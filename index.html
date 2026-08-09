@@ -3159,7 +3159,8 @@ setTimeout(function() {
   if (loading && loading.style.display !== 'none' && !loading.classList.contains('opacity-0')) {
     console.warn('[Loading Guard] Loading screen dipaksa hilang setelah 10 detik — kemungkinan ada error di alur normal. Cek console untuk detail error sebelumnya.');
     loading.classList.add('opacity-0', 'pointer-events-none');
-    setTimeout(function(){ try { loading.remove(); } catch(e){} }, 600);
+    // TIDAK menghapus elemen dari DOM — lihat penjelasan di hideLoadingScreen()
+    setTimeout(function(){ loading.style.display = 'none'; }, 600);
     var appEl = document.getElementById('app');
     if (appEl) appEl.classList.remove('opacity-0');
   }
@@ -3327,7 +3328,13 @@ function hideLoadingScreen() {
   const loading = document.getElementById('loading-overlay');
   if (loading) {
     loading.classList.add('opacity-0','pointer-events-none');
-    setTimeout(() => { try { loading.remove(); } catch(e){} }, 600);
+    // PENTING: TIDAK menghapus elemen dari DOM (tidak pakai .remove()).
+    // Elemen ini perlu dipakai ULANG setiap kali login/register berhasil
+    // (lihat handleLoginSubmit/handleRegisterSubmit) — kalau dihapus total,
+    // panggilan berikutnya ke getElementById('loading-overlay') akan
+    // mengembalikan null, membuat loading screen tidak bisa ditampilkan
+    // lagi sama sekali untuk sesi login berikutnya.
+    setTimeout(() => { loading.style.display = 'none'; }, 600);
   }
   const appEl = document.getElementById('app');
   if (appEl) appEl.classList.remove('opacity-0');
@@ -3517,6 +3524,15 @@ async function handleLoginSubmit(e) {
 
     if (j.status === 'success') {
       saveAkunSession(j.data);
+      // PENTING: tampilkan loading screen DULU, baru sembunyikan auth-screen —
+      // supaya tidak ada celah waktu di mana halaman utama (dengan data kosong)
+      // sempat terlihat sebelum loading screen benar-benar menutupinya.
+      const loadingEl = document.getElementById('loading-overlay');
+      if (loadingEl) {
+        loadingEl.style.display = 'flex';
+        loadingEl.classList.remove('opacity-0', 'pointer-events-none');
+        loadingEl.style.opacity = '1';
+      }
       document.getElementById('auth-screen').style.display = 'none';
       // Lanjut ke alur normal: fetch data transaksi dari GS_URL akun ini,
       // lalu cek PIN, lalu initApp() — semuanya di dalam startMainFetchFlow().
@@ -3581,9 +3597,20 @@ async function handleRegisterSubmit(e) {
         return;
       }
       saveAkunSession(j.data);
+      // Sama seperti login: loading screen tampil DULU sebelum auth-screen
+      // hilang, supaya tidak ada celah tampilan data kosong.
+      const loadingEl = document.getElementById('loading-overlay');
+      if (loadingEl) {
+        loadingEl.style.display = 'flex';
+        loadingEl.classList.remove('opacity-0', 'pointer-events-none');
+        loadingEl.style.opacity = '1';
+      }
       document.getElementById('auth-screen').style.display = 'none';
-      showSuccess('Akun berhasil dibuat! Selamat datang, ' + username + '.');
       await startMainFetchFlow();
+      // Pesan sukses ditampilkan SETELAH loading screen hilang, supaya
+      // benar-benar terlihat user (tidak tertutup loading yang z-index-nya
+      // lebih tinggi).
+      showSuccess('Akun berhasil dibuat! Selamat datang, ' + username + '.');
     } else {
       msgEl.textContent = j.message || 'Registrasi gagal. Coba lagi.';
     }
