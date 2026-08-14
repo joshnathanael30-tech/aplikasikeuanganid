@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KelolaDuit.id</title>
+<title>Keuangan+ AI</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -1209,52 +1209,107 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
 
 #auth-screen {
   position: fixed; inset: 0; z-index: 95;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(160deg,#0F0C29,#302B63,#24243E);
-  padding: 24px; overflow-y: auto;
+  display: flex; flex-direction: column;
+  background: #fff;
+  overflow-y: auto;
 }
 #auth-screen.hidden { display: none; }
-#auth-card {
-  width: 100%; max-width: 340px;
-  background: #fff; border-radius: 28px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,.4);
-  padding: 32px 28px; text-align: center;
-  box-sizing: border-box; margin: auto;
+
+/* ── Header organik dengan blob shapes ── */
+.auth-header {
+  position: relative;
+  flex-shrink: 0;
+  height: 38vh;
+  min-height: 260px;
+  max-height: 340px;
+  overflow: hidden;
+  background: #FBBFA0;
 }
-.auth-icon-wrap {
-  width: 64px; height: 64px;
-  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
-  border-radius: 16px; margin: 0 auto 20px;
+.auth-blob {
+  position: absolute;
+  border-radius: 50%;
+}
+.auth-blob-1 {
+  width: 130%; height: 100%;
+  left: -15%; top: -10%;
+  background: linear-gradient(160deg, #7C3E66, #5B2C4D);
+  border-radius: 40% 60% 65% 35% / 45% 40% 60% 55%;
+}
+.auth-blob-2 {
+  width: 60%; height: 70%;
+  right: -15%; top: 15%;
+  background: linear-gradient(135deg, #F0D878, #E8C858);
+  border-radius: 55% 45% 40% 60% / 60% 55% 45% 40%;
+}
+.auth-back-btn {
+  position: absolute; top: 20px; left: 20px; z-index: 2;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 10px 15px -3px rgba(139,92,246,.3);
+  color: #fff;
 }
-.auth-icon-wrap svg { height: 32px; width: 32px; color: #fff; }
-#auth-card h2 { font-size: 20px; font-weight: 900; color: #18181B; margin-bottom: 4px; }
-.auth-desc { font-size: 13px; color: #A1A1AA; font-weight: 500; margin-bottom: 22px; }
-.auth-form { display: flex; flex-direction: column; gap: 10px; }
+.auth-header-title {
+  position: absolute; left: 24px; bottom: 32px; z-index: 2;
+  font-size: 32px; font-weight: 900; color: #fff;
+  line-height: 1.15;
+  text-shadow: 0 2px 12px rgba(0,0,0,.15);
+}
+
+/* ── Body form ── */
+.auth-body {
+  flex: 1;
+  padding: 32px 28px 40px;
+  display: flex;
+  flex-direction: column;
+}
+.auth-desc { font-size: 13px; color: #A1A1AA; font-weight: 600; margin-bottom: 24px; }
+.auth-form { display: flex; flex-direction: column; gap: 22px; }
 .auth-form.hidden { display: none; }
+
+.auth-field { position: relative; }
+.auth-field label {
+  display: block; font-size: 12px; font-weight: 700; color: #A1A1AA;
+  margin-bottom: 6px;
+}
 .auth-form input {
   width: 100%; box-sizing: border-box;
-  padding: 13px 16px; border-radius: 14px;
-  background: #F4F4F5; border: 1.5px solid transparent;
-  outline: none; font-family: inherit; font-size: 14px; font-weight: 600;
-  color: #18181B; transition: border-color .15s;
+  padding: 6px 0 10px; border: none; border-bottom: 1.5px solid #E4E4E7;
+  outline: none; font-family: inherit; font-size: 16px; font-weight: 700;
+  color: #18181B; background: transparent;
+  transition: border-color .15s;
 }
-.auth-form input:focus { border-color: #8B5CF6; background: #fff; }
+.auth-form input::placeholder { color: #D4D4D8; font-weight: 500; }
+.auth-form input:focus { border-color: #5B2C4D; }
+
+/* ── Baris Sign in + tombol panah bulat ── */
+.auth-submit-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px;
+}
+.auth-submit-label { font-size: 19px; font-weight: 900; color: #18181B; }
 .auth-form button[type="submit"] {
-  width: 100%; background: #18181B; color: #fff;
-  font-weight: 700; padding: 15px; border-radius: 14px;
-  border: none; cursor: pointer; font-size: 14px; font-family: inherit;
-  margin-top: 4px; transition: transform .1s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #7C3E66, #5B2C4D);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10px 20px -6px rgba(91,44,77,.5);
+  transition: transform .12s;
 }
-.auth-form button[type="submit"]:active { transform: scale(.96); }
-.auth-msg { color: #EF4444; font-size: 12px; font-weight: 700; min-height: 16px; text-align: left; margin: -2px 0 0; }
-.auth-hint { color: #A1A1AA; font-size: 11px; font-weight: 600; text-align: left; margin: -4px 0 0; line-height: 1.4; }
-.auth-switch { font-size: 13px; color: #71717A; font-weight: 600; margin-top: 20px; }
-.auth-switch a { color: #8B5CF6; font-weight: 800; text-decoration: none; margin-left: 4px; }
+.auth-form button[type="submit"]:active { transform: scale(.92); }
+.auth-form button[type="submit"] svg { width: 22px; height: 22px; color: #fff; }
+
+.auth-msg { color: #EF4444; font-size: 12px; font-weight: 700; min-height: 16px; margin-top: -8px; }
+.auth-hint { color: #A1A1AA; font-size: 11px; font-weight: 600; line-height: 1.4; }
+
+.auth-switch {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 14px; font-weight: 700; margin-top: auto; padding-top: 32px;
+}
+.auth-switch a { color: #18181B; text-decoration: underline; text-underline-offset: 3px; }
+
 .auth-spin {
-  width: 16px; height: 16px;
+  width: 18px; height: 18px;
   border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff;
   border-radius: 50%; animation: spin .7s linear infinite;
 }
@@ -1368,40 +1423,64 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
 
 <!-- ═══════════ AUTH SCREEN (LOGIN / REGISTER) ═══════════ -->
 <div id="auth-screen" class="hidden">
-  <div id="auth-card">
-    <div class="auth-icon-wrap">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-    </div>
-    <h2 id="auth-title">Masuk ke Akun</h2>
+  <div class="auth-header">
+    <div class="auth-blob auth-blob-1"></div>
+    <div class="auth-blob auth-blob-2"></div>
+    <h1 class="auth-header-title" id="auth-title">Selamat<br>Datang</h1>
+  </div>
+
+  <div class="auth-body">
     <p class="auth-desc" id="auth-desc">Kelola keuanganmu dengan aman.</p>
 
     <form id="login-form" class="auth-form">
-      <input type="text" id="login-username" placeholder="Username" autocomplete="username" required>
-      <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" required>
+      <div class="auth-field">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" placeholder="usernamemu" autocomplete="username" required>
+      </div>
+      <div class="auth-field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
       <p id="login-msg" class="auth-msg"></p>
-      <button type="submit" id="login-submit-btn">
-        <span id="login-submit-text">Masuk</span>
-        <div id="login-submit-spin" class="auth-spin hidden"></div>
-      </button>
+      <div class="auth-submit-row">
+        <span class="auth-submit-label">Masuk</span>
+        <button type="submit" id="login-submit-btn" aria-label="Masuk">
+          <svg id="login-submit-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          <div id="login-submit-spin" class="auth-spin hidden"></div>
+        </button>
+      </div>
     </form>
 
     <form id="register-form" class="auth-form hidden">
-      <input type="text" id="register-username" placeholder="Username" autocomplete="username" required>
-      <input type="password" id="register-password" placeholder="Password (min. 4 karakter)" autocomplete="new-password" required>
-      <input type="email" id="register-email" placeholder="Email (opsional)" autocomplete="email">
-      <input type="text" id="register-nama" placeholder="Nama Lengkap (opsional)" autocomplete="name">
-      <input type="text" id="register-gsurl" placeholder="URL Apps Script Transaksi (opsional)" autocomplete="off">
-      <p class="auth-hint">Kosongkan jika belum punya — bisa diatur nanti lewat menu Profil setelah masuk.</p>
+      <div class="auth-field">
+        <label for="register-username">Username</label>
+        <input type="text" id="register-username" placeholder="usernamemu" autocomplete="username" required>
+      </div>
+      <div class="auth-field">
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" placeholder="min. 4 karakter" autocomplete="new-password" required>
+      </div>
+      <div class="auth-field">
+        <label for="register-email">Email <span style="font-weight:500;color:#D4D4D8">(opsional)</span></label>
+        <input type="email" id="register-email" placeholder="kamu@email.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label for="register-nama">Nama Lengkap <span style="font-weight:500;color:#D4D4D8">(opsional)</span></label>
+        <input type="text" id="register-nama" placeholder="Nama kamu" autocomplete="name">
+      </div>
       <p id="register-msg" class="auth-msg"></p>
-      <button type="submit" id="register-submit-btn">
-        <span id="register-submit-text">Daftar</span>
-        <div id="register-submit-spin" class="auth-spin hidden"></div>
-      </button>
+      <div class="auth-submit-row">
+        <span class="auth-submit-label">Daftar</span>
+        <button type="submit" id="register-submit-btn" aria-label="Daftar">
+          <svg id="register-submit-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          <div id="register-submit-spin" class="auth-spin hidden"></div>
+        </button>
+      </div>
     </form>
 
     <p class="auth-switch">
       <span id="auth-switch-text">Belum punya akun?</span>
-      <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)">Daftar di sini</a>
+      <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)">Daftar</a>
     </p>
   </div>
 </div>
@@ -1853,11 +1932,6 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
         <div class="h-px bg-zinc-100 mx-4"></div>
         <button onclick="openModal('security-modal')" class="w-full flex items-center justify-between p-4 hover:bg-zinc-50 transition active:bg-zinc-100">
           <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center"><svg class="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div><div><p class="text-sm font-black text-zinc-900">Keamanan & PIN</p><p id="profile-security-status" class="text-xs text-zinc-400 font-semibold">...</p></div></div>
-          <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
-        <div class="h-px bg-zinc-100 mx-4"></div>
-        <button onclick="openGsUrlModal()" class="w-full flex items-center justify-between p-4 hover:bg-zinc-50 transition active:bg-zinc-100">
-          <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center"><svg class="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg></div><div><p class="text-sm font-black text-zinc-900">Data Keuangan</p><p id="profile-gsurl-status" class="text-xs text-zinc-400 font-semibold">...</p></div></div>
           <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
         <div class="h-px bg-zinc-100 mx-4"></div>
@@ -3067,26 +3141,6 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
   </div>
 </div>
 
-<!-- ═══════════ DATA KEUANGAN (ATUR URL APPS SCRIPT) ═══════════ -->
-<div id="gsurl-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'gsurl-modal')">
-  <div class="sheet p-6 pb-8">
-    <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
-    <h2 class="text-xl font-black text-zinc-900 mb-1">Data Keuangan</h2>
-    <p class="text-xs text-zinc-400 font-semibold mb-4">URL Apps Script tempat transaksi &amp; dompetmu tersimpan.</p>
-    <form id="gsurl-form" class="space-y-4">
-      <input type="text" id="gsurl-input" placeholder="https://script.google.com/macros/s/…/exec" class="fi" autocomplete="off">
-      <p class="text-xs text-zinc-400 font-semibold leading-relaxed">Perubahan memerlukan password akunmu sebagai verifikasi keamanan.</p>
-      <input type="password" id="gsurl-password" placeholder="Password Akun" class="fi" autocomplete="current-password">
-      <p id="gsurl-msg" class="auth-msg"></p>
-      <button type="submit" id="gsurl-submit-btn" class="w-full bg-zinc-900 text-white font-black py-4 rounded-2xl active:scale-[0.98] transition flex items-center justify-center gap-2">
-        <span id="gsurl-submit-text">Simpan</span>
-        <div id="gsurl-submit-spin" class="auth-spin hidden"></div>
-      </button>
-    </form>
-    <button onclick="closeModal('gsurl-modal')" class="w-full text-zinc-400 font-bold text-sm mt-4">Batal</button>
-  </div>
-</div>
-
 <!-- ═══════════ JAVASCRIPT ═══════════ -->
 <script>
 // ================================================================
@@ -3183,10 +3237,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    const gsUrlForm = document.getElementById('gsurl-form');
     if (loginForm) loginForm.addEventListener('submit', handleLoginSubmit);
     if (registerForm) registerForm.addEventListener('submit', handleRegisterSubmit);
-    if (gsUrlForm) gsUrlForm.addEventListener('submit', handleGsUrlSubmit);
   } catch(e) { console.warn(e); }
 
   // Cek sesi akun PALING AWAL — sebelum fetch data transaksi apapun dimulai,
@@ -3479,17 +3531,17 @@ window.toggleAuthMode = function(e) {
   if (isShowingLogin) {
     loginForm.classList.add('hidden');
     registerForm.classList.remove('hidden');
-    title.textContent = 'Buat Akun Baru';
+    title.innerHTML = 'Buat<br>Akun';
     desc.textContent = 'Mulai kelola keuanganmu sekarang.';
     switchText.textContent = 'Sudah punya akun?';
-    switchLink.textContent = 'Masuk di sini';
+    switchLink.textContent = 'Masuk';
   } else {
     registerForm.classList.add('hidden');
     loginForm.classList.remove('hidden');
-    title.textContent = 'Masuk ke Akun';
+    title.innerHTML = 'Selamat<br>Datang';
     desc.textContent = 'Kelola keuanganmu dengan aman.';
     switchText.textContent = 'Belum punya akun?';
-    switchLink.textContent = 'Daftar di sini';
+    switchLink.textContent = 'Daftar';
   }
   document.getElementById('login-msg').textContent = '';
   document.getElementById('register-msg').textContent = '';
@@ -3508,10 +3560,10 @@ async function handleLoginSubmit(e) {
   }
 
   const btn = document.getElementById('login-submit-btn');
-  const btnText = document.getElementById('login-submit-text');
+  const btnIcon = document.getElementById('login-submit-icon');
   const btnSpin = document.getElementById('login-submit-spin');
   btn.disabled = true;
-  btnText.textContent = 'Memeriksa…';
+  if (btnIcon) btnIcon.classList.add('hidden');
   btnSpin.classList.remove('hidden');
 
   try {
@@ -3544,7 +3596,7 @@ async function handleLoginSubmit(e) {
     msgEl.textContent = 'Gagal terhubung ke server. Cek koneksi internet.';
   } finally {
     btn.disabled = false;
-    btnText.textContent = 'Masuk';
+    if (btnIcon) btnIcon.classList.remove('hidden');
     btnSpin.classList.add('hidden');
   }
 }
@@ -3555,7 +3607,6 @@ async function handleRegisterSubmit(e) {
   const password = document.getElementById('register-password').value;
   const email = document.getElementById('register-email').value.trim();
   const namaLengkap = document.getElementById('register-nama').value.trim();
-  const gsUrl = document.getElementById('register-gsurl').value.trim();
   const msgEl = document.getElementById('register-msg');
   msgEl.textContent = '';
 
@@ -3567,23 +3618,19 @@ async function handleRegisterSubmit(e) {
     msgEl.textContent = 'Password minimal 4 karakter.';
     return;
   }
-  if (gsUrl && !gsUrl.startsWith('https://script.google.com/')) {
-    msgEl.textContent = 'URL Apps Script harus dimulai dengan https://script.google.com/';
-    return;
-  }
 
   const btn = document.getElementById('register-submit-btn');
-  const btnText = document.getElementById('register-submit-text');
+  const btnIcon = document.getElementById('register-submit-icon');
   const btnSpin = document.getElementById('register-submit-spin');
   btn.disabled = true;
-  btnText.textContent = 'Mendaftarkan…';
+  if (btnIcon) btnIcon.classList.add('hidden');
   btnSpin.classList.remove('hidden');
 
   try {
     const r = await fetch(GLOBAL_GS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'registerAkun', data: { username, password, email, namaLengkap, gsUrl } })
+      body: JSON.stringify({ action: 'registerAkun', data: { username, password, email, namaLengkap } })
     });
     const j = await r.json();
 
@@ -3618,7 +3665,7 @@ async function handleRegisterSubmit(e) {
     msgEl.textContent = 'Gagal terhubung ke server. Cek koneksi internet.';
   } finally {
     btn.disabled = false;
-    btnText.textContent = 'Daftar';
+    if (btnIcon) btnIcon.classList.remove('hidden');
     btnSpin.classList.add('hidden');
   }
 }
@@ -4471,78 +4518,6 @@ function updateProfileUI(){
   document.getElementById('username-display').textContent=un;
   const akunStatusEl = document.getElementById('profile-akun-status');
   if (akunStatusEl) akunStatusEl.textContent = S.akun ? ('Masuk sebagai ' + S.akun.username) : 'Belum masuk';
-  const gsUrlStatusEl = document.getElementById('profile-gsurl-status');
-  if (gsUrlStatusEl) gsUrlStatusEl.textContent = (S.akun && S.akun.gsUrl) ? 'Terhubung ✓' : 'Belum terhubung';
-}
-
-/**
- * Buka modal untuk melihat/mengubah URL Apps Script transaksi milik akun
- * yang sedang login. Pre-fill dengan URL yang sedang aktif (kalau ada).
- */
-window.openGsUrlModal = function() {
-  const input = document.getElementById('gsurl-input');
-  const pwInput = document.getElementById('gsurl-password');
-  const msgEl = document.getElementById('gsurl-msg');
-  if (input) input.value = (S.akun && S.akun.gsUrl) ? S.akun.gsUrl : '';
-  if (pwInput) pwInput.value = '';
-  if (msgEl) { msgEl.textContent = ''; msgEl.style.color = '#EF4444'; }
-  openModal('gsurl-modal');
-};
-
-async function handleGsUrlSubmit(e) {
-  e.preventDefault();
-  const gsUrl = document.getElementById('gsurl-input').value.trim();
-  const password = document.getElementById('gsurl-password').value;
-  const msgEl = document.getElementById('gsurl-msg');
-  msgEl.textContent = '';
-  msgEl.style.color = '#EF4444';
-
-  if (!password) {
-    msgEl.textContent = 'Masukkan password akunmu untuk verifikasi.';
-    return;
-  }
-  if (gsUrl && !gsUrl.startsWith('https://script.google.com/')) {
-    msgEl.textContent = 'URL harus dimulai dengan https://script.google.com/';
-    return;
-  }
-  if (!S.akun) {
-    msgEl.textContent = 'Sesi akun tidak ditemukan. Silakan login ulang.';
-    return;
-  }
-
-  const btn = document.getElementById('gsurl-submit-btn');
-  const btnText = document.getElementById('gsurl-submit-text');
-  const btnSpin = document.getElementById('gsurl-submit-spin');
-  btn.disabled = true;
-  btnText.textContent = 'Menyimpan…';
-  btnSpin.classList.remove('hidden');
-
-  try {
-    const r = await fetch(GLOBAL_GS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'setGsUrlAkun', data: { username: S.akun.username, password, gsUrl } })
-    });
-    const j = await r.json();
-
-    if (j.status === 'success') {
-      // Update sesi lokal dengan URL baru, lalu reload supaya seluruh
-      // aplikasi mengambil data dari endpoint yang benar dari awal.
-      S.akun.gsUrl = gsUrl;
-      saveAkunSession(S.akun);
-      closeModal('gsurl-modal');
-      showSuccess('URL data keuangan berhasil diperbarui. Memuat ulang…');
-      setTimeout(() => location.reload(), 900);
-    } else {
-      msgEl.textContent = j.message || 'Gagal menyimpan. Coba lagi.';
-    }
-  } catch (err) {
-    msgEl.textContent = 'Gagal terhubung ke server. Cek koneksi internet.';
-  } finally {
-    btn.disabled = false;
-    btnText.textContent = 'Simpan';
-    btnSpin.classList.add('hidden');
-  }
 }
 
 /**
