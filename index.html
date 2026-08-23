@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Keuangan+ AI</title>
+<title>KelolaDuit.id</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -1129,31 +1129,63 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
 }
 .dompet-provider-btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 2px solid #E4E4E7;
-  background: #fff;
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 0;
+}
+.dompet-provider-box {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  border: 2px solid #E4E4E7;
+  background-color: #fff;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
   transition: all .15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  position: relative;
+  overflow: hidden;
 }
-.dompet-provider-btn.selected {
+.dompet-provider-box-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.55);
+}
+.dompet-provider-box img {
+  position: relative;
+  z-index: 1;
+}
+.dompet-provider-btn.selected .dompet-provider-box {
   border-color: #8B5CF6;
-  background: #F5F3FF;
+  box-shadow: 0 0 0 3px rgba(139,92,246,.15);
 }
-.dompet-provider-btn img {
-  width: 28px;
-  height: 28px;
+.dompet-provider-btn:active .dompet-provider-box {
+  transform: scale(0.94);
+}
+.dompet-provider-box img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  border-radius: 6px;
-  flex-shrink: 0;
 }
 .dompet-provider-btn span {
   font-size: 11px;
   font-weight: 800;
   color: #52525B;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
+.dompet-provider-btn.selected span { color: #6D28D9; }
 
 /* ── TX FORM: DOMPET PICKER ── */
 .tx-dompet-chip {
@@ -2479,7 +2511,7 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
 
       <div id="onb-provider-wrap" style="margin-bottom:18px">
         <p style="font-size:11px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Pilih Penyedia</p>
-        <div id="onb-provider-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div id="onb-provider-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
           <div style="grid-column:span 2;text-align:center;padding:20px;color:#A1A1AA;font-size:12px;font-weight:700">Memuat daftar…</div>
         </div>
       </div>
@@ -2660,7 +2692,7 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
 
       <div id="td-provider-wrap" style="margin-bottom:16px">
         <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Pilih Penyedia</p>
-        <div id="td-provider-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+        <div id="td-provider-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"></div>
       </div>
 
       <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Nama Dompet</p>
@@ -9074,13 +9106,20 @@ function renderOnboardingProviders(type) {
     var reason = !dompetState.globalLoaded
       ? 'Gagal terhubung ke Data Master. Cek koneksi atau URL Apps Script.'
       : 'Sheet "' + (type === 'emoney' ? 'Emoney' : 'Rekening Bank') + '" di Data Master kosong atau nama sheet-nya beda.';
-    grid.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:16px;color:#EF4444;font-size:11px;font-weight:700">⚠️ ' + reason + '<br><span style="color:#A1A1AA;font-weight:600">Isi nama manual di bawah sebagai alternatif.</span></div>';
+    grid.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:16px;color:#EF4444;font-size:11px;font-weight:700">⚠️ ' + reason + '<br><span style="color:#A1A1AA;font-weight:600">Isi nama manual di bawah sebagai alternatif.</span></div>';
     return;
   }
 
   grid.innerHTML = list.map(function(p, i) {
+    var bgStyle = p.background
+      ? ' style="background-image:url(' + String.fromCharCode(39) + p.background + String.fromCharCode(39) + ')"'
+      : '';
+    var overlay = p.background ? '<div class="dompet-provider-box-overlay"></div>' : '';
     return '<button type="button" class="dompet-provider-btn" onclick="selectOnboardingProvider(' + i + ',\'' + type + '\',this)">' +
-      '<img src="' + (p.gambar || '') + '" onerror="this.style.display=\'none\'">' +
+      '<div class="dompet-provider-box"' + bgStyle + '>' +
+        overlay +
+        '<img src="' + (p.gambar || '') + '" onerror="this.style.display=' + String.fromCharCode(39) + 'none' + String.fromCharCode(39) + '">' +
+      '</div>' +
       '<span>' + p.nama + '</span>' +
     '</button>';
   }).join('');
@@ -9545,11 +9584,18 @@ window.setTambahDompetType = function(type, btn) {
     var grid = document.getElementById('td-provider-grid');
     var list = type === 'emoney' ? dompetState.globalEmoney : dompetState.globalBank;
     if (!list.length) {
-      grid.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:14px;color:#A1A1AA;font-size:11px;font-weight:700">Daftar tidak tersedia.</div>';
+      grid.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:14px;color:#A1A1AA;font-size:11px;font-weight:700">Daftar tidak tersedia.</div>';
     } else {
       grid.innerHTML = list.map(function(p, i) {
+        var bgStyle = p.background
+          ? ' style="background-image:url(' + String.fromCharCode(39) + p.background + String.fromCharCode(39) + ')"'
+          : '';
+        var overlay = p.background ? '<div class="dompet-provider-box-overlay"></div>' : '';
         return '<button type="button" class="dompet-provider-btn" onclick="selectTambahProvider(' + i + ',\'' + type + '\',this)">' +
-          '<img src="' + (p.gambar || '') + '" onerror="this.style.display=\'none\'">' +
+          '<div class="dompet-provider-box"' + bgStyle + '>' +
+            overlay +
+            '<img src="' + (p.gambar || '') + '" onerror="this.style.display=' + String.fromCharCode(39) + 'none' + String.fromCharCode(39) + '">' +
+          '</div>' +
           '<span>' + p.nama + '</span>' +
         '</button>';
       }).join('');
