@@ -333,11 +333,13 @@ body {
 }
 .add-menu-wrap.visible { pointer-events: auto; }
 .add-menu-wrap.visible .add-menu-option { pointer-events: auto; }
-.add-menu-wrap.visible .add-menu-option:nth-child(1) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.14s forwards; }
-.add-menu-wrap.visible .add-menu-option:nth-child(2) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.10s forwards; }
-.add-menu-wrap.visible .add-menu-option:nth-child(3) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.10s forwards; }
-.add-menu-wrap.visible .add-menu-option:nth-child(4) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.05s forwards; }
-.add-menu-wrap.visible .add-menu-option:nth-child(5) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.00s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(1) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.18s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(2) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.15s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(3) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.12s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(4) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.09s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(5) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.06s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(6) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.03s forwards; }
+.add-menu-wrap.visible .add-menu-option:nth-child(7) { animation: addMenuUp 0.32s cubic-bezier(0.22,1,0.36,1) 0.00s forwards; }
 @keyframes addMenuUp { from { opacity:0; transform:translateY(16px) scale(0.85); } to { opacity:1; transform:translateY(0) scale(1); } }
 .add-menu-btn {
   width: 50px; height: 50px; border-radius: 9999px; border: none; cursor: pointer;
@@ -1080,6 +1082,39 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
   background-position: center;
 }
 .dompet-card:active { transform: scale(0.95); }
+.dompet-card-add {
+  width: 140px;
+  height: 96px;
+  border-radius: 18px;
+  flex-shrink: 0;
+  border: 2px dashed #D4D4D8;
+  background: #FAFAFA;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all .15s;
+  animation: crapCardIn .35s cubic-bezier(.34,1.2,.64,1) both;
+}
+.dompet-card-add:active { transform: scale(0.95); background: #F4F4F5; }
+.dompet-card-add-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #D4D4D8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dompet-card-add-icon svg { width: 15px; height: 15px; color: #71717A; }
+.dompet-card-add span {
+  font-size: 11px;
+  font-weight: 800;
+  color: #71717A;
+}
 .dompet-card-overlay {
   position: absolute;
   inset: 0;
@@ -1582,6 +1617,18 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
         </button>
         <div class="add-menu-label">Tambah Satu</div>
       </div>
+      <div class="add-menu-option">
+        <button class="add-menu-btn" style="background:#059669; box-shadow:0 6px 20px rgba(5,150,105,0.35)" onclick="closeFab();openDepositoModal()">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .672-3 1.5S10.343 11 12 11s3 .672 3 1.5-1.343 1.5-3 1.5m0-6c1.11 0 2.08.402 2.599 1M12 8V6.5M12 8v6m0 0v1.5M9.401 15c.52.598 1.488 1 2.599 1M12 20a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        </button>
+        <div class="add-menu-label">Deposito</div>
+      </div>
+      <div class="add-menu-option">
+        <button class="add-menu-btn" style="background:#DC2626; box-shadow:0 6px 20px rgba(220,38,38,0.35)" onclick="closeFab();openCicilanModal()">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 7h6m0 10v-3m-3 3v-6m-3 6v-1m11-9V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h9a2 2 0 002-2v-1M9 7V4a2 2 0 012-2h2a2 2 0 012 2v3M9 7h6"/></svg>
+        </button>
+        <div class="add-menu-label">Cicilan</div>
+      </div>
     </div>
   </div>
 
@@ -1655,6 +1702,24 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
             <div style="width:132px;height:92px;border-radius:18px;background:#F4F4F5;animation:shimmer 1.4s infinite;animation-delay:.1s;flex-shrink:0"></div>
           </div>
         </div>
+      </div>
+
+      <!-- ── DEPOSITO ── -->
+      <div class="fade-up s2" id="deposito-section">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-base font-black text-zinc-900">Deposito</span>
+          <button onclick="openDepositoModal()" class="text-[12px] font-black text-emerald-600 active:scale-90 transition-transform">+ Buka Baru</button>
+        </div>
+        <div id="deposito-list-wrap"></div>
+      </div>
+
+      <!-- ── CICILAN / KREDIT ── -->
+      <div class="fade-up s2" id="cicilan-section">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-base font-black text-zinc-900">Cicilan / Kredit</span>
+          <button onclick="openCicilanModal()" class="text-[12px] font-black text-red-600 active:scale-90 transition-transform">+ Tambah Baru</button>
+        </div>
+        <div id="cicilan-list-wrap"></div>
       </div>
 
       <!-- ── WEATHER WIDGET (compact) ── -->
@@ -2588,6 +2653,193 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
         style="width:100%;margin-top:10px;padding:14px;border-radius:16px;border:2px dashed #D4D4D8;background:none;color:#71717A;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
         <svg style="width:16px;height:16px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         Tambah Dompet Baru
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DEPOSITO MODAL ═══════════ -->
+<div id="deposito-backdrop" class="modal-backdrop" style="display:none;z-index:9280" onclick="handleBackdropClick(event,'deposito-backdrop')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh;display:flex;flex-direction:column">
+    <div style="padding:18px 20px 14px;flex-shrink:0;border-bottom:1px solid #F4F4F5">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+      <div class="flex justify-between items-center">
+        <h2 style="font-size:17px;font-weight:900;color:#18181B">🏦 Buka Deposito</h2>
+        <button onclick="closeModal('deposito-backdrop')" style="width:32px;height:32px;border-radius:10px;background:#F4F4F5;border:none;cursor:pointer;color:#71717A">✕</button>
+      </div>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:16px 20px 24px">
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Nama Deposito</p>
+      <input type="text" id="dep-nama" placeholder="Contoh: Deposito BCA 6 Bulan" class="fi" style="width:100%;margin-bottom:14px">
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Nominal Pokok</p>
+      <div style="background:#F9F9FB;border:1.5px solid #E4E4E7;border-radius:16px;padding:14px;display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <span style="font-size:15px;font-weight:900;color:#71717A">Rp</span>
+        <input type="number" id="dep-nominal" placeholder="0" oninput="updateDepositoPreview()" style="flex:1;border:none;outline:none;font-size:18px;font-weight:900;color:#18181B;background:transparent">
+      </div>
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Sumber Dana</p>
+      <select id="dep-dompet-id" onchange="updateDepositoPreview()" class="fi" style="width:100%;font-weight:800;margin-bottom:6px"></select>
+      <p id="dep-dompet-saldo" style="font-size:11px;font-weight:700;color:#A1A1AA;margin-bottom:14px">Saldo: Rp 0</p>
+
+      <div class="grid grid-cols-2 gap-3" style="margin-bottom:14px">
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Bunga (%/tahun)</p>
+          <input type="number" id="dep-bunga" placeholder="0" step="0.01" oninput="updateDepositoPreview()" class="fi" style="width:100%">
+        </div>
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Tenor (bulan)</p>
+          <input type="number" id="dep-tenor" placeholder="0" oninput="updateDepositoPreview()" class="fi" style="width:100%">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3" style="margin-bottom:14px">
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Pajak Bunga (%)</p>
+          <input type="number" id="dep-pajak" placeholder="20" step="0.1" oninput="updateDepositoPreview()" class="fi" style="width:100%">
+        </div>
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Tanggal Mulai</p>
+          <input type="date" id="dep-tanggal-mulai" oninput="updateDepositoPreview()" class="fi" style="width:100%">
+        </div>
+      </div>
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Saat Jatuh Tempo</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:2px solid #E4E4E7;cursor:pointer" id="dep-tipe-label-cair">
+          <input type="radio" name="dep-tipe-jt" value="cair" checked onchange="setDepositoTipeJT(this)" style="width:16px;height:16px;accent-color:#059669">
+          <div><p style="font-size:12px;font-weight:800;color:#18181B">Cair ke Rekening</p><p style="font-size:10px;font-weight:600;color:#A1A1AA">Pokok + bunga bersih masuk ke dompet sumber</p></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:2px solid #E4E4E7;cursor:pointer" id="dep-tipe-label-perpanjang-pokok">
+          <input type="radio" name="dep-tipe-jt" value="perpanjang_pokok" onchange="setDepositoTipeJT(this)" style="width:16px;height:16px;accent-color:#059669">
+          <div><p style="font-size:12px;font-weight:800;color:#18181B">Perpanjang Pokok Saja</p><p style="font-size:10px;font-weight:600;color:#A1A1AA">Bunga cair, pokok deposito baru dibuka lagi</p></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:2px solid #E4E4E7;cursor:pointer" id="dep-tipe-label-perpanjang-semua">
+          <input type="radio" name="dep-tipe-jt" value="perpanjang_semua" onchange="setDepositoTipeJT(this)" style="width:16px;height:16px;accent-color:#059669">
+          <div><p style="font-size:12px;font-weight:800;color:#18181B">Perpanjang Pokok + Bunga</p><p style="font-size:10px;font-weight:600;color:#A1A1AA">Semua digulung jadi deposito baru</p></div>
+        </label>
+      </div>
+
+      <!-- Preview kalkulasi -->
+      <div id="dep-preview" style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:16px;padding:14px;margin-bottom:8px">
+        <p style="font-size:10px;font-weight:900;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Estimasi</p>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;font-weight:700;color:#166534">Bunga Kotor</span>
+          <span id="dep-preview-bunga-kotor" style="font-size:12px;font-weight:900;color:#166534">Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;font-weight:700;color:#166534">Potongan Pajak</span>
+          <span id="dep-preview-pajak" style="font-size:12px;font-weight:900;color:#DC2626">- Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;font-weight:700;color:#166534">Bunga Bersih</span>
+          <span id="dep-preview-bunga-bersih" style="font-size:12px;font-weight:900;color:#166534">Rp 0</span>
+        </div>
+        <div style="height:1px;background:#BBF7D0;margin:8px 0"></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:12px;font-weight:900;color:#166534">Total Kembali</span>
+          <span id="dep-preview-total" style="font-size:14px;font-weight:900;color:#166534">Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:11px;font-weight:700;color:#166534">Jatuh Tempo</span>
+          <span id="dep-preview-jt" style="font-size:11px;font-weight:900;color:#166534">-</span>
+        </div>
+      </div>
+
+      <div id="dep-balance-warn" style="display:none;margin-bottom:14px;padding:10px 12px;border-radius:12px;background:#FEF2F2;border:1.5px solid #FECACA;font-size:11px;font-weight:800;color:#991B1B">
+        ⚠️ Nominal melebihi saldo dompet sumber!
+      </div>
+
+      <p id="dep-form-msg" style="text-align:center;font-size:11px;color:#EF4444;min-height:16px"></p>
+    </div>
+
+    <div style="flex-shrink:0;padding:14px 20px 28px;border-top:1px solid #F4F4F5">
+      <button id="dep-submit-btn" onclick="submitDeposito()"
+        style="width:100%;color:#fff;font-weight:900;padding:14px;border-radius:18px;border:none;cursor:pointer;
+               background:linear-gradient(135deg,#059669,#047857);box-shadow:0 8px 24px rgba(5,150,105,.3);
+               display:flex;align-items:center;justify-content:center;gap:8px">
+        <span id="dep-submit-text">Buka Deposito</span>
+        <div id="dep-submit-spin" class="spin-sm hidden"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CICILAN/KREDIT MODAL ═══════════ -->
+<div id="cicilan-backdrop" class="modal-backdrop" style="display:none;z-index:9280" onclick="handleBackdropClick(event,'cicilan-backdrop')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh;display:flex;flex-direction:column">
+    <div style="padding:18px 20px 14px;flex-shrink:0;border-bottom:1px solid #F4F4F5">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+      <div class="flex justify-between items-center">
+        <h2 style="font-size:17px;font-weight:900;color:#18181B">💳 Tambah Cicilan</h2>
+        <button onclick="closeModal('cicilan-backdrop')" style="width:32px;height:32px;border-radius:10px;background:#F4F4F5;border:none;cursor:pointer;color:#71717A">✕</button>
+      </div>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:16px 20px 24px">
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Nama Cicilan</p>
+      <input type="text" id="cic-nama" placeholder="Contoh: KPR, Motor, Paylater" class="fi" style="width:100%;margin-bottom:14px">
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Total Pinjaman</p>
+      <div style="background:#F9F9FB;border:1.5px solid #E4E4E7;border-radius:16px;padding:14px;display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <span style="font-size:15px;font-weight:900;color:#71717A">Rp</span>
+        <input type="number" id="cic-pinjaman" placeholder="0" oninput="updateCicilanPreview()" style="flex:1;border:none;outline:none;font-size:18px;font-weight:900;color:#18181B;background:transparent">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3" style="margin-bottom:14px">
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Tenor (bulan)</p>
+          <input type="number" id="cic-tenor" placeholder="0" oninput="updateCicilanPreview()" class="fi" style="width:100%">
+        </div>
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Bunga (%/tahun)</p>
+          <input type="number" id="cic-bunga" placeholder="0" step="0.01" oninput="updateCicilanPreview()" class="fi" style="width:100%">
+        </div>
+      </div>
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Tipe Bunga</p>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button type="button" id="cic-tipe-flat" onclick="setCicilanTipeBunga('flat')"
+          style="flex:1;padding:12px;border-radius:14px;border:2px solid #DC2626;background:#FEF2F2;color:#991B1B;font-size:12px;font-weight:900;cursor:pointer">Flat / Tetap</button>
+        <button type="button" id="cic-tipe-efektif" onclick="setCicilanTipeBunga('efektif')"
+          style="flex:1;padding:12px;border-radius:14px;border:2px solid #E4E4E7;background:#fff;color:#71717A;font-size:12px;font-weight:900;cursor:pointer">Efektif / Menurun</button>
+      </div>
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Tanggal Jatuh Tempo per Bulan</p>
+      <input type="date" id="cic-tanggal-mulai" oninput="updateCicilanPreview()" class="fi" style="width:100%;margin-bottom:14px">
+      <p style="font-size:10px;font-weight:600;color:#A1A1AA;margin:-10px 0 14px">Tanggal pertama = jatuh tempo cicilan ke-1. Tanggal (bukan bulan) dipakai sama untuk tiap bulan berikutnya.</p>
+
+      <!-- Preview kalkulasi -->
+      <div id="cic-preview" style="background:#FEF2F2;border:1.5px solid #FECACA;border-radius:16px;padding:14px;margin-bottom:16px">
+        <p style="font-size:10px;font-weight:900;color:#991B1B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Estimasi</p>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;font-weight:700;color:#991B1B">Cicilan per Bulan</span>
+          <span id="cic-preview-per-bulan" style="font-size:14px;font-weight:900;color:#991B1B">Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;font-weight:700;color:#991B1B">Total Bunga</span>
+          <span id="cic-preview-total-bunga" style="font-size:12px;font-weight:900;color:#991B1B">Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:11px;font-weight:700;color:#991B1B">Total Bayar (Pokok+Bunga)</span>
+          <span id="cic-preview-total-bayar" style="font-size:12px;font-weight:900;color:#991B1B">Rp 0</span>
+        </div>
+        <p id="cic-preview-note" style="font-size:9px;font-weight:600;color:#B91C1C;margin-top:8px">Cicilan flat: nominal sama tiap bulan. Cicilan efektif: nominal bulan pertama lebih besar, menurun seiring pokok berkurang.</p>
+      </div>
+
+      <p id="cic-form-msg" style="text-align:center;font-size:11px;color:#EF4444;min-height:16px"></p>
+    </div>
+
+    <div style="flex-shrink:0;padding:14px 20px 28px;border-top:1px solid #F4F4F5">
+      <button id="cic-submit-btn" onclick="submitCicilan()"
+        style="width:100%;color:#fff;font-weight:900;padding:14px;border-radius:18px;border:none;cursor:pointer;
+               background:linear-gradient(135deg,#DC2626,#B91C1C);box-shadow:0 8px 24px rgba(220,38,38,.3);
+               display:flex;align-items:center;justify-content:center;gap:8px">
+        <span id="cic-submit-text">Simpan Cicilan</span>
+        <div id="cic-submit-spin" class="spin-sm hidden"></div>
       </button>
     </div>
   </div>
@@ -3794,6 +4046,8 @@ async function initApp() {
   try { renderWishList(); }         catch(e) { console.error('renderWishList:', e); }
   try { initRippleEffects(); }      catch(e) { console.error('initRippleEffects:', e); }
   try { updateProfileCounts(); }    catch(e) { console.error('updateProfileCounts:', e); }
+  try { loadDepositoLocal(); renderDepositoList(); } catch(e) { console.error('deposito init:', e); }
+  try { loadCicilanLocal(); renderCicilanList(); }   catch(e) { console.error('cicilan init:', e); }
 
   // ── Semua yang butuh network (dompet, cuaca, forex, kripto, berita) ──
   // dijalankan PARALEL dan DITUNGGU semuanya selesai, supaya loading screen
@@ -3805,6 +4059,7 @@ async function initApp() {
     (async () => { try { await initForex(); }            catch(e) { console.error('initForex:', e); } })(),
     (async () => { try { await startCryptoPolling(); }   catch(e) { console.error('startCryptoPolling:', e); } })(),
     (async () => { try { await fetchNews(); }            catch(e) { console.error('fetchNews:', e); } })(),
+    (async () => { try { await cekJatuhTempoDeposito(); } catch(e) { console.error('cekJatuhTempoDeposito:', e); } })(),
   ]);
 }
 
@@ -4604,7 +4859,7 @@ async function postData(action,data){
     throw new Error(j.message||'Error');
   }catch(e){alert(e.message);return null;}
 }
-function refreshAll(){ renderHome(); renderHistoryList(); if(S.currentView==='view-report') renderReport(); if(typeof renderDompetList==='function') renderDompetList(); }
+function refreshAll(){ renderHome(); renderHistoryList(); if(S.currentView==='view-report') renderReport(); if(typeof renderDompetList==='function') renderDompetList(); if(typeof renderDepositoList==='function') renderDepositoList(); if(typeof renderCicilanList==='function') renderCicilanList(); }
 
 // ================================================================
 // PRINT: SINGLE RECEIPT
@@ -8790,6 +9045,13 @@ function renderDompetList() {
     '</div>';
   }).join('');
 
+  html += '<button type="button" class="dompet-card-add" style="animation-delay:' + (dompetState.list.length*0.05) + 's" onclick="openTambahDompetModal()">' +
+    '<div class="dompet-card-add-icon">' +
+      '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>' +
+    '</div>' +
+    '<span>Tambah Dompet</span>' +
+  '</button>';
+
   wrap.innerHTML = html;
 }
 
@@ -9651,6 +9913,641 @@ window.submitTambahDompet = function() {
   });
 };
 
+
+// ================================================================
+// FITUR DEPOSITO (TIME DEPOSIT)
+// ================================================================
+// Disimpan LOKAL (localStorage) — sama seperti dompet, karena sheet
+// GAS tidak diubah untuk fitur ini. Setiap deposito, saat dibuka,
+// mencatat 1 transaksi "Uang Keluar" (uang pindah dari dompet ke
+// deposito). Saat dicairkan, mencatat "Uang Masuk" balik.
+var depositoState = { list: [] };
+
+function loadDepositoLocal() {
+  try {
+    var raw = safeLocalStorageGet('keuangan_deposito_list', '[]');
+    depositoState.list = JSON.parse(raw) || [];
+  } catch(e) { depositoState.list = []; }
+}
+function saveDepositoLocal() {
+  safeLocalStorageSet('keuangan_deposito_list', JSON.stringify(depositoState.list));
+}
+
+/**
+ * Kalkulasi inti deposito. Bunga dihitung PRO-RATA sesuai tenor
+ * (bunga per tahun x (tenor bulan / 12)) -- pendekatan simple interest
+ * yang umum dipakai untuk deposito berjangka Indonesia.
+ */
+function hitungDeposito(nominal, bungaPersenTahun, tenorBulan, pajakPersen) {
+  var bungaKotor = nominal * (bungaPersenTahun / 100) * (tenorBulan / 12);
+  var nominalPajak = bungaKotor * (pajakPersen / 100);
+  var bungaBersih = bungaKotor - nominalPajak;
+  var totalKembali = nominal + bungaBersih;
+  return {
+    bungaKotor: bungaKotor,
+    nominalPajak: nominalPajak,
+    bungaBersih: bungaBersih,
+    totalKembali: totalKembali,
+  };
+}
+
+function hitungTanggalJatuhTempo(tanggalMulaiStr, tenorBulan) {
+  var d = new Date(tanggalMulaiStr + 'T12:00:00');
+  d.setMonth(d.getMonth() + Number(tenorBulan));
+  return d;
+}
+
+window.openDepositoModal = function() {
+  if (typeof validasiSaldoDompetSesuai === 'function' && !validasiSaldoDompetSesuai()) return;
+  if (!dompetState.list.length) {
+    alert('Buat minimal 1 dompet terlebih dahulu.');
+    return;
+  }
+
+  document.getElementById('dep-nama').value = '';
+  document.getElementById('dep-nominal').value = '';
+  document.getElementById('dep-bunga').value = '';
+  document.getElementById('dep-tenor').value = '';
+  document.getElementById('dep-pajak').value = '20';
+  document.getElementById('dep-tanggal-mulai').value = (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10);
+  document.getElementById('dep-form-msg').textContent = '';
+  document.getElementById('dep-balance-warn').style.display = 'none';
+  document.querySelector('input[name="dep-tipe-jt"][value="cair"]').checked = true;
+  setDepositoTipeJT(document.querySelector('input[name="dep-tipe-jt"][value="cair"]'));
+
+  var sel = document.getElementById('dep-dompet-id');
+  sel.innerHTML = dompetState.list.map(function(d) {
+    return '<option value="' + d.id + '">' + (d.nama || d.provider) + '</option>';
+  }).join('');
+
+  updateDepositoPreview();
+  openModal('deposito-backdrop');
+};
+
+window.setDepositoTipeJT = function(radio) {
+  document.querySelectorAll('#deposito-backdrop label[id^="dep-tipe-label-"]').forEach(function(l) {
+    l.style.borderColor = '#E4E4E7';
+    l.style.background = '#fff';
+  });
+  var label = radio.closest('label');
+  label.style.borderColor = '#059669';
+  label.style.background = '#F0FDF4';
+};
+
+window.updateDepositoPreview = function() {
+  var nominal = parseFloat(document.getElementById('dep-nominal').value) || 0;
+  var bunga = parseFloat(document.getElementById('dep-bunga').value) || 0;
+  var tenor = parseInt(document.getElementById('dep-tenor').value) || 0;
+  var pajak = parseFloat(document.getElementById('dep-pajak').value) || 0;
+  var tanggalMulai = document.getElementById('dep-tanggal-mulai').value;
+  var dompetId = document.getElementById('dep-dompet-id').value;
+
+  var saldoDompet = dompetId ? hitungSaldoDompet(dompetId) : 0;
+  document.getElementById('dep-dompet-saldo').textContent = 'Saldo: ' + idr(saldoDompet);
+
+  var warnEl = document.getElementById('dep-balance-warn');
+  if (nominal > saldoDompet) {
+    warnEl.style.display = 'block';
+  } else {
+    warnEl.style.display = 'none';
+  }
+
+  var hasil = hitungDeposito(nominal, bunga, tenor, pajak);
+  document.getElementById('dep-preview-bunga-kotor').textContent = idr(hasil.bungaKotor);
+  document.getElementById('dep-preview-pajak').textContent = '- ' + idr(hasil.nominalPajak);
+  document.getElementById('dep-preview-bunga-bersih').textContent = idr(hasil.bungaBersih);
+  document.getElementById('dep-preview-total').textContent = idr(hasil.totalKembali);
+
+  if (tanggalMulai && tenor > 0) {
+    var jt = hitungTanggalJatuhTempo(tanggalMulai, tenor);
+    document.getElementById('dep-preview-jt').textContent = jt.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
+  } else {
+    document.getElementById('dep-preview-jt').textContent = '-';
+  }
+};
+
+window.submitDeposito = async function() {
+  var msgEl = document.getElementById('dep-form-msg');
+  msgEl.textContent = '';
+
+  var nama = document.getElementById('dep-nama').value.trim();
+  var nominal = parseFloat(document.getElementById('dep-nominal').value);
+  var dompetId = document.getElementById('dep-dompet-id').value;
+  var bunga = parseFloat(document.getElementById('dep-bunga').value);
+  var tenor = parseInt(document.getElementById('dep-tenor').value);
+  var pajak = parseFloat(document.getElementById('dep-pajak').value) || 0;
+  var tanggalMulai = document.getElementById('dep-tanggal-mulai').value;
+  var tipeJT = document.querySelector('input[name="dep-tipe-jt"]:checked').value;
+
+  if (!nama) { msgEl.textContent = 'Isi nama deposito.'; return; }
+  if (!nominal || nominal <= 0) { msgEl.textContent = 'Isi nominal pokok yang valid.'; return; }
+  if (!dompetId) { msgEl.textContent = 'Pilih sumber dana.'; return; }
+  if (!bunga || bunga <= 0) { msgEl.textContent = 'Isi suku bunga.'; return; }
+  if (!tenor || tenor <= 0) { msgEl.textContent = 'Isi tenor (bulan).'; return; }
+  if (!tanggalMulai) { msgEl.textContent = 'Isi tanggal mulai.'; return; }
+
+  var saldoDompet = hitungSaldoDompet(dompetId);
+  if (nominal > saldoDompet) { msgEl.textContent = 'Nominal melebihi saldo dompet sumber.'; return; }
+
+  var dompet = dompetState.list.find(function(d) { return d.id === dompetId; });
+  var hasil = hitungDeposito(nominal, bunga, tenor, pajak);
+  var tglJT = hitungTanggalJatuhTempo(tanggalMulai, tenor);
+
+  var btn = document.getElementById('dep-submit-btn');
+  var btnText = document.getElementById('dep-submit-text');
+  var btnSpin = document.getElementById('dep-submit-spin');
+  btn.style.pointerEvents = 'none';
+  btnText.textContent = 'Memproses…';
+  btnSpin.classList.remove('hidden');
+
+  try {
+    // Catat transaksi "Uang Keluar" -- uang pindah dari dompet ke deposito
+    var payload = {
+      id: null,
+      'Kategori': 'Uang Keluar',
+      'Kategori Uang Keluar': 'Deposito',
+      'Jumlah Uang': nominal,
+      'Tanggal': tanggalMulai + 'T12:00:00',
+      'Deskripsi': 'Buka deposito: ' + nama,
+      'DompetId': dompetId,
+    };
+    var res = await postData('addData', payload);
+    if (res && res.data) S.transactions.unshift(res.data);
+
+    var newDeposito = {
+      id: 'dep_' + Date.now(),
+      nama: nama,
+      nominal: nominal,
+      dompetId: dompetId,
+      dompetNama: dompet ? (dompet.nama || dompet.provider) : '',
+      sukuBunga: bunga,
+      tenor: tenor,
+      pajak: pajak,
+      tipeJatuhTempo: tipeJT,
+      tanggalMulai: tanggalMulai,
+      tanggalJatuhTempo: tglJT.toISOString().slice(0,10),
+      status: 'aktif',
+      bungaKotor: hasil.bungaKotor,
+      nominalPajak: hasil.nominalPajak,
+      bungaBersih: hasil.bungaBersih,
+      totalKembali: hasil.totalKembali,
+    };
+    depositoState.list.push(newDeposito);
+    saveDepositoLocal();
+
+    closeModal('deposito-backdrop');
+    refreshAll();
+    try { renderDepositoList(); } catch(e) {}
+    showSuccess('Deposito "' + nama + '" berhasil dibuka.');
+  } catch (err) {
+    msgEl.textContent = 'Terjadi kesalahan: ' + err.message;
+  } finally {
+    btn.style.pointerEvents = 'auto';
+    btnText.textContent = 'Buka Deposito';
+    btnSpin.classList.add('hidden');
+  }
+};
+
+/**
+ * Cairkan / proses jatuh tempo satu deposito. Dipanggil manual oleh user
+ * (tombol "Cairkan Sekarang") ATAU otomatis lewat cekJatuhTempoDeposito()
+ * saat tanggal jatuh tempo sudah lewat.
+ */
+async function prosesJatuhTempoDeposito(depositoId) {
+  var dep = depositoState.list.find(function(d) { return d.id === depositoId; });
+  if (!dep || dep.status !== 'aktif') return;
+
+  if (dep.tipeJatuhTempo === 'cair') {
+    // Cair penuh: pokok + bunga bersih masuk ke dompet sumber
+    var payload = {
+      id: null,
+      'Kategori': 'Uang Masuk',
+      'Kategori Uang Keluar': '',
+      'Jumlah Uang': dep.totalKembali,
+      'Tanggal': dep.tanggalJatuhTempo + 'T12:00:00',
+      'Deskripsi': 'Pencairan deposito: ' + dep.nama,
+      'DompetId': dep.dompetId,
+    };
+    var res = await postData('addData', payload);
+    if (res && res.data) S.transactions.unshift(res.data);
+    dep.status = 'cair';
+
+  } else if (dep.tipeJatuhTempo === 'perpanjang_pokok') {
+    // Bunga cair ke dompet, pokok dibuka lagi sebagai deposito baru dengan tenor sama
+    var payloadBunga = {
+      id: null,
+      'Kategori': 'Uang Masuk',
+      'Kategori Uang Keluar': '',
+      'Jumlah Uang': dep.bungaBersih,
+      'Tanggal': dep.tanggalJatuhTempo + 'T12:00:00',
+      'Deskripsi': 'Bunga deposito (pokok diperpanjang): ' + dep.nama,
+      'DompetId': dep.dompetId,
+    };
+    var resBunga = await postData('addData', payloadBunga);
+    if (resBunga && resBunga.data) S.transactions.unshift(resBunga.data);
+
+    dep.status = 'diperpanjang';
+    var hasilBaru = hitungDeposito(dep.nominal, dep.sukuBunga, dep.tenor, dep.pajak);
+    var tglMulaiBaru = dep.tanggalJatuhTempo;
+    var tglJTBaru = hitungTanggalJatuhTempo(tglMulaiBaru, dep.tenor);
+    depositoState.list.push({
+      id: 'dep_' + Date.now(),
+      nama: dep.nama, nominal: dep.nominal, dompetId: dep.dompetId, dompetNama: dep.dompetNama,
+      sukuBunga: dep.sukuBunga, tenor: dep.tenor, pajak: dep.pajak, tipeJatuhTempo: dep.tipeJatuhTempo,
+      tanggalMulai: tglMulaiBaru, tanggalJatuhTempo: tglJTBaru.toISOString().slice(0,10),
+      status: 'aktif', bungaKotor: hasilBaru.bungaKotor, nominalPajak: hasilBaru.nominalPajak,
+      bungaBersih: hasilBaru.bungaBersih, totalKembali: hasilBaru.totalKembali,
+    });
+
+  } else if (dep.tipeJatuhTempo === 'perpanjang_semua') {
+    // Pokok + bunga bersih digulung jadi deposito baru (tidak ada transaksi kas)
+    dep.status = 'diperpanjang';
+    var nominalBaru = dep.totalKembali;
+    var hasilBaru2 = hitungDeposito(nominalBaru, dep.sukuBunga, dep.tenor, dep.pajak);
+    var tglMulaiBaru2 = dep.tanggalJatuhTempo;
+    var tglJTBaru2 = hitungTanggalJatuhTempo(tglMulaiBaru2, dep.tenor);
+    depositoState.list.push({
+      id: 'dep_' + Date.now(),
+      nama: dep.nama, nominal: nominalBaru, dompetId: dep.dompetId, dompetNama: dep.dompetNama,
+      sukuBunga: dep.sukuBunga, tenor: dep.tenor, pajak: dep.pajak, tipeJatuhTempo: dep.tipeJatuhTempo,
+      tanggalMulai: tglMulaiBaru2, tanggalJatuhTempo: tglJTBaru2.toISOString().slice(0,10),
+      status: 'aktif', bungaKotor: hasilBaru2.bungaKotor, nominalPajak: hasilBaru2.nominalPajak,
+      bungaBersih: hasilBaru2.bungaBersih, totalKembali: hasilBaru2.totalKembali,
+    });
+  }
+
+  saveDepositoLocal();
+  refreshAll();
+  try { renderDepositoList(); } catch(e) {}
+}
+
+/**
+ * Dipanggil dari initApp() -- cek semua deposito aktif, kalau tanggal jatuh
+ * tempo sudah lewat hari ini, otomatis proses sesuai tipeJatuhTempo.
+ */
+async function cekJatuhTempoDeposito() {
+  loadDepositoLocal();
+  var todayStr = (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10);
+  var jatuhTempoList = depositoState.list.filter(function(d) {
+    return d.status === 'aktif' && d.tanggalJatuhTempo <= todayStr;
+  });
+  for (var i = 0; i < jatuhTempoList.length; i++) {
+    await prosesJatuhTempoDeposito(jatuhTempoList[i].id);
+  }
+}
+
+window.cairkanDepositoManual = function(depositoId) {
+  var dep = depositoState.list.find(function(d) { return d.id === depositoId; });
+  if (!dep) return;
+  if (!confirm('Cairkan deposito "' + dep.nama + '" sekarang? Ini akan diproses sesuai pilihan "' +
+    (dep.tipeJatuhTempo === 'cair' ? 'Cair ke Rekening' : dep.tipeJatuhTempo === 'perpanjang_pokok' ? 'Perpanjang Pokok Saja' : 'Perpanjang Pokok + Bunga') +
+    '" walau belum jatuh tempo.')) return;
+  prosesJatuhTempoDeposito(depositoId);
+};
+
+function renderDepositoList() {
+  var wrap = document.getElementById('deposito-list-wrap');
+  if (!wrap) return;
+
+  var aktif = depositoState.list.filter(function(d) { return d.status === 'aktif'; });
+  if (!aktif.length) {
+    wrap.innerHTML = '<p style="text-align:center;color:#A1A1AA;font-size:12px;padding:20px">Belum ada deposito aktif.</p>';
+    return;
+  }
+
+  var todayMs = new Date(((typeof today === 'function') ? today() : new Date().toISOString().slice(0,10)) + 'T00:00:00').getTime();
+
+  wrap.innerHTML = aktif.map(function(dep) {
+    var mulaiMs = new Date(dep.tanggalMulai + 'T00:00:00').getTime();
+    var jtMs = new Date(dep.tanggalJatuhTempo + 'T00:00:00').getTime();
+    var totalHari = Math.max(1, Math.round((jtMs - mulaiMs) / 86400000));
+    var sisaHari = Math.max(0, Math.round((jtMs - todayMs) / 86400000));
+    var progress = Math.min(100, Math.max(0, Math.round(((totalHari - sisaHari) / totalHari) * 100)));
+
+    return '<div style="background:#fff;border:1.5px solid #F4F4F5;border-radius:16px;padding:14px;margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">' +
+        '<div><p style="font-size:13px;font-weight:900;color:#18181B">' + dep.nama + '</p><p style="font-size:10px;font-weight:700;color:#A1A1AA">' + (dep.dompetNama||'') + ' &middot; ' + idr(dep.nominal) + '</p></div>' +
+        '<span style="font-size:9px;font-weight:900;color:#059669;background:#F0FDF4;padding:3px 8px;border-radius:8px">AKTIF</span>' +
+      '</div>' +
+      '<div style="height:6px;border-radius:3px;background:#F4F4F5;overflow:hidden;margin-bottom:6px">' +
+        '<div style="height:100%;width:' + progress + '%;background:linear-gradient(90deg,#10B981,#059669);border-radius:3px"></div>' +
+      '</div>' +
+      '<p style="font-size:10px;font-weight:700;color:#71717A;margin-bottom:10px">' + (sisaHari > 0 ? 'Sisa ' + sisaHari + ' hari lagi menuju jatuh tempo' : 'Jatuh tempo hari ini') + '</p>' +
+      '<div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:#A1A1AA;margin-bottom:10px">' +
+        '<span>Estimasi bunga bersih: <b style="color:#059669">' + idr(dep.bungaBersih) + '</b></span>' +
+      '</div>' +
+      '<button onclick="cairkanDepositoManual(' + String.fromCharCode(39) + dep.id + String.fromCharCode(39) + ')" style="width:100%;padding:10px;border-radius:12px;background:#F4F4F5;border:none;color:#52525B;font-size:11px;font-weight:800;cursor:pointer">Cairkan Sekarang</button>' +
+    '</div>';
+  }).join('');
+}
+
+// ================================================================
+// FITUR CICILAN / KREDIT
+// ================================================================
+// Disimpan LOKAL (localStorage). Setiap cicilan punya jadwal bulanan
+// (array), masing-masing berisi porsi pokok, bunga, dan status bayar.
+// Saat user bayar cicilan, dicatat 1 transaksi "Uang Keluar" dari
+// dompet yang dipilih, dan status bulan tsb berubah jadi "lunas".
+var cicilanState = { list: [], tipeBungaTerpilih: 'flat' };
+
+function loadCicilanLocal() {
+  try {
+    var raw = safeLocalStorageGet('keuangan_cicilan_list', '[]');
+    cicilanState.list = JSON.parse(raw) || [];
+  } catch(e) { cicilanState.list = []; }
+}
+function saveCicilanLocal() {
+  safeLocalStorageSet('keuangan_cicilan_list', JSON.stringify(cicilanState.list));
+}
+
+/**
+ * Amortisasi FLAT: cicilan pokok sama tiap bulan, bunga dihitung dari
+ * POKOK AWAL (bukan sisa pokok) -- sehingga total cicilan per bulan
+ * SAMA dari awal sampai akhir. Umum dipakai leasing motor/mobil/paylater.
+ */
+function hitungAmortisasiFlat(pinjaman, bungaPersenTahun, tenorBulan) {
+  var bungaPerBulan = (pinjaman * (bungaPersenTahun / 100)) / 12;
+  var pokokPerBulan = pinjaman / tenorBulan;
+  var cicilanPerBulan = pokokPerBulan + bungaPerBulan;
+
+  var jadwal = [];
+  var sisaPokok = pinjaman;
+  for (var i = 1; i <= tenorBulan; i++) {
+    sisaPokok -= pokokPerBulan;
+    jadwal.push({
+      bulanKe: i,
+      pokok: pokokPerBulan,
+      bunga: bungaPerBulan,
+      totalBayar: cicilanPerBulan,
+      sisaPokok: Math.max(0, sisaPokok),
+      status: 'belum_bayar',
+    });
+  }
+  return { cicilanPerBulan: cicilanPerBulan, jadwal: jadwal };
+}
+
+/**
+ * Amortisasi EFEKTIF/MENURUN: cicilan TOTAL sama tiap bulan (dihitung
+ * pakai rumus anuitas), tapi porsi bunga dihitung dari SISA POKOK --
+ * sehingga porsi bunga makin kecil & porsi pokok makin besar seiring
+ * waktu. Umum dipakai KPR/KTA bank.
+ */
+function hitungAmortisasiEfektif(pinjaman, bungaPersenTahun, tenorBulan) {
+  var i = (bungaPersenTahun / 100) / 12; // suku bunga bulanan
+  var n = tenorBulan;
+  var cicilanPerBulan;
+
+  if (i === 0) {
+    cicilanPerBulan = pinjaman / n;
+  } else {
+    // Rumus anuitas: A = P * i * (1+i)^n / ((1+i)^n - 1)
+    var pembilang = i * Math.pow(1 + i, n);
+    var penyebut = Math.pow(1 + i, n) - 1;
+    cicilanPerBulan = pinjaman * (pembilang / penyebut);
+  }
+
+  var jadwal = [];
+  var sisaPokok = pinjaman;
+  for (var b = 1; b <= n; b++) {
+    var bungaBulan = sisaPokok * i;
+    var pokokBulan = cicilanPerBulan - bungaBulan;
+    sisaPokok -= pokokBulan;
+    jadwal.push({
+      bulanKe: b,
+      pokok: pokokBulan,
+      bunga: bungaBulan,
+      totalBayar: cicilanPerBulan,
+      sisaPokok: Math.max(0, sisaPokok),
+      status: 'belum_bayar',
+    });
+  }
+  return { cicilanPerBulan: cicilanPerBulan, jadwal: jadwal };
+}
+
+function hitungAmortisasi(tipeBunga, pinjaman, bungaPersenTahun, tenorBulan) {
+  if (tipeBunga === 'efektif') {
+    return hitungAmortisasiEfektif(pinjaman, bungaPersenTahun, tenorBulan);
+  }
+  return hitungAmortisasiFlat(pinjaman, bungaPersenTahun, tenorBulan);
+}
+
+window.openCicilanModal = function() {
+  document.getElementById('cic-nama').value = '';
+  document.getElementById('cic-pinjaman').value = '';
+  document.getElementById('cic-tenor').value = '';
+  document.getElementById('cic-bunga').value = '';
+  document.getElementById('cic-tanggal-mulai').value = (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10);
+  document.getElementById('cic-form-msg').textContent = '';
+  cicilanState.tipeBungaTerpilih = 'flat';
+  setCicilanTipeBunga('flat');
+  updateCicilanPreview();
+  openModal('cicilan-backdrop');
+};
+
+window.setCicilanTipeBunga = function(tipe) {
+  cicilanState.tipeBungaTerpilih = tipe;
+  var btnFlat = document.getElementById('cic-tipe-flat');
+  var btnEfektif = document.getElementById('cic-tipe-efektif');
+  if (tipe === 'flat') {
+    btnFlat.style.borderColor = '#DC2626'; btnFlat.style.background = '#FEF2F2'; btnFlat.style.color = '#991B1B';
+    btnEfektif.style.borderColor = '#E4E4E7'; btnEfektif.style.background = '#fff'; btnEfektif.style.color = '#71717A';
+  } else {
+    btnEfektif.style.borderColor = '#DC2626'; btnEfektif.style.background = '#FEF2F2'; btnEfektif.style.color = '#991B1B';
+    btnFlat.style.borderColor = '#E4E4E7'; btnFlat.style.background = '#fff'; btnFlat.style.color = '#71717A';
+  }
+  updateCicilanPreview();
+};
+
+window.updateCicilanPreview = function() {
+  var pinjaman = parseFloat(document.getElementById('cic-pinjaman').value) || 0;
+  var tenor = parseInt(document.getElementById('cic-tenor').value) || 0;
+  var bunga = parseFloat(document.getElementById('cic-bunga').value) || 0;
+
+  if (pinjaman <= 0 || tenor <= 0) {
+    document.getElementById('cic-preview-per-bulan').textContent = 'Rp 0';
+    document.getElementById('cic-preview-total-bunga').textContent = 'Rp 0';
+    document.getElementById('cic-preview-total-bayar').textContent = 'Rp 0';
+    return;
+  }
+
+  var hasil = hitungAmortisasi(cicilanState.tipeBungaTerpilih, pinjaman, bunga, tenor);
+  var totalBunga = hasil.jadwal.reduce(function(sum, j) { return sum + j.bunga; }, 0);
+  var totalBayar = pinjaman + totalBunga;
+
+  document.getElementById('cic-preview-per-bulan').textContent = idr(hasil.cicilanPerBulan) + (cicilanState.tipeBungaTerpilih === 'efektif' ? ' (bln ke-1)' : '');
+  document.getElementById('cic-preview-total-bunga').textContent = idr(totalBunga);
+  document.getElementById('cic-preview-total-bayar').textContent = idr(totalBayar);
+};
+
+window.submitCicilan = async function() {
+  var msgEl = document.getElementById('cic-form-msg');
+  msgEl.textContent = '';
+
+  var nama = document.getElementById('cic-nama').value.trim();
+  var pinjaman = parseFloat(document.getElementById('cic-pinjaman').value);
+  var tenor = parseInt(document.getElementById('cic-tenor').value);
+  var bunga = parseFloat(document.getElementById('cic-bunga').value) || 0;
+  var tanggalMulai = document.getElementById('cic-tanggal-mulai').value;
+  var tipeBunga = cicilanState.tipeBungaTerpilih;
+
+  if (!nama) { msgEl.textContent = 'Isi nama cicilan.'; return; }
+  if (!pinjaman || pinjaman <= 0) { msgEl.textContent = 'Isi total pinjaman yang valid.'; return; }
+  if (!tenor || tenor <= 0) { msgEl.textContent = 'Isi tenor (bulan).'; return; }
+  if (!tanggalMulai) { msgEl.textContent = 'Isi tanggal jatuh tempo pertama.'; return; }
+
+  var hasil = hitungAmortisasi(tipeBunga, pinjaman, bunga, tenor);
+
+  // Tanggal jatuh tempo tiap bulan: tanggal yang sama, bulan berikutnya
+  var tglMulaiObj = new Date(tanggalMulai + 'T12:00:00');
+  hasil.jadwal.forEach(function(j, idx) {
+    var tglJT = new Date(tglMulaiObj);
+    tglJT.setMonth(tglJT.getMonth() + idx);
+    j.tanggalJatuhTempo = tglJT.toISOString().slice(0,10);
+  });
+
+  var btn = document.getElementById('cic-submit-btn');
+  var btnText = document.getElementById('cic-submit-text');
+  var btnSpin = document.getElementById('cic-submit-spin');
+  btn.style.pointerEvents = 'none';
+  btnText.textContent = 'Menyimpan…';
+  btnSpin.classList.remove('hidden');
+
+  try {
+    var newCicilan = {
+      id: 'cic_' + Date.now(),
+      nama: nama,
+      totalPinjaman: pinjaman,
+      tenor: tenor,
+      sukuBunga: bunga,
+      tipeBunga: tipeBunga,
+      tanggalMulai: tanggalMulai,
+      cicilanPerBulan: hasil.cicilanPerBulan,
+      jadwal: hasil.jadwal,
+      status: 'aktif',
+    };
+    cicilanState.list.push(newCicilan);
+    saveCicilanLocal();
+
+    closeModal('cicilan-backdrop');
+    try { renderCicilanList(); } catch(e) {}
+    showSuccess('Cicilan "' + nama + '" berhasil ditambahkan.');
+  } catch (err) {
+    msgEl.textContent = 'Terjadi kesalahan: ' + err.message;
+  } finally {
+    btn.style.pointerEvents = 'auto';
+    btnText.textContent = 'Simpan Cicilan';
+    btnSpin.classList.add('hidden');
+  }
+};
+
+/**
+ * Bayar cicilan bulan tertentu -- mencatat transaksi Uang Keluar dari
+ * dompet yang dipilih, dan mengubah status bulan tsb jadi lunas.
+ */
+window.bayarCicilanBulan = function(cicilanId, bulanKe) {
+  var cic = cicilanState.list.find(function(c) { return c.id === cicilanId; });
+  if (!cic) return;
+  var jadwalBulan = cic.jadwal.find(function(j) { return j.bulanKe === bulanKe; });
+  if (!jadwalBulan || jadwalBulan.status === 'lunas') return;
+
+  if (!dompetState.list.length) {
+    alert('Buat minimal 1 dompet terlebih dahulu.');
+    return;
+  }
+
+  // Modal sumber dana sederhana lewat prompt select — pakai dompet pertama
+  // sebagai default, tapi tampilkan pilihan lewat confirm sederhana.
+  var opsiDompet = dompetState.list.map(function(d, i) {
+    return (i+1) + '. ' + (d.nama || d.provider) + ' (' + idr(hitungSaldoDompet(d.id)) + ')';
+  }).join('\n');
+  var pilihan = prompt('Bayar cicilan bulan ke-' + bulanKe + ' (' + idr(jadwalBulan.totalBayar) + ')\nPilih sumber dana:\n' + opsiDompet + '\n\nMasukkan nomor:', '1');
+  if (!pilihan) return;
+  var idx = parseInt(pilihan) - 1;
+  var dompetTerpilih = dompetState.list[idx];
+  if (!dompetTerpilih) { alert('Pilihan tidak valid.'); return; }
+
+  var saldoDompet = hitungSaldoDompet(dompetTerpilih.id);
+  if (jadwalBulan.totalBayar > saldoDompet) {
+    alert('Saldo dompet "' + (dompetTerpilih.nama || dompetTerpilih.provider) + '" tidak cukup untuk membayar cicilan ini.');
+    return;
+  }
+
+  var payload = {
+    id: null,
+    'Kategori': 'Uang Keluar',
+    'Kategori Uang Keluar': 'Cicilan',
+    'Jumlah Uang': jadwalBulan.totalBayar,
+    'Tanggal': (typeof today === 'function' ? today() : new Date().toISOString().slice(0,10)) + 'T12:00:00',
+    'Deskripsi': 'Bayar cicilan ' + cic.nama + ' bulan ke-' + bulanKe,
+    'DompetId': dompetTerpilih.id,
+  };
+
+  postData('addData', payload).then(function(res) {
+    if (res && res.data) S.transactions.unshift(res.data);
+    jadwalBulan.status = 'lunas';
+    jadwalBulan.tanggalBayar = (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10);
+
+    var semuaLunas = cic.jadwal.every(function(j) { return j.status === 'lunas'; });
+    if (semuaLunas) cic.status = 'lunas';
+
+    saveCicilanLocal();
+    refreshAll();
+    try { renderCicilanList(); } catch(e) {}
+    showSuccess('Cicilan bulan ke-' + bulanKe + ' berhasil dibayar.');
+  });
+};
+
+function renderCicilanList() {
+  var wrap = document.getElementById('cicilan-list-wrap');
+  if (!wrap) return;
+
+  var aktif = cicilanState.list.filter(function(c) { return c.status === 'aktif'; });
+  if (!aktif.length) {
+    wrap.innerHTML = '<p style="text-align:center;color:#A1A1AA;font-size:12px;padding:20px">Belum ada cicilan aktif.</p>';
+    return;
+  }
+
+  var todayStr = (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10);
+
+  wrap.innerHTML = aktif.map(function(cic) {
+    var totalBayar = cic.jadwal.reduce(function(s, j) { return s + j.totalBayar; }, 0);
+    var sudahDibayar = cic.jadwal.filter(function(j) { return j.status === 'lunas'; })
+      .reduce(function(s, j) { return s + j.totalBayar; }, 0);
+    var sisaUtang = cic.totalPinjaman - cic.jadwal.filter(function(j) { return j.status === 'lunas'; })
+      .reduce(function(s, j) { return s + j.pokok; }, 0);
+    var progress = Math.round((sudahDibayar / totalBayar) * 100);
+
+    var bulanBerikutnya = cic.jadwal.find(function(j) { return j.status !== 'lunas'; });
+    var isMendekatiJT = bulanBerikutnya && (new Date(bulanBerikutnya.tanggalJatuhTempo) - new Date(todayStr)) / 86400000 <= 7;
+
+    var jadwalRows = cic.jadwal.map(function(j) {
+      var isLunas = j.status === 'lunas';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F4F4F5">' +
+        '<div><p style="font-size:11px;font-weight:800;color:#18181B">Bulan ke-' + j.bulanKe + '</p><p style="font-size:9px;font-weight:600;color:#A1A1AA">' + new Date(j.tanggalJatuhTempo).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) + '</p></div>' +
+        '<div style="text-align:right">' +
+          '<p style="font-size:11px;font-weight:900;color:#18181B">' + idr(j.totalBayar) + '</p>' +
+          (isLunas
+            ? '<span style="font-size:9px;font-weight:900;color:#059669">✓ Lunas</span>'
+            : '<button onclick="bayarCicilanBulan(' + String.fromCharCode(39) + cic.id + String.fromCharCode(39) + ',' + j.bulanKe + ')" style="font-size:9px;font-weight:900;color:#fff;background:#DC2626;border:none;border-radius:6px;padding:3px 8px;cursor:pointer">Bayar</button>') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div style="background:#fff;border:1.5px solid #F4F4F5;border-radius:16px;padding:14px;margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">' +
+        '<div><p style="font-size:13px;font-weight:900;color:#18181B">' + cic.nama + '</p><p style="font-size:10px;font-weight:700;color:#A1A1AA">' + idr(cic.cicilanPerBulan) + '/bulan &middot; ' + (cic.tipeBunga === 'flat' ? 'Flat' : 'Efektif') + '</p></div>' +
+        (isMendekatiJT ? '<span style="font-size:9px;font-weight:900;color:#DC2626;background:#FEF2F2;padding:3px 8px;border-radius:8px">⚠️ Segera Jatuh Tempo</span>' : '') +
+      '</div>' +
+      '<div style="height:6px;border-radius:3px;background:#F4F4F5;overflow:hidden;margin-bottom:6px">' +
+        '<div style="height:100%;width:' + progress + '%;background:linear-gradient(90deg,#DC2626,#B91C1C);border-radius:3px"></div>' +
+      '</div>' +
+      '<p style="font-size:10px;font-weight:700;color:#71717A;margin-bottom:10px">Sisa utang: <b style="color:#991B1B">' + idr(sisaUtang) + '</b> dari ' + idr(cic.totalPinjaman) + '</p>' +
+      '<details><summary style="font-size:11px;font-weight:800;color:#71717A;cursor:pointer;margin-bottom:6px">Lihat Jadwal Pembayaran</summary>' +
+        '<div style="max-height:240px;overflow-y:auto">' + jadwalRows + '</div>' +
+      '</details>' +
+    '</div>';
+  }).join('');
+}
 </script>
 <!-- ═══════════════════════════════════
      AI CHAT POPUP MODAL (v3 — working)
