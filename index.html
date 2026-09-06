@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KelolaDuit.id</title>
+<title>Keuangan+ AI</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -9913,6 +9913,33 @@ window.submitTambahDompet = function() {
   });
 };
 
+
+// ================================================================
+// HELPER: AKSES localStorage YANG AMAN
+// Dipakai oleh Deposito & Cicilan (dan fitur lain) untuk baca/tulis
+// localStorage tanpa membuat script berhenti kalau storage diblokir
+// (misal di iframe sandbox tertentu). Kalau localStorage gagal, fungsi
+// ini diam-diam gagal (return fallback / tidak menyimpan apa-apa)
+// alih-alih melempar error yang menghentikan seluruh alur.
+// ================================================================
+function safeLocalStorageGet(key, fallback) {
+  try {
+    var v = localStorage.getItem(key);
+    return v !== null ? v : fallback;
+  } catch(e) {
+    console.warn('[Storage] Gagal membaca "' + key + '":', e.message);
+    return fallback;
+  }
+}
+function safeLocalStorageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch(e) {
+    console.warn('[Storage] Gagal menyimpan "' + key + '":', e.message);
+    return false;
+  }
+}
 
 // ================================================================
 // FITUR DEPOSITO (TIME DEPOSIT)
