@@ -1689,6 +1689,71 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
         </div>
       </div>
 
+      <!-- ── AKSI CEPAT ── -->
+      <div class="fade-up s2" id="quick-action-section">
+        <div class="rounded-[24px] p-4" style="background:#fff;border:1.5px solid #F4F4F5">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px">
+
+            <button onclick="openBulkModal()" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer" class="active:scale-90 transition-transform">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#8B5CF6;box-shadow:0 4px 12px rgba(139,92,246,0.3)">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#52525B;text-align:center">Tambah<br>Banyak</span>
+            </button>
+
+            <button onclick="openReceiptUploadModal()" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer" class="active:scale-90 transition-transform">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#F59E0B;box-shadow:0 4px 12px rgba(245,158,11,0.3)">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#52525B;text-align:center">Upload<br>Struk</span>
+            </button>
+
+            <button onclick="openTransferDompetModal()" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer" class="active:scale-90 transition-transform">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#3B82F6;box-shadow:0 4px 12px rgba(59,130,246,0.3)">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#52525B;text-align:center">Transfer</span>
+            </button>
+
+            <button onclick="openDepositoModal()" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer" class="active:scale-90 transition-transform">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#059669;box-shadow:0 4px 12px rgba(5,150,105,0.3)">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .672-3 1.5S10.343 11 12 11s3 .672 3 1.5-1.343 1.5-3 1.5m0-6c1.11 0 2.08.402 2.599 1M12 8V6.5M12 8v6m0 0v1.5M9.401 15c.52.598 1.488 1 2.599 1M12 20a8 8 0 100-16 8 8 0 000 16z"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#52525B;text-align:center">Deposito</span>
+            </button>
+
+            <button onclick="openCicilanModal()" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer" class="active:scale-90 transition-transform">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#DC2626;box-shadow:0 4px 12px rgba(220,38,38,0.3)">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 7h6m0 10v-3m-3 3v-6m-3 6v-1m11-9V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h9a2 2 0 002-2v-1M9 7V4a2 2 0 012-2h2a2 2 0 012 2v3M9 7h6"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#52525B;text-align:center">Cicilan</span>
+            </button>
+
+            <button onclick="openValasModal()" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer" class="active:scale-90 transition-transform">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#0EA5E9;box-shadow:0 4px 12px rgba(14,165,233,0.3)">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .672-3 1.5S10.343 11 12 11s3 .672 3 1.5-1.343 1.5-3 1.5m0-6c1.11 0 2.08.402 2.599 1M12 8V6.5M12 8v6m0 0v1.5M9.401 15c.52.598 1.488 1 2.599 1M3 21l18-18M3 3l18 18"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#52525B;text-align:center">Transaksi<br>Valas</span>
+            </button>
+
+            <button disabled style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:not-allowed;opacity:.55">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#A1A1AA">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a4 4 0 00-8 0v2m-2 0h12a2 2 0 012 2v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7a2 2 0 012-2z"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#A1A1AA;text-align:center">Utang/<br>Piutang</span>
+            </button>
+
+            <button disabled style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:not-allowed;opacity:.55">
+              <div style="width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#A1A1AA">
+                <svg style="width:20px;height:20px;color:#fff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;color:#A1A1AA;text-align:center">Investasi</span>
+            </button>
+
+          </div>
+        </div>
+      </div>
+
       <!-- ── DOMPET SAYA ── -->
       <div class="fade-up s2" id="dompet-section">
         <div class="flex justify-between items-center mb-3">
@@ -2841,6 +2906,59 @@ input[type=checkbox].toggle-input:checked ~ .toggle-track .toggle-thumb { transf
         <span id="cic-submit-text">Simpan Cicilan</span>
         <div id="cic-submit-spin" class="spin-sm hidden"></div>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BAYAR CICILAN MODAL ═══════════ -->
+<div id="bayar-cicilan-backdrop" class="modal-backdrop" style="display:none;z-index:9290" onclick="handleBackdropClick(event,'bayar-cicilan-backdrop')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh;display:flex;flex-direction:column">
+    <div style="padding:18px 20px 14px;flex-shrink:0;border-bottom:1px solid #F4F4F5">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+      <div class="flex justify-between items-center">
+        <h2 style="font-size:17px;font-weight:900;color:#18181B">💳 Bayar Cicilan</h2>
+        <button onclick="closeModal('bayar-cicilan-backdrop')" style="width:32px;height:32px;border-radius:10px;background:#F4F4F5;border:none;cursor:pointer;color:#71717A">✕</button>
+      </div>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:16px 20px 24px">
+      <div style="background:#FEF2F2;border:1.5px solid #FECACA;border-radius:16px;padding:14px;margin-bottom:16px;text-align:center">
+        <p id="bc-nama-cicilan" style="font-size:12px;font-weight:700;color:#991B1B;margin-bottom:2px">-</p>
+        <p id="bc-jumlah" style="font-size:22px;font-weight:900;color:#991B1B">Rp 0</p>
+        <p id="bc-bulan-ke" style="font-size:10px;font-weight:700;color:#B91C1C;margin-top:2px">-</p>
+      </div>
+
+      <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Pilih Sumber Dana</p>
+      <div id="bc-dompet-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+
+      <p id="bc-form-msg" style="text-align:center;font-size:11px;color:#EF4444;min-height:16px;margin-top:8px"></p>
+    </div>
+
+    <div style="flex-shrink:0;padding:14px 20px 28px;border-top:1px solid #F4F4F5">
+      <button id="bc-submit-btn" onclick="confirmBayarCicilan()"
+        style="width:100%;color:#fff;font-weight:900;padding:14px;border-radius:18px;border:none;cursor:pointer;
+               background:linear-gradient(135deg,#DC2626,#B91C1C);box-shadow:0 8px 24px rgba(220,38,38,.3);
+               display:flex;align-items:center;justify-content:center;gap:8px">
+        <span id="bc-submit-text">Bayar Sekarang</span>
+        <div id="bc-submit-spin" class="spin-sm hidden"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL KONFIRMASI UMUM (pengganti confirm() bawaan browser) ═══════════ -->
+<div id="confirm-custom-backdrop" class="modal-backdrop" style="display:none;z-index:9500" onclick="handleBackdropClick(event,'confirm-custom-backdrop')">
+  <div class="sheet" style="max-width:400px;margin:0 auto;padding:28px 24px 24px;text-align:center">
+    <div id="confirm-custom-icon-wrap" style="width:56px;height:56px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+      <svg id="confirm-custom-icon" style="width:28px;height:28px;color:#EF4444" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <h2 id="confirm-custom-title" style="font-size:16px;font-weight:900;color:#18181B;margin-bottom:6px">Konfirmasi</h2>
+    <p id="confirm-custom-desc" style="font-size:12px;font-weight:600;color:#71717A;line-height:1.5;margin-bottom:22px">-</p>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeModal('confirm-custom-backdrop')" style="flex:1;padding:13px;border-radius:14px;border:none;background:#F4F4F5;color:#52525B;font-weight:800;font-size:13px;cursor:pointer">Batal</button>
+      <button id="confirm-custom-ok-btn" onclick="handleConfirmCustomOk()" style="flex:1;padding:13px;border-radius:14px;border:none;background:#EF4444;color:#fff;font-weight:800;font-size:13px;cursor:pointer">Ya, Lanjutkan</button>
     </div>
   </div>
 </div>
@@ -4812,9 +4930,15 @@ function updateProfileUI(){
  * Tidak menghapus data apapun di server, hanya sesi di device ini.
  */
 window.handleLogoutAkun = function() {
-  if (!confirm('Keluar dari akun "' + (S.akun ? S.akun.username : '') + '"? Kamu perlu login lagi untuk mengakses aplikasi.')) return;
-  clearAkunSession();
-  location.reload();
+  showCustomConfirm(
+    'Keluar dari Akun?',
+    'Keluar dari akun "' + (S.akun ? S.akun.username : '') + '"? Kamu perlu login lagi untuk mengakses aplikasi.',
+    function() {
+      clearAkunSession();
+      location.reload();
+    },
+    { okText: 'Ya, Keluar' }
+  );
 };
 async function handleUpdateUsername(e){
   e.preventDefault();
@@ -5495,27 +5619,32 @@ window.allocateWish = function(id) {
   }
 
   // Alokasikan: buat transaksi pengeluaran
-  if (confirm(`Alokasikan ${idr(item.nominal)} untuk "${item.nama_barang}"? Ini akan dicatat sebagai pengeluaran.`)) {
-    const tx = {
-      id: null,
-      'Kategori': 'Uang Keluar',
-      'Kategori Uang Keluar': 'Hiburan & Langganan',
-      'Jumlah Uang': item.nominal,
-      'Tanggal': new Date().toISOString(),
-      'Deskripsi': item.nama_barang
-    };
-    postData('addData', tx).then(r => {
-      if (r?.data) {
-        S.transactions.unshift(r.data);
-        S.daftar_keinginan = S.daftar_keinginan.filter(w => w.id !== id);
-        saveWishList();
-        refreshAll();
-        renderWishList();
-        updateProfileCounts();
-        showSuccess(`Dana ${idr(item.nominal)} dialokasikan untuk ${item.nama_barang}!`);
-      }
-    });
-  }
+  showCustomConfirm(
+    'Alokasikan Dana?',
+    `Alokasikan ${idr(item.nominal)} untuk "${item.nama_barang}"? Ini akan dicatat sebagai pengeluaran.`,
+    function() {
+      const tx = {
+        id: null,
+        'Kategori': 'Uang Keluar',
+        'Kategori Uang Keluar': 'Hiburan & Langganan',
+        'Jumlah Uang': item.nominal,
+        'Tanggal': new Date().toISOString(),
+        'Deskripsi': item.nama_barang
+      };
+      postData('addData', tx).then(r => {
+        if (r?.data) {
+          S.transactions.unshift(r.data);
+          S.daftar_keinginan = S.daftar_keinginan.filter(w => w.id !== id);
+          saveWishList();
+          refreshAll();
+          renderWishList();
+          updateProfileCounts();
+          showSuccess(`Dana ${idr(item.nominal)} dialokasikan untuk ${item.nama_barang}!`);
+        }
+      });
+    },
+    { okText: 'Ya, Alokasikan', iconType: 'info' }
+  );
 };
 
 window.deleteWishItem = function(id) {
@@ -9787,19 +9916,24 @@ window.confirmHapusDompet = function(dompetId) {
     alert('Minimal harus ada 1 dompet. Buat dompet baru dulu sebelum menghapus yang ini.');
     return;
   }
-  if (!confirm('Hapus dompet "' + d.nama + '"? Transaksi yang terikat dompet ini tidak akan terhapus, tapi jadi tidak tercatat pada dompet manapun.')) return;
+  showCustomConfirm(
+    'Hapus Dompet?',
+    'Hapus dompet "' + d.nama + '"? Transaksi yang terikat dompet ini tidak akan terhapus, tapi jadi tidak tercatat pada dompet manapun.',
+    function() {
+      dompetState.list = dompetState.list.filter(function(x){ return x.id !== dompetId; });
+      saveDompetLocal();
+      renderKelolaSyncStatus();
+      renderKelolaDompetList();
+      renderDompetList();
+      showSuccess('Dompet dihapus.');
 
-  dompetState.list = dompetState.list.filter(function(x){ return x.id !== dompetId; });
-  saveDompetLocal();
-  renderKelolaSyncStatus();
-  renderKelolaDompetList();
-  renderDompetList();
-  showSuccess('Dompet dihapus.');
-
-  // Sinkron penghapusan ke Google Sheets (abaikan jika id belum tersinkron/masih lokal)
-  if (dompetId && dompetId.indexOf('dpt_') !== 0) {
-    postData('deleteDompet', { id: dompetId });
-  }
+      // Sinkron penghapusan ke Google Sheets (abaikan jika id belum tersinkron/masih lokal)
+      if (dompetId && dompetId.indexOf('dpt_') !== 0) {
+        postData('deleteDompet', { id: dompetId });
+      }
+    },
+    { okText: 'Ya, Hapus' }
+  );
 };
 
 // ================================================================
@@ -9913,6 +10047,48 @@ window.submitTambahDompet = function() {
   });
 };
 
+
+// ================================================================
+// MODAL KONFIRMASI CUSTOM (pengganti confirm() bawaan browser)
+// Dipakai di seluruh aplikasi supaya konfirmasi punya tampilan
+// konsisten dengan desain aplikasi, bukan popup polos bawaan browser.
+// ================================================================
+var _confirmCustomCallback = null;
+
+/**
+ * Tampilkan modal konfirmasi custom. onConfirmFn dipanggil HANYA kalau
+ * user menekan tombol "Ya, Lanjutkan". Kalau user menekan Batal (atau
+ * klik luar modal), tidak terjadi apa-apa.
+ *
+ * options (opsional): { okText, okColor, iconType }
+ *   iconType: 'danger' (merah, default) | 'warning' (kuning) | 'info' (biru)
+ */
+function showCustomConfirm(title, desc, onConfirmFn, options) {
+  options = options || {};
+  document.getElementById('confirm-custom-title').textContent = title;
+  document.getElementById('confirm-custom-desc').textContent = desc;
+
+  var okBtn = document.getElementById('confirm-custom-ok-btn');
+  okBtn.textContent = options.okText || 'Ya, Lanjutkan';
+
+  var iconWrap = document.getElementById('confirm-custom-icon-wrap');
+  var icon = document.getElementById('confirm-custom-icon');
+  var warna = options.iconType === 'warning' ? '#F59E0B' : options.iconType === 'info' ? '#3B82F6' : '#EF4444';
+  var warnaBg = options.iconType === 'warning' ? '#FFFBEB' : options.iconType === 'info' ? '#EFF6FF' : '#FEF2F2';
+  iconWrap.style.background = warnaBg;
+  icon.style.color = warna;
+  okBtn.style.background = warna;
+
+  _confirmCustomCallback = onConfirmFn;
+  openModal('confirm-custom-backdrop');
+}
+
+window.handleConfirmCustomOk = function() {
+  var cb = _confirmCustomCallback;
+  _confirmCustomCallback = null;
+  closeModal('confirm-custom-backdrop');
+  if (typeof cb === 'function') cb();
+};
 
 // ================================================================
 // HELPER: AKSES localStorage YANG AMAN
@@ -10226,10 +10402,15 @@ async function cekJatuhTempoDeposito() {
 window.cairkanDepositoManual = function(depositoId) {
   var dep = depositoState.list.find(function(d) { return d.id === depositoId; });
   if (!dep) return;
-  if (!confirm('Cairkan deposito "' + dep.nama + '" sekarang? Ini akan diproses sesuai pilihan "' +
-    (dep.tipeJatuhTempo === 'cair' ? 'Cair ke Rekening' : dep.tipeJatuhTempo === 'perpanjang_pokok' ? 'Perpanjang Pokok Saja' : 'Perpanjang Pokok + Bunga') +
-    '" walau belum jatuh tempo.')) return;
-  prosesJatuhTempoDeposito(depositoId);
+  var tipeLabel = dep.tipeJatuhTempo === 'cair' ? 'Cair ke Rekening' : dep.tipeJatuhTempo === 'perpanjang_pokok' ? 'Perpanjang Pokok Saja' : 'Perpanjang Pokok + Bunga';
+  showCustomConfirm(
+    'Cairkan Deposito?',
+    'Cairkan deposito "' + dep.nama + '" sekarang? Ini akan diproses sesuai pilihan "' + tipeLabel + '" walau belum jatuh tempo.',
+    function() {
+      prosesJatuhTempoDeposito(depositoId);
+    },
+    { okText: 'Ya, Cairkan', iconType: 'warning' }
+  );
 };
 
 function renderDepositoList() {
@@ -10471,6 +10652,8 @@ window.submitCicilan = async function() {
  * Bayar cicilan bulan tertentu -- mencatat transaksi Uang Keluar dari
  * dompet yang dipilih, dan mengubah status bulan tsb jadi lunas.
  */
+var _bayarCicilanState = { cicilanId: null, bulanKe: null };
+
 window.bayarCicilanBulan = function(cicilanId, bulanKe) {
   var cic = cicilanState.list.find(function(c) { return c.id === cicilanId; });
   if (!cic) return;
@@ -10482,22 +10665,65 @@ window.bayarCicilanBulan = function(cicilanId, bulanKe) {
     return;
   }
 
-  // Modal sumber dana sederhana lewat prompt select — pakai dompet pertama
-  // sebagai default, tapi tampilkan pilihan lewat confirm sederhana.
-  var opsiDompet = dompetState.list.map(function(d, i) {
-    return (i+1) + '. ' + (d.nama || d.provider) + ' (' + idr(hitungSaldoDompet(d.id)) + ')';
-  }).join('\n');
-  var pilihan = prompt('Bayar cicilan bulan ke-' + bulanKe + ' (' + idr(jadwalBulan.totalBayar) + ')\nPilih sumber dana:\n' + opsiDompet + '\n\nMasukkan nomor:', '1');
-  if (!pilihan) return;
-  var idx = parseInt(pilihan) - 1;
-  var dompetTerpilih = dompetState.list[idx];
-  if (!dompetTerpilih) { alert('Pilihan tidak valid.'); return; }
+  _bayarCicilanState.cicilanId = cicilanId;
+  _bayarCicilanState.bulanKe = bulanKe;
+
+  document.getElementById('bc-nama-cicilan').textContent = cic.nama;
+  document.getElementById('bc-jumlah').textContent = idr(jadwalBulan.totalBayar);
+  document.getElementById('bc-bulan-ke').textContent = 'Cicilan bulan ke-' + bulanKe;
+  document.getElementById('bc-form-msg').textContent = '';
+
+  var listEl = document.getElementById('bc-dompet-list');
+  listEl.innerHTML = dompetState.list.map(function(d, i) {
+    var saldo = hitungSaldoDompet(d.id);
+    var cukup = saldo >= jadwalBulan.totalBayar;
+    return '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:2px solid #E4E4E7;cursor:pointer" class="bc-dompet-option">' +
+      '<input type="radio" name="bc-dompet" value="' + d.id + '"' + (i === 0 ? ' checked' : '') + ' onchange="onBcDompetChange(this)" style="width:16px;height:16px;accent-color:#DC2626">' +
+      '<div style="flex:1"><p style="font-size:12px;font-weight:800;color:#18181B">' + (d.nama || d.provider) + '</p><p style="font-size:10px;font-weight:700;color:' + (cukup ? '#A1A1AA' : '#EF4444') + '">Saldo: ' + idr(saldo) + (cukup ? '' : ' — Tidak cukup') + '</p></div>' +
+    '</label>';
+  }).join('');
+
+  // Beri highlight ke opsi pertama sesuai style default radio terpilih
+  onBcDompetChange(listEl.querySelector('input[name="bc-dompet"]'));
+
+  openModal('bayar-cicilan-backdrop');
+};
+
+window.onBcDompetChange = function(radio) {
+  document.querySelectorAll('#bc-dompet-list .bc-dompet-option').forEach(function(l) {
+    l.style.borderColor = '#E4E4E7';
+    l.style.background = '#fff';
+  });
+  var label = radio.closest('label');
+  label.style.borderColor = '#DC2626';
+  label.style.background = '#FEF2F2';
+};
+
+window.confirmBayarCicilan = function() {
+  var msgEl = document.getElementById('bc-form-msg');
+  msgEl.textContent = '';
+
+  var cic = cicilanState.list.find(function(c) { return c.id === _bayarCicilanState.cicilanId; });
+  var jadwalBulan = cic ? cic.jadwal.find(function(j) { return j.bulanKe === _bayarCicilanState.bulanKe; }) : null;
+  if (!cic || !jadwalBulan) { msgEl.textContent = 'Data cicilan tidak ditemukan.'; return; }
+
+  var radio = document.querySelector('input[name="bc-dompet"]:checked');
+  if (!radio) { msgEl.textContent = 'Pilih sumber dana.'; return; }
+  var dompetTerpilih = dompetState.list.find(function(d) { return d.id === radio.value; });
+  if (!dompetTerpilih) { msgEl.textContent = 'Dompet tidak ditemukan.'; return; }
 
   var saldoDompet = hitungSaldoDompet(dompetTerpilih.id);
   if (jadwalBulan.totalBayar > saldoDompet) {
-    alert('Saldo dompet "' + (dompetTerpilih.nama || dompetTerpilih.provider) + '" tidak cukup untuk membayar cicilan ini.');
+    msgEl.textContent = 'Saldo dompet "' + (dompetTerpilih.nama || dompetTerpilih.provider) + '" tidak cukup.';
     return;
   }
+
+  var btn = document.getElementById('bc-submit-btn');
+  var btnText = document.getElementById('bc-submit-text');
+  var btnSpin = document.getElementById('bc-submit-spin');
+  btn.style.pointerEvents = 'none';
+  btnText.textContent = 'Memproses…';
+  btnSpin.classList.remove('hidden');
 
   var payload = {
     id: null,
@@ -10505,7 +10731,7 @@ window.bayarCicilanBulan = function(cicilanId, bulanKe) {
     'Kategori Uang Keluar': 'Cicilan',
     'Jumlah Uang': jadwalBulan.totalBayar,
     'Tanggal': (typeof today === 'function' ? today() : new Date().toISOString().slice(0,10)) + 'T12:00:00',
-    'Deskripsi': 'Bayar cicilan ' + cic.nama + ' bulan ke-' + bulanKe,
+    'Deskripsi': 'Bayar cicilan ' + cic.nama + ' bulan ke-' + jadwalBulan.bulanKe,
     'DompetId': dompetTerpilih.id,
   };
 
@@ -10520,7 +10746,18 @@ window.bayarCicilanBulan = function(cicilanId, bulanKe) {
     saveCicilanLocal();
     refreshAll();
     try { renderCicilanList(); } catch(e) {}
-    showSuccess('Cicilan bulan ke-' + bulanKe + ' berhasil dibayar.');
+
+    btn.style.pointerEvents = 'auto';
+    btnText.textContent = 'Bayar Sekarang';
+    btnSpin.classList.add('hidden');
+
+    closeModal('bayar-cicilan-backdrop');
+    showSuccess('Cicilan bulan ke-' + jadwalBulan.bulanKe + ' berhasil dibayar.');
+  }).catch(function(err) {
+    btn.style.pointerEvents = 'auto';
+    btnText.textContent = 'Bayar Sekarang';
+    btnSpin.classList.add('hidden');
+    msgEl.textContent = 'Terjadi kesalahan: ' + err.message;
   });
 };
 
