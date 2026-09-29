@@ -3,203 +3,484 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tes Login OTP - Bird API</title>
+  <title>Threads Feed</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    :root {
+      --bg-color: #101010;
+      --card-bg: #101010;
+      --border-color: #232323;
+      --text-main: #f3f5f7;
+      --text-muted: #777777;
+      --accent: #0095f6;
+      --like-color: #ff3040;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background: #0f172a;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* Header Nav */
+    header {
+      width: 100%;
+      max-width: 620px;
+      height: 64px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 20px;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      background: rgba(16, 16, 16, 0.88);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      border-bottom: 1px solid var(--border-color);
     }
-    .card {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 32px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+
+    .header-spacer {
+      width: 32px;
     }
-    h2 { color: #0f172a; text-align: center; margin-bottom: 6px; font-size: 22px; }
-    p.desc { color: #64748b; font-size: 13px; text-align: center; margin-bottom: 22px; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-    }
-    input:focus { border-color: #6366f1; ring: 2px solid #e0e7ff; }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: #4f46e5;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
+
+    .logo-svg {
+      width: 34px;
+      height: 34px;
+      fill: var(--text-main);
       cursor: pointer;
-      margin-top: 6px;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    button:hover { background: #4338ca; }
-    button:disabled { background: #94a3b8; cursor: not-allowed; }
-    .otp-field { text-align: center; font-size: 22px; letter-spacing: 6px; font-weight: bold; }
-    .badge {
-      display: inline-block;
-      margin-top: 6px;
-      background: #f1f5f9;
-      color: #475569;
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 4px;
+    .logo-svg:hover {
+      transform: scale(1.08);
     }
-    .result {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
+
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 6px 12px;
       font-size: 13px;
-      display: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .refresh-btn:hover {
+      color: var(--text-main);
+      border-color: #444;
+      background: #1a1a1a;
+    }
+    .refresh-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+    .refresh-btn.rotating svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Feed Container */
+    .feed-container {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Thread Item */
+    .thread-card {
+      display: flex;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.15s ease;
+    }
+    .thread-card:hover {
+      background-color: rgba(255, 255, 255, 0.015);
+    }
+
+    /* Avatar & Connector Line */
+    .avatar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #262626;
+      border: 1px solid #333;
+    }
+
+    .thread-line {
+      width: 2px;
+      flex-grow: 1;
+      background-color: #2b2b2b;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      border-radius: 1px;
+    }
+
+    /* Content Area */
+    .content-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .username {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .username:hover {
+      text-decoration: underline;
+    }
+
+    .post-time {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .post-text {
+      font-size: 15px;
+      line-height: 1.48;
+      color: #e5e5e5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 8px;
+    }
+
+    .post-hashtag {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      text-decoration: none;
+    }
+    .post-hashtag:hover {
+      text-decoration: underline;
+    }
+
+    .post-image-container {
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      max-height: 460px;
+      background: #141414;
+      display: flex;
+      justify-content: center;
+    }
+
+    .post-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* Actions Bar */
+    .actions-bar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px;
+      border-radius: 50%;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    .action-btn:hover {
+      opacity: 0.8;
+      transform: scale(1.08);
+    }
+    .action-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .action-btn.liked svg {
+      fill: var(--like-color);
+      stroke: var(--like-color);
+    }
+
+    .action-btn.liked span {
+      color: var(--like-color);
+    }
+
+    .likes-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Comments Section */
+    .comments-wrapper {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #242424;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 8px;
+      font-size: 13px;
+      background-color: #161616;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #222;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .comment-text {
+      color: #dddddd;
+      flex: 1;
       word-break: break-word;
     }
-    .result.success { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
-    .result.error { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
-    .result.loading { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; }
+
+    /* Status Messages */
+    .status-msg {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    .error-msg {
+      color: #ff5252;
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Masuk Akun</h2>
-    <p class="desc">Uji Coba Pengiriman OTP via Bird API</p>
+  <!-- Header -->
+  <header>
+    <div class="header-spacer"></div>
+    <svg class="logo-svg" viewBox="0 0 192 192">
+      <path d="M141.537 88.9883C140.71 88.5919 139.87 88.2104 139.019 87.8451C137.537 60.5382 122.616 44.905 97.5619 44.745C97.4484 44.7443 97.3355 44.7443 97.222 44.7443C82.2364 44.7443 69.7731 51.1409 62.102 62.7807L75.481 72.7301C80.893 64.5168 88.6657 60.334 97.2057 60.334C97.2872 60.334 97.3695 60.334 97.4524 60.3347C110.383 60.4172 119.82 69.1764 121.849 84.8197C114.693 83.9145 106.915 84.1037 98.7774 85.3904C74.0048 89.3093 59.4449 102.736 61.1684 121.233C62.7163 137.847 77.0177 147.255 93.3039 147.255C108.971 147.255 120.916 139.845 127.327 126.837C133.023 138.868 143.766 146.435 158.468 146.435C169.875 146.435 179.914 141.517 186.744 132.615L174.453 122.378C169.932 128.272 164.218 131.134 158.468 131.134C148.653 131.134 142.164 124.237 141.69 113.431C148.718 107.03 154.512 99.2783 158.441 90.3541L144.974 84.2831C142.274 90.4158 138.167 95.8344 132.846 100.323C132.32 96.4862 131.162 92.6865 129.418 89.0435C133.473 89.284 137.525 89.2644 141.537 88.9883ZM125.753 108.932C122.955 116.924 114.776 131.954 93.3039 131.954C84.3754 131.954 76.5442 126.883 75.6983 117.809C74.6543 106.609 84.9711 98.7118 101.218 96.1417C107.288 95.1802 113.149 94.8872 118.665 95.228C121.722 100.178 123.639 105.419 125.753 108.932Z"/>
+    </svg>
+    <button class="refresh-btn" id="refreshBtn" onclick="fetchPosts()">
+      <svg viewBox="0 0 24 24">
+        <path d="M23 4v6h-6"></path>
+        <path d="M1 20v-6h6"></path>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      Refresh
+    </button>
+  </header>
 
-    <!-- FORM INPUT EMAIL -->
-    <div id="section-email">
-      <div class="form-group">
-        <label>Email Penerima</label>
-        <input type="email" id="email" value="delivered@messagebird.dev" />
-        <span class="badge">Alamat sandbox Bird (selalu berhasil tanpa email asli)</span>
-      </div>
-      <button id="btn-kirim" onclick="kirimOtp()">Kirim Kode OTP</button>
-    </div>
-
-    <!-- FORM INPUT OTP -->
-    <div id="section-otp" style="display: none;">
-      <div class="form-group">
-        <label>Masukkan 6-Digit OTP</label>
-        <input type="text" id="otp-input" class="otp-field" maxlength="6" placeholder="000000" />
-      </div>
-      <button id="btn-verif" onclick="verifikasiOtp()">Verifikasi & Masuk</button>
-      <div style="text-align: center; margin-top: 10px;">
-        <a href="#" onclick="ulangi()" style="color: #4f46e5; font-size: 12px; text-decoration: none;">Ulangi Kirim</a>
-      </div>
-    </div>
-
-    <!-- KOTAK STATUS RESPON -->
-    <div id="status-box" class="result"></div>
-  </div>
+  <!-- Feed Area -->
+  <main class="feed-container" id="feedContainer">
+    <div class="status-msg" id="loadingText">Menghubungkan ke Spreadsheet...</div>
+  </main>
 
   <script>
-    const BIRD_API_KEY = "bk_eu1_VfMRQDtkbeAxiNACEVP9XQU2dS6z7";
-    // Menggunakan CORS proxy agar request dari browser tidak diblokir
-    const API_TARGET = "https://eu1.platform.bird.com/email/messages";
-    const PROXY_URL = "https://corsproxy.io/?" + encodeURIComponent(API_TARGET);
+    // URL Web App Apps Script milik Anda
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1AatP5Ujs4LR9TqivKWFGvoOVcv9wH4Un5K_BzOu-TNTeU4QOSxXeZnyUpS4jq8Te/exec";
 
-    let kodeOtpTerkirim = null;
-
-    function setStatus(text, tipe) {
-      const box = document.getElementById("status-box");
-      box.className = "result " + tipe;
-      box.innerHTML = text;
-      box.style.display = "block";
+    // Fungsi normalisasi agar kompatibel dengan berbagai format respon Apps Script
+    function normalizePost(item) {
+      return {
+        username: item.username || item.Username || "anonymous",
+        time: item.time || item.Time || "",
+        photoProfile: item.photoProfile || item["Photo Profile"] || item.photoprofile || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
+        content: item.content || item.Content || "",
+        image: item.image || item.Image || "",
+        likes: Number(item.likes || item.Like || item.like || 0),
+        comment1: item.comment1 || item["Comment #1"] || item.comment_1 || "",
+        comment2: item.comment2 || item["Comment #2"] || item.comment_2 || "",
+        hashtag: item.hashtag || item.Hashtag || ""
+      };
     }
 
-    async function kirimOtp() {
-      const email = document.getElementById("email").value.trim();
-      const btn = document.getElementById("btn-kirim");
+    async function fetchPosts() {
+      const container = document.getElementById("feedContainer");
+      const refreshBtn = document.getElementById("refreshBtn");
+      
+      refreshBtn.classList.add("rotating");
 
-      if (!email) {
-        setStatus("Harap isi alamat email.", "error");
+      try {
+        const response = await fetch(SCRIPT_URL);
+        const result = await response.json();
+
+        // Cek struktur JSON apakah { status: 'success', data: [...] } atau langsung [...]
+        let rawPosts = [];
+        if (Array.isArray(result)) {
+          rawPosts = result;
+        } else if (result.data && Array.isArray(result.data)) {
+          rawPosts = result.data;
+        }
+
+        const posts = rawPosts.map(normalizePost);
+        renderFeed(posts);
+      } catch (error) {
+        console.error("Gagal mengambil data:", error);
+        container.innerHTML = `
+          <div class="status-msg error-msg">
+            <p><strong>Gagal memuat postingan</strong></p>
+            <p style="font-size: 13px; margin-top: 6px; color: #aaa;">Pastikan Apps Script di-deploy dengan akses <em>"Who has access: Anyone"</em>.</p>
+          </div>
+        `;
+      } finally {
+        refreshBtn.classList.remove("rotating");
+      }
+    }
+
+    function renderFeed(posts) {
+      const container = document.getElementById("feedContainer");
+      container.innerHTML = "";
+
+      if (posts.length === 0) {
+        container.innerHTML = `<div class="status-msg">Belum ada data di Spreadsheet.</div>`;
         return;
       }
 
-      // Generate 6 digit angka OTP acak
-      kodeOtpTerkirim = Math.floor(100000 + Math.random() * 900000).toString();
+      posts.forEach(post => {
+        const card = document.createElement("article");
+        card.className = "thread-card";
 
-      btn.disabled = true;
-      btn.innerText = "Menghubungi Bird API...";
-      setStatus("Sedang memproses permintaan via API Bird...", "loading");
+        const hasComments = Boolean(post.comment1 || post.comment2);
 
-      const payload = {
-        from: {
-          email: "onboarding@messagebird.dev",
-          name: "Sistem Login"
-        },
-        to: [email],
-        subject: "Kode Verifikasi Login",
-        html: `<p>Kode OTP Anda adalah: <b>${kodeOtpTerkirim}</b></p>`
-      };
+        card.innerHTML = `
+          <div class="avatar-col">
+            <img class="avatar" src="${post.photoProfile}" alt="${post.username}" onerror="this.src='https://via.placeholder.com/42/262626/888?text=U'" />
+            ${hasComments ? '<div class="thread-line"></div>' : ''}
+          </div>
 
-      try {
-        const response = await fetch(PROXY_URL, {
-          method: "POST",
-          headers: {
-            "Authorization": `AccessKey ${BIRD_API_KEY}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
+          <div class="content-col">
+            <div class="post-header">
+              <span class="username">${escapeHTML(post.username)}</span>
+              <span class="post-time">${escapeHTML(post.time)}</span>
+            </div>
 
-        const data = await response.json();
+            <p class="post-text">${escapeHTML(post.content)}</p>
 
-        // Status 200 / 202 berarti API berhasil menerima pengiriman
-        if (response.ok || response.status === 202) {
-          setStatus(
-            `<strong>API Bekerja Normal! (Status ${response.status})</strong><br>` +
-            `Message ID: ${data.id || 'accepted'}<br>` +
-            `Kode OTP untuk tes: <b style="font-size:15px; color:#166534;">${kodeOtpTerkirim}</b>`,
-            "success"
-          );
+            ${post.hashtag ? `<a href="#" class="post-hashtag">${escapeHTML(post.hashtag)}</a>` : ''}
 
-          document.getElementById("section-email").style.display = "none";
-          document.getElementById("section-otp").style.display = "block";
-        } else {
-          setStatus(
-            `<strong>API Merespon Error (${response.status}):</strong><br>${JSON.stringify(data)}`,
-            "error"
-          );
-        }
-      } catch (err) {
-        setStatus(
-          `<strong>Gagal:</strong> ${err.message}. Pastikan koneksi internet lancar.`,
-          "error"
-        );
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Kirim Kode OTP";
-      }
+            ${post.image ? `
+              <div class="post-image-container">
+                <img class="post-image" src="${post.image}" alt="Media Post" loading="lazy" onerror="this.parentElement.style.display='none'" />
+              </div>
+            ` : ''}
+
+            <!-- Tombol Aksi -->
+            <div class="actions-bar">
+              <button class="action-btn" onclick="toggleLike(this, ${post.likes})">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                <span class="likes-count">${post.likes}</span>
+              </button>
+
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                </svg>
+              </button>
+
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24">
+                  <path d="M17 1l4 4-4 4"></path>
+                  <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                  <path d="M7 23l-4-4 4-4"></path>
+                  <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Balasan / Preview Komentar -->
+            ${hasComments ? `
+              <div class="comments-wrapper">
+                ${post.comment1 ? `
+                  <div class="comment-item">
+                    <span class="comment-author">balasan:</span>
+                    <span class="comment-text">${escapeHTML(post.comment1)}</span>
+                  </div>
+                ` : ''}
+                ${post.comment2 ? `
+                  <div class="comment-item">
+                    <span class="comment-author">balasan:</span>
+                    <span class="comment-text">${escapeHTML(post.comment2)}</span>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
     }
 
-    function verifikasiOtp() {
-      const input = document.getElementById("otp-input").value.trim();
-      if (input === kodeOtpTerkirim) {
-        setStatus("<strong>Sukses!</strong> Login berhasil menggunakan OTP.", "success");
-      } else {
-        setStatus("Kode OTP salah, masukkan kode yang muncul di atas.", "error");
-      }
+    function toggleLike(btn, baseCount) {
+      const isLiked = btn.classList.toggle("liked");
+      const countEl = btn.querySelector(".likes-count");
+      countEl.textContent = isLiked ? baseCount + 1 : baseCount;
     }
 
-    function ulangi() {
-      document.getElementById("section-email").style.display = "block";
-      document.getElementById("section-otp").style.display = "none";
-      document.getElementById("status-box").style.display = "none";
-      document.getElementById("otp-input").value = "";
+    function escapeHTML(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
+
+    document.addEventListener("DOMContentLoaded", fetchPosts);
   </script>
 </body>
 </html>
