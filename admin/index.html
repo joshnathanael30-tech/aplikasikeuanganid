@@ -1,21 +1,205 @@
-const { BirdClient } = require('@messagebird/sdk');
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tes Login OTP - Bird API</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body {
+      background: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    h2 { color: #0f172a; text-align: center; margin-bottom: 6px; font-size: 22px; }
+    p.desc { color: #64748b; font-size: 13px; text-align: center; margin-bottom: 22px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #6366f1; ring: 2px solid #e0e7ff; }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    button:hover { background: #4338ca; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    .otp-field { text-align: center; font-size: 22px; letter-spacing: 6px; font-weight: bold; }
+    .badge {
+      display: inline-block;
+      margin-top: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .result {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: none;
+      word-break: break-word;
+    }
+    .result.success { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
+    .result.error { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+    .result.loading { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; }
+  </style>
+</head>
+<body>
 
-const bird = new BirdClient({ 
-  apiKey: "bk_eu1_VfMRQDtkbeAxiNACEVP9XQU2dS6z7" 
-});
+  <div class="card">
+    <h2>Masuk Akun</h2>
+    <p class="desc">Uji Coba Pengiriman OTP via Bird API</p>
 
-async function testKirim() {
-  try {
-    const res = await bird.email.send({
-      from: { email: "onboarding@messagebird.dev", name: "Test OTP" },
-      to: ["delivered@messagebird.dev"],
-      subject: "Tes Kode OTP",
-      html: "<p>Kode OTP Anda: <b>123456</b></p>"
-    });
-    console.log("SUKSES! Status:", res.status, "| Message ID:", res.id);
-  } catch (err) {
-    console.error("GAGAL:", err);
-  }
-}
+    <!-- FORM INPUT EMAIL -->
+    <div id="section-email">
+      <div class="form-group">
+        <label>Email Penerima</label>
+        <input type="email" id="email" value="delivered@messagebird.dev" />
+        <span class="badge">Alamat sandbox Bird (selalu berhasil tanpa email asli)</span>
+      </div>
+      <button id="btn-kirim" onclick="kirimOtp()">Kirim Kode OTP</button>
+    </div>
 
-testKirim();
+    <!-- FORM INPUT OTP -->
+    <div id="section-otp" style="display: none;">
+      <div class="form-group">
+        <label>Masukkan 6-Digit OTP</label>
+        <input type="text" id="otp-input" class="otp-field" maxlength="6" placeholder="000000" />
+      </div>
+      <button id="btn-verif" onclick="verifikasiOtp()">Verifikasi & Masuk</button>
+      <div style="text-align: center; margin-top: 10px;">
+        <a href="#" onclick="ulangi()" style="color: #4f46e5; font-size: 12px; text-decoration: none;">Ulangi Kirim</a>
+      </div>
+    </div>
+
+    <!-- KOTAK STATUS RESPON -->
+    <div id="status-box" class="result"></div>
+  </div>
+
+  <script>
+    const BIRD_API_KEY = "bk_eu1_VfMRQDtkbeAxiNACEVP9XQU2dS6z7";
+    // Menggunakan CORS proxy agar request dari browser tidak diblokir
+    const API_TARGET = "https://eu1.platform.bird.com/email/messages";
+    const PROXY_URL = "https://corsproxy.io/?" + encodeURIComponent(API_TARGET);
+
+    let kodeOtpTerkirim = null;
+
+    function setStatus(text, tipe) {
+      const box = document.getElementById("status-box");
+      box.className = "result " + tipe;
+      box.innerHTML = text;
+      box.style.display = "block";
+    }
+
+    async function kirimOtp() {
+      const email = document.getElementById("email").value.trim();
+      const btn = document.getElementById("btn-kirim");
+
+      if (!email) {
+        setStatus("Harap isi alamat email.", "error");
+        return;
+      }
+
+      // Generate 6 digit angka OTP acak
+      kodeOtpTerkirim = Math.floor(100000 + Math.random() * 900000).toString();
+
+      btn.disabled = true;
+      btn.innerText = "Menghubungi Bird API...";
+      setStatus("Sedang memproses permintaan via API Bird...", "loading");
+
+      const payload = {
+        from: {
+          email: "onboarding@messagebird.dev",
+          name: "Sistem Login"
+        },
+        to: [email],
+        subject: "Kode Verifikasi Login",
+        html: `<p>Kode OTP Anda adalah: <b>${kodeOtpTerkirim}</b></p>`
+      };
+
+      try {
+        const response = await fetch(PROXY_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `AccessKey ${BIRD_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        // Status 200 / 202 berarti API berhasil menerima pengiriman
+        if (response.ok || response.status === 202) {
+          setStatus(
+            `<strong>API Bekerja Normal! (Status ${response.status})</strong><br>` +
+            `Message ID: ${data.id || 'accepted'}<br>` +
+            `Kode OTP untuk tes: <b style="font-size:15px; color:#166534;">${kodeOtpTerkirim}</b>`,
+            "success"
+          );
+
+          document.getElementById("section-email").style.display = "none";
+          document.getElementById("section-otp").style.display = "block";
+        } else {
+          setStatus(
+            `<strong>API Merespon Error (${response.status}):</strong><br>${JSON.stringify(data)}`,
+            "error"
+          );
+        }
+      } catch (err) {
+        setStatus(
+          `<strong>Gagal:</strong> ${err.message}. Pastikan koneksi internet lancar.`,
+          "error"
+        );
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Kirim Kode OTP";
+      }
+    }
+
+    function verifikasiOtp() {
+      const input = document.getElementById("otp-input").value.trim();
+      if (input === kodeOtpTerkirim) {
+        setStatus("<strong>Sukses!</strong> Login berhasil menggunakan OTP.", "success");
+      } else {
+        setStatus("Kode OTP salah, masukkan kode yang muncul di atas.", "error");
+      }
+    }
+
+    function ulangi() {
+      document.getElementById("section-email").style.display = "block";
+      document.getElementById("section-otp").style.display = "none";
+      document.getElementById("status-box").style.display = "none";
+      document.getElementById("otp-input").value = "";
+    }
+  </script>
+</body>
+</html>
