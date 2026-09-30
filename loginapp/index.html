@@ -7,49 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Custom Styles for Slider */
-        .slider-container {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .slider-track {
-            display: flex;
-            width: 500%; /* 5 images = 500% */
-            height: 100%;
-            animation: slide 20s infinite; /* Adjust timing here */
-        }
-
-        .slide {
-            width: 20%; /* 100% / 5 images */
-            height: 100%;
-            position: relative;
+        /* Efek Glassmorphism (Dari UI Pertama) */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .slide img {
-             width: 100%;
-             height: 100%;
-             object-fit: cover; /* or contain depending on preference */
-             object-position: top center;
-        }
-
-        /* The Slide Animation */
-        @keyframes slide {
-            0%, 15% { transform: translateX(0); }
-            20%, 35% { transform: translateX(-20%); }
-            40%, 55% { transform: translateX(-40%); }
-            60%, 75% { transform: translateX(-60%); }
-            80%, 95% { transform: translateX(-80%); }
-            100% { transform: translateX(0); }
-        }
-
-        /* Loader Animation */
+        /* Animasi Loading Tombol */
         .loader {
-            border: 3px solid #f3f3f3;
+            border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top: 3px solid white;
             width: 20px;
@@ -58,236 +26,228 @@
             display: none;
             margin: 0 auto;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Slider Gambar Efek Fade (Lebih Rapi & Stabil) */
+        .fade-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            background-color: #f9fafb;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .fade-slider img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            opacity: 0;
+            animation: fade 25s infinite;
         }
         
-        /* Custom Colors based on logo */
-        .bg-kelola-green { background-color: #27A683; }
-        .text-kelola-green { color: #27A683; }
-        .border-kelola-green { border-color: #27A683; }
-        .hover-bg-kelola-dark { background-color: #1a7a60; }
-        
-        /* Glassmorphism for text over slider (optional) */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        /* Urutan Tampil Gambar */
+        .fade-slider img:nth-child(1) { animation-delay: 0s; }
+        .fade-slider img:nth-child(2) { animation-delay: 5s; }
+        .fade-slider img:nth-child(3) { animation-delay: 10s; }
+        .fade-slider img:nth-child(4) { animation-delay: 15s; }
+        .fade-slider img:nth-child(5) { animation-delay: 20s; }
+
+        @keyframes fade {
+            0%, 15% { opacity: 1; z-index: 1; }
+            20%, 95% { opacity: 0; z-index: 0; }
+            100% { opacity: 1; z-index: 1; }
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased h-screen flex">
 
-    <!-- Container Utama: Split Layout -->
     <div class="flex w-full h-full">
 
-        <!-- KIRI: Area Branding & Slider (Hidden di Mobile) -->
-        <div class="hidden lg:flex lg:w-1/2 bg-gray-100 flex-col relative p-8">
+        <!-- KIRI: Area Branding (Tema Indigo Original) -->
+        <div class="hidden lg:flex lg:w-1/2 bg-indigo-900 relative p-12 overflow-hidden flex-col justify-between">
             
-            <!-- Logo Header Area -->
-            <div class="z-10 mb-8 flex justify-center w-full">
-                <img src="Gemini_Generated_Image_99xacv99xacv99xa.png" alt="KelolaDuit Logo" class="h-24 object-contain filter drop-shadow-md">
+            <!-- Dekorasi Background Cahaya -->
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-60"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+
+            <!-- Header Logo -->
+            <div class="relative z-10 flex items-center gap-3">
+                <img src="./Gemini_Generated_Image_99xacv99xacv99xa.png" alt="Logo KelolaDuit" class="h-12 bg-white px-2 py-1 rounded-xl shadow-sm">
             </div>
 
-            <!-- Slider Area -->
-            <div class="flex-grow flex items-center justify-center relative w-full max-w-md mx-auto">
-                 <div class="slider-container">
-                    <div class="slider-track">
-                        <!-- Slide 1: Beranda -->
-                        <div class="slide">
-                            <img src="image_1a1a3e.png" alt="Beranda KelolaDuit">
-                        </div>
-                        <!-- Slide 2: Laporan Ringkasan -->
-                        <div class="slide">
-                            <img src="image_1a1a97.png" alt="Laporan KelolaDuit">
-                        </div>
-                        <!-- Slide 3: Laporan Grafik -->
-                        <div class="slide">
-                            <img src="image_1a1d43.png" alt="Grafik Laporan">
-                        </div>
-                        <!-- Slide 4: Riwayat -->
-                        <div class="slide">
-                            <img src="image_1a1d7c.png" alt="Riwayat Transaksi">
-                        </div>
-                        <!-- Slide 5: Eksplorasi -->
-                        <div class="slide">
-                            <img src="image_1a1d9c.png" alt="Fitur Eksplorasi">
+            <!-- Bagian Tengah: Mockup HP & Slider -->
+            <div class="relative z-10 flex-grow flex items-center justify-center mt-8 mb-8">
+                <!-- Bingkai Ala HP -->
+                <div class="w-64 md:w-72 h-[500px] bg-white/20 p-2 rounded-[2rem] shadow-2xl relative backdrop-blur-sm border border-white/30">
+                    
+                    <div class="fade-slider">
+                        <!-- Path gambar diperbaiki menggunakan awalan ./ -->
+                        <img src="./image_1a1a3e.png" alt="Beranda">
+                        <img src="./image_1a1a97.png" alt="Laporan">
+                        <img src="./image_1a1d43.png" alt="Grafik">
+                        <img src="./image_1a1d7c.png" alt="Riwayat">
+                        <img src="./image_1a1d9c.png" alt="Eksplorasi">
+                    </div>
+                    
+                    <!-- Kartu Glassmorphism Melayang (Identitas UI Pertama) -->
+                    <div class="glass absolute -right-16 bottom-16 p-4 rounded-2xl w-60 shadow-xl">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-400 rounded-full flex items-center justify-center text-white text-lg shadow-inner">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold text-sm">Keuangan Sehat</p>
+                                <p class="text-indigo-100 text-xs mt-0.5">Skor Bulan Ini: Cukup Baik</p>
+                            </div>
                         </div>
                     </div>
-                 </div>
-                 
-                 <!-- Optional Caption Panel -->
-                 <div class="absolute bottom-10 left-0 w-full px-8 z-10 pointer-events-none">
-                     <div class="glass-panel p-6 rounded-2xl text-center shadow-lg bg-white/80">
-                         <h2 class="text-2xl font-bold text-gray-800 mb-2">Teman Baik Keuanganmu</h2>
-                         <p class="text-gray-600 text-sm">Catat, pantau, dan kelola keuangan Anda dengan mudah dalam satu aplikasi pintar.</p>
-                     </div>
-                 </div>
+                </div>
+            </div>
+
+            <!-- Teks Footer Kiri -->
+            <div class="relative z-10 text-white">
+                <h2 class="text-3xl font-bold mb-3 tracking-tight">Teman Baik Keuanganmu</h2>
+                <p class="text-indigo-200 max-w-md text-sm leading-relaxed">
+                    Catat arus kas, pantau laporan bulanan, dan kelola dompet Anda dalam satu aplikasi pintar dengan desain modern.
+                </p>
             </div>
         </div>
 
-        <!-- KANAN: Form Login -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-            <div class="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl shadow-xl lg:shadow-none lg:bg-transparent lg:p-0">
+        <!-- KANAN: Form Login yang Bersih -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white">
+            <div class="w-full max-w-md">
                 
-                <!-- Header Form (Logo only shown on mobile) -->
-                <div class="text-center mb-10">
-                    <img src="Gemini_Generated_Image_99xacv99xacv99xa.png" alt="KelolaDuit Logo" class="h-16 mx-auto mb-6 lg:hidden object-contain">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang</h1>
-                    <p class="text-gray-500">Masuk untuk melanjutkan ke akun KelolaDuit Anda.</p>
+                <!-- Logo untuk versi Mobile HP -->
+                <div class="text-center mb-10 lg:hidden">
+                    <img src="./Gemini_Generated_Image_99xacv99xacv99xa.png" alt="Logo" class="h-16 mx-auto mb-5 object-contain">
+                    <h1 class="text-3xl font-bold text-gray-900">Masuk Akun</h1>
                 </div>
 
-                <!-- Formulir Login -->
-                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-6">
+                <!-- Teks Sambutan versi Desktop -->
+                <div class="hidden lg:block mb-10 text-left">
+                    <h1 class="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">Selamat Datang 👋</h1>
+                    <p class="text-gray-500 font-medium">Silakan masukkan kredensial akun Anda untuk melanjutkan.</p>
+                </div>
+
+                <!-- Form -->
+                <form onsubmit="handleLogin(event)" class="space-y-5">
                     
                     <!-- Input Email -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email / Nomor HP</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email / Nomor HP</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fa-regular fa-user text-gray-400"></i>
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fa-regular fa-envelope text-gray-400"></i>
                             </div>
-                            <input type="text" id="email" name="email" required
-                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27A683] focus:border-transparent transition-all"
-                                placeholder="nama@email.com"
-                                value="testinguser">
+                            <input type="text" id="email" required
+                                class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-all text-sm font-medium text-gray-800 bg-gray-50 focus:bg-white"
+                                placeholder="nama@email.com" value="testinguser">
                         </div>
                     </div>
 
-                    <!-- Input Password -->
+                    <!-- Input Sandi -->
                     <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
-                            <a href="#" class="text-sm text-kelola-green hover:underline font-medium">Lupa sandi?</a>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="block text-sm font-semibold text-gray-700">Kata Sandi</label>
+                            <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800 font-bold transition-colors">Lupa sandi?</a>
                         </div>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <i class="fa-solid fa-lock text-gray-400"></i>
                             </div>
-                            <input type="password" id="password" name="password" required
-                                class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27A683] focus:border-transparent transition-all"
-                                placeholder="Masukkan kata sandi">
-                            
-                            <!-- Toggle Show Password -->
-                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <input type="password" id="password" required
+                                class="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-all text-sm font-medium text-gray-800 bg-gray-50 focus:bg-white"
+                                placeholder="••••••••">
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-700 transition-colors">
                                 <i id="eyeIcon" class="fa-regular fa-eye"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Ingat Saya -->
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox"
-                            class="h-4 w-4 text-kelola-green focus:ring-[#27A683] border-gray-300 rounded cursor-pointer">
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-700 cursor-pointer">
-                            Ingat saya di perangkat ini
-                        </label>
+                    <!-- Remember Me -->
+                    <div class="flex items-center pt-1 pb-2">
+                        <input id="remember" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer">
+                        <label for="remember" class="ml-2 block text-sm font-medium text-gray-600 cursor-pointer">Ingat saya di perangkat ini</label>
                     </div>
 
-                    <!-- Tombol Login -->
+                    <!-- Tombol Masuk -->
                     <button type="submit" id="loginBtn"
-                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-kelola-green hover:bg-[#1a7a60] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#27A683] transition-colors">
-                        <span id="btnText">Masuk ke Akun</span>
+                        class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                        <span id="btnText">Masuk ke Dasbor</span>
                         <div id="btnLoader" class="loader"></div>
                     </button>
                     
-                    <!-- Atau Login Dengan (Opsional/Bisa Dihapus) -->
-                    <div class="mt-6">
+                    <!-- Pemisah -->
+                    <div class="mt-8 pt-2">
                         <div class="relative">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-gray-300"></div>
-                            </div>
+                            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
                             <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-white lg:bg-transparent text-gray-500">Atau masuk dengan</span>
+                                <span class="px-4 bg-white text-gray-400 text-xs font-bold uppercase tracking-widest">Atau</span>
                             </div>
                         </div>
-
-                        <div class="mt-6 grid grid-cols-2 gap-3">
-                            <div>
-                                <a href="#" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                                    Google
-                                </a>
-                            </div>
-                            <div>
-                                <a href="#" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                                    <i class="fa-brands fa-apple text-lg mr-2"></i>
-                                    Apple
-                                </a>
-                            </div>
+                        
+                        <!-- Login Sosial -->
+                        <div class="mt-6 grid grid-cols-2 gap-4">
+                            <button type="button" class="flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-xl shadow-sm text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5 mr-2" alt="Google"> Google
+                            </button>
+                            <button type="button" class="flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-xl shadow-sm text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                <i class="fa-brands fa-apple text-lg mr-2"></i> Apple
+                            </button>
                         </div>
                     </div>
-                    
                 </form>
 
-                <!-- Footer Text -->
-                <p class="mt-8 text-center text-sm text-gray-600">
-                    Belum punya akun? 
-                    <a href="#" class="font-semibold text-kelola-green hover:underline hover:text-[#1a7a60]">Daftar sekarang</a>
+                <p class="mt-10 text-center text-sm text-gray-500 font-medium">
+                    Belum memiliki akun? <a href="#" class="font-bold text-indigo-600 hover:text-indigo-800 transition-colors">Daftar Sekarang</a>
                 </p>
-                
             </div>
         </div>
-
     </div>
 
-    <!-- Script JavaScript untuk Interaksi -->
     <script>
-        // Fungsi untuk melihat/menyembunyikan kata sandi
+        // Fitur lihat kata sandi
         function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
+                pwd.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
 
-        // Fungsi Simulasi Proses Login
-        function handleLogin(event) {
-            event.preventDefault(); // Mencegah reload halaman
-            
+        // Simulasi Loading Login
+        function handleLogin(e) {
+            e.preventDefault();
             const btn = document.getElementById('loginBtn');
-            const btnText = document.getElementById('btnText');
-            const btnLoader = document.getElementById('btnLoader');
+            const txt = document.getElementById('btnText');
+            const loader = document.getElementById('btnLoader');
             
-            // Ubah state tombol menjadi loading
-            btnText.style.display = 'none';
-            btnLoader.style.display = 'block';
-            btn.classList.add('opacity-80', 'cursor-not-allowed');
-            btn.disabled = true;
-
-            // Simulasi delay jaringan (2 detik)
+            txt.style.display = 'none';
+            loader.style.display = 'block';
+            btn.classList.add('opacity-90', 'cursor-wait');
+            
             setTimeout(() => {
-                // Kembalikan ke state awal (atau redirect ke dashboard)
-                btnText.style.display = 'block';
-                btnLoader.style.display = 'none';
-                btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                btn.disabled = false;
-                
-                // Animasi sukses sederhana (opsional)
-                btn.classList.remove('bg-kelola-green', 'hover:bg-[#1a7a60]');
-                btn.classList.add('bg-green-500');
-                btnText.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Berhasil Masuk';
+                loader.style.display = 'none';
+                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'cursor-wait');
+                btn.classList.add('bg-green-500', 'hover:bg-green-600');
+                txt.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Berhasil';
+                txt.style.display = 'block';
                 
                 setTimeout(() => {
-                     // Reset tombol setelah sukses
-                     btn.classList.add('bg-kelola-green', 'hover:bg-[#1a7a60]');
-                     btn.classList.remove('bg-green-500');
-                     btnText.innerText = 'Masuk ke Akun';
-                     // window.location.href = '/dashboard.html'; // Uncomment untuk redirect
-                }, 1500);
-
-            }, 2000);
+                    btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                    txt.innerText = 'Masuk ke Dasbor';
+                }, 2000);
+            }, 1500);
         }
     </script>
 </body>
