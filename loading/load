@@ -1,0 +1,43 @@
+<div id="loading-overlay" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(160deg,#0F0C29,#302B63,#24243E);transition:opacity .6s ease">
+
+  <!-- Floating bubbles -->
+  <div class="lo-bubbles">
+    <div class="lo-bub" style="--s:60px;--x:10%;--d:4s;--del:0s;background:rgba(124,58,237,.3)"></div>
+    <div class="lo-bub" style="--s:40px;--x:25%;--d:6s;--del:1s;background:rgba(16,185,129,.25)"></div>
+    <div class="lo-bub" style="--s:80px;--x:50%;--d:5s;--del:.5s;background:rgba(59,130,246,.2)"></div>
+    <div class="lo-bub" style="--s:30px;--x:70%;--d:7s;--del:1.5s;background:rgba(249,115,22,.25)"></div>
+    <div class="lo-bub" style="--s:55px;--x:85%;--d:4.5s;--del:.8s;background:rgba(236,72,153,.2)"></div>
+    <div class="lo-bub" style="--s:45px;--x:40%;--d:5.5s;--del:2s;background:rgba(124,58,237,.2)"></div>
+    <div class="lo-bub" style="--s:35px;--x:60%;--d:6.5s;--del:.3s;background:rgba(16,185,129,.3)"></div>
+    <div class="lo-bub" style="--s:70px;--x:15%;--d:8s;--del:1.2s;background:rgba(59,130,246,.15)"></div>
+    <div class="lo-bub" style="--s:25px;--x:90%;--d:5s;--del:2.5s;background:rgba(251,191,36,.25)"></div>
+    <div class="lo-bub" style="--s:50px;--x:75%;--d:7s;--del:.6s;background:rgba(99,102,241,.2)"></div>
+  </div>
+
+  <!-- Shimmer orbs in background -->
+  <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.15),transparent 70%);top:-80px;left:-80px;animation:loPulse 4s ease-in-out infinite"></div>
+  <div style="position:absolute;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.1),transparent 70%);bottom:-60px;right:-60px;animation:loPulse 5s ease-in-out infinite .8s"></div>
+
+  <!-- Content -->
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0">
+    <!-- Fun animated loading graphic -->
+    <div style="position:relative;width:100px;height:100px;margin-bottom:20px;display:flex;align-items:center;justify-content:center">
+      <!-- Orbiting coins -->
+      <div style="position:absolute;inset:0;animation:loOrbit 3s linear infinite">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#FCD34D,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#92400E;box-shadow:0 2px 8px rgba(245,158,11,.5)">Rp</div>
+      </div>
+      <div style="position:absolute;inset:0;animation:loOrbit 3s linear infinite;animation-delay:-1s">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#A78BFA,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.5)">$</div>
+      </div>
+      <div style="position:absolute;inset:0;animation:loOrbit 3s linear infinite;animation-delay:-2s">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#6EE7B7,#10B981);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#064E3B;box-shadow:0 2px 8px rgba(16,185,129,.5)">€</div>
+      </div>
+      <!-- Center wallet/piggy icon bouncing -->
+      <div style="font-size:42px;animation:loWalletBounce 1.4s ease-in-out infinite">💰</div>
+    </div>
+
+    <p id="lo-status" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:28px;min-height:18px">Menyiapkan aplikasi…</p>
+
+    <!-- Progress bar container -->
+    <div style="width:200px;height:4px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin-bottom:10px">
+      <div id="lo-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#7C3AED,#2563EB,#10B981);border-radius:99px;transition:width .4s ease;box-shadow:0 0 8px rgba(124,58,237,.6)"></div>
