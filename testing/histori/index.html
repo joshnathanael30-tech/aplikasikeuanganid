@@ -1,3 +1,8 @@
+# Kode HTML Halaman Riwayat / Histori — Tanpa Loading Screen (Keloladuit.id)
+
+Klik tombol **Copy / Salin** di pojok kanan atas blok kode di bawah ini agar seluruh kode dari `<!DOCTYPE html>` hingga `</html>` tersalin utuh tanpa terpotong:
+
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -79,6 +84,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 @keyframes scaleIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
 @keyframes chipIn { from { opacity:0; transform:translateY(14px) scale(0.9); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes spin { to { transform:rotate(360deg); } }
+@keyframes shimmer { 0% { opacity:0.55; } 50% { opacity:1; } 100% { opacity:0.55; } }
 @keyframes checkDraw { to { stroke-dashoffset:0; } }
 .view-section { display:none; }
 .view-section.active { display:block; animation: scaleIn 0.38s cubic-bezier(0.22,1,0.36,1) forwards; }
@@ -178,35 +184,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 </head>
 <body>
 <div class="ambient"></div>
-<!-- ═══════════ LOADING ═══════════ -->
-<div id="loading-overlay" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(160deg,#0F0C29,#302B63,#24243E);transition:opacity .6s ease">
-  <div class="lo-bubbles">
-    <div class="lo-bub" style="--s:60px;--x:10%;--d:4s;--del:0s;background:rgba(124,58,237,.3)"></div>
-    <div class="lo-bub" style="--s:40px;--x:25%;--d:6s;--del:1s;background:rgba(16,185,129,.25)"></div>
-    <div class="lo-bub" style="--s:80px;--x:50%;--d:5s;--del:.5s;background:rgba(59,130,246,.2)"></div>
-    <div class="lo-bub" style="--s:30px;--x:70%;--d:7s;--del:1.5s;background:rgba(249,115,22,.25)"></div>
-    <div class="lo-bub" style="--s:55px;--x:85%;--d:4.5s;--del:.8s;background:rgba(236,72,153,.2)"></div>
-  </div>
-  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0">
-    <div style="position:relative;width:100px;height:100px;margin-bottom:20px;display:flex;align-items:center;justify-content:center">
-      <div style="position:absolute;inset:0;animation:loOrbit 3s linear infinite">
-        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#FCD34D,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#92400E;box-shadow:0 2px 8px rgba(245,158,11,.5)">Rp</div>
-      </div>
-      <div style="position:absolute;inset:0;animation:loOrbit 3s linear infinite;animation-delay:-1s">
-        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#A78BFA,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.5)">$</div>
-      </div>
-      <div style="position:absolute;inset:0;animation:loOrbit 3s linear infinite;animation-delay:-2s">
-        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#6EE7B7,#10B981);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#064E3B;box-shadow:0 2px 8px rgba(16,185,129,.5)">€</div>
-      </div>
-      <div style="font-size:42px;animation:loWalletBounce 1.4s ease-in-out infinite">💰</div>
-    </div>
-    <p id="lo-status" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:28px;min-height:18px">Memuat riwayat transaksi…</p>
-    <div style="width:200px;height:4px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin-bottom:10px">
-      <div id="lo-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#7C3AED,#2563EB,#10B981);border-radius:99px;transition:width .4s ease;box-shadow:0 0 8px rgba(124,58,237,.6)"></div>
-    </div>
-    <p id="lo-pct" style="font-size:11px;font-weight:800;color:rgba(255,255,255,.4)">0%</p>
-  </div>
-</div>
 <!-- ═══════════ AUTH SCREEN (LOGIN / REGISTER) ═══════════ -->
 <div id="auth-screen" class="hidden">
   <div class="auth-header">
@@ -266,21 +243,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     </p>
   </div>
 </div>
-<!-- ═══════════ LOCKSCREEN ═══════════ -->
-<div id="lockscreen" class="hidden">
-  <div>
-    <div class="lock-icon-wrap">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-    </div>
-    <h2>Masukkan PIN</h2>
-    <p class="lock-desc">Jaga kerahasiaan data finansialmu.</p>
-    <form id="lockscreen-form">
-      <input type="password" id="password-input" inputmode="numeric" placeholder="••••">
-      <button type="submit">Buka Aplikasi</button>
-    </form>
-    <p id="lockscreen-msg"></p>
-  </div>
-</div>
 <!-- ═══════════ SUCCESS MODAL ═══════════ -->
 <div id="success-modal" class="fixed inset-0 z-[80] flex items-center justify-center hidden pointer-events-none bg-zinc-900/20 backdrop-blur-sm">
   <div class="success-card bg-white rounded-[28px] shadow-2xl p-7 flex flex-col items-center min-w-[220px] border border-zinc-100">
@@ -294,7 +256,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   </div>
 </div>
 <!-- ═══════════ APP CONTAINER ═══════════ -->
-<div id="app" class="max-w-md mx-auto opacity-0 transition-opacity duration-500">
+<div id="app" class="max-w-md mx-auto">
   <!-- ═══ VIEW: HISTORY ═══ -->
   <div id="view-history" class="view-section active">
     <!-- Sticky Header -->
@@ -562,16 +524,32 @@ const AI_API_KEY = 'AIzaSyAc4Ea4PWZ3489Uqg7Pajbr8NZk2yW23WQ';
 const AI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
 const idr = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n||0);
 const today = () => new Date().toISOString().split('T')[0];
-// ── JARING PENGAMAN LOADING (10 detik) ──
-setTimeout(function() {
-  var loading = document.getElementById('loading-overlay');
-  if (loading && loading.style.display !== 'none' && !loading.classList.contains('opacity-0')) {
-    loading.classList.add('opacity-0', 'pointer-events-none');
-    setTimeout(function(){ loading.style.display = 'none'; }, 600);
-    var appEl = document.getElementById('app');
-    if (appEl) appEl.classList.remove('opacity-0');
-  }
-}, 10000);
+const TX_CACHE_KEY = 'keuangan_transactions_cache';
+var isFetchingBg = false;
+
+function loadTransactionsCache() {
+  try {
+    const raw = localStorage.getItem(TX_CACHE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) S.transactions = parsed;
+    }
+  } catch(e) {}
+  try {
+    const cachedSettings = localStorage.getItem('keuangan_settings_cache');
+    if (cachedSettings) {
+      const parsedS = JSON.parse(cachedSettings);
+      if (parsedS && typeof parsedS === 'object') S.settings = parsedS;
+    }
+  } catch(e) {}
+}
+
+function saveTransactionsCache() {
+  try {
+    localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions));
+  } catch(e) {}
+}
+
 // ── STORAGE ABSTRACTION (localStorage -> cookie -> memory) ──
 var _storageMode = null;
 var _memoryStore = {};
@@ -600,7 +578,7 @@ function storageGet(key) {
   }
   if (mode === 'cookie') {
     try {
-      var match = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '=([^;]*)'));
+      var match = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
       return match ? decodeURIComponent(match[1]) : null;
     } catch(e) { return null; }
   }
@@ -711,104 +689,71 @@ function hitungSaldoDompet(dompetId) {
   return saldo;
 }
 // ================================================================
-// INIT & AUTH FLOW
+// INSTANT INIT & BACKGROUND SYNC (TANPA LOADING SCREEN)
 // ================================================================
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   try { loadDompetLocal(); } catch(e) {}
+  try { loadTransactionsCache(); } catch(e) {}
   try { initTxModalListeners(); } catch(e) {}
   try { initRippleEffects(); } catch(e) {}
   try {
-    const lockForm = document.getElementById('lockscreen-form');
-    if (lockForm) lockForm.addEventListener('submit', handleLockscreen);
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     if (loginForm) loginForm.addEventListener('submit', handleLoginSubmit);
     if (registerForm) registerForm.addEventListener('submit', handleRegisterSubmit);
   } catch(e) {}
+
   if (checkAkunSession()) {
-    await startMainFetchFlow();
+    S.isLoggedIn = true;
+    // Langsung render instan (0ms) dari cache localStorage!
+    if (S.transactions.length === 0) isFetchingBg = true;
+    renderHistoryList();
+    // Sinkronisasi data terbaru di background secara senyap tanpa loading overlay
+    syncDataInBackground();
   } else {
-    hideLoadingScreen();
     const authEl = document.getElementById('auth-screen');
     if (authEl) { authEl.classList.remove('hidden'); authEl.style.display = 'flex'; }
   }
 });
-function setProgress(pct, msg) {
-  const bar  = document.getElementById('lo-bar');
-  const pctEl= document.getElementById('lo-pct');
-  const stat = document.getElementById('lo-status');
-  if (bar)   bar.style.width   = pct + '%';
-  if (pctEl) pctEl.textContent = pct + '%';
-  if (stat && msg) stat.textContent = msg;
-}
-async function startMainFetchFlow() {
-  const loadingEl = document.getElementById('loading-overlay');
-  if (loadingEl) { loadingEl.style.display = 'flex'; loadingEl.classList.remove('opacity-0'); }
+
+async function syncDataInBackground() {
   try {
-    const cached = localStorage.getItem('keuangan_settings_cache');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (parsed && typeof parsed === 'object') S.settings = parsed;
-    }
-  } catch(e) {}
-  setProgress(15, 'Menghubungkan ke server…');
-  window.mainFetchPromise = (async () => {
-    try {
-      setProgress(35, 'Mengambil data transaksi…');
-      const r = await fetch(GS_URL + '?action=read');
-      setProgress(70, 'Memproses data…');
-      const d = await r.json();
-      if (d && d.status === 'success') {
-        S.transactions = d.data.transactions || [];
-        S.settings     = d.data.settings     || {};
-        try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(e) {}
-        if (Array.isArray(d.data.dompet)) {
-          var dariServer = d.data.dompet.map(function(w) {
-            return {
-              id: w.id,
-              nama: w.nama,
-              tipe: w.tipe || 'bank',
-              provider: w.keterangan || w.nama,
-              logo: w.logo || null,
-              background: w.background || null,
-              saldoAwal: Number(w.nominal) || 0,
-            };
-          });
-          var belumTersinkron = dompetState.list.filter(function(d) {
-            return typeof d.id === 'string' && d.id.indexOf('dpt_') === 0;
-          });
-          dompetState.list = dariServer.concat(belumTersinkron);
-          try { saveDompetLocal(); } catch(e) {}
-        }
+    const r = await fetch(GS_URL + '?action=read');
+    const d = await r.json();
+    if (d && d.status === 'success') {
+      S.transactions = d.data.transactions || [];
+      S.settings     = d.data.settings     || {};
+      saveTransactionsCache();
+      try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(e) {}
+
+      if (Array.isArray(d.data.dompet)) {
+        var dariServer = d.data.dompet.map(function(w) {
+          return {
+            id: w.id,
+            nama: w.nama,
+            tipe: w.tipe || 'bank',
+            provider: w.keterangan || w.nama,
+            logo: w.logo || null,
+            background: w.background || null,
+            saldoAwal: Number(w.nominal) || 0,
+          };
+        });
+        var belumTersinkron = dompetState.list.filter(function(d) {
+          return typeof d.id === 'string' && d.id.indexOf('dpt_') === 0;
+        });
+        dompetState.list = dariServer.concat(belumTersinkron);
+        saveDompetLocal();
       }
-      setProgress(95, 'Hampir selesai…');
-    } catch(e) {
-      console.warn('Fetch failed:', e.message);
-      setProgress(80, 'Memuat dari cache…');
     }
-  })();
-  const timeoutPromise = new Promise(resolve => setTimeout(resolve, 8000));
-  await Promise.race([window.mainFetchPromise, timeoutPromise]);
-  setProgress(100, 'Siap!');
-  await new Promise(resolve => setTimeout(resolve, 300));
-  await checkAuth();
-  window.mainFetchPromise.then(function() {
-    if (!S.isLoggedIn) {
-      try { checkAuth(); } catch(e) {}
-    } else {
-      try { renderHistoryList(); } catch(e) {}
-    }
-  }).catch(function(){});
-}
-function hideLoadingScreen() {
-  const loading = document.getElementById('loading-overlay');
-  if (loading) {
-    loading.classList.add('opacity-0','pointer-events-none');
-    setTimeout(() => { loading.style.display = 'none'; }, 600);
+  } catch(e) {
+    console.warn('[Histori] Background sync:', e.message);
+  } finally {
+    isFetchingBg = false;
+    renderHistoryList();
+    migrasikanLogoDompetLama().then(() => renderHistoryList()).catch(() => {});
   }
-  const appEl = document.getElementById('app');
-  if (appEl) appEl.classList.remove('opacity-0');
 }
+
 window.toggleAuthMode = function(e) {
   if (e) e.preventDefault();
   const loginForm = document.getElementById('login-form');
@@ -836,6 +781,7 @@ window.toggleAuthMode = function(e) {
   document.getElementById('login-msg').textContent = '';
   document.getElementById('register-msg').textContent = '';
 };
+
 async function handleLoginSubmit(e) {
   e.preventDefault();
   const username = document.getElementById('login-username').value.trim();
@@ -861,14 +807,11 @@ async function handleLoginSubmit(e) {
     const j = await r.json();
     if (j.status === 'success') {
       saveAkunSession(j.data);
-      const loadingEl = document.getElementById('loading-overlay');
-      if (loadingEl) {
-        loadingEl.style.display = 'flex';
-        loadingEl.classList.remove('opacity-0', 'pointer-events-none');
-        loadingEl.style.opacity = '1';
-      }
       document.getElementById('auth-screen').style.display = 'none';
-      await startMainFetchFlow();
+      S.isLoggedIn = true;
+      isFetchingBg = true;
+      renderHistoryList();
+      await syncDataInBackground();
     } else {
       msgEl.textContent = j.message || 'Login gagal. Coba lagi.';
     }
@@ -880,6 +823,7 @@ async function handleLoginSubmit(e) {
     btnSpin.classList.add('hidden');
   }
 }
+
 async function handleRegisterSubmit(e) {
   e.preventDefault();
   const username = document.getElementById('register-username').value.trim();
@@ -916,14 +860,11 @@ async function handleRegisterSubmit(e) {
         return;
       }
       saveAkunSession(j.data);
-      const loadingEl = document.getElementById('loading-overlay');
-      if (loadingEl) {
-        loadingEl.style.display = 'flex';
-        loadingEl.classList.remove('opacity-0', 'pointer-events-none');
-        loadingEl.style.opacity = '1';
-      }
       document.getElementById('auth-screen').style.display = 'none';
-      await startMainFetchFlow();
+      S.isLoggedIn = true;
+      isFetchingBg = true;
+      renderHistoryList();
+      await syncDataInBackground();
       showSuccess('Akun berhasil dibuat! Selamat datang, ' + username + '.');
     } else {
       msgEl.textContent = j.message || 'Registrasi gagal. Coba lagi.';
@@ -935,47 +876,6 @@ async function handleRegisterSubmit(e) {
     if (btnIcon) btnIcon.classList.remove('hidden');
     btnSpin.classList.add('hidden');
   }
-}
-async function checkAuth() {
-  const hasPin = S.settings.password && S.settings.password !== 'NONE';
-  if (hasPin) {
-    hideLoadingScreen();
-    openModal('lockscreen');
-  } else {
-    if (!S.isLoggedIn) {
-      if (window.mainFetchPromise) {
-        try { await window.mainFetchPromise; } catch(e) {}
-        const hasPinFresh = S.settings.password && S.settings.password !== 'NONE';
-        if (hasPinFresh) {
-          hideLoadingScreen();
-          openModal('lockscreen');
-          return;
-        }
-      }
-      S.isLoggedIn = true;
-      await initApp();
-    }
-    hideLoadingScreen();
-  }
-}
-async function handleLockscreen(e) {
-  e.preventDefault();
-  const val = document.getElementById('password-input').value;
-  if (val === String(S.settings.password)) {
-    S.isLoggedIn = true;
-    closeModal('lockscreen');
-    if (window.mainFetchPromise) {
-      try { await window.mainFetchPromise; } catch(e) {}
-    }
-    setTimeout(initApp, 350);
-  } else {
-    document.getElementById('lockscreen-msg').textContent = 'PIN salah. Coba lagi.';
-    document.getElementById('password-input').value = '';
-  }
-}
-async function initApp() {
-  try { renderHistoryList(); } catch(e) { console.error('renderHistoryList:', e); }
-  try { await migrasikanLogoDompetLama(); renderHistoryList(); } catch(e) {}
 }
 // ================================================================
 // MODAL & DATA HELPERS
@@ -1020,6 +920,7 @@ async function postData(action, data) {
   }
 }
 function refreshAll() {
+  saveTransactionsCache();
   renderHistoryList();
 }
 // ================================================================
@@ -1133,6 +1034,18 @@ function renderHistoryList() {
   var container = document.getElementById('history-list');
   if (!container) return;
   if (!list.length) {
+    if (isFetchingBg && S.transactions.length === 0) {
+      if (sumEl) sumEl.textContent = 'Menyinkronkan data…';
+      container.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">' +
+        [1,2,3,4,5].map(function(i){
+          return '<div style="height:62px;background:#fff;border-radius:16px;border:1.5px solid #F4F4F5;padding:12px 14px;display:flex;align-items:center;gap:12px;animation:shimmer 1.4s infinite;animation-delay:' + (i*0.08) + 's">' +
+            '<div style="width:26px;height:26px;border-radius:8px;background:#F4F4F5;flex-shrink:0"></div>' +
+            '<div style="flex:1"><div style="height:12px;width:55%;background:#F4F4F5;border-radius:6px;margin-bottom:6px"></div><div style="height:9px;width:30%;background:#F4F4F5;border-radius:4px"></div></div>' +
+            '<div style="height:13px;width:70px;background:#F4F4F5;border-radius:6px"></div>' +
+          '</div>';
+        }).join('') + '</div>';
+      return;
+    }
     container.innerHTML = '<div style="text-align:center;padding:60px 20px 20px">' +
       '<div style="font-size:40px;margin-bottom:12px">📭</div>' +
       '<p style="font-size:14px;font-weight:700;color:#A1A1AA">Tidak ada transaksi di ' + label + '</p>' +
