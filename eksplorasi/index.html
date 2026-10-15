@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Eksplorasi — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+// ══════════════════════════════════════════════════════════════
+// DETEKSI KEGAGALAN TAILWIND CDN — AUTO RELOAD
+// ══════════════════════════════════════════════════════════════
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); }
+    catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+
+      var tailwindLoaded = (computedDisplay === 'flex');
+
+      if (!tailwindLoaded) {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          console.warn('[Tailwind Guard] CDN gagal dimuat (percobaan ke-' + (count+1) + '). Reload halaman otomatis...');
+          setReloadCount(count + 1);
+          location.reload();
+        } else {
+          console.error('[Tailwind Guard] CDN tetap gagal setelah ' + MAX_RELOADS + 'x percobaan.');
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root { --bg: #F0F4F8; --surface: rgba(255,255,255,0.75); --primary: #10B981; --violet: #8B5CF6; --amber: #F59E0B; --sky: #0EA5E9; --red: #EF4444; --pastel-green:  #D1FAE5; --pastel-blue:   #DBEAFE; --pastel-violet: #EDE9FE; --pastel-pink:   #FCE7F3; --pastel-amber:  #FEF3C7; --pastel-red:    #FEE2E2; --pastel-teal:   #CCFBF1; --glass-bg:      rgba(255,255,255,0.72); --glass-border:  rgba(255,255,255,0.65); --glass-shadow:  0 4px 24px rgba(99,102,241,0.07), 0 1px 4px rgba(0,0,0,0.04); --spring: 0.38s cubic-bezier(0.34,1.56,0.64,1); --ease:   0.22s cubic-bezier(0.4,0,0.2,1); }
+body::before { content:''; position:fixed; inset:0; z-index:-2; pointer-events:none; background:
+radial-gradient(ellipse 70% 50% at 15% -10%, rgba(16,185,129,.09) 0%, transparent 60%), radial-gradient(ellipse 55% 40% at 85% 110%, rgba(139,92,246,.07) 0%, transparent 60%), linear-gradient(160deg, #EEF2FF 0%, #F0F4F8 40%, #F0FDF4 100%); }
+* { -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #18181B; padding-bottom: 90px; overflow-x: hidden; }
+.ambient { position: fixed; inset: 0; pointer-events: none; z-index: -1; background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(16,185,129,0.07) 0%, transparent 70%); }
+.glass { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: box-shadow var(--ease), transform var(--ease); }
+.glass:hover { box-shadow: 0 8px 32px rgba(99,102,241,0.10), 0 2px 8px rgba(0,0,0,0.06); }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes scaleIn  { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+@keyframes spin     { to { transform:rotate(360deg); } }
+@keyframes shimmer  { 0% { opacity:0.55; } 50% { opacity:1; } 100% { opacity:0.55; } }
+.fade-up { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
+.s1 { animation-delay:.05s; } .s2 { animation-delay:.1s; } .s3 { animation-delay:.15s; } .s4 { animation-delay:.2s; }
+.view-section { display:none; }
+.view-section.active { display:block; animation: scaleIn 0.38s cubic-bezier(0.22,1,0.36,1) forwards; }
+.no-scroll::-webkit-scrollbar { display:none; }
+.no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
+.nav-btn { transition: color 0.2s, transform 0.15s; color:#A1A1AA; text-decoration:none; }
+.nav-btn.active { color:#18181B; }
+.nav-btn.active svg { stroke-width:2.5; }
+.nav-btn.active span { font-weight:800; }
+.nav-btn:active { transform:scale(0.88); }
+.sheet { background:white; border-radius:28px 28px 0 0; box-shadow: 0 -12px 48px rgba(0,0,0,0.1); }
+.modal-backdrop { position:fixed; inset:0; background:rgba(9,9,11,0.45); backdrop-filter:blur(8px); display:flex; align-items:flex-end; justify-content:center; z-index:60; opacity:0; transition:opacity 0.3s; }
+.modal-backdrop.show { opacity:1; }
+.modal-backdrop .sheet { transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); max-height:92vh; overflow-y:auto; width:100%; max-width:480px; }
+.modal-backdrop.show .sheet { transform:translateY(0); }
+.fi, .inp { background:#F4F4F5; border:1.5px solid transparent; border-radius:14px; padding:12px 14px; width:100%; font-size:14px; font-weight:600; color:#18181B; outline:none; transition:all 0.2s; font-family:inherit; }
+.fi:focus, .inp:focus { background:white; border-color:#10B981; box-shadow:0 0 0 3px rgba(16,185,129,0.1); }
+.fi::placeholder, .inp::placeholder { color:#A1A1AA; font-weight:500; }
+.ai-logo-wrap { position: relative; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ai-logo-ring { position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(255,255,255,.12); animation: aiRingSpin 8s linear infinite; }
+.ai-logo-ring::before { content:''; position:absolute; top:-2px; left:50%; width:6px; height:6px; border-radius:50%; background:#fff; transform:translateX(-50%); box-shadow:0 0 8px 2px rgba(255,255,255,.8); }
+.ai-logo-inner { width: 42px; height: 42px; border-radius: 14px; background: #111; border: 1.5px solid rgba(255,255,255,.15); display: flex; align-items:center; justify-content:center; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(255,255,255,.06); }
+.ai-logo-inner::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.08) 0%, transparent 65%); pointer-events:none; }
+@keyframes aiRingSpin { to { transform: rotate(360deg); } }
+.ai-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: white; pointer-events: none; animation: aiParticle var(--dur,2.4s) var(--delay,0s) ease-in-out infinite; opacity: 0; }
+@keyframes aiParticle { 0%   { opacity:0; transform:translate(0,0) scale(1); }
+20%  { opacity:.9; }
+100% { opacity:0; transform:translate(var(--tx,8px),var(--ty,-12px)) scale(0); }
+}
+.ai-logo-pulse { position:absolute; inset:-8px; border-radius:50%; border:1.5px solid rgba(255,255,255,.06); animation:aiPulseRing 3s ease-out infinite; }
+@keyframes aiPulseRing { 0%  { transform:scale(.85); opacity:.6; }
+70% { transform:scale(1.2); opacity:0; }
+100%{ transform:scale(1.2); opacity:0; }
+}
+.ai-nav-orb { width:46px; height:46px; border-radius:16px; background:#111; border:1.5px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; position:relative; overflow:visible; box-shadow:0 4px 16px rgba(0,0,0,.4); transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .2s; }
+.ai-nav-orb:active { transform:scale(.88); }
+.ai-nav-orb .orb-ping, .orb-ping { position:absolute; inset:-4px; border-radius:20px; border:1px solid rgba(255,255,255,.15); animation:orbPing 3s ease-out infinite; pointer-events:none; }
+@keyframes orbPing { 0%  {opacity:.8;transform:scale(.9);}
+70% {opacity:0;transform:scale(1.18);}
+100%{opacity:0;transform:scale(1.18);}
+}
+.gpt-msg { animation: gptIn .28s cubic-bezier(.34,1.2,.64,1) both; }
+@keyframes gptIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.gpt-mode-pill { padding:7px 14px; border-radius:99px; font-size:11px; font-weight:800; cursor:pointer; border:none; transition:all .22s cubic-bezier(.34,1.4,.64,1); }
+.gpt-mode-pill.on  { background:#fff; color:#000; box-shadow:0 3px 12px rgba(255,255,255,.15); }
+.gpt-mode-pill.off { background:transparent; color:rgba(255,255,255,.4); }
+.gdot { width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);display:inline-block;animation:gdotB 1s infinite; }
+.gdot:nth-child(2){animation-delay:.16s}.gdot:nth-child(3){animation-delay:.32s}
+@keyframes gdotB{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-5px);opacity:1}}
+.weather-card { background: linear-gradient(135deg,#0F172A 0%,#1E3A5F 50%,#0F2744 100%); border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 8px 32px rgba(15,23,42,.35); border: 1px solid rgba(255,255,255,.08); }
+.weather-sun { position:absolute; top:-20px; right:-20px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle,rgba(251,191,36,.5) 0%,rgba(251,191,36,.0) 70%); animation:weatherSunPulse 4s ease-in-out infinite; }
+@keyframes weatherSunPulse { 0%,100%{transform:scale(1);opacity:.7}
+50%{transform:scale(1.2);opacity:1}
+}
+.weather-detail-pill { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:6px 10px; display:flex; align-items:center; gap:5px; }
+.weather-rain-drop { position:absolute; width:2px; border-radius:2px; background:rgba(147,197,253,.4); animation:rainFall linear infinite; }
+@keyframes rainFall { from{transform:translateY(-20px);opacity:0}
+10%{opacity:1}
+to{transform:translateY(120px);opacity:0}
+}
+@keyframes cryptoPing { 0%   { transform:scale(1); opacity:1; box-shadow:0 0 0 0 rgba(16,185,129,.5); }
+70%  { transform:scale(1.1); opacity:.8; box-shadow:0 0 0 6px rgba(16,185,129,0); }
+100% { transform:scale(1); opacity:1; box-shadow:0 0 0 0 rgba(16,185,129,0); }
+}
+.crypto-chip { flex-shrink:0; width:116px; border-radius:18px; padding:12px 12px; background:#fff; border:1.5px solid #F4F4F5; box-shadow:0 2px 10px rgba(0,0,0,.05); transition:transform .18s, box-shadow .18s; cursor:pointer; }
+.crypto-chip:active { transform:scale(.94); }
+.crypto-chip:hover  { box-shadow:0 4px 18px rgba(0,0,0,.1); }
+.crypto-chip .sym  { font-size:11px; font-weight:900; color:#18181B; }
+.crypto-chip .name { font-size:9px; font-weight:700; color:#A1A1AA; margin-top:1px; }
+.crypto-chip .price{ font-size:13px; font-weight:900; color:#18181B; margin-top:8px; }
+.crypto-chip .chg  { font-size:9px; font-weight:800; margin-top:3px; }
+.chg-up   { color:#10B981; }
+.chg-down { color:#EF4444; }
+.chg-flat { color:#A1A1AA; }
+@keyframes priceFlash { 0%   { background:rgba(16,185,129,.15); }
+100% { background:transparent; }
+}
+.price-flash { animation:priceFlash .5s ease; }
+.crypto-row { display:flex; align-items:center; justify-content:space-between; background:#fff; border:1.5px solid #F4F4F5; border-radius:16px; padding:12px 14px; box-shadow:0 1px 6px rgba(0,0,0,.04); transition:all .15s; }
+.crypto-row:active { transform:scale(.98); }
+.mini-sparkline { display:flex; align-items:flex-end; gap:2px; height:24px; }
+.spark-bar { width:3px; border-radius:2px; transition:height .3s ease; }
+@keyframes crapCardIn { from{opacity:0;transform:translateY(16px) scale(.96)} to{opacity:1;transform:none} }
+@keyframes crapFloat   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.crap-mini-card { border-radius:14px; overflow:hidden; border:1.5px solid #F4F4F5; box-shadow:0 2px 8px rgba(0,0,0,.05); cursor:pointer; transition:transform .15s; background:#fff; }
+.crap-mini-card:active { transform:scale(.94); }
+.crap-cat-pill { padding:4px 10px; border-radius:99px; font-size:9px; font-weight:900; border:none; cursor:pointer; transition:all .15s; flex-shrink:0; }
+.crap-cat-pill.active { background:#18181B; color:#fff; }
+.crap-cat-pill:not(.active) { background:#F4F4F5; color:#71717A; }
+.market-carousel { will-change: transform; }
+.market-card { min-width: 100%; border-radius: 20px; padding: 16px 18px 14px; position: relative; overflow: hidden; cursor: pointer; transition: transform .15s; flex-shrink: 0; }
+.market-card:active { transform: scale(.98); }
+.mc-btc  { background: linear-gradient(135deg,#F7931A,#FF6B00); }
+.mc-eth  { background: linear-gradient(135deg,#627EEA,#3C3C9E); }
+.mc-bnb  { background: linear-gradient(135deg,#F3BA2F,#C89A10); }
+.mc-sol  { background: linear-gradient(135deg,#9945FF,#19FB9B); }
+.mc-xrp  { background: linear-gradient(135deg,#00A9E0,#003087); }
+.mc-ada  { background: linear-gradient(135deg,#0033AD,#001F6B); }
+.mc-doge { background: linear-gradient(135deg,#C2A633,#886E16); }
+.mc-def  { background: linear-gradient(135deg,#8B5CF6,#4C1D95); }
+.mc-usd  { background: linear-gradient(135deg,#22C55E,#14532D); }
+.mc-eur  { background: linear-gradient(135deg,#003399,#1E40AF); }
+.mc-sgd  { background: linear-gradient(135deg,#EF4444,#991B1B); }
+.mc-jpy  { background: linear-gradient(135deg,#DC2626,#7F1D1D); }
+.mc-gbp  { background: linear-gradient(135deg,#1D4ED8,#1E3A8A); }
+.mc-aud  { background: linear-gradient(135deg,#059669,#064E3B); }
+.mc-myr  { background: linear-gradient(135deg,#DC2626,#FBBF24); }
+.mc-cny  { background: linear-gradient(135deg,#EF4444,#FCD34D); }
+.mc-fdef { background: linear-gradient(135deg,#0EA5E9,#1D4ED8); }
+.market-card .mc-pair { font-size: 13px; font-weight: 900; color: rgba(255,255,255,.95); letter-spacing: .02em; display: flex; align-items: center; gap: 7px; }
+.market-card .mc-price { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1; margin: 8px 0 4px; }
+.market-card .mc-sub { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.7); }
+.market-card .mc-chg { position: absolute; top: 14px; right: 14px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 900; }
+.mc-chg-up   { background: rgba(255,255,255,.25); color: #fff; }
+.mc-chg-down { background: rgba(0,0,0,.2); color: #fecaca; }
+.mc-chg-flat { background: rgba(255,255,255,.15); color: rgba(255,255,255,.8); }
+.mc-sparkline { position: absolute; bottom: 0; right: 0; width: 50%; height: 60px; opacity: .35; }
+.market-dot { width: 6px; height: 6px; border-radius: 50%; background: #D4D4D8; transition: all .3s cubic-bezier(.34,1.56,.64,1); cursor: pointer; }
+.market-dot.active { width: 18px; border-radius: 3px; background: #18181B; }
+.mc-glow { position: absolute; border-radius: 50%; background: rgba(255,255,255,.12); filter: blur(24px); pointer-events: none; }
+.calc-btn2{height:76px;border-radius:50%;border:none;cursor:pointer;font-size:28px;font-weight:400;color:#fff;background:#333335;display:flex;align-items:center;justify-content:center;transition:opacity .12s;-webkit-tap-highlight-color:transparent;}
+.calc-btn2:active{opacity:.6;}
+@keyframes quakeRadarPulse { 0%   { transform: scale(.4); opacity: .9; }
+100% { transform: scale(2.2); opacity: 0; }
+}
+.quake-pulse-ring { position: absolute; border-radius: 50%; border: 2px solid; animation: quakeRadarPulse 2.4s ease-out infinite; pointer-events: none; }
+.quake-item { animation: crapCardIn .35s cubic-bezier(.34,1.2,.64,1) both; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="ambient"></div>
+
+<!-- ═══════════ APP CONTAINER ═══════════ -->
+<div id="app" class="max-w-md mx-auto">
+
+  <!-- ═══ VIEW: EKSPLORASI ═══ -->
+  <div id="view-explore" class="view-section active">
+    <header class="pt-7 pb-2 px-5 sticky top-0 z-20"
+      style="background:rgba(240,244,248,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+      <h1 class="text-base font-black text-zinc-900">Eksplorasi</h1>
+    </header>
+
+    <main class="px-5 pt-2 pb-28 space-y-6">
+
+      <!-- ── ALAT BANTU ── -->
+      <div>
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Alat Bantu</p>
+        <div class="grid grid-cols-4 gap-3">
+
+          <!-- 1. Kalkulator -->
+          <button onclick="openModal('calc-modal')"
+            class="flex flex-col items-center gap-2 p-3 rounded-2xl active:scale-90 transition-transform"
+            style="background:#F0FDF4;border:1.5px solid #BBF7D0">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#10B981">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <span class="text-[9px] font-black text-emerald-700 text-center leading-tight">Kalkulator</span>
+          </button>
+
+          <!-- 2. Cek Cuaca -->
+          <button onclick="openModal('weather-detail-modal')"
+            class="flex flex-col items-center gap-2 p-3 rounded-2xl active:scale-90 transition-transform"
+            style="background:#F0F9FF;border:1.5px solid #BAE6FD">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#0EA5E9">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+              </svg>
+            </div>
+            <span class="text-[9px] font-black text-sky-700 text-center leading-tight">Cek Cuaca</span>
+          </button>
+
+          <!-- 3. Cek Kripto -->
+          <button onclick="openModal('crypto-modal')"
+            class="flex flex-col items-center gap-2 p-3 rounded-2xl active:scale-90 transition-transform"
+            style="background:#FDF4FF;border:1.5px solid #E9D5FF">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#8B5CF6">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="text-[9px] font-black text-violet-700 text-center leading-tight">Cek Kripto</span>
+          </button>
+
+          <!-- 4. Kurs Valas -->
+          <button onclick="openForexDetailModal()"
+            class="flex flex-col items-center gap-2 p-3 rounded-2xl active:scale-90 transition-transform"
+            style="background:#F0FDF4;border:1.5px solid #BBF7D0">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#10B981,#0EA5E9)">
+              <span style="font-size:16px;font-weight:900;color:#fff;line-height:1">$€</span>
+            </div>
+            <span class="text-[9px] font-black text-emerald-700 text-center leading-tight">Kurs<br>Valas</span>
+          </button>
+
+          <!-- 5. Gempa Bumi -->
+          <button onclick="openQuakeDetailModal()"
+            class="flex flex-col items-center gap-2 p-3 rounded-2xl active:scale-90 transition-transform"
+            style="background:#fff;border:1.5px solid #F4F4F5;box-shadow:0 2px 8px rgba(0,0,0,.04)">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#FAFAFA;border:1px solid #F4F4F5">
+              <span style="font-size:20px">🌍</span>
+            </div>
+            <span class="text-[9px] font-black text-zinc-700 text-center leading-tight">Gempa<br>Bumi</span>
+          </button>
+
+          <!-- 6. AI Assistant -->
+          <button onclick="openAIChat()"
+            class="flex flex-col items-center gap-2 p-3 rounded-2xl active:scale-90 transition-transform relative overflow-hidden"
+            style="background:#0A0A0A;border:1.5px solid rgba(255,255,255,.12)">
+            <div class="orb-ping" style="position:absolute;inset:4px;border-radius:14px;border-color:rgba(255,255,255,.15)"></div>
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,.1)">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              </svg>
+            </div>
+            <span class="text-[9px] font-black text-white text-center">AI Chat</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- ── CRYPTO CAROUSEL ── -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-violet-500" id="crypto-live-dot" style="animation:cryptoPing 1.5s ease-out infinite"></div>
+            <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Live Crypto</span>
+          </div>
+          <button onclick="openModal('crypto-modal')" class="text-[10px] font-black text-violet-600 flex items-center gap-1 active:scale-90 transition-transform">
+            Selengkapnya <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+        <div class="market-carousel-wrap" style="position:relative;overflow:hidden;border-radius:20px">
+          <div id="crypto-carousel" class="market-carousel" style="display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform">
+            <div class="market-card-skeleton" style="min-width:100%;height:150px;background:linear-gradient(135deg,#EDE9FE,#DDD6FE);border-radius:20px;animation:shimmer 1.4s infinite"></div>
+          </div>
+          <div id="crypto-dots" class="market-dots" style="display:flex;justify-content:center;gap:5px;margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- ── GEMPA BUMI TERKINI ── -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-zinc-400" id="quake-live-dot" style="animation:cryptoPing 1.6s ease-out infinite"></div>
+            <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Gempa Bumi Terkini</span>
+          </div>
+          <button onclick="fetchEarthquakes()" class="text-[10px] font-black text-zinc-500 flex items-center gap-1 active:scale-90 transition-transform">
+            <svg id="quake-refresh-icon" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="transition:transform .4s">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <div id="quake-widget" style="background:#fff;border:1.5px solid #F4F4F5;border-radius:22px;padding:16px;position:relative;overflow:hidden;min-height:180px;box-shadow:0 2px 12px rgba(0,0,0,.04)">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.5;pointer-events:none">
+            <div style="width:140px;height:140px;border-radius:50%;border:1px solid #F4F4F5"></div>
+            <div style="position:absolute;width:90px;height:90px;border-radius:50%;border:1px solid #F4F4F5"></div>
+            <div style="position:absolute;width:40px;height:40px;border-radius:50%;border:1px solid #F4F4F5"></div>
+          </div>
+
+          <div id="quake-loading" style="display:flex;flex-direction:column;gap:10px;position:relative;z-index:1">
+            <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite"></div>
+            <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
+            <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.2s"></div>
+          </div>
+
+          <div id="quake-list" class="hidden" style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+
+      <!-- Hidden state holders for standalone weather & tickers -->
+      <div style="display:none">
+        <div id="crypto-ticker-wrap"></div>
+        <div id="forex-ticker-wrap"></div>
+        <span id="weather-city">Serpong, Tangerang Selatan</span>
+        <span id="weather-temp">--°</span>
+        <span id="weather-desc">--</span>
+        <span id="weather-icon">🌤️</span>
+        <span id="weather-humidity">--%</span>
+        <span id="weather-feels">Terasa --°C</span>
+        <span id="weather-wind">-- km/j</span>
+        <span id="weather-vis">-- mb</span>
+        <div id="weather-rain-container"></div>
+      </div>
+
+      <!-- ── NEWS FEED ── -->
+      <div>
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Berita Bisnis</p>
+        <div id="explore-list"></div>
+      </div>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- ═══════════ NAV BAR (DIRECT LINKS) ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[var(--bg)] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center" id="nav-home">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center" id="nav-report">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <a href="https://keloladuit.my.id/home#tambah" target="_top" id="nav-add"
+      class="relative flex flex-col items-center justify-center w-14 h-full -mt-5"
+      style="outline:none;text-decoration:none">
+      <div id="nav-add-orb" class="ai-nav-orb" style="position:relative;background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.45);transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s">
+        <div class="orb-ping" style="border-color:rgba(16,185,129,.4)"></div>
+        <svg id="nav-add-icon" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3" style="transition:transform .3s">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Tambah</span>
+    </a>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center" id="nav-history">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn active flex flex-col items-center gap-1 w-16 h-full justify-center" id="nav-explore">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ══════════════ CALCULATOR MODAL ══════════════ -->
+<div id="calc-modal" style="display:none;position:fixed;inset:0;z-index:9100;background:#1C1C1E;flex-direction:column">
+  <div style="padding:52px 20px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <button onclick="closeModal('calc-modal')" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center">✕</button>
+    <span style="font-size:14px;font-weight:800;color:rgba(255,255,255,.5)">Kalkulator</span>
+    <div style="width:34px"></div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;padding:0 24px 20px;overflow:hidden">
+    <div id="calc-expr" style="font-size:22px;font-weight:500;color:rgba(255,255,255,.4);min-height:30px;word-break:break-all;text-align:right;width:100%"></div>
+    <div id="calc-result" style="font-size:72px;font-weight:200;color:#fff;letter-spacing:-2px;line-height:1.05;word-break:break-all;text-align:right;width:100%">0</div>
+  </div>
+  <div style="padding:4px 14px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex-shrink:0">
+    <button onclick="calcInput('C')"  class="calc-btn2" style="background:#A5A5A5;color:#000">AC</button>
+    <button onclick="calcInput('pm')" class="calc-btn2" style="background:#A5A5A5;color:#000">⁺∕₋</button>
+    <button onclick="calcInput('%')"  class="calc-btn2" style="background:#A5A5A5;color:#000">%</button>
+    <button onclick="calcInput('/')"  class="calc-btn2" style="background:#FF9F0A">÷</button>
+    <button onclick="calcInput('7')"  class="calc-btn2">7</button>
+    <button onclick="calcInput('8')"  class="calc-btn2">8</button>
+    <button onclick="calcInput('9')"  class="calc-btn2">9</button>
+    <button onclick="calcInput('*')"  class="calc-btn2" style="background:#FF9F0A">×</button>
+    <button onclick="calcInput('4')"  class="calc-btn2">4</button>
+    <button onclick="calcInput('5')"  class="calc-btn2">5</button>
+    <button onclick="calcInput('6')"  class="calc-btn2">6</button>
+    <button onclick="calcInput('-')"  class="calc-btn2" style="background:#FF9F0A">−</button>
+    <button onclick="calcInput('1')"  class="calc-btn2">1</button>
+    <button onclick="calcInput('2')"  class="calc-btn2">2</button>
+    <button onclick="calcInput('3')"  class="calc-btn2">3</button>
+    <button onclick="calcInput('+')"  class="calc-btn2" style="background:#FF9F0A">+</button>
+    <button onclick="calcInput('0')"  class="calc-btn2" style="grid-column:span 2;border-radius:999px;justify-content:flex-start;padding-left:28px">0</button>
+    <button onclick="calcInput('.')"  class="calc-btn2">.</button>
+    <button onclick="calcInput('=')"  class="calc-btn2" style="background:#FF9F0A">=</button>
+  </div>
+</div>
+
+<!-- ══════════════ CURRENCY MODAL ══════════════ -->
+<div id="currency-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'currency-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:94vh;display:flex;flex-direction:column">
+    <div style="flex-shrink:0;padding:14px 18px 12px;border-bottom:1px solid #F4F4F5;background:#fff;border-radius:28px 28px 0 0">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 12px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <h2 style="font-size:17px;font-weight:900;color:#18181B">&#x1F4B1; Konversi &amp; Kurs</h2>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:2px">
+            <div style="width:6px;height:6px;border-radius:50%;background:#3B82F6;animation:cryptoPing 2s infinite"></div>
+            <span id="forex-update-time" style="font-size:9px;font-weight:700;color:#A1A1AA">Memuat...</span>
+          </div>
+        </div>
+        <button onclick="fetchForexRates()" style="padding:7px 12px;border-radius:11px;background:#EFF6FF;color:#3B82F6;border:none;cursor:pointer;font-size:10px;font-weight:900">&#x21BB; Refresh</button>
+      </div>
+      <div style="margin-bottom:10px">
+        <p style="font-size:9px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Base Tampilan</p>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="forex-base-btn active" onclick="setForexBase('IDR',this)" style="padding:5px 11px;border-radius:99px;font-size:10px;font-weight:900;border:none;cursor:pointer;background:#18181B;color:#fff">&#x1F1EE;&#x1F1E9; IDR</button>
+          <button class="forex-base-btn" onclick="setForexBase('USD',this)" style="padding:5px 11px;border-radius:99px;font-size:10px;font-weight:900;border:none;cursor:pointer;background:#F4F4F5;color:#52525B">&#x1F1FA;&#x1F1F8; USD</button>
+          <button class="forex-base-btn" onclick="setForexBase('EUR',this)" style="padding:5px 11px;border-radius:99px;font-size:10px;font-weight:900;border:none;cursor:pointer;background:#F4F4F5;color:#52525B">&#x1F1EA;&#x1F1FA; EUR</button>
+          <button class="forex-base-btn" onclick="setForexBase('SGD',this)" style="padding:5px 11px;border-radius:99px;font-size:10px;font-weight:900;border:none;cursor:pointer;background:#F4F4F5;color:#52525B">&#x1F1F8;&#x1F1EC; SGD</button>
+          <button class="forex-base-btn" onclick="setForexBase('JPY',this)" style="padding:5px 11px;border-radius:99px;font-size:10px;font-weight:900;border:none;cursor:pointer;background:#F4F4F5;color:#52525B">&#x1F1EF;&#x1F1F5; JPY</button>
+        </div>
+      </div>
+      <div style="background:#F8FAFF;border:1.5px solid #DBEAFE;border-radius:16px;padding:13px">
+        <p style="font-size:9px;font-weight:900;color:#3B82F6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px">Kalkulator Konversi</p>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center">
+          <div>
+            <input type="number" id="forex-amount" value="1000000" min="0" oninput="calcForex()" style="width:100%;border:1.5px solid #DBEAFE;border-radius:10px;padding:7px 9px;font-size:13px;font-weight:900;outline:none;background:#fff;color:#18181B;box-sizing:border-box">
+            <select id="forex-from" onchange="calcForex()" style="width:100%;border:1.5px solid #DBEAFE;border-radius:10px;padding:6px 7px;font-size:11px;font-weight:800;outline:none;background:#fff;color:#18181B;margin-top:4px;box-sizing:border-box">
+              <option value="IDR" selected>IDR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="SGD">SGD</option><option value="JPY">JPY</option><option value="GBP">GBP</option><option value="AUD">AUD</option><option value="MYR">MYR</option><option value="CNY">CNY</option><option value="KRW">KRW</option><option value="SAR">SAR</option><option value="THB">THB</option><option value="AED">AED</option>
+            </select>
+          </div>
+          <button onclick="swapForex()" style="width:34px;height:34px;border-radius:50%;background:#3B82F6;border:none;cursor:pointer;color:#fff;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center">&#x21C4;</button>
+          <div>
+            <div id="forex-result" style="width:100%;border:1.5px solid #DBEAFE;border-radius:10px;padding:7px 9px;font-size:13px;font-weight:900;background:#EFF6FF;color:#1D4ED8;text-align:center;box-sizing:border-box">--</div>
+            <select id="forex-to" onchange="calcForex()" style="width:100%;border:1.5px solid #DBEAFE;border-radius:10px;padding:6px 7px;font-size:11px;font-weight:800;outline:none;background:#fff;color:#18181B;margin-top:4px;box-sizing:border-box">
+              <option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="IDR">IDR</option><option value="SGD">SGD</option><option value="JPY">JPY</option><option value="GBP">GBP</option><option value="AUD">AUD</option><option value="MYR">MYR</option><option value="CNY">CNY</option><option value="KRW">KRW</option><option value="SAR">SAR</option><option value="THB">THB</option><option value="AED">AED</option>
+            </select>
+          </div>
+        </div>
+        <p id="forex-rate-label" style="text-align:center;font-size:10px;font-weight:700;color:#6B7280;margin-top:8px">--</p>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:12px 18px 32px">
+      <div id="forex-chart-panel" style="display:none;margin-bottom:14px;background:#fff;border:1.5px solid #F4F4F5;border-radius:18px;padding:14px">
+        <p id="forex-chart-hdr" style="font-size:11px;font-weight:900;color:#18181B;margin-bottom:10px">--</p>
+        <div style="height:130px;position:relative"><canvas id="forex-chart-canvas"></canvas></div>
+        <p style="font-size:9px;color:#A1A1AA;margin-top:6px;text-align:right">Pergerakan 7 hari vs IDR</p>
+      </div>
+      <p style="font-size:9px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Kurs vs <span id="forex-base-label">IDR</span> &mdash; tap untuk grafik</p>
+      <div id="forex-rates-list" style="display:flex;flex-direction:column;gap:8px">
+        <div style="height:52px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite"></div>
+        <div style="height:52px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
+        <div style="height:52px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.2s"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     AI CHAT POPUP MODAL
+═══════════════════════════════════════ -->
+<div id="gpt-overlay" onclick="if(event.target===this)gptClose()"
+  style="display:none;position:fixed;inset:0;z-index:9000;
+         background:rgba(10,8,20,.6);backdrop-filter:blur(14px);
+         -webkit-backdrop-filter:blur(14px)">
+
+  <div id="gpt-panel"
+    style="position:absolute;bottom:0;left:0;right:0;
+           max-width:448px;margin:0 auto;height:88vh;
+           background:linear-gradient(170deg,#1A0F30 0%,#0D0B18 100%);
+           border-radius:26px 26px 0 0;display:flex;flex-direction:column;
+           box-shadow:0 -8px 40px rgba(139,92,246,.25);
+           transform:translateY(100%);transition:transform .38s cubic-bezier(.32,1.4,.64,1)">
+
+    <!-- Header -->
+    <div style="padding:16px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)">
+      <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:0 auto 14px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="ai-logo-wrap">
+            <div class="ai-logo-pulse"></div>
+            <div class="ai-logo-ring"></div>
+            <div class="ai-logo-inner">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              </svg>
+            </div>
+            <div class="ai-particle" style="--tx:10px;--ty:-14px;--dur:2.2s;--delay:0s;top:8px;left:32px"></div>
+            <div class="ai-particle" style="--tx:-8px;--ty:-10px;--dur:2.8s;--delay:.6s;top:12px;left:4px"></div>
+            <div class="ai-particle" style="--tx:12px;--ty:-8px;--dur:2.4s;--delay:1.1s;top:30px;left:36px"></div>
+            <div class="ai-particle" style="--tx:-10px;--ty:-12px;--dur:3s;--delay:.3s;top:36px;left:8px"></div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:900;color:#fff">AI Assistant</div>
+            <div id="ai-status-text" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);margin-top:2px">Siap membantu</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div style="display:flex;gap:4px;background:rgba(255,255,255,.07);border-radius:10px;padding:4px">
+            <button id="gpt-btn-finance" onclick="gptSetMode('finance')"
+              style="padding:5px 10px;border-radius:7px;font-size:10px;font-weight:800;border:none;cursor:pointer;background:#111;color:#fff;transition:all .2s">
+              💰 Keuangan
+            </button>
+            <button id="gpt-btn-free" onclick="gptSetMode('free')"
+              style="padding:5px 10px;border-radius:7px;font-size:10px;font-weight:800;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,.45);transition:all .2s">
+              💬 Bebas
+            </button>
+          </div>
+          <button onclick="gptClear()"
+            style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.08);border:none;cursor:pointer;color:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+          <button onclick="gptClose()"
+            style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.08);border:none;cursor:pointer;color:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="gpt-messages"
+      style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth">
+    </div>
+
+    <!-- Typing -->
+    <div id="gpt-typing" style="display:none;padding:0 16px 8px;flex-shrink:0">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:4px 14px 14px 14px;padding:9px 14px;display:flex;gap:4px;align-items:center">
+          <span class="gdot"></span><span class="gdot"></span><span class="gdot"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div style="padding:10px 14px 28px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;display:flex;gap:10px;align-items:flex-end">
+      <textarea id="gpt-input" placeholder="Ketik pesan…" rows="1"
+        style="flex:1;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.15);border-radius:14px;
+               padding:10px 14px;font-size:13px;font-weight:500;font-family:inherit;
+               color:#fff;resize:none;outline:none;max-height:100px;min-height:42px;
+               transition:border-color .2s;line-height:1.4"
+        onfocus="this.style.borderColor='rgba(255,255,255,.4)'"
+        onblur="this.style.borderColor='rgba(255,255,255,.15)'"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();gptSend()}">
+      </textarea>
+      <button id="gpt-send" onclick="gptSend()"
+        style="width:42px;height:42px;border-radius:14px;background:#fff;
+               border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+               box-shadow:0 4px 14px rgba(255,255,255,.12);transition:opacity .2s,transform .15s"
+        onmousedown="this.style.transform='scale(.88)'" onmouseup="this.style.transform='scale(1)'">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── WEATHER LOCATION PICKER ── -->
+<div id="weather-loc-modal" class="modal-backdrop" style="display:none;z-index:70" onclick="handleBackdropClick(event,'weather-loc-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto">
+    <div class="p-5 pb-8">
+      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
+      <h3 class="text-base font-black text-zinc-900 mb-4">Ganti Lokasi Cuaca</h3>
+      <div class="flex gap-2">
+        <input type="text" id="weather-loc-input" placeholder="Cth: Jakarta, Bandung, Surabaya…"
+          class="fi flex-1" onkeydown="if(event.key==='Enter') applyWeatherLocation()">
+        <button onclick="applyWeatherLocation()" class="px-4 py-2 bg-zinc-900 text-white text-sm font-black rounded-xl active:scale-90 transition-transform">Cari</button>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-3">
+        <button onclick="setWeatherCity('Serpong, Tangerang Selatan')" class="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs font-bold rounded-full active:scale-90 transition-transform">Serpong</button>
+        <button onclick="setWeatherCity('Jakarta')" class="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs font-bold rounded-full active:scale-90 transition-transform">Jakarta</button>
+        <button onclick="setWeatherCity('Bandung')" class="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs font-bold rounded-full active:scale-90 transition-transform">Bandung</button>
+        <button onclick="setWeatherCity('Surabaya')" class="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs font-bold rounded-full active:scale-90 transition-transform">Surabaya</button>
+        <button onclick="setWeatherCity('Bali')" class="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs font-bold rounded-full active:scale-90 transition-transform">Bali</button>
+        <button onclick="setWeatherCity('Medan')" class="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs font-bold rounded-full active:scale-90 transition-transform">Medan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CRYPTO DETAIL MODAL
+═══════════════════════════════════════════ -->
+<div id="crypto-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'crypto-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh">
+    <div class="px-5 pt-4 pb-2 flex-shrink-0">
+      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-4"></div>
+      <div class="flex justify-between items-center mb-1">
+        <div>
+          <h2 class="text-lg font-black text-zinc-900">Harga Kripto</h2>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500" style="animation:cryptoPing 1.5s ease-out infinite"></div>
+            <p class="text-[10px] font-bold text-zinc-400">Update otomatis setiap 30 detik</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-[9px] font-black text-zinc-400 uppercase tracking-wider">Terakhir Update</p>
+          <p id="crypto-last-update" class="text-[10px] font-black text-zinc-600">--:--</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 mt-3 mb-3">
+        <svg class="w-4 h-4 text-zinc-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" id="crypto-search" placeholder="Cari koin (BTC, ETH, BNB…)"
+          class="flex-1 bg-transparent text-sm font-semibold outline-none text-zinc-800 placeholder-zinc-400 h-7"
+          oninput="filterCryptoList(this.value)">
+      </div>
+    </div>
+    <div id="crypto-detail-list" class="overflow-y-auto px-5 pb-8 space-y-2.5" style="max-height:calc(92vh - 180px)"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     GEMPA BUMI DETAIL MODAL
+═══════════════════════════════════════════ -->
+<div id="quake-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'quake-detail-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh;display:flex;flex-direction:column">
+    <div style="padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid #F4F4F5;background:#fff;border-radius:28px 28px 0 0">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <h2 style="font-size:17px;font-weight:900;color:#18181B;display:flex;align-items:center;gap:7px">
+            🌍 Gempa Bumi
+          </h2>
+          <p id="qd-subtitle" style="font-size:10px;font-weight:700;color:#A1A1AA;margin-top:2px">Memuat data…</p>
+        </div>
+        <button onclick="fetchEarthquakes()" id="qd-refresh-btn"
+          style="display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:12px;
+                 background:#18181B;color:#fff;border:none;cursor:pointer;
+                 font-size:11px;font-weight:900;transition:transform .15s"
+          onmousedown="this.style.transform='scale(.9)'" onmouseup="this.style.transform='scale(1)'">
+          <svg id="qd-refresh-icon" style="width:12px;height:12px;transition:transform .4s" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div style="overflow-y:auto;padding:16px 20px 32px;flex:1">
+      <div id="qd-loading" style="display:flex;flex-direction:column;gap:10px">
+        <div style="height:140px;background:#F4F4F5;border-radius:18px;animation:shimmer 1.4s infinite"></div>
+        <div style="height:140px;background:#F4F4F5;border-radius:18px;animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
+        <div style="height:140px;background:#F4F4F5;border-radius:18px;animation:shimmer 1.4s infinite;animation-delay:.2s"></div>
+      </div>
+      <div id="qd-list" class="hidden" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     KURS VALAS DETAIL MODAL
+═══════════════════════════════════════════ -->
+<div id="forex-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'forex-detail-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh;display:flex;flex-direction:column">
+    <div style="padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid #F4F4F5;background:#fff;border-radius:28px 28px 0 0">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <h2 style="font-size:17px;font-weight:900;color:#18181B">💱 Kurs Mata Uang</h2>
+          <p id="fdm-subtitle" style="font-size:10px;font-weight:700;color:#A1A1AA;margin-top:2px">Memuat…</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="fdm-base-select" onchange="fdmChangeBase(this.value)"
+            style="padding:7px 10px;border-radius:12px;border:1.5px solid #E4E4E7;background:#F9F9FB;
+                   font-size:12px;font-weight:900;color:#18181B;outline:none;cursor:pointer">
+            <option value="IDR">IDR</option>
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="SGD">SGD</option>
+            <option value="GBP">GBP</option>
+          </select>
+          <button onclick="fdmRefresh()" style="width:34px;height:34px;border-radius:10px;background:#F4F4F5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
+            <svg id="fdm-spin" style="width:14px;height:14px;transition:transform .4s" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:16px 20px 32px">
+      <div id="fdm-loading" style="display:flex;flex-direction:column;gap:10px">
+        <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite"></div>
+        <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.07s"></div>
+        <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.14s"></div>
+        <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.21s"></div>
+        <div style="height:60px;background:#F4F4F5;border-radius:14px;animation:shimmer 1.4s infinite;animation-delay:.28s"></div>
+      </div>
+
+      <div id="fdm-list" class="hidden" style="display:flex;flex-direction:column;gap:10px"></div>
+
+      <div id="fdm-chart-panel" style="display:none;margin-top:16px;background:#fff;border:1.5px solid #F4F4F5;border-radius:18px;padding:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <p id="fdm-chart-title" style="font-size:13px;font-weight:900;color:#18181B">--</p>
+          <button onclick="document.getElementById('fdm-chart-panel').style.display='none'"
+            style="font-size:11px;font-weight:800;color:#A1A1AA;background:none;border:none;cursor:pointer">✕</button>
+        </div>
+        <canvas id="fdm-chart-canvas" style="width:100%;height:120px"></canvas>
+        <p id="fdm-chart-note" style="font-size:9px;font-weight:600;color:#A1A1AA;margin-top:8px;text-align:center">Kurs hari ini (dari pivot EUR)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PRODUK ABSURD MODAL (AnyCrap API)
+═══════════════════════════════════════════ -->
+<div id="crap-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'crap-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:92vh">
+    <div style="padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid #F4F4F5;position:sticky;top:0;background:#fff;border-radius:28px 28px 0 0;z-index:2">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <h2 style="font-size:17px;font-weight:900;color:#18181B;display:flex;align-items:center;gap:7px">
+            🛒 Produk Absurd
+          </h2>
+          <p style="font-size:10px;font-weight:700;color:#A1A1AA;margin-top:2px">35.000+ produk paling nggak berguna di dunia</p>
+        </div>
+        <button onclick="fetchCrapProduct()" id="crap-shuffle-btn"
+          style="display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:12px;
+                 background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;border:none;cursor:pointer;
+                 font-size:11px;font-weight:900;box-shadow:0 4px 12px rgba(245,158,11,.3);
+                 transition:transform .15s" onmousedown="this.style.transform='scale(.9)'" onmouseup="this.style.transform='scale(1)'">
+          <svg style="width:12px;height:12px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Acak Lagi
+        </button>
+      </div>
+      <div id="crap-cat-pills" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none"></div>
+    </div>
+
+    <div style="overflow-y:auto;padding:16px 20px 32px;max-height:calc(92vh - 140px)">
+      <div id="crap-card" style="border-radius:20px;overflow:hidden;border:1.5px solid #F4F4F5;box-shadow:0 4px 20px rgba(0,0,0,.07);animation:crapCardIn .4s cubic-bezier(.34,1.2,.64,1) both">
+        <div id="crap-img-wrap" style="height:220px;background:#F9F9F9;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div id="crap-img-placeholder" style="font-size:64px;animation:crapFloat 3s ease-in-out infinite">🛒</div>
+          <img id="crap-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+        </div>
+        <div style="padding:16px">
+          <div id="crap-cats" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"></div>
+          <h3 id="crap-name" style="font-size:18px;font-weight:900;color:#18181B;line-height:1.35;margin-bottom:8px">
+            Memuat produk...
+          </h3>
+          <p id="crap-desc" style="font-size:13px;font-weight:500;color:#52525B;line-height:1.65;word-break:break-word"></p>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Produk Lainnya</p>
+        <div id="crap-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CUACA MODAL
+═══════════════════════════════════════════ -->
+<div id="weather-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'weather-detail-modal')">
+  <div class="sheet" style="max-width:448px;margin:0 auto;max-height:90vh;overflow-y:auto">
+    <div style="padding:16px 18px 24px">
+      <div style="width:40px;height:4px;border-radius:2px;background:#E4E4E7;margin:0 auto 14px"></div>
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <h2 style="font-size:17px;font-weight:900;color:#18181B">🌤 Cuaca</h2>
+          <div id="wm-city" style="font-size:11px;font-weight:700;color:#A1A1AA;margin-top:2px">Memuat...</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="openWeatherLocationPicker()" style="padding:7px 12px;border-radius:11px;background:#F4F4F5;color:#52525B;border:none;cursor:pointer;font-size:10px;font-weight:900">📍 Ganti</button>
+          <button onclick="refreshWeatherModal()" style="padding:7px 12px;border-radius:11px;background:#EFF6FF;color:#3B82F6;border:none;cursor:pointer;font-size:10px;font-weight:900">↻</button>
+        </div>
+      </div>
+
+      <!-- Main card -->
+      <div id="wm-card" class="weather-card" style="padding:20px;margin-bottom:14px">
+        <div class="weather-sun"></div>
+        <div id="wm-rain-container"></div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:16px">
+            <div>
+              <div id="wm-temp" style="font-size:64px;font-weight:900;color:#fff;letter-spacing:-3px;line-height:1">--°</div>
+              <div id="wm-desc" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.8);margin-top:4px">--</div>
+            </div>
+            <div id="wm-icon" style="font-size:56px;margin-bottom:8px">🌤️</div>
+          </div>
+          <!-- Detail grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="weather-detail-pill" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5)">KELEMBABAN</span>
+              <span id="wm-humidity" style="font-size:15px;font-weight:900;color:#fff">--%</span>
+            </div>
+            <div class="weather-detail-pill" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5)">TERASA</span>
+              <span id="wm-feels" style="font-size:15px;font-weight:900;color:#fff">--°C</span>
+            </div>
+            <div class="weather-detail-pill" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5)">ANGIN</span>
+              <span id="wm-wind" style="font-size:15px;font-weight:900;color:#fff">-- km/j</span>
+            </div>
+            <div class="weather-detail-pill" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5)">VISIBILITAS</span>
+              <span id="wm-vis" style="font-size:15px;font-weight:900;color:#fff">-- mb</span>
+            </div>
+            <div class="weather-detail-pill" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5)">TEKANAN</span>
+              <span id="wm-pressure" style="font-size:15px;font-weight:900;color:#fff">-- mb</span>
+            </div>
+            <div class="weather-detail-pill" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5)">UV INDEX</span>
+              <span id="wm-uv" style="font-size:15px;font-weight:900;color:#fff">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ganti lokasi shortcut -->
+      <div style="background:#F9F9FB;border-radius:16px;padding:14px">
+        <p style="font-size:10px;font-weight:900;color:#A1A1AA;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Lokasi Cepat</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button onclick="quickWeatherCity('Serpong, Tangerang Selatan')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Serpong</button>
+          <button onclick="quickWeatherCity('Jakarta')"  class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Jakarta</button>
+          <button onclick="quickWeatherCity('Bandung')"  class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Bandung</button>
+          <button onclick="quickWeatherCity('Surabaya')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Surabaya</button>
+          <button onclick="quickWeatherCity('Bali')"     class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Bali</button>
+          <button onclick="quickWeatherCity('Medan')"    class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Medan</button>
+          <button onclick="quickWeatherCity('Yogyakarta')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Yogyakarta</button>
+          <button onclick="quickWeatherCity('Makassar')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-zinc-200 text-zinc-700 active:scale-90 transition-transform">Makassar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ JAVASCRIPT ═══════════ -->
+<script>
+// ================================================================
+// CONFIG & STATE
+// ================================================================
+let GS_URL = '';
+const NEWS_KEY = 'pub_27e83856472840ff8701c619e2fcf7be';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+
+let S = {
+  transactions: [],
+  settings: {},
+  akun: null,
+  currentView: 'view-explore'
+};
+
+const idr = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n||0);
+
+// ── Pulihkan sesi & transaksi di background (untuk AI Chat Mode Keuangan) ──
+function loadSessionTransactions() {
+  try {
+    const raw = localStorage.getItem(AUTH_SESSION_KEY);
+    if (!raw) return;
+    const session = JSON.parse(raw);
+    if (session && session.gsUrl) {
+      S.akun = session;
+      GS_URL = session.gsUrl;
+      fetch(GS_URL + '?action=read')
+        .then(r => r.json())
+        .then(d => {
+          if (d && d.status === 'success') {
+            S.transactions = d.data.transactions || [];
+            S.settings     = d.data.settings     || {};
+          }
+        })
+        .catch(e => console.warn('[Eksplorasi] Background sync:', e.message));
+    }
+  } catch(e) {}
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  loadSessionTransactions();
+  renderExplore();
+  initWeather();
+  initForex();
+});
+
+// ================================================================
+// MODAL HELPERS
+// ================================================================
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) { console.warn('openModal: element not found:', id); return; }
+  if (id === 'calc-modal') { el.style.display='flex'; return; }
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+
+  if (id === 'crap-modal') {
+    var cs = (typeof crapState !== 'undefined') ? crapState : null;
+    if (cs && !cs.loaded) {
+      cs.loaded = true;
+      setTimeout(loadCrapCategories, 60);
+      setTimeout(fetchCrapProduct, 80);
+      setTimeout(fetchCrapGrid, 120);
+    }
+  }
+  if (id === 'currency-modal' && typeof forexState !== 'undefined') {
+    if (!forexState.loaded) {
+      setTimeout(fetchForexRates, 50);
+      setTimeout(function(){
+        if (forexState.loaded && typeof openForexChart === 'function') openForexChart('USD');
+      }, 2500);
+    } else {
+      setTimeout(renderForexRatesList, 30);
+      setTimeout(calcForex, 60);
+      setTimeout(function(){
+        var panel = document.getElementById('forex-chart-panel');
+        if (panel && panel.style.display !== 'block' && typeof openForexChart === 'function') {
+          openForexChart('USD');
+        }
+      }, 150);
+    }
+    setTimeout(function(){
+      var bl = document.getElementById('forex-base-label');
+      if (bl) bl.textContent = forexState.baseSym || 'IDR';
+    }, 40);
+  }
+  if (id === 'crypto-modal' && typeof cryptoState !== 'undefined') {
+    setTimeout(renderCryptoDetailList, 30);
+  }
+  if (id === 'weather-detail-modal') {
+    syncWeatherModal();
+    var tempEl = document.getElementById('weather-temp');
+    if (!tempEl || tempEl.textContent === '--°') {
+      if (typeof fetchWeather === 'function') fetchWeather(weatherCity || 'Serpong, Tangerang Selatan');
+      setTimeout(syncWeatherModal, 2000);
+    }
+  }
+};
+
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (id === 'calc-modal') { el.style.display='none'; return; }
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display='none'; }, 400);
+};
+
+window.handleBackdropClick = function(e, id) {
+  if(e.target === document.getElementById(id)) closeModal(id);
+};
+
+// ================================================================
+// AI CHAT v4
+// ================================================================
+(function () {
+  'use strict';
+
+  var KEY  = 'AIzaSyAc4Ea4PWZ3489Uqg7Pajbr8NZk2yW23WQ';
+  var URLS = [
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+  ];
+
+  var mode    = 'finance';
+  var history = [];
+  var busy    = false;
+
+  function el(id) { return document.getElementById(id); }
+
+  function sysText() {
+    if (mode === 'free') {
+      return 'Kamu adalah asisten AI yang cerdas dan ramah. Selalu jawab dalam Bahasa Indonesia yang santai dan informatif.';
+    }
+    var txns = (typeof S !== 'undefined' && S.transactions) ? S.transactions : [];
+    var now  = new Date();
+    var mon  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+
+    var inc = 0, exp = 0, bal = 0, cats = {};
+
+    txns.forEach(function(t) {
+      var v = Number(t['Jumlah Uang']) || 0;
+      if (t.Kategori === 'Uang Masuk')  bal += v;
+      if (t.Kategori === 'Uang Keluar') bal -= v;
+    });
+
+    txns.filter(function(t){ return t.Tanggal && t.Tanggal.slice(0,7) === mon; })
+      .forEach(function(t) {
+        var v = Number(t['Jumlah Uang']) || 0;
+        if (t.Kategori === 'Uang Masuk')  inc += v;
+        if (t.Kategori === 'Uang Keluar') {
+          exp += v;
+          var cat = t['Kategori Uang Keluar'] || 'Lainnya';
+          cats[cat] = (cats[cat] || 0) + v;
+        }
+      });
+
+    var top = Object.entries(cats)
+      .sort(function(a,b){ return b[1]-a[1]; })
+      .slice(0,5)
+      .map(function(e){ return e[0]+': '+idr(e[1]); })
+      .join(', ');
+
+    return 'Kamu adalah asisten keuangan personal yang cerdas dan ramah. ' +
+      'Selalu jawab dalam Bahasa Indonesia yang lugas dan helpful. ' +
+      'Data keuangan pengguna — ' +
+      'saldo aktif saat ini: ' + idr(bal) + ', ' +
+      'bulan ini (' + mon + ') pemasukan: ' + idr(inc) + ', pengeluaran: ' + idr(exp) + '. ' +
+      'Top kategori pengeluaran bulan ini: ' + (top || 'belum ada pengeluaran bulan ini') + '. ' +
+      'Total ' + txns.length + ' transaksi tercatat. ' +
+      'Gunakan data ini untuk menjawab pertanyaan keuangan secara spesifik dan personal.';
+  }
+
+  function callGemini(idx, contents, onOk, onErr) {
+    if (idx >= URLS.length) { onErr('Semua endpoint gagal.'); return; }
+    var body = JSON.stringify({
+      system_instruction: { parts: [{ text: sysText() }] },
+      contents: contents
+    });
+    fetch(URLS[idx], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-goog-api-key': KEY },
+      body: body
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var txt = d && d.candidates && d.candidates[0] &&
+                d.candidates[0].content && d.candidates[0].content.parts &&
+                d.candidates[0].content.parts[0] && d.candidates[0].content.parts[0].text;
+      if (txt) { onOk(txt.trim()); }
+      else {
+        var err = (d.error && d.error.message) ? d.error.message : 'Respons kosong ('+URLS[idx].split('/').pop()+')';
+        callGemini(idx+1, contents, onOk, function(){ onErr(err); });
+      }
+    })
+    .catch(function(e){
+      callGemini(idx+1, contents, onOk, function(){ onErr(e.message||'Network error'); });
+    });
+  }
+
+  function buildContents(userText) {
+    var out = [];
+    history.forEach(function(m){ out.push({ role: m.role, parts: [{ text: m.text }] }); });
+    out.push({ role: 'user', parts: [{ text: userText }] });
+    return out;
+  }
+
+  function safe(t) {
+    return String(t)
+      .split('&').join('&amp;')
+      .split('<').join('&lt;')
+      .split('>').join('&gt;')
+      .split(String.fromCharCode(10)).join('<br>');
+  }
+
+  function addMsg(role, text) {
+    var box  = el('gpt-messages');
+    if (!box) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'gpt-msg';
+    wrap.style.cssText = 'display:flex;gap:8px;align-items:flex-start;' +
+      (role === 'user' ? 'flex-direction:row-reverse' : '');
+    var s = safe(text);
+    if (role === 'ai') {
+      wrap.innerHTML =
+        '<div style="width:26px;height:26px;border-radius:9px;flex-shrink:0;margin-top:2px;' +
+        'background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);' +
+        'display:flex;align-items:center;justify-content:center">' +
+        '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>' +
+        '</svg></div>' +
+        '<div style="max-width:80%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);' +
+        'border-radius:4px 16px 16px 16px;padding:10px 14px;font-size:13px;font-weight:500;' +
+        'color:rgba(255,255,255,.88);line-height:1.6">' + s + '</div>';
+    } else {
+      wrap.innerHTML =
+        '<div style="max-width:80%;background:#fff;border-radius:16px 4px 16px 16px;' +
+        'padding:10px 14px;font-size:13px;font-weight:600;color:#111;line-height:1.55;' +
+        'box-shadow:0 3px 12px rgba(255,255,255,.1)">' + s + '</div>';
+    }
+    box.appendChild(wrap);
+    setTimeout(function(){ box.scrollTop = box.scrollHeight; }, 40);
+  }
+
+  function setTyping(on) {
+    var t = el('gpt-typing');
+    if (t) t.style.display = on ? 'block' : 'none';
+    if (on) setTimeout(function(){
+      var b = el('gpt-messages'); if(b) b.scrollTop = b.scrollHeight;
+    }, 30);
+  }
+
+  function setBusy(on) {
+    busy = on;
+    var btn = el('gpt-send');
+    if (btn) { btn.style.opacity = on ? '0.35' : '1'; btn.style.cursor = on ? 'default' : 'pointer'; }
+    var st = el('ai-status-text');
+    if (st) { st.textContent = on ? 'Sedang memproses…' : 'Siap membantu'; st.style.color = on ? 'rgba(255,255,255,.6)' : 'rgba(255,255,255,.4)'; }
+  }
+
+  function welcome() {
+    var msgs = {
+      finance: '👋 Hai! Saya siap bantu analisis keuanganmu. Tanya soal pengeluaran, tips hemat, atau kondisi keuangan bulan ini!',
+      free:    '👋 Halo! Ada yang bisa saya bantu hari ini?'
+    };
+    addMsg('ai', msgs[mode]);
+  }
+
+  window.gptSend = function() {
+    if (busy) return;
+    var inp  = el('gpt-input');
+    var text = (inp ? inp.value : '').trim();
+    if (!text) return;
+    inp.value = '';
+    inp.style.height = 'auto';
+
+    addMsg('user', text);
+    setTyping(true);
+    setBusy(true);
+
+    var contents = buildContents(text);
+
+    callGemini(0, contents,
+      function(reply) {
+        history.push({ role: 'user',  text: text  });
+        history.push({ role: 'model', text: reply });
+        setTyping(false);
+        setBusy(false);
+        addMsg('ai', reply);
+      },
+      function(errMsg) {
+        setTyping(false);
+        setBusy(false);
+        addMsg('ai', '⚠️ Gagal: ' + errMsg);
+      }
+    );
+  };
+
+  window.gptClear = function() {
+    history = [];
+    var box = el('gpt-messages');
+    if (box) box.innerHTML = '';
+    welcome();
+  };
+
+  window.gptSetMode = function(m) {
+    mode = m;
+    var bf = el('gpt-btn-finance'), bfr = el('gpt-btn-free');
+    if (bf)  { bf.style.background = m==='finance'?'#111':'transparent'; bf.style.color = m==='finance'?'#fff':'rgba(255,255,255,.45)'; }
+    if (bfr) { bfr.style.background = m==='free'?'#111':'transparent';   bfr.style.color = m==='free'?'#fff':'rgba(255,255,255,.45)'; }
+    history = [];
+    var box = el('gpt-messages');
+    if (box) box.innerHTML = '';
+    welcome();
+  };
+
+  window.openAIChat = function() {
+    var overlay = document.getElementById('gpt-overlay');
+    var panel   = document.getElementById('gpt-panel');
+    if (!overlay || !panel) return;
+    overlay.style.display = 'flex';
+    setTimeout(function(){ panel.style.transform = 'translateY(0)'; }, 10);
+    if (history.length === 0) welcome();
+  };
+
+  window.gptClose = function() {
+    var panel   = document.getElementById('gpt-panel');
+    var overlay = document.getElementById('gpt-overlay');
+    if (panel)   panel.style.transform = 'translateY(100%)';
+    if (overlay) setTimeout(function(){ overlay.style.display = 'none'; }, 400);
+  };
+})();
+
+// ================================================================
+// EKSPLORASI — Full news feed & live widgets
+// ================================================================
+var exploreLoaded = false;
+var exploreData   = [];
+
+async function renderExplore() {
+  var list = document.getElementById('explore-list');
+  if (!list) return;
+
+  if (!window._cryptoStarted) {
+    window._cryptoStarted = true;
+    startCryptoPolling();
+  } else if (cryptoState.allData.length) {
+    renderCryptoTicker();
+    renderCryptoDetailList();
+    if (typeof renderCryptoCarousel === 'function') renderCryptoCarousel();
+  }
+  renderForexTicker();
+  if (typeof renderForexCarousel === 'function') renderForexCarousel();
+
+  if (!window._quakeStarted) {
+    window._quakeStarted = true;
+    if (typeof initQuake === 'function') initQuake();
+  }
+
+  if (exploreLoaded && exploreData.length > 0) {
+    renderExploreItems(exploreData);
+    return;
+  }
+
+  list.innerHTML = '<div style="display:flex;flex-direction:column;gap:14px">' +
+    [1,2,3].map(function(){
+      return '<div style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">' +
+        '<div style="height:180px;background:#f0f0f0;animation:shimmer 1.4s infinite"></div>' +
+        '<div style="padding:14px;display:flex;flex-direction:column;gap:8px">' +
+        '<div style="height:11px;background:#f0f0f0;border-radius:6px;width:100%;animation:shimmer 1.4s infinite"></div>' +
+        '<div style="height:11px;background:#f0f0f0;border-radius:6px;width:80%;animation:shimmer 1.4s infinite"></div>' +
+        '<div style="height:11px;background:#f0f0f0;border-radius:6px;width:60%;animation:shimmer 1.4s infinite"></div>' +
+        '</div></div>';
+    }).join('') + '</div>';
+
+  var urls = [
+    'https://newsdata.io/api/1/news?apikey=' + NEWS_KEY + '&country=id&category=business',
+    'https://newsdata.io/api/1/news?apikey=' + NEWS_KEY + '&category=business&language=id',
+    'https://newsdata.io/api/1/news?apikey=' + NEWS_KEY + '&country=id&language=id'
+  ];
+
+  var found = false;
+  for (var ui = 0; ui < urls.length; ui++) {
+    try {
+      var r = await fetch(urls[ui]);
+      var d = await r.json();
+      if (d.results && d.results.length > 0) {
+        exploreData   = d.results;
+        exploreLoaded = true;
+        renderExploreItems(d.results);
+        found = true;
+        break;
+      }
+    } catch(e) {}
+  }
+
+  if (!found) {
+    list.innerHTML = '<p style="text-align:center;color:#A1A1AA;font-size:13px;padding:40px 0;font-weight:600">Tidak ada berita tersedia saat ini.<br><span style="font-size:11px">Coba lagi beberapa saat</span></p>';
+  }
+}
+
+function renderExploreItems(items) {
+  var list = document.getElementById('explore-list');
+  if (!list) return;
+
+  var html = '<div style="display:flex;flex-direction:column;gap:14px">';
+
+  items.slice(0, 15).forEach(function(item) {
+    var imgUrl  = item.image_url || '';
+    var title   = (item.title   || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var rawDesc = item.description || item.content || '';
+    var desc    = rawDesc.length > 400 ? rawDesc.slice(0,400).trim() + '…' : rawDesc;
+    desc        = desc.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var src     = (item.source_id || '').toUpperCase();
+    var date    = '';
+    try { date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : ''; } catch(e){}
+    var link    = item.link || '#';
+
+    html += '<a href="' + link + '" target="_blank" rel="noopener noreferrer" ' +
+      'style="display:block;text-decoration:none;background:#fff;border-radius:18px;overflow:hidden;' +
+      'box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.05);transition:transform .15s">';
+
+    if (imgUrl) {
+      html += '<div style="height:190px;overflow:hidden;background:#F4F4F5">' +
+        '<img src="' + imgUrl + '" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.hidden=true">' +
+        '</div>';
+    }
+
+    html += '<div style="padding:14px 16px">';
+
+    if (src || date) {
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+      if (src) html += '<span style="font-size:9px;font-weight:900;color:#fff;background:#18181B;padding:2px 8px;border-radius:99px">' + src + '</span>';
+      if (date) html += '<span style="font-size:10px;font-weight:600;color:#A1A1AA">' + date + '</span>';
+      html += '</div>';
+    }
+
+    html += '<h3 style="font-size:14px;font-weight:900;color:#18181B;line-height:1.5;margin-bottom:8px;word-break:break-word">' + title + '</h3>';
+
+    if (desc) {
+      html += '<p style="font-size:12px;font-weight:500;color:#52525B;line-height:1.65;word-break:break-word;margin-bottom:10px">' + desc + '</p>';
+    }
+
+    html += '<p style="font-size:11px;font-weight:800;color:#10B981">Baca selengkapnya →</p>';
+    html += '</div></a>';
+  });
+
+  html += '</div>';
+  list.innerHTML = html;
+}
+
+// ================================================================
+// WEATHER MODULE
+// ================================================================
+var weatherCity  = localStorage.getItem('weather_city') || 'Serpong, Tangerang Selatan';
+var weatherCache = null;
+
+var WEATHER_ICONS = {
+  113: '☀️', 116: '⛅', 119: '☁️', 122: '🌫️',
+  143: '🌫️', 176: '🌦️', 179: '🌨️', 182: '🌧️',
+  185: '🌧️', 200: '⛈️', 227: '🌨️', 230: '❄️',
+  248: '🌫️', 260: '🌫️', 263: '🌦️', 266: '🌦️',
+  281: '🌧️', 284: '🌧️', 293: '🌦️', 296: '🌦️',
+  299: '🌧️', 302: '🌧️', 305: '🌧️', 308: '🌧️',
+  311: '🌧️', 314: '🌧️', 317: '🌨️', 320: '🌨️',
+  323: '🌨️', 326: '🌨️', 329: '❄️', 332: '❄️',
+  335: '❄️', 338: '❄️', 350: '🌧️', 353: '🌦️',
+  356: '🌧️', 359: '🌧️', 362: '🌨️', 365: '🌨️',
+  368: '🌨️', 371: '❄️', 374: '🌧️', 377: '🌧️',
+  386: '⛈️', 389: '⛈️', 392: '🌩️', 395: '❄️'
+};
+
+function weatherIcon(code) {
+  return WEATHER_ICONS[code] || '🌤️';
+}
+
+function updateWeatherBackground(code) {
+  var card = document.getElementById('wm-card');
+  var sun  = card ? card.querySelector('.weather-sun') : null;
+  var rain = document.getElementById('wm-rain-container');
+  if (!card) return;
+
+  if (rain) rain.innerHTML = '';
+
+  var isRain  = [176,263,266,293,296,299,302,305,308,353,356,359].indexOf(code) >= 0;
+  var isStorm = [200,386,389].indexOf(code) >= 0;
+  var isCloud = [119,122].indexOf(code) >= 0;
+  var isSun   = code === 113;
+
+  if (isRain || isStorm) {
+    card.style.background = 'linear-gradient(135deg,#0F172A 0%,#1a2744 50%,#0a1628 100%)';
+    if (sun) sun.style.display = 'none';
+    if (rain) {
+      var rHtml = '';
+      for (var i = 0; i < 12; i++) {
+        var left  = (i * 8.3) + Math.random() * 4;
+        var delay = (Math.random() * 1.5).toFixed(2);
+        var dur   = (0.6 + Math.random() * 0.6).toFixed(2);
+        var ht    = 8 + Math.floor(Math.random() * 8);
+        rHtml += '<div class="weather-rain-drop" style="left:' + left + '%;height:' + ht + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;top:0;bottom:0"></div>';
+      }
+      rain.innerHTML = rHtml;
+    }
+  } else if (isCloud) {
+    card.style.background = 'linear-gradient(135deg,#1e293b 0%,#334155 50%,#1e3a5f 100%)';
+    if (sun) sun.style.display = 'block';
+  } else if (isSun) {
+    card.style.background = 'linear-gradient(135deg,#0F2744 0%,#1E3A5F 40%,#1a4a6e 100%)';
+    if (sun) { sun.style.display = 'block'; sun.style.background = 'radial-gradient(circle,rgba(251,191,36,.6) 0%,rgba(251,191,36,0) 70%)'; }
+  } else {
+    card.style.background = 'linear-gradient(135deg,#0F172A 0%,#1E3A5F 50%,#0F2744 100%)';
+    if (sun) sun.style.display = 'block';
+  }
+}
+
+function meteoToWeatherstackCode(wmo) {
+  var map = {
+    0:113, 1:116, 2:119, 3:122,
+    45:143, 48:248,
+    51:176, 53:176, 55:176,
+    56:185, 57:185,
+    61:296, 63:302, 65:308,
+    66:281, 67:284,
+    71:326, 73:329, 75:230,
+    77:350,
+    80:299, 81:305, 82:359,
+    85:317, 86:320,
+    95:200, 96:386, 99:389
+  };
+  return map[wmo] || 116;
+}
+
+var WEATHER_DESC_ID = {
+  0:'Cerah',1:'Cerah Berawan',2:'Berawan Sebagian',3:'Berawan',
+  45:'Berkabut',48:'Kabut Es',
+  51:'Gerimis Ringan',53:'Gerimis',55:'Gerimis Lebat',
+  56:'Gerimis Beku',57:'Gerimis Beku Lebat',
+  61:'Hujan Ringan',63:'Hujan',65:'Hujan Lebat',
+  66:'Hujan Beku',67:'Hujan Beku Lebat',
+  71:'Salju Ringan',73:'Salju',75:'Salju Lebat',77:'Butiran Salju',
+  80:'Hujan Sebentar Ringan',81:'Hujan Sebentar',82:'Hujan Sebentar Lebat',
+  85:'Hujan Salju Ringan',86:'Hujan Salju Lebat',
+  95:'Badai Petir',96:'Badai Petir + Hujan Es',99:'Badai Petir Lebat'
+};
+
+var WEATHER_CITY_FALLBACK = {
+  'serpong, tangerang selatan': { lat: -6.301, lon: 106.673, name: 'Serpong', region: 'Banten' },
+  'jakarta':   { lat: -6.2088, lon: 106.8456, name: 'Jakarta',   region: 'DKI Jakarta' },
+  'bandung':   { lat: -6.9175, lon: 107.6191, name: 'Bandung',   region: 'Jawa Barat' },
+  'surabaya':  { lat: -7.2575, lon: 112.7521, name: 'Surabaya',  region: 'Jawa Timur' },
+  'bali':      { lat: -8.4095, lon: 115.1889, name: 'Bali',      region: 'Bali' },
+  'medan':     { lat: 3.5952,  lon: 98.6722,  name: 'Medan',     region: 'Sumatera Utara' },
+  'yogyakarta':{ lat: -7.7956, lon: 110.3695, name: 'Yogyakarta',region: 'DI Yogyakarta' },
+  'makassar':  { lat: -5.1477, lon: 119.4327, name: 'Makassar',  region: 'Sulawesi Selatan' }
+};
+
+async function geocodeCity(city) {
+  try {
+    var r = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=id');
+    var d = await r.json();
+    if (d.results && d.results.length) {
+      var res = d.results[0];
+      return { lat: res.latitude, lon: res.longitude, name: res.name, region: res.admin1 || '' };
+    }
+  } catch (e) {}
+  var key = city.trim().toLowerCase();
+  if (WEATHER_CITY_FALLBACK[key]) return WEATHER_CITY_FALLBACK[key];
+  for (var k in WEATHER_CITY_FALLBACK) {
+    if (k.indexOf(key) >= 0 || key.indexOf(k.split(',')[0]) >= 0) return WEATHER_CITY_FALLBACK[k];
+  }
+  return null;
+}
+
+async function fetchWeather(city) {
+  try {
+    var geo = await geocodeCity(city);
+    if (!geo) throw new Error('Lokasi tidak ditemukan');
+
+    var wUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + geo.lat + '&longitude=' + geo.lon +
+      '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl' +
+      '&timezone=auto';
+    var r = await fetch(wUrl);
+    var d = await r.json();
+
+    if (d && d.error) throw new Error(d.reason || 'Open-Meteo error');
+    if (!d || !d.current) throw new Error('No data dari Open-Meteo');
+
+    var cur     = d.current;
+    var wmoCode = cur.weather_code != null ? cur.weather_code : 0;
+    var code    = meteoToWeatherstackCode(wmoCode);
+    var cityName = geo.name + (geo.region ? ', ' + geo.region : '');
+
+    var setTxt = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
+    setTxt('weather-city', cityName);
+    setTxt('weather-temp', Math.round(cur.temperature_2m) + '°C');
+    setTxt('weather-desc', WEATHER_DESC_ID[wmoCode] || '--');
+    setTxt('weather-icon', weatherIcon(code));
+    setTxt('weather-humidity', (cur.relative_humidity_2m != null ? Math.round(cur.relative_humidity_2m) : '--') + '%');
+    setTxt('weather-feels', 'Terasa ' + (cur.apparent_temperature != null ? Math.round(cur.apparent_temperature) : '--') + '°C');
+    setTxt('weather-wind', (cur.wind_speed_10m != null ? Math.round(cur.wind_speed_10m) : '--') + ' km/j');
+    setTxt('weather-vis', (cur.pressure_msl != null ? Math.round(cur.pressure_msl) : '--') + ' mb');
+
+    weatherCache = {
+      city: cityName,
+      data: { current: { weather_code: code, pressure: cur.pressure_msl != null ? Math.round(cur.pressure_msl) : '--', uv_index: cur.uv_index != null ? cur.uv_index : '--' } },
+      ts: Date.now()
+    };
+
+    syncWeatherModal();
+  } catch(e) {
+    console.warn('Weather error:', e.message);
+  }
+}
+
+function syncWeatherModal() {
+  var city     = document.getElementById('weather-city')?.textContent || weatherCity || 'Serpong';
+  var temp     = document.getElementById('weather-temp')?.textContent || '--°';
+  var desc     = document.getElementById('weather-desc')?.textContent || '--';
+  var humidity = document.getElementById('weather-humidity')?.textContent || '--%';
+  var feels    = document.getElementById('weather-feels')?.textContent || 'Terasa --°C';
+  var wind     = document.getElementById('weather-wind')?.textContent || '-- km/j';
+  var vis      = document.getElementById('weather-vis')?.textContent  || '-- mb';
+  var iconEl   = document.getElementById('weather-icon');
+  var icon     = iconEl ? iconEl.textContent : '🌤️';
+
+  var setTxt = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
+  setTxt('wm-city', city);
+  setTxt('wm-temp', temp);
+  setTxt('wm-desc', desc);
+  setTxt('wm-humidity', humidity);
+  setTxt('wm-feels', feels.replace('Terasa ', ''));
+  setTxt('wm-wind', wind);
+  setTxt('wm-vis', vis);
+  setTxt('wm-icon', icon);
+
+  if (weatherCache && weatherCache.data && weatherCache.data.current) {
+    var cur = weatherCache.data.current;
+    setTxt('wm-pressure', (cur.pressure || '--') + ' mb');
+    setTxt('wm-uv',       cur.uv_index !== undefined ? cur.uv_index : '--');
+    updateWeatherBackground(cur.weather_code || 113);
+  }
+}
+
+window.openWeatherLocationPicker = function() {
+  var inp = document.getElementById('weather-loc-input');
+  if (inp) inp.value = weatherCity;
+  openModal('weather-loc-modal');
+};
+
+window.applyWeatherLocation = function() {
+  var inp = document.getElementById('weather-loc-input');
+  var val = inp ? inp.value.trim() : '';
+  if (!val) return;
+  setWeatherCity(val);
+};
+
+window.setWeatherCity = function(city) {
+  weatherCity = city;
+  localStorage.setItem('weather_city', city);
+  weatherCache = null;
+  closeModal('weather-loc-modal');
+  fetchWeather(city);
+};
+
+window.refreshWeatherModal = function() {
+  fetchWeather(weatherCity);
+};
+
+window.quickWeatherCity = function(city) {
+  setWeatherCity(city);
+};
+
+function initWeather() {
+  return fetchWeather(weatherCity);
+}
+
+// ================================================================
+// LIVE CRYPTO MODULE
+// ================================================================
+var COIN_KEY   = 'efe3005248ab23aa14d6eaae6515e9ce';
+var CHANGE_URL = 'https://api.coinlayer.com/change?access_key=' + COIN_KEY + '&start_date=' + (function(){var d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);})() + '&end_date=' + new Date().toISOString().slice(0,10);
+
+var FEATURED_COINS = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','MATIC','DOT','AVAX','LINK','UNI','LTC','SHIB','TRX'];
+
+var cryptoState = {
+  rates:      {},
+  prevRates:  {},
+  change24h:  {},
+  lastFetch:  0,
+  intervalId: null,
+  allData:    [],
+  filtered:   [],
+  idrRate:    16000,
+};
+
+function fmtUSD(v) {
+  if (!v || isNaN(v)) return '$--';
+  if (v >= 1000) return '$' + v.toLocaleString('en-US', {maximumFractionDigits:0});
+  if (v >= 1)    return '$' + v.toLocaleString('en-US', {maximumFractionDigits:2});
+  if (v >= 0.01) return '$' + v.toFixed(4);
+  return '$' + v.toExponential(3);
+}
+function fmtIDR(v) {
+  var n = v * cryptoState.idrRate;
+  if (n >= 1e12) return 'Rp' + (n/1e12).toFixed(2) + 'T';
+  if (n >= 1e9)  return 'Rp' + (n/1e9).toFixed(2) + 'M';
+  if (n >= 1e6)  return 'Rp' + (n/1e6).toFixed(1) + 'jt';
+  return 'Rp' + Math.round(n).toLocaleString('id-ID');
+}
+function chgClass(p) { return p > 0 ? 'chg-up' : p < 0 ? 'chg-down' : 'chg-flat'; }
+function chgSign(p)  { return p > 0 ? '▲' : p < 0 ? '▼' : '—'; }
+
+var COIN_EMOJI = {
+  BTC:'🟡',ETH:'🔵',BNB:'🟠',SOL:'🟣',XRP:'🔷',ADA:'🔵',DOGE:'🐶',MATIC:'🟣',
+  DOT:'⚫',AVAX:'🔴',LINK:'🔵',UNI:'🦄',LTC:'⚪',SHIB:'🐕',TRX:'🔴',DEFAULT:'💎'
+};
+function coinEmoji(sym) { return COIN_EMOJI[sym] || COIN_EMOJI.DEFAULT; }
+
+var GECKO_IDS={BTC:'bitcoin',ETH:'ethereum',BNB:'binancecoin',SOL:'solana',XRP:'ripple',ADA:'cardano',DOGE:'dogecoin',MATIC:'matic-network',DOT:'polkadot',AVAX:'avalanche-2',LINK:'chainlink',UNI:'uniswap',LTC:'litecoin',SHIB:'shiba-inu',TRX:'tron'};
+var GECKO_SYM={}; Object.keys(GECKO_IDS).forEach(function(s){GECKO_SYM[GECKO_IDS[s]]=s;});
+
+async function fetchCryptoLive() {
+  var ids=FEATURED_COINS.map(function(s){return GECKO_IDS[s];}).filter(Boolean).join(',');
+  try {
+    var r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids='+ids+'&order=market_cap_desc&per_page=20&page=1&price_change_percentage=24h');
+    var list=await r.json();
+    if (Array.isArray(list)&&list.length) {
+      cryptoState.prevRates=Object.assign({},cryptoState.rates);
+      list.forEach(function(coin){
+        var sym=GECKO_SYM[coin.id]; if(!sym)return;
+        cryptoState.rates[sym]=coin.current_price||0;
+        cryptoState.change24h[sym]=coin.price_change_percentage_24h||0;
+      });
+      cryptoState.lastFetch=Date.now();
+      try{var ri=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=idr');var di=await ri.json();if(di.bitcoin&&di.bitcoin.idr&&cryptoState.rates['BTC'])cryptoState.idrRate=di.bitcoin.idr/cryptoState.rates['BTC'];}catch(ei){}
+      cryptoState.allData=FEATURED_COINS.filter(function(s){return cryptoState.rates[s];}).map(function(s){return{sym:s,price:cryptoState.rates[s],chg:cryptoState.change24h[s]||0};});
+      cryptoState.filtered=cryptoState.allData.slice();
+      renderCryptoTicker();renderCryptoDetailList();updateCryptoTimestamp();
+      if(typeof renderCryptoCarousel==='function')renderCryptoCarousel();
+      return;
+    }
+  } catch(e){console.warn('CoinGecko:',e.message);}
+  try {
+    var r2=await fetch('https://api.coinlayer.com/live?access_key='+COIN_KEY+'&symbols='+FEATURED_COINS.join(','));
+    var d2=await r2.json();
+    if(d2.success&&d2.rates){
+      cryptoState.prevRates=Object.assign({},cryptoState.rates);cryptoState.rates=d2.rates;cryptoState.lastFetch=Date.now();
+      cryptoState.allData=FEATURED_COINS.filter(function(s){return d2.rates[s];}).map(function(s){return{sym:s,price:d2.rates[s],chg:cryptoState.change24h[s]||0};});
+      cryptoState.filtered=cryptoState.allData.slice();
+      renderCryptoTicker();renderCryptoDetailList();updateCryptoTimestamp();
+      if(typeof renderCryptoCarousel==='function')renderCryptoCarousel();
+    }
+  }catch(e2){console.warn('CoinLayer:',e2.message);}
+}
+
+async function fetchCryptoChange() {
+  try {
+    var r = await fetch(CHANGE_URL + '&symbols=' + FEATURED_COINS.join(','));
+    var d = await r.json();
+    if (d.success && d.rates) {
+      Object.keys(d.rates).forEach(function(sym) {
+        var info = d.rates[sym];
+        if (info && info.change_pct !== undefined) {
+          cryptoState.change24h[sym] = info.change_pct;
+        }
+      });
+    }
+  } catch(e) {}
+}
+
+function generateSparkline(currentPrice, chgPct24h, points) {
+  if (!currentPrice || currentPrice <= 0) return [];
+  points = points || 10;
+  var startPrice = chgPct24h ? currentPrice / (1 + chgPct24h / 100) : currentPrice;
+  var result = [];
+  for (var i = 0; i < points; i++) {
+    var t     = i / (points - 1);
+    var trend = startPrice + (currentPrice - startPrice) * t;
+    var noise = (Math.random() - 0.5) * currentPrice * 0.006;
+    result.push(Math.max(0, trend + noise));
+  }
+  result[result.length - 1] = currentPrice;
+  return result;
+}
+
+function renderCryptoTicker() {
+  var wrap = document.getElementById('crypto-ticker-wrap');
+  if (!wrap) return;
+  var html = '';
+  var featured = FEATURED_COINS.filter(function(s){ return cryptoState.rates[s]; }).slice(0, 10);
+  featured.forEach(function(sym) {
+    var price  = cryptoState.rates[sym];
+    var prev   = cryptoState.prevRates[sym];
+    var chgPct = cryptoState.change24h[sym] || 0;
+    var flash  = prev && price !== prev ? ' price-flash' : '';
+    var arrow  = chgPct > 0 ? '▲' : chgPct < 0 ? '▼' : '';
+    var cls    = chgClass(chgPct);
+    html += '<div class="crypto-chip' + flash + '" onclick="openModal(\'crypto-modal\')" title="' + sym + '">' +
+      '<div style="display:flex;align-items:center;gap:5px"><span style="font-size:16px">' + coinEmoji(sym) + '</span><div><div class="sym">' + sym + '</div></div></div>' +
+      '<div class="price">' + fmtUSD(price) + '</div>' +
+      '<div class="chg ' + cls + '">' + arrow + ' ' + Math.abs(chgPct).toFixed(2) + '%</div>' +
+    '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function renderCryptoDetailList() {
+  var list = document.getElementById('crypto-detail-list');
+  if (!list) return;
+  var data = cryptoState.filtered;
+  if (!data.length) {
+    list.innerHTML = '<p style="text-align:center;color:#A1A1AA;font-size:13px;padding:24px 0">Tidak ada hasil</p>';
+    return;
+  }
+  var html = '';
+  data.forEach(function(item) {
+    var sym    = item.sym;
+    var price  = item.price;
+    var chgPct = cryptoState.change24h[sym] || 0;
+    var cls    = chgClass(chgPct);
+    var arrow  = chgSign(chgPct);
+    var idrStr = fmtIDR(price);
+
+    var bars = '';
+    var barHeights = [40,55,35,65,50,70,45,80,60,75];
+    var variance = chgPct > 0 ? 1 : -1;
+    barHeights.forEach(function(h, i) {
+      var adj = Math.max(20, Math.min(100, h + variance * i * 4));
+      bars += '<div class="spark-bar" style="height:' + adj + '%;background:' + (chgPct >= 0 ? '#10B981' : '#EF4444') + ';opacity:' + (0.4 + i*0.06) + '"></div>';
+    });
+
+    html +=
+      '<div class="crypto-row">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<span style="font-size:22px">' + coinEmoji(sym) + '</span>' +
+          '<div>' +
+            '<p style="font-size:13px;font-weight:900;color:#18181B">' + sym + '</p>' +
+            '<p style="font-size:10px;font-weight:700;color:#A1A1AA">' + idrStr + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div class="mini-sparkline">' + bars + '</div>' +
+          '<div style="text-align:right">' +
+            '<p style="font-size:13px;font-weight:900;color:#18181B">' + fmtUSD(price) + '</p>' +
+            '<p style="font-size:10px;font-weight:800" class="' + cls + '">' + arrow + ' ' + Math.abs(chgPct).toFixed(2) + '%</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+  list.innerHTML = html;
+}
+
+window.filterCryptoList = function(q) {
+  var kw = q.trim().toUpperCase();
+  cryptoState.filtered = kw
+    ? cryptoState.allData.filter(function(d){ return d.sym.includes(kw); })
+    : cryptoState.allData.slice();
+  renderCryptoDetailList();
+};
+
+function updateCryptoTimestamp() {
+  var el = document.getElementById('crypto-last-update');
+  if (el) el.textContent = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function startCryptoPolling() {
+  if (cryptoState.intervalId) clearInterval(cryptoState.intervalId);
+  const firstChange = fetchCryptoChange();
+  const firstLive   = fetchCryptoLive();
+  cryptoState.intervalId = setInterval(fetchCryptoLive, 30000);
+  setInterval(fetchCryptoChange, 300000);
+  return Promise.all([firstChange, firstLive]);
+}
+
+// ================================================================
+// ANYCRAP — ABSURD PRODUCTS MODULE
+// ================================================================
+var CRAP_KEY     = 'ak_d30ff102237b428ea2a18a4492852469';
+var CRAP_BASE    = 'https://anycrap.shop/api/v1';
+var CRAP_HEADERS = { 'Authorization': 'Bearer ' + CRAP_KEY };
+var crapState = {
+  categories: [],
+  selectedCat: null,
+  currentProduct: null,
+  gridProducts: [],
+  loaded: false,
+};
+
+async function loadCrapCategories() {
+  try {
+    var r = await fetch(CRAP_BASE + '/categories', { headers: CRAP_HEADERS });
+    var d = await r.json();
+    if (d.data && d.data.length) {
+      crapState.categories = d.data.map(function(c){ return c.slug || c.name; }).slice(0, 10);
+      renderCrapCategoryPills();
+    }
+  } catch(e) {}
+}
+
+function renderCrapCategoryPills() {
+  var el = document.getElementById('crap-cat-pills');
+  if (!el) return;
+  var html = '<button class="crap-cat-pill active" onclick="selectCrapCat(null, this)">Semua</button>';
+  crapState.categories.forEach(function(cat) {
+    var label = cat.replace(/-/g,' ').replace(/\b\w/g, function(l){return l.toUpperCase();});
+    html += '<button class="crap-cat-pill" onclick="selectCrapCat(\'' + cat + '\', this)">' + label + '</button>';
+  });
+  el.innerHTML = html;
+}
+
+window.selectCrapCat = function(cat, btn) {
+  crapState.selectedCat = cat;
+  document.querySelectorAll('.crap-cat-pill').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  fetchCrapProduct();
+  fetchCrapGrid();
+};
+
+window.fetchCrapProduct = async function() {
+  var card = document.getElementById('crap-card');
+  if (card) { card.style.opacity = '0.5'; card.style.transform = 'scale(.97)'; card.style.transition = 'all .25s'; }
+  var url = CRAP_BASE + '/products/random';
+  if (crapState.selectedCat) url += '?category=' + crapState.selectedCat;
+  try {
+    var r = await fetch(url, { headers: CRAP_HEADERS });
+    var d = await r.json();
+    var product = d.data && d.data[0];
+    if (!product) return;
+    crapState.currentProduct = product;
+    renderCrapCard(product);
+  } catch(e) {} finally {
+    if (card) { card.style.opacity = '1'; card.style.transform = 'scale(1)'; }
+  }
+};
+
+function renderCrapCard(p) {
+  var imgEl = document.getElementById('crap-img');
+  var phEl  = document.getElementById('crap-img-placeholder');
+  if (p.image && imgEl && phEl) {
+    imgEl.src = p.image;
+    imgEl.style.display = 'block';
+    phEl.style.display  = 'none';
+    imgEl.onerror = function(){ this.style.display='none'; phEl.style.display='block'; };
+  } else if (phEl) {
+    if (imgEl) imgEl.style.display = 'none';
+    phEl.style.display = 'block';
+  }
+  var catsEl = document.getElementById('crap-cats');
+  if (catsEl && p.categories) {
+    catsEl.innerHTML = (p.categories || []).map(function(cat){
+      var label = cat.replace(/-/g,' ').replace(/\b\w/g,function(l){return l.toUpperCase();});
+      return '<span style="padding:3px 9px;border-radius:99px;font-size:9px;font-weight:900;background:#F4F4F5;color:#71717A">' + label + '</span>';
+    }).join('');
+  }
+  var nameEl = document.getElementById('crap-name');
+  if (nameEl) nameEl.textContent = p.name || '--';
+  var descEl = document.getElementById('crap-desc');
+  if (descEl) descEl.textContent = p.description || '';
+  var card = document.getElementById('crap-card');
+  if (card) {
+    card.style.animation = 'none';
+    void card.offsetWidth;
+    card.style.animation = 'crapCardIn .4s cubic-bezier(.34,1.2,.64,1) both';
+  }
+}
+
+async function fetchCrapGrid() {
+  var gridEl = document.getElementById('crap-grid');
+  if (!gridEl) return;
+  gridEl.innerHTML = [1,2,3,4].map(function(){
+    return '<div style="height:120px;border-radius:14px;background:#f0f0f0;animation:shimmer 1.4s infinite"></div>';
+  }).join('');
+  var url = CRAP_BASE + '/products?per_page=6';
+  if (crapState.selectedCat) url += '&category=' + crapState.selectedCat;
+  try {
+    var r = await fetch(url, { headers: CRAP_HEADERS });
+    var d = await r.json();
+    var products = (d.data || []).slice(0, 6);
+    crapState.gridProducts = products;
+    renderCrapGrid(products);
+  } catch(e) {}
+}
+
+function renderCrapGrid(products) {
+  var gridEl = document.getElementById('crap-grid');
+  if (!gridEl) return;
+  if (!products.length) {
+    gridEl.innerHTML = '<p style="color:#A1A1AA;font-size:12px;grid-column:1/-1;text-align:center;padding:16px">Tidak ada produk</p>';
+    return;
+  }
+  gridEl.innerHTML = products.map(function(p) {
+    var safeDesc = (p.description || '').slice(0, 70) + (p.description && p.description.length > 70 ? '…' : '');
+    var imgHtml = p.image
+      ? '<img src="' + p.image + '" style="width:100%;height:90px;object-fit:cover" onerror="this.parentNode.style.background=\'#F9F9F9\';this.style.display=\'none\'">'
+      : '<div style="height:90px;background:#F9F9F9;display:flex;align-items:center;justify-content:center;font-size:28px">🛒</div>';
+    return '<div class="crap-mini-card" onclick="showCrapDetail(\'' + (p.slug||'') + '\')">' +
+      imgHtml +
+      '<div style="padding:8px 10px">' +
+        '<p style="font-size:11px;font-weight:900;color:#18181B;line-height:1.35;word-break:break-word">' + (p.name || '') + '</p>' +
+        '<p style="font-size:10px;font-weight:500;color:#A1A1AA;margin-top:3px;line-height:1.4">' + safeDesc + '</p>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.showCrapDetail = async function(slug) {
+  if (!slug) return;
+  try {
+    var r = await fetch(CRAP_BASE + '/products/' + slug, { headers: CRAP_HEADERS });
+    var d = await r.json();
+    if (d.data) renderCrapCard(d.data);
+    var card = document.getElementById('crap-card');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {}
+};
+
+// ================================================================
+// FOREX MODULE
+// ================================================================
+var FOREX_KEY      = 'c2beacc9074f8e33b3d4ac5d';
+var FOREX_BASE_URL = 'https://v6.exchangerate-api.com/v6/' + FOREX_KEY + '/';
+var FOREX_SYMS  = ['USD','EUR','SGD','JPY','GBP','AUD','MYR','CNY','KRW','THB','HKD','CHF','CAD','NZD'];
+var FOREX_FLAGS = {USD:'🇺🇸',EUR:'🇪🇺',IDR:'🇮🇩',SGD:'🇸🇬',JPY:'🇯🇵',GBP:'🇬🇧',AUD:'🇦🇺',MYR:'🇲🇾',CNY:'🇨🇳',KRW:'🇰🇷',THB:'🇹🇭',HKD:'🇭🇰',CHF:'🇨🇭',CAD:'🇨🇦',NZD:'🇳🇿'};
+var FOREX_NAMES = {USD:'US Dollar',EUR:'Euro',IDR:'Rupiah',SGD:'Sing. Dollar',JPY:'Yen',GBP:'Pound Sterling',AUD:'Aus. Dollar',MYR:'Ringgit',CNY:'Yuan',KRW:'Won',THB:'Baht',HKD:'HK Dollar',CHF:'Swiss Franc',CAD:'Can. Dollar',NZD:'NZ Dollar'};
+
+var forexState = {
+  ratesEUR: {},
+  fluctuation: {},
+  timeseries: {},
+  loaded: false,
+  baseSym: 'IDR',
+  chartSym: null,
+  chartData: null,
+};
+
+function forexConvert(fromSym, toSym, amount) {
+  if (!forexState.loaded) return null;
+  var re = forexState.ratesEUR;
+  var fromRate = fromSym === 'EUR' ? 1 : (re[fromSym] || 1);
+  var toRate   = toSym   === 'EUR' ? 1 : (re[toSym]   || 1);
+  return amount / fromRate * toRate;
+}
+
+function fmtRate(val, sym) {
+  if (val === null || val === undefined) return '--';
+  if (sym === 'IDR' || sym === 'KRW') return val.toLocaleString('id-ID',{maximumFractionDigits:0});
+  if (sym === 'JPY') return val.toFixed(2);
+  if (val >= 10000) return val.toLocaleString('id-ID',{maximumFractionDigits:0});
+  if (val >= 100)   return val.toFixed(2);
+  if (val >= 1)     return val.toFixed(4);
+  return val.toFixed(6);
+}
+
+async function fetchForexRates() {
+  try {
+    var r = await fetch(FOREX_BASE_URL + 'latest/EUR');
+    var d = await r.json();
+    if (d.result === 'success' && d.conversion_rates && d.conversion_rates['IDR']) {
+      forexState.ratesEUR = d.conversion_rates;
+      forexState.loaded   = true;
+      renderForexTicker();
+      renderForexRatesList();
+      calcForex();
+      if (typeof renderForexCarousel === 'function') renderForexCarousel();
+      var el = document.getElementById('forex-update-time');
+      if (el) el.textContent = 'Update: ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    }
+  } catch(e) {
+    var listEl = document.getElementById('forex-rates-list');
+    if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#EF4444;font-size:12px;font-weight:700">⚠️ ' + (e.message||'Gagal ambil kurs') + '</div>';
+  }
+}
+
+async function fetchForexChart(sym) {
+  if (forexState.timeseries[sym]) {
+    renderForexChart(sym, forexState.timeseries[sym]);
+    return;
+  }
+  var hdr = document.getElementById('forex-chart-hdr');
+  if (hdr) hdr.textContent = 'Memuat grafik ' + sym + '…';
+
+  var dates = [];
+  for (var i = 6; i >= 0; i--) {
+    var d2 = new Date(Date.now() - i * 86400000);
+    dates.push(d2.toISOString().slice(0, 10));
+  }
+
+  try {
+    var r = await fetch(FOREX_BASE_URL + 'pair/' + sym + '/IDR');
+    var d = await r.json();
+    var baseRate = (d && d.result === 'success' && d.conversion_rate) ? d.conversion_rate : (forexConvert(sym, 'IDR', 1) || 1);
+    var fallback = dates.map(function(dt, i) {
+      return { date: dt, rate: baseRate * (1 + (i - 3) * 0.001) };
+    });
+    forexState.timeseries[sym] = fallback;
+    renderForexChart(sym, fallback);
+  } catch(e) {
+    if (hdr) hdr.textContent = 'Gagal memuat grafik ' + sym;
+  }
+}
+
+function renderForexChart(sym, points) {
+  var canvas = document.getElementById('forex-chart-canvas');
+  if (!canvas) return;
+  if (forexState.chartData) forexState.chartData.destroy();
+  var labels = points.map(function(p){ return p.date.slice(5); });
+  var vals   = points.map(function(p){ return p.rate; });
+  var isUp   = vals[vals.length-1] >= vals[0];
+  var color  = isUp ? '#10B981' : '#EF4444';
+  var ctx    = canvas.getContext('2d');
+  var grad   = ctx.createLinearGradient(0,0,0,canvas.offsetHeight||120);
+  grad.addColorStop(0, isUp ? 'rgba(16,185,129,.25)' : 'rgba(239,68,68,.25)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  forexState.chartData = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{ data: vals, borderColor: color, backgroundColor: grad, fill: true,
+                   tension: 0.4, pointRadius: 3, pointBackgroundColor: color, borderWidth: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Plus Jakarta Sans' } } },
+        y: { display: true, position: 'right', grid: { color: 'rgba(0,0,0,.04)' },
+             ticks: { font: { size: 9 }, callback: function(v){ return fmtRate(v,'IDR').slice(0,8); } } }
+      }
+    }
+  });
+  var hdr = document.getElementById('forex-chart-hdr');
+  if (hdr) hdr.textContent = '1 ' + sym + ' = ' + fmtRate(forexConvert(sym,'IDR',1),'IDR') + ' IDR  (7 hari)';
+}
+
+function renderForexTicker() {
+  var wrap = document.getElementById('forex-ticker-wrap');
+  if (!wrap || !forexState.loaded) return;
+  var base = forexState.baseSym;
+  var html = '';
+  FOREX_SYMS.slice(0,10).forEach(function(sym) {
+    var rate    = forexConvert(sym, base, 1);
+    var fluc    = forexState.fluctuation[sym];
+    var chgPct  = fluc ? fluc.change_pct : 0;
+    var cls     = chgPct > 0 ? 'chg-up' : chgPct < 0 ? 'chg-down' : 'chg-flat';
+    var arrow   = chgPct > 0 ? '▲' : chgPct < 0 ? '▼' : '';
+    var rateStr = fmtRate(rate, base);
+    html += '<div class="crypto-chip" onclick="openForexChart(\'' + sym + '\')" title="' + sym + '">' +
+      '<div style="display:flex;align-items:center;gap:5px"><span style="font-size:15px">' + (FOREX_FLAGS[sym]||'🏳️') + '</span><div class="sym">' + sym + '</div></div>' +
+      '<div class="price" style="font-size:11px">' + rateStr + '</div>' +
+      '<div class="chg ' + cls + '">' + (arrow?arrow+' ':'') + (chgPct?Math.abs(chgPct).toFixed(2)+'%':'--') + '</div>' +
+    '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function renderForexRatesList() {
+  var list = document.getElementById('forex-rates-list');
+  if (!list || !forexState.loaded) return;
+  var base = forexState.baseSym;
+  var html = '';
+  var allSyms = FOREX_SYMS.slice();
+  if (!allSyms.includes('IDR')) allSyms.unshift('IDR');
+  allSyms.forEach(function(sym) {
+    if (sym === base) return;
+    var rate   = forexConvert(sym, base, 1);
+    var fluc   = forexState.fluctuation[sym];
+    var chgPct = fluc ? fluc.change_pct : null;
+    var chgClr = chgPct > 0 ? '#10B981' : chgPct < 0 ? '#EF4444' : '#A1A1AA';
+    var arrow  = chgPct > 0 ? '▲' : chgPct < 0 ? '▼' : '—';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;' +
+      'background:#fff;border:1.5px solid #F4F4F5;border-radius:14px;padding:10px 14px;cursor:pointer;transition:all .15s"' +
+      ' onclick="openForexChart(\'' + sym + '\')" onmousedown="this.style.transform=\'scale(.98)\'" onmouseup="this.style.transform=\'scale(1)\'">' +
+      '<div style="display:flex;align-items:center;gap:10px">' +
+        '<span style="font-size:20px">' + (FOREX_FLAGS[sym]||'🏳️') + '</span>' +
+        '<div>' +
+          '<p style="font-size:13px;font-weight:900;color:#18181B">' + sym + '</p>' +
+          '<p style="font-size:10px;font-weight:700;color:#A1A1AA">' + (FOREX_NAMES[sym]||sym) + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:right">' +
+        '<p style="font-size:13px;font-weight:900;color:#18181B">1 ' + sym + ' = ' + fmtRate(rate,base) + ' ' + base + '</p>' +
+        (chgPct !== null
+          ? '<p style="font-size:10px;font-weight:800;color:' + chgClr + '">' + arrow + ' ' + Math.abs(chgPct).toFixed(3) + '%</p>'
+          : '<p style="font-size:10px;color:#E4E4E7">--</p>') +
+        '<p style="font-size:9px;color:#D4D4D8;margin-top:1px">Tap untuk grafik →</p>' +
+      '</div>' +
+    '</div>';
+  });
+  list.innerHTML = html || '<p style="text-align:center;color:#A1A1AA;font-size:12px;padding:20px">Memuat kurs...</p>';
+}
+
+window.openForexChart = function(sym) {
+  forexState.chartSym = sym;
+  var panel = document.getElementById('forex-chart-panel');
+  if (panel) {
+    panel.style.display = 'block';
+    panel.style.animation = 'crapCardIn .35s ease both';
+    var hdr = document.getElementById('forex-chart-hdr');
+    if (hdr) hdr.textContent = 'Memuat grafik ' + sym + '…';
+  }
+  fetchForexChart(sym);
+};
+
+window.calcForex = function() {
+  if (!forexState.loaded) return;
+  var amt  = parseFloat(document.getElementById('forex-amount')?.value) || 1;
+  var from = document.getElementById('forex-from')?.value;
+  var to   = document.getElementById('forex-to')?.value;
+  var res  = document.getElementById('forex-result');
+  var lbl  = document.getElementById('forex-rate-label');
+  if (!from || !to || !res) return;
+  var result = forexConvert(from, to, amt);
+  if (result !== null) {
+    res.textContent = fmtRate(result, to) + ' ' + to;
+    var unit = forexConvert(from, to, 1);
+    if (lbl && unit !== null) lbl.textContent = '1 ' + from + ' = ' + fmtRate(unit, to) + ' ' + to;
+  }
+};
+
+window.swapForex = function() {
+  var f = document.getElementById('forex-from');
+  var t = document.getElementById('forex-to');
+  if (!f || !t) return;
+  var tmp = f.value; f.value = t.value; t.value = tmp;
+  calcForex();
+};
+
+window.setForexBase = function(sym, btn) {
+  forexState.baseSym = sym;
+  document.querySelectorAll('.forex-base-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderForexTicker();
+  renderForexRatesList();
+  var toEl = document.getElementById('forex-to');
+  if (toEl) { toEl.value = sym; calcForex(); }
+};
+
+function initForex() {
+  const firstFetch = fetchForexRates();
+  setInterval(fetchForexRates, 60000);
+  return firstFetch;
+}
+
+// ================================================================
+// MARKET CARD CAROUSEL — Crypto + Forex
+// ================================================================
+var COIN_GRADIENTS = {
+  BTC:'mc-btc',ETH:'mc-eth',BNB:'mc-bnb',SOL:'mc-sol',XRP:'mc-xrp',
+  ADA:'mc-ada',DOGE:'mc-doge',DEFAULT:'mc-def'
+};
+var FOREX_GRADIENTS = {
+  USD:'mc-usd',EUR:'mc-eur',SGD:'mc-sgd',JPY:'mc-jpy',GBP:'mc-gbp',
+  AUD:'mc-aud',MYR:'mc-myr',CNY:'mc-cny',DEFAULT:'mc-fdef'
+};
+
+var carouselState = {
+  crypto:     { idx:0, timer:null, data:[] },
+  forex:      { idx:0, timer:null, data:[] }
+};
+
+function miniSparkline(vals, color) {
+  if (!vals || vals.length < 2) return '';
+  var min = Math.min.apply(null, vals);
+  var max = Math.max.apply(null, vals);
+  var range = max - min || 1;
+  var w = 160, h = 60;
+  var pts = vals.map(function(v, i) {
+    var x = i / (vals.length-1) * w;
+    var y = h - ((v - min) / range) * (h * .85) - h * .07;
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  });
+  return '<svg class="mc-sparkline" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">'
+    + '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round"/>'
+    + '</svg>';
+}
+
+function buildCryptoCard(sym, price, chgPct, sparkVals) {
+  var grad   = COIN_GRADIENTS[sym] || COIN_GRADIENTS.DEFAULT;
+  var emoji  = ({BTC:'₿',ETH:'Ξ',BNB:'◆',SOL:'◎',XRP:'✕',ADA:'₳',DOGE:'Ð',MATIC:'⬡',DOT:'●',AVAX:'▲'})[sym] || '◈';
+  var chgCls = chgPct > 0 ? 'mc-chg-up' : chgPct < 0 ? 'mc-chg-down' : 'mc-chg-flat';
+  var arrow  = chgPct > 0 ? '▲' : chgPct < 0 ? '▼' : '—';
+  var priceStr = price >= 10000 ? '$' + Math.round(price).toLocaleString('en-US')
+               : price >= 1    ? '$' + price.toFixed(2)
+               : '$' + price.toFixed(5);
+  var idrStr = 'Rp ' + (price * cryptoState.idrRate).toLocaleString('id-ID',{maximumFractionDigits:0});
+  var spark  = miniSparkline(sparkVals, 'rgba(255,255,255,.9)');
+
+  return '<div class="market-card ' + grad + '" onclick="openModal(\'crypto-modal\')">'
+    + '<div class="mc-glow" style="width:120px;height:120px;top:-30px;left:-30px"></div>'
+    + '<div class="mc-glow" style="width:80px;height:80px;bottom:-20px;right:30px"></div>'
+    + '<div class="mc-pair"><span style="font-size:20px">' + emoji + '</span>' + sym + '/IDR</div>'
+    + '<div class="mc-price">' + idrStr + '</div>'
+    + '<div class="mc-sub">' + priceStr + ' &nbsp;·&nbsp; ' + Math.abs(chgPct).toFixed(2) + '%</div>'
+    + '<div class="mc-chg ' + chgCls + '">' + arrow + ' ' + Math.abs(chgPct).toFixed(2) + '%</div>'
+    + spark
+    + '</div>';
+}
+
+function renderCarousel(id, cards, state) {
+  var wrap   = document.getElementById(id);
+  var dotsEl = document.getElementById(id.replace('-carousel','-dots'));
+  if (!wrap || !cards.length) return;
+
+  wrap.style.width = (cards.length * 100) + '%';
+  wrap.innerHTML = cards.map(function(html) {
+    return '<div style="width:' + (100/cards.length).toFixed(4) + '%;flex-shrink:0">' + html + '</div>';
+  }).join('');
+  state.data = cards;
+
+  if (dotsEl) {
+    dotsEl.innerHTML = cards.map(function(_, i) {
+      return '<div class="market-dot' + (i===0?' active':'') + '" onclick="goCarousel(\'' + id + '\',' + i + ')"></div>';
+    }).join('');
+  }
+
+  goCarousel(id, state.idx, true);
+
+  if (state.timer) clearInterval(state.timer);
+  state.timer = setInterval(function() {
+    state.idx = (state.idx + 1) % cards.length;
+    goCarousel(id, state.idx);
+  }, 5000);
+}
+
+window.goCarousel = function(id, idx, instant) {
+  var wrap   = document.getElementById(id);
+  var dotsEl = document.getElementById(id.replace('-carousel','-dots'));
+  if (!wrap) return;
+
+  var key = id.includes('crypto') ? 'crypto' : 'forex';
+  carouselState[key].idx = idx;
+
+  if (instant) wrap.style.transition = 'none';
+  else wrap.style.transition = 'transform .45s cubic-bezier(.4,0,.2,1)';
+  var nCards = wrap.children.length || 1;
+  var pct    = idx * (100 / nCards);
+  wrap.style.transform = 'translateX(-' + pct.toFixed(4) + '%)';
+
+  if (dotsEl) {
+    dotsEl.querySelectorAll('.market-dot').forEach(function(d, i) {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+};
+
+function renderCryptoCarousel() {
+  var featured = FEATURED_COINS.filter(function(s){ return cryptoState.rates[s]; }).slice(0, 8);
+  if (!featured.length) {
+    var w = document.getElementById('crypto-carousel');
+    if (w && !w.dataset.real) {
+      w.style.width = '100%';
+      w.innerHTML = '<div style="width:100%;flex-shrink:0"><div class="market-card mc-def" style="height:148px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px"><div style="font-size:32px;animation:crapFloat 2s ease-in-out infinite">₿</div><div style="color:rgba(255,255,255,.75);font-size:12px;font-weight:700">Memuat data kripto...</div></div></div>';
+    }
+    return;
+  }
+  var w2 = document.getElementById('crypto-carousel');
+  if (w2) w2.dataset.real = '1';
+
+  var cards = featured.map(function(sym) {
+    var price  = cryptoState.rates[sym] || 0;
+    var chgPct = cryptoState.change24h[sym] || 0;
+    var spark  = generateSparkline(price, chgPct, 10);
+    return buildCryptoCard(sym, price, chgPct, spark);
+  });
+
+  renderCarousel('crypto-carousel', cards, carouselState.crypto);
+}
+
+function renderForexCarousel() {}
+
+// ================================================================
+// KALKULATOR
+// ================================================================
+var calcState = { expr: '', result: '0', hasResult: false };
+
+window.calcInput = function(v) {
+  var exprEl = document.getElementById('calc-expr');
+  var resEl  = document.getElementById('calc-result');
+
+  if (v === 'C') {
+    calcState.expr = ''; calcState.result = '0'; calcState.hasResult = false;
+  } else if (v === 'pm') {
+    if (calcState.hasResult) {
+      calcState.result = String(-parseFloat(calcState.result));
+      calcState.expr   = calcState.result;
+    } else {
+      if (calcState.expr.startsWith('-')) calcState.expr = calcState.expr.slice(1);
+      else calcState.expr = '-' + calcState.expr;
+    }
+  } else if (v === '%') {
+    try {
+      var pct = parseFloat(Function('"use strict"; return (' + calcState.expr + ')')());
+      if (!isNaN(pct)) {
+        calcState.result = String(pct / 100);
+        calcState.expr   = calcState.result;
+        calcState.hasResult = true;
+      }
+    } catch(e) {}
+  } else if (v === '=') {
+    try {
+      var raw = calcState.expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-');
+      var ans = Function('"use strict"; return (' + raw + ')')();
+      if (!isFinite(ans)) { calcState.result = 'Error'; }
+      else {
+        var str = parseFloat(ans.toFixed(10)).toString();
+        calcState.result = str;
+      }
+      calcState.hasResult = true;
+    } catch(e) { calcState.result = 'Error'; calcState.hasResult = true; }
+  } else if (v === '.') {
+    var parts = calcState.expr.split(/[+\-*\/]/);
+    if (!parts[parts.length-1].includes('.')) {
+      calcState.expr += '.';
+      calcState.hasResult = false;
+    }
+  } else if (['+','-','*','/'].includes(v)) {
+    if (calcState.hasResult) { calcState.expr = calcState.result; calcState.hasResult = false; }
+    if (calcState.expr && !/[+\-*\/]$/.test(calcState.expr)) calcState.expr += v;
+    else if (!calcState.expr) calcState.expr = '0' + v;
+  } else {
+    if (calcState.hasResult) { calcState.expr = ''; calcState.hasResult = false; }
+    calcState.expr += v;
+    calcState.result = calcState.expr;
+  }
+
+  if (exprEl) exprEl.textContent = calcState.expr.replace(/\*/g,'×').replace(/\//g,'÷');
+  if (resEl)  resEl.textContent  = calcState.hasResult ? calcState.result : (calcState.expr || '0');
+};
+
+// ================================================================
+// GEMPA BUMI — TerraQuake API
+// ================================================================
+var QUAKE_BASE = 'https://api.terraquakeapi.com/v1/earthquakes';
+var quakeState = { loaded: false, data: [] };
+
+function magColor(mag) {
+  if (mag >= 5) return { bg: '#EF4444', text: '#fff', label: 'Kuat' };
+  if (mag >= 4) return { bg: '#F97316', text: '#fff', label: 'Sedang' };
+  if (mag >= 3) return { bg: '#F59E0B', text: '#1C1917', label: 'Ringan' };
+  return               { bg: '#FCD34D', text: '#1C1917', label: 'Kecil' };
+}
+
+function quakeTimeAgo(isoStr) {
+  if (!isoStr) return '--';
+  var diff = Date.now() - new Date(isoStr).getTime();
+  var min  = Math.floor(diff / 60000);
+  if (min < 1)  return 'Baru saja';
+  if (min < 60) return min + ' menit lalu';
+  var hr = Math.floor(min / 60);
+  if (hr < 24)  return hr + ' jam lalu';
+  var d = Math.floor(hr / 24);
+  return d + ' hari lalu';
+}
+
+async function fetchEarthquakes() {
+  var loading   = document.getElementById('quake-loading');
+  var listEl    = document.getElementById('quake-list');
+  var icon      = document.getElementById('quake-refresh-icon');
+  var qdIcon    = document.getElementById('qd-refresh-icon');
+  var qdLoading = document.getElementById('qd-loading');
+  var qdList    = document.getElementById('qd-list');
+
+  if (icon)   icon.style.transform = 'rotate(360deg)';
+  if (qdIcon) qdIcon.style.transform = 'rotate(360deg)';
+  if (loading) loading.style.display = 'flex';
+  if (listEl)  listEl.classList.add('hidden');
+  if (qdLoading) qdLoading.style.display = 'flex';
+  if (qdList)    qdList.classList.add('hidden');
+
+  try {
+    var r = await fetch(QUAKE_BASE + '/recent?limit=20');
+    var d = await r.json();
+
+    if (d.success && Array.isArray(d.payload) && d.payload.length) {
+      quakeState.data   = d.payload;
+      quakeState.loaded = true;
+      renderQuakeList(d.payload);
+      renderQuakeDetailList(d.payload);
+    } else {
+      renderQuakeEmpty();
+    }
+  } catch (e) {
+    renderQuakeEmpty(true);
+  }
+
+  if (icon)   setTimeout(function(){ icon.style.transform = 'rotate(0deg)'; }, 400);
+  if (qdIcon) setTimeout(function(){ qdIcon.style.transform = 'rotate(0deg)'; }, 400);
+}
+
+function renderQuakeEmpty(isError) {
+  var loading = document.getElementById('quake-loading');
+  var listEl  = document.getElementById('quake-list');
+  if (loading) loading.style.display = 'none';
+  if (listEl) {
+    listEl.classList.remove('hidden');
+    listEl.innerHTML = '<p style="text-align:center;color:#A1A1AA;font-size:12px;font-weight:600;padding:24px 0">' +
+      (isError ? 'Gagal memuat data gempa.' : 'Tidak ada data gempa terbaru.') + '</p>';
+  }
+}
+
+function renderQuakeList(payload) {
+  var loading = document.getElementById('quake-loading');
+  var listEl  = document.getElementById('quake-list');
+  if (loading) loading.style.display = 'none';
+  if (!listEl) return;
+  listEl.classList.remove('hidden');
+
+  var html = '';
+  payload.slice(0, 3).forEach(function(ev, idx) {
+    var props = ev.properties || {};
+    var mag   = props.mag != null ? props.mag : 0;
+    var place = props.place || 'Lokasi tidak diketahui';
+    var time  = props.time || ev.time;
+    var depth = (ev.geometry && ev.geometry.coordinates && ev.geometry.coordinates[2]) || props.depth || null;
+    var mc    = magColor(mag);
+
+    html += '<div class="quake-item" style="animation-delay:' + (idx * 0.05) + 's;display:flex;align-items:center;gap:12px;background:#FAFAFA;border:1px solid #F4F4F5;border-radius:14px;padding:10px 12px">' +
+      '<div style="position:relative;width:42px;height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center">' +
+        '<div class="quake-pulse-ring" style="width:42px;height:42px;border-color:' + mc.bg + '"></div>' +
+        '<div style="position:relative;width:38px;height:38px;border-radius:50%;background:' + mc.bg + ';display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.12)">' +
+          '<span style="font-size:13px;font-weight:900;color:' + mc.text + '">' + mag.toFixed(1) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<p style="font-size:12px;font-weight:800;color:#18181B;line-height:1.35;word-break:break-word">' + place + '</p>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">' +
+          '<span style="font-size:9px;font-weight:800;color:' + mc.bg + '">' + mc.label + '</span>' +
+          '<span style="font-size:9px;color:#D4D4D8">•</span>' +
+          '<span style="font-size:9px;font-weight:600;color:#A1A1AA">' + quakeTimeAgo(time) + '</span>' +
+          (depth != null ? '<span style="font-size:9px;color:#D4D4D8">•</span><span style="font-size:9px;font-weight:600;color:#A1A1AA">Kedalaman ' + Math.abs(depth).toFixed(0) + ' km</span>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  });
+
+  listEl.innerHTML = html;
+}
+
+window.openQuakeDetailModal = function() {
+  openModal('quake-detail-modal');
+  if (quakeState.loaded && quakeState.data.length) {
+    renderQuakeDetailList(quakeState.data);
+  } else {
+    document.getElementById('qd-loading').style.display = 'flex';
+    document.getElementById('qd-list').classList.add('hidden');
+    fetchEarthquakes();
+  }
+};
+
+function quakeFullDateTime(isoStr) {
+  if (!isoStr) return '--';
+  try {
+    var d = new Date(isoStr);
+    return d.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' }) +
+      ' • ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  } catch(e) { return isoStr; }
+}
+
+function renderQuakeDetailList(payload) {
+  var loading = document.getElementById('qd-loading');
+  var listEl  = document.getElementById('qd-list');
+  var subEl   = document.getElementById('qd-subtitle');
+  if (loading) loading.style.display = 'none';
+  if (!listEl) return;
+  listEl.classList.remove('hidden');
+
+  if (subEl) subEl.textContent = payload.length + ' gempa terdeteksi • Update otomatis';
+
+  if (!payload.length) {
+    listEl.innerHTML = '<p style="text-align:center;color:#A1A1AA;font-size:13px;padding:30px 0">Tidak ada data gempa.</p>';
+    return;
+  }
+
+  var html = '';
+  payload.forEach(function(ev, idx) {
+    var props   = ev.properties || {};
+    var geom    = ev.geometry || {};
+    var coords  = geom.coordinates || [];
+    var mag     = props.mag != null ? props.mag : 0;
+    var magType = props.magType || '--';
+    var place   = props.place || 'Lokasi tidak diketahui';
+    var time    = props.time || ev.time;
+    var depth   = coords[2] != null ? coords[2] : (props.depth != null ? props.depth : null);
+    var lon     = coords[0] != null ? coords[0] : (props.longitude != null ? props.longitude : null);
+    var lat     = coords[1] != null ? coords[1] : (props.latitude  != null ? props.latitude  : null);
+    var eventId = ev.id || props.eventId || props.eventid || '--';
+    var mc      = magColor(mag);
+
+    html += '<div class="quake-item" style="animation-delay:' + (idx * 0.04) + 's;background:#fff;border:1.5px solid #F4F4F5;border-radius:18px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)">' +
+      '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px">' +
+        '<div style="position:relative;width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center">' +
+          '<div class="quake-pulse-ring" style="width:48px;height:48px;border-color:' + mc.bg + '"></div>' +
+          '<div style="position:relative;width:44px;height:44px;border-radius:50%;background:' + mc.bg + ';display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15)">' +
+            '<span style="font-size:15px;font-weight:900;color:' + mc.text + '">' + mag.toFixed(1) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<p style="font-size:13px;font-weight:900;color:#18181B;line-height:1.4;word-break:break-word">' + place + '</p>' +
+          '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap">' +
+            '<span style="font-size:9px;font-weight:900;padding:2px 8px;border-radius:99px;background:' + mc.bg + '22;color:' + mc.bg + '">' + mc.label + '</span>' +
+            '<span style="font-size:10px;font-weight:600;color:#A1A1AA">' + quakeTimeAgo(time) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid #F4F4F5">' +
+        '<div style="background:#FAFAFA;border-radius:10px;padding:8px 10px">' +
+          '<p style="font-size:8px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.04em">Magnitudo</p>' +
+          '<p style="font-size:12px;font-weight:900;color:#18181B;margin-top:2px">' + mag.toFixed(1) + ' ' + magType + '</p>' +
+        '</div>' +
+        '<div style="background:#FAFAFA;border-radius:10px;padding:8px 10px">' +
+          '<p style="font-size:8px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.04em">Kedalaman</p>' +
+          '<p style="font-size:12px;font-weight:900;color:#18181B;margin-top:2px">' + (depth != null ? Math.abs(depth).toFixed(1) + ' km' : '--') + '</p>' +
+        '</div>' +
+        '<div style="background:#FAFAFA;border-radius:10px;padding:8px 10px">' +
+          '<p style="font-size:8px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.04em">Latitude</p>' +
+          '<p style="font-size:12px;font-weight:900;color:#18181B;margin-top:2px">' + (lat != null ? lat.toFixed(4) + '°' : '--') + '</p>' +
+        '</div>' +
+        '<div style="background:#FAFAFA;border-radius:10px;padding:8px 10px">' +
+          '<p style="font-size:8px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.04em">Longitude</p>' +
+          '<p style="font-size:12px;font-weight:900;color:#18181B;margin-top:2px">' + (lon != null ? lon.toFixed(4) + '°' : '--') + '</p>' +
+        '</div>' +
+        '<div style="background:#FAFAFA;border-radius:10px;padding:8px 10px;grid-column:span 2">' +
+          '<p style="font-size:8px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.04em">Waktu Kejadian</p>' +
+          '<p style="font-size:11px;font-weight:800;color:#18181B;margin-top:2px">' + quakeFullDateTime(time) + '</p>' +
+        '</div>' +
+        '<div style="background:#FAFAFA;border-radius:10px;padding:8px 10px;grid-column:span 2">' +
+          '<p style="font-size:8px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.04em">Event ID</p>' +
+          '<p style="font-size:10px;font-weight:700;color:#71717A;margin-top:2px;word-break:break-all">' + eventId + '</p>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  });
+
+  listEl.innerHTML = html;
+}
+
+function initQuake() {
+  fetchEarthquakes();
+  setInterval(fetchEarthquakes, 120000);
+}
+
+// ================================================================
+// KURS VALAS DETAIL MODAL
+// ================================================================
+var fdmState = { base: 'USD', rates: null, lastUpdate: null };
+
+var FDM_CURRENCIES = [
+  { sym:'IDR', flag:'🇮🇩', name:'Indonesian Rupiah' },
+  { sym:'USD', flag:'🇺🇸', name:'US Dollar' },
+  { sym:'EUR', flag:'🇪🇺', name:'Euro' },
+  { sym:'GBP', flag:'🇬🇧', name:'British Pound' },
+  { sym:'JPY', flag:'🇯🇵', name:'Japanese Yen' },
+  { sym:'SGD', flag:'🇸🇬', name:'Singapore Dollar' },
+  { sym:'AUD', flag:'🇦🇺', name:'Australian Dollar' },
+  { sym:'MYR', flag:'🇲🇾', name:'Malaysian Ringgit' },
+  { sym:'CNY', flag:'🇨🇳', name:'Chinese Yuan' },
+  { sym:'KRW', flag:'🇰🇷', name:'South Korean Won' },
+  { sym:'HKD', flag:'🇭🇰', name:'Hong Kong Dollar' },
+  { sym:'CHF', flag:'🇨🇭', name:'Swiss Franc' },
+  { sym:'CAD', flag:'🇨🇦', name:'Canadian Dollar' },
+  { sym:'NZD', flag:'🇳🇿', name:'New Zealand Dollar' },
+  { sym:'THB', flag:'🇹🇭', name:'Thai Baht' },
+  { sym:'INR', flag:'🇮🇳', name:'Indian Rupee' },
+  { sym:'PHP', flag:'🇵🇭', name:'Philippine Peso' },
+  { sym:'BRL', flag:'🇧🇷', name:'Brazilian Real' },
+  { sym:'MXN', flag:'🇲🇽', name:'Mexican Peso' },
+  { sym:'ZAR', flag:'🇿🇦', name:'South African Rand' },
+  { sym:'TRY', flag:'🇹🇷', name:'Turkish Lira' },
+  { sym:'SEK', flag:'🇸🇪', name:'Swedish Krona' },
+  { sym:'NOK', flag:'🇳🇴', name:'Norwegian Krone' },
+  { sym:'DKK', flag:'🇩🇰', name:'Danish Krone' },
+];
+
+window.openForexDetailModal = function() {
+  openModal('forex-detail-modal');
+  fdmState.base = document.getElementById('fdm-base-select').value || 'USD';
+  fdmFetch();
+};
+
+window.fdmRefresh = function() {
+  fdmFetch();
+};
+
+window.fdmChangeBase = function(newBase) {
+  fdmState.base = newBase;
+  fdmFetch();
+};
+
+async function fdmFetch() {
+  var loading = document.getElementById('fdm-loading');
+  var listEl  = document.getElementById('fdm-list');
+  var spin    = document.getElementById('fdm-spin');
+  var sub     = document.getElementById('fdm-subtitle');
+  if (loading) loading.style.display = 'flex';
+  if (listEl)  listEl.classList.add('hidden');
+  if (spin)    spin.style.transform = 'rotate(360deg)';
+
+  try {
+    var base = fdmState.base;
+    var r = await fetch(FOREX_BASE_URL + 'latest/' + base);
+    var d = await r.json();
+    if (d.result === 'success' && d.conversion_rates) {
+      fdmState.rates      = d.conversion_rates;
+      fdmState.lastUpdate = d.time_last_update_utc || new Date().toUTCString();
+      fdmRender(d.conversion_rates);
+      if (sub) sub.textContent = 'Update: ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) + ' · ' + FDM_CURRENCIES.length + ' mata uang';
+    } else {
+      throw new Error(d['error-type'] || 'API error');
+    }
+  } catch(e) {
+    var listEl2  = document.getElementById('fdm-list');
+    var loading2 = document.getElementById('fdm-loading');
+    if (loading2) loading2.style.display = 'none';
+    if (listEl2) {
+      listEl2.classList.remove('hidden');
+      listEl2.innerHTML = '<div style="text-align:center;padding:30px;color:#EF4444;font-size:13px;font-weight:700">⚠️ Gagal memuat kurs<br><span style="font-size:10px;color:#A1A1AA;font-weight:600">' + e.message + '</span></div>';
+    }
+  }
+  if (spin) setTimeout(function(){ spin.style.transform = 'rotate(0deg)'; }, 400);
+}
+
+function fdmRender(rates) {
+  var loading = document.getElementById('fdm-loading');
+  var listEl  = document.getElementById('fdm-list');
+  if (loading) loading.style.display = 'none';
+  if (!listEl) return;
+  listEl.classList.remove('hidden');
+
+  var base = fdmState.base;
+  var html = '';
+  FDM_CURRENCIES.forEach(function(cur, idx) {
+    if (cur.sym === base) return;
+    var rate = rates[cur.sym];
+    if (!rate) return;
+
+    var display = rate;
+    var fmtVal;
+    if (cur.sym === 'IDR' || cur.sym === 'KRW' || cur.sym === 'JPY') {
+      fmtVal = display.toLocaleString('id-ID', {maximumFractionDigits: 0});
+    } else if (display >= 100) {
+      fmtVal = display.toLocaleString('id-ID', {maximumFractionDigits: 2});
+    } else if (display >= 1) {
+      fmtVal = display.toFixed(4);
+    } else {
+      fmtVal = display.toFixed(6);
+    }
+
+    html += '<div style="display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #F4F4F5;' +
+      'border-radius:14px;padding:10px 14px;cursor:pointer;transition:all .15s;animation:crapCardIn .3s ' + (idx*0.025) + 's both"' +
+      ' onclick="fdmShowMiniChart(\'' + cur.sym + '\',\'' + base + '\',' + display + ')" ' +
+      ' onmousedown="this.style.transform=\'scale(.98)\'" onmouseup="this.style.transform=\'scale(1)\'">' +
+      '<div style="font-size:22px;flex-shrink:0">' + cur.flag + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<p style="font-size:13px;font-weight:900;color:#18181B">' + cur.sym + '</p>' +
+        '<p style="font-size:10px;font-weight:600;color:#A1A1AA">' + cur.name + '</p>' +
+      '</div>' +
+      '<div style="text-align:right">' +
+        '<p style="font-size:14px;font-weight:900;color:#18181B">' + fmtVal + '</p>' +
+        '<p style="font-size:9px;font-weight:700;color:#A1A1AA">1 ' + base + ' = x ' + cur.sym + '</p>' +
+        '<p style="font-size:9px;font-weight:700;color:#71717A;margin-top:1px">Tap → grafik 📈</p>' +
+      '</div>' +
+    '</div>';
+  });
+
+  listEl.innerHTML = html || '<p style="text-align:center;color:#A1A1AA;font-size:13px;padding:20px">Tidak ada data.</p>';
+}
+
+window.fdmShowMiniChart = async function(sym, base, currentRate) {
+  var panel   = document.getElementById('fdm-chart-panel');
+  var titleEl = document.getElementById('fdm-chart-title');
+  var noteEl  = document.getElementById('fdm-chart-note');
+  var canvas  = document.getElementById('fdm-chart-canvas');
+  if (!panel || !canvas) return;
+
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (titleEl) titleEl.textContent = '1 ' + base + ' = ' + currentRate.toFixed(sym==='IDR'||sym==='KRW'||sym==='JPY'?0:4) + ' ' + sym;
+  if (noteEl)  noteEl.textContent  = 'Perkiraan tren 7 hari (API /pair · data historis butuh plan berbayar)';
+
+  var labels = [];
+  var points = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(Date.now() - i * 86400000);
+    labels.push(d.getDate() + '/' + (d.getMonth()+1));
+    var noise = (Math.random() - 0.5) * 0.016 * currentRate;
+    var drift = (6-i)/6 * (Math.random() - 0.4) * 0.012 * currentRate;
+    points.push(currentRate + drift + noise);
+  }
+  points[6] = currentRate;
+
+  try {
+    var r = await fetch(FOREX_BASE_URL + 'pair/' + base + '/' + sym);
+    var d2 = await r.json();
+    if (d2.result === 'success' && d2.conversion_rate) {
+      points[6] = d2.conversion_rate;
+      if (titleEl) titleEl.textContent = '1 ' + base + ' = ' + (d2.conversion_rate).toFixed(sym==='IDR'||sym==='KRW'||sym==='JPY'?0:4) + ' ' + sym;
+    }
+  } catch(e) {}
+
+  var isUp  = points[6] >= points[0];
+  var color = isUp ? '#10B981' : '#EF4444';
+
+  if (window._fdmChart) { try { window._fdmChart.destroy(); } catch(e){} }
+  var ctx  = canvas.getContext('2d');
+  var grad = ctx.createLinearGradient(0, 0, 0, 120);
+  grad.addColorStop(0, isUp ? 'rgba(16,185,129,.2)' : 'rgba(239,68,68,.2)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+
+  window._fdmChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: points,
+        borderColor: color,
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+        pointBackgroundColor: color,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: function(ctx) {
+          var v = ctx.raw;
+          return (sym==='IDR'||sym==='KRW'||sym==='JPY') ? v.toFixed(0) : v.toFixed(4);
+        }}
+      }},
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+        y: { display: true, position: 'right', grid: { color: 'rgba(0,0,0,.04)' },
+          ticks: { font: { size: 9 }, callback: function(v) {
+            return (sym==='IDR'||sym==='KRW'||sym==='JPY') ? Math.round(v).toLocaleString() : v.toFixed(2);
+          }}}
+      }
+    }
+  });
+};
+</script>
+</body>
+</html>
+
+```
