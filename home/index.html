@@ -211,12 +211,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .dompet-card:active { transform:scale(.95); }
 .prov-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; border:1.5px solid #F4F4F5; background:#fff; cursor:pointer; transition:all .15s; }
 .prov-item.selected { border-color:#10B981; background:#F0FDF4; }
-.fab-menu-overlay { position:fixed; inset:0; z-index:45; background:rgba(9,9,11,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); display:none; align-items:flex-end; justify-content:center; padding-bottom:92px; opacity:0; transition:opacity .25s ease; }
-.fab-menu-overlay.show { opacity:1; }
-.fab-menu-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; width:100%; max-width:400px; padding:0 16px; transform:translateY(24px) scale(0.95); transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
-.fab-menu-overlay.show .fab-menu-grid { transform:translateY(0) scale(1); }
-.fab-item { background:#fff; border-radius:18px; padding:12px 8px; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 8px 24px rgba(0,0,0,.12); border:none; cursor:pointer; transition:transform .15s; }
-.fab-item:active { transform:scale(.92); }
 </style>
 </head>
 <body>
@@ -308,44 +302,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     </div>
     <p class="text-lg font-black text-zinc-900 mb-1">Berhasil!</p>
     <p id="success-msg" class="text-sm text-zinc-500 font-medium text-center">Tersimpan.</p>
-  </div>
-</div>
-
-<!-- ═══════════ FAB QUICK ADD OVERLAY ═══════════ -->
-<div id="fab-menu-overlay" class="fab-menu-overlay" onclick="if(event.target===this)toggleFabMenu()">
-  <div class="fab-menu-grid">
-    <button class="fab-item" onclick="toggleFabMenu();openValasModal()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-xs" style="background:linear-gradient(135deg,#0EA5E9,#2563EB)">$€</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Transaksi Valas</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openModal('receipt-backdrop')">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:#F0FDF4;color:#10B981">🧾</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Upload Struk</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openBulkModal()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:#FEF3C7;color:#D97706">📋</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Tambah Banyak</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openTransferDompetModal()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:#EDE9FE;color:#7C3AED">💸</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Transfer</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openTransactionModal()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg font-black" style="background:linear-gradient(135deg,#10B981,#059669)">＋</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Tambah Satu</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openDepositoModal()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:#DBEAFE;color:#1D4ED8">🏦</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Deposito</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openCicilanModal()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:#FEE2E2;color:#DC2626">💳</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Cicilan</span>
-    </button>
-    <button class="fab-item" onclick="toggleFabMenu();openAIChat()">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm" style="background:#18181B">✨</div>
-      <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">AI Chat</span>
-    </button>
   </div>
 </div>
 
@@ -572,7 +528,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
       <span class="text-[10px] font-bold">Laporan</span>
     </a>
-    <button onclick="toggleFabMenu()" id="nav-add"
+    <button onclick="openTransactionModal()" id="nav-add"
       class="relative flex flex-col items-center justify-center w-14 h-full -mt-5"
       style="outline:none;background:none;border:none;cursor:pointer">
       <div id="nav-add-orb" class="ai-nav-orb" style="position:relative;background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.45);transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s">
@@ -767,38 +723,47 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   </div>
 </div>
 
-<!-- ═══════════ DOMPET DETAIL & SESUAIKAN SALDO MODAL ═══════════ -->
-<div id="dompet-detail-backdrop" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'dompet-detail-backdrop')">
-  <div class="sheet pb-8">
-    <div class="p-6">
-      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-4"></div>
-      <div class="flex justify-between items-center mb-4">
-        <div>
-          <span id="dd-tipe-badge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">BANK</span>
-          <h2 id="dd-nama" class="text-lg font-black text-zinc-900 mt-1">Dompet</h2>
-        </div>
-        <div class="flex gap-1.5">
-          <button id="dd-edit-btn" class="px-3 py-1.5 rounded-xl bg-zinc-100 text-zinc-700 text-xs font-black">Edit</button>
-          <button onclick="closeModal('dompet-detail-backdrop')" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500">✕</button>
-        </div>
-      </div>
-      <div class="rounded-2xl p-4 text-white mb-4" style="background:linear-gradient(135deg,#0F172A,#1E293B)">
-        <p class="text-[10px] font-bold text-zinc-400 uppercase">Saldo Saat Ini</p>
-        <p id="dd-saldo" class="text-2xl font-black mt-0.5">Rp 0</p>
-        <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/10 text-xs">
-          <div><span class="text-zinc-400 text-[10px] block">Pemasukan</span><span id="dd-in" class="font-black text-emerald-400">+Rp 0</span></div>
-          <div><span class="text-zinc-400 text-[10px] block">Pengeluaran</span><span id="dd-out" class="font-black text-red-400">-Rp 0</span></div>
+<!-- ═══════════ DOMPET DETAIL FULL SCREEN MODAL ═══════════ -->
+<div id="dompet-detail-backdrop" class="modal-backdrop" style="display:none;align-items:stretch;justify-content:center;z-index:75">
+  <div id="dompet-detail-sheet" style="background:#F0F4F8;width:100%;max-width:480px;height:100vh;max-height:100vh;display:flex;flex-direction:column;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.15)">
+    <div id="dd-banner" style="position:relative;padding:28px 22px 28px;color:#fff;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#0C3C78,#061F42);background-size:cover;background-position:center">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.06) 0%,rgba(0,0,0,0.25) 100%);pointer-events:none"></div>
+      <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+        <button type="button" onclick="closeModal('dompet-detail-backdrop')" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;transition:transform .15s" class="active:scale-90 transition-transform" aria-label="Kembali">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div id="dd-logo-wrap" style="display:flex;align-items:center;justify-content:flex-end">
+          <img id="dd-logo" src="" alt="" style="height:30px;max-width:115px;object-fit:contain;display:none" onerror="this.style.display='none'">
+          <span id="dd-tipe-badge" style="display:none;font-size:10px;font-weight:900;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,0.2);color:#fff">BANK</span>
         </div>
       </div>
-      <div class="bg-zinc-50 p-3.5 rounded-2xl mb-4 border border-zinc-100">
-        <p class="text-[10px] font-black text-zinc-500 uppercase mb-2">Sesuaikan Saldo Aktual</p>
-        <div class="flex gap-2">
-          <input type="number" id="dd-adjust-input" placeholder="Masukkan saldo sebenarnya" class="fi py-2 text-xs flex-1" style="background:#fff">
-          <button onclick="submitAdjustDompetSaldo()" class="px-3.5 py-2 rounded-xl bg-zinc-900 text-white text-xs font-black">Sesuaikan</button>
+      <div style="position:relative;z-index:1">
+        <p id="dd-nama" style="font-size:14px;font-weight:800;color:rgba(255,255,255,0.85);margin-bottom:4px;letter-spacing:0.01em">Dompet</p>
+        <h2 id="dd-saldo" style="font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1.15">Rp 0</h2>
+      </div>
+    </div>
+    <div style="padding:20px 18px 40px;flex:1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+        <div style="background:#fff;border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.03);border:1px solid #F1F5F9">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
+            <span style="color:#10B981;font-size:12px;font-weight:900">↑</span>
+            <span style="font-size:10px;font-weight:800;color:#94A3B8;letter-spacing:0.06em;text-transform:uppercase">PEMASUKAN</span>
+          </div>
+          <p id="dd-in" style="font-size:17px;font-weight:900;color:#10B981">Rp 0</p>
+        </div>
+        <div style="background:#fff;border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.03);border:1px solid #F1F5F9">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
+            <span style="color:#EF4444;font-size:12px;font-weight:900">↓</span>
+            <span style="font-size:10px;font-weight:800;color:#94A3B8;letter-spacing:0.06em;text-transform:uppercase">PENGELUARAN</span>
+          </div>
+          <p id="dd-out" style="font-size:17px;font-weight:900;color:#EF4444">Rp 0</p>
         </div>
       </div>
-      <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-2">Riwayat Transaksi Dompet</p>
-      <div id="dd-tx-list" class="space-y-2 max-h-52 overflow-y-auto"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 2px">
+        <h3 style="font-size:15px;font-weight:900;color:#18181B">Riwayat Transaksi</h3>
+        <span id="dd-tx-count" style="font-size:12px;font-weight:700;color:#94A3B8">0 transaksi</span>
+      </div>
+      <div id="dd-tx-list"></div>
     </div>
   </div>
 </div>
@@ -1516,7 +1481,7 @@ function hitungSaldoDompet(dompetId) {
   if (!dompet) return 0;
   var saldo = Number(dompet.saldoAwal) || 0;
   S.transactions.forEach(tx => {
-    if (tx.DompetId !== dompetId) return;
+    if (String(tx.DompetId) !== String(dompetId)) return;
     var v = Number(tx['Jumlah Uang']) || 0;
     if (tx.Kategori === 'Uang Masuk')  saldo += v;
     if (tx.Kategori === 'Uang Keluar') saldo -= v;
@@ -1731,21 +1696,7 @@ async function handleRegisterSubmit(e) {
 // ================================================================
 // MODAL, FAB & DATA HELPERS
 // ================================================================
-window.toggleFabMenu = function() {
-  const ov = document.getElementById('fab-menu-overlay');
-  const icon = document.getElementById('nav-add-icon');
-  if (!ov) return;
-  const isOpen = ov.classList.contains('show');
-  if (isOpen) {
-    ov.classList.remove('show');
-    if (icon) icon.style.transform = 'rotate(0deg)';
-    setTimeout(() => { ov.style.display = 'none'; }, 250);
-  } else {
-    ov.style.display = 'flex';
-    requestAnimationFrame(() => ov.classList.add('show'));
-    if (icon) icon.style.transform = 'rotate(45deg)';
-  }
-};
+window.toggleFabMenu = function() { openTransactionModal(); };
 
 window.openModal = function(id) {
   const el = document.getElementById(id);
@@ -1910,27 +1861,27 @@ function renderHomeDompetList() {
         ? 'background:linear-gradient(135deg,#059669,#047857);color:#fff'
         : d.tipe === 'emoney'
           ? 'background:linear-gradient(135deg,#7C3AED,#4C1D95);color:#fff'
-          : 'background:linear-gradient(135deg,#1E293B,#0F172A);color:#fff';
+          : 'background:linear-gradient(135deg,#0C3C78,#061F42);color:#fff';
     const badge = d.tipe === 'tunai' ? 'TUNAI' : d.tipe === 'emoney' ? 'E-MONEY' : 'BANK';
     const logoHtml = d.logo
-      ? `<div style="background:rgba(255,255,255,.92);border-radius:8px;padding:3px 6px;height:22px;display:flex;align-items:center"><img src="${d.logo}" style="height:15px;max-width:52px;object-fit:contain" onerror="this.parentNode.style.display='none'"></div>`
+      ? `<img src="${d.logo}" style="height:22px;max-width:68px;object-fit:contain;flex-shrink:0;display:block" onerror="this.style.display='none'">`
       : `<span style="font-size:9px;font-weight:900;background:rgba(255,255,255,.2);padding:2px 7px;border-radius:99px">${badge}</span>`;
     return `<div class="dompet-card" style="${bgStyle}" onclick="openDompetDetail('${d.id}')">
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.55) 100%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.22) 100%);pointer-events:none"></div>
       <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:6px">
-        <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nama || d.provider}</span>
+        <span style="font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nama || d.provider}</span>
         ${logoHtml}
       </div>
       <div style="position:relative;z-index:1">
-        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.05em">Saldo</p>
-        <p style="font-size:14px;font-weight:900;color:#fff;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${saldoStr}</p>
+        <p style="font-size:9px;font-weight:800;color:rgba(255,255,255,.72);text-transform:uppercase;letter-spacing:.05em">SALDO</p>
+        <p style="font-size:15px;font-weight:900;color:#fff;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${saldoStr}</p>
       </div>
     </div>`;
   }).join('');
 }
 
 // ================================================================
-// KELOLA DOMPET, DETAIL, SESUAIKAN SALDO & TRANSFER
+// KELOLA DOMPET, DETAIL FULL SCREEN & TRANSFER
 // ================================================================
 window.openKelolaDompetModal = function() {
   const listEl = document.getElementById('kelola-dompet-list');
@@ -1940,17 +1891,26 @@ window.openKelolaDompetModal = function() {
     } else {
       listEl.innerHTML = dompetState.list.map(d => {
         const s = hitungSaldoDompet(d.id);
+        const miniBg = d.background
+          ? `background-image:url('${d.background}');background-size:cover;background-position:center`
+          : (d.tipe==='tunai' ? 'background:linear-gradient(135deg,#059669,#047857)' : d.tipe==='emoney' ? 'background:linear-gradient(135deg,#7C3AED,#4C1D95)' : 'background:linear-gradient(135deg,#0C3C78,#061F42)');
+        const iconBox = d.logo
+          ? `<div style="width:42px;height:30px;border-radius:8px;${miniBg};display:flex;align-items:center;justify-content:center;padding:4px;flex-shrink:0;overflow:hidden"><img src="${d.logo}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>`
+          : `<div class="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center text-sm flex-shrink-0">${d.tipe==='tunai'?'💵':d.tipe==='emoney'?'📱':'🏦'}</div>`;
         return `<div onclick="closeModal('kelola-dompet-backdrop');openDompetDetail('${d.id}')" class="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-50 border border-zinc-100 cursor-pointer">
-          <div class="flex items-center gap-3">
-            ${d.logo ? `<img src="${d.logo}" class="w-8 h-8 object-contain rounded-lg bg-white p-1 border border-zinc-100">` : `<div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-sm">${d.tipe==='tunai'?'💵':d.tipe==='emoney'?'📱':'🏦'}</div>`}
-            <div>
-              <p class="text-xs font-black text-zinc-900">${d.nama||d.provider}</p>
+          <div class="flex items-center gap-3 min-w-0">
+            ${iconBox}
+            <div class="min-w-0">
+              <p class="text-xs font-black text-zinc-900 truncate">${d.nama||d.provider}</p>
               <p class="text-[10px] font-bold text-zinc-400 uppercase">${d.tipe}</p>
             </div>
           </div>
-          <div class="text-right">
-            <p class="text-xs font-black text-zinc-900">${idr(s)}</p>
-            <p class="text-[9px] font-bold text-emerald-600">Detail →</p>
+          <div class="flex items-center gap-2.5 flex-shrink-0">
+            <div class="text-right">
+              <p class="text-xs font-black text-zinc-900">${idr(s)}</p>
+              <p class="text-[9px] font-bold text-emerald-600">Riwayat →</p>
+            </div>
+            <button type="button" onclick="event.stopPropagation();closeModal('kelola-dompet-backdrop');openDompetModal('${d.id}')" class="px-2.5 py-1.5 rounded-xl bg-white border border-zinc-200 text-zinc-700 text-[10px] font-black active:scale-95">Edit</button>
           </div>
         </div>`;
       }).join('');
@@ -1959,64 +1919,118 @@ window.openKelolaDompetModal = function() {
   openModal('kelola-dompet-backdrop');
 };
 
+var DD_MONTH_SHORT = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+var DD_DAY_SHORT   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
 window.openDompetDetail = function(dompetId) {
   const d = dompetState.list.find(x => String(x.id) === String(dompetId));
   if (!d) return;
   dompetState.activeDetailId = d.id;
-  document.getElementById('dd-tipe-badge').textContent = (d.tipe || 'BANK').toUpperCase();
-  document.getElementById('dd-nama').textContent = d.nama || d.provider;
+
+  const banner = document.getElementById('dd-banner');
+  if (banner) {
+    if (d.background) {
+      banner.style.backgroundImage = `url('${d.background}')`;
+      banner.style.backgroundSize = 'cover';
+      banner.style.backgroundPosition = 'center';
+    } else {
+      banner.style.backgroundImage = d.tipe === 'tunai'
+        ? 'linear-gradient(135deg,#059669,#047857)'
+        : d.tipe === 'emoney'
+          ? 'linear-gradient(135deg,#7C3AED,#4C1D95)'
+          : 'linear-gradient(135deg,#0C3C78,#061F42)';
+    }
+  }
+
+  const logoEl  = document.getElementById('dd-logo');
+  const badgeEl = document.getElementById('dd-tipe-badge');
+  if (d.logo) {
+    if (logoEl)  { logoEl.src = d.logo; logoEl.style.display = 'block'; }
+    if (badgeEl) { badgeEl.style.display = 'none'; }
+  } else {
+    if (logoEl)  { logoEl.style.display = 'none'; }
+    if (badgeEl) { badgeEl.textContent = (d.tipe || 'BANK').toUpperCase(); badgeEl.style.display = 'inline-block'; }
+  }
+
+  document.getElementById('dd-nama').textContent = d.nama || d.provider || 'Dompet';
   const saldo = hitungSaldoDompet(d.id);
   document.getElementById('dd-saldo').textContent = idr(saldo);
-  document.getElementById('dd-adjust-input').value = '';
-  document.getElementById('dd-edit-btn').onclick = () => { closeModal('dompet-detail-backdrop'); openDompetModal(d.id); };
 
   let tIn = 0, tOut = 0;
-  const txs = S.transactions.filter(t => t.DompetId === d.id);
+  const txs = S.transactions
+    .filter(t => String(t.DompetId) === String(d.id))
+    .sort((a, b) => String(b.Tanggal || '').localeCompare(String(a.Tanggal || '')));
+
   txs.forEach(t => {
     const v = Number(t['Jumlah Uang']) || 0;
-    if (t.Kategori === 'Uang Masuk') tIn += v;
+    if (t.Kategori === 'Uang Masuk')  tIn += v;
     if (t.Kategori === 'Uang Keluar') tOut += v;
   });
-  document.getElementById('dd-in').textContent = '+' + idr(tIn);
-  document.getElementById('dd-out').textContent = '-' + idr(tOut);
+
+  document.getElementById('dd-in').textContent = idr(tIn);
+  document.getElementById('dd-out').textContent = idr(tOut);
+  const countEl = document.getElementById('dd-tx-count');
+  if (countEl) countEl.textContent = txs.length + ' transaksi';
 
   const txWrap = document.getElementById('dd-tx-list');
   if (txWrap) {
-    txWrap.innerHTML = txs.slice(0, 15).map(t => {
-      const isI = t.Kategori === 'Uang Masuk';
-      return `<div class="flex justify-between items-center p-2.5 rounded-xl bg-zinc-50 text-xs">
-        <div class="min-w-0 pr-2">
-          <p class="font-extrabold text-zinc-800 truncate">${t.Deskripsi}</p>
-          <p class="text-[10px] text-zinc-400">${String(t.Tanggal).slice(0,10)}</p>
-        </div>
-        <span class="font-black ${isI?'text-emerald-600':'text-red-500'} whitespace-nowrap">${isI?'+':'-'}${idr(t['Jumlah Uang'])}</span>
-      </div>`;
-    }).join('') || '<p class="text-xs text-zinc-400 text-center py-4">Belum ada transaksi di dompet ini.</p>';
+    if (!txs.length) {
+      txWrap.innerHTML = '<div style="background:#fff;border-radius:18px;padding:36px 20px;text-align:center;border:1px solid #F1F5F9"><div style="font-size:32px;margin-bottom:8px">📭</div><p style="font-size:12px;font-weight:700;color:#94A3B8">Belum ada transaksi di dompet ini.</p></div>';
+    } else {
+      const grouped = {};
+      txs.forEach(t => {
+        const dt = String(t.Tanggal || '').split('T')[0];
+        if (!dt) return;
+        if (!grouped[dt]) grouped[dt] = [];
+        grouped[dt].push(t);
+      });
+      const dates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+      let html = '<div style="display:flex;flex-direction:column;gap:16px">';
+      dates.forEach(dt => {
+        const dayTxs = grouped[dt];
+        const dayTotal = dayTxs.reduce((sum, t) => {
+          const v = Number(t['Jumlah Uang']) || 0;
+          return t.Kategori === 'Uang Keluar' ? sum - v : sum + v;
+        }, 0);
+        const dtObj = new Date(dt + 'T12:00:00');
+        const dayLbl = isNaN(dtObj.getTime())
+          ? dt
+          : (DD_DAY_SHORT[dtObj.getDay()] + ', ' + dtObj.getDate() + ' ' + DD_MONTH_SHORT[dtObj.getMonth()]);
+        const totClr = dayTotal < 0 ? '#EF4444' : '#10B981';
+        const totSign = dayTotal < 0 ? '-' : (dayTotal > 0 ? '+' : '');
+        html += '<div>';
+        html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px">
+          <span style="font-size:12px;font-weight:800;color:#71717A">${dayLbl}</span>
+          <span style="font-size:12px;font-weight:800;color:${totClr}">${totSign}${idr(Math.abs(dayTotal))}</span>
+        </div>`;
+        html += '<div style="display:flex;flex-direction:column;gap:10px">';
+        dayTxs.forEach(t => {
+          const isI = t.Kategori === 'Uang Masuk';
+          const dotClr = isI ? '#10B981' : '#EF4444';
+          const amtClr = isI ? '#10B981' : '#EF4444';
+          const sgn = isI ? '+' : '-';
+          const sub = isI ? 'Uang Masuk' : (t['Kategori Uang Keluar'] || 'Lainnya');
+          html += `<div style="background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.03);border:1px solid #F1F5F9;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;flex:1">
+              <div style="width:8px;height:8px;border-radius:50%;background:${dotClr};margin-top:6px;flex-shrink:0"></div>
+              <div style="min-width:0;flex:1">
+                <p style="font-size:13px;font-weight:800;color:#18181B;line-height:1.35;word-break:break-word">${t.Deskripsi || '—'}</p>
+                <p style="font-size:11px;font-weight:600;color:#94A3B8;margin-top:3px">${sub}</p>
+              </div>
+            </div>
+            <span style="font-size:13px;font-weight:900;color:${amtClr};white-space:nowrap;flex-shrink:0">${sgn}${idr(Number(t['Jumlah Uang']) || 0)}</span>
+          </div>`;
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+      txWrap.innerHTML = html;
+    }
   }
-  openModal('dompet-detail-backdrop');
-};
 
-window.submitAdjustDompetSaldo = async function() {
-  const id = dompetState.activeDetailId;
-  const targetVal = parseFloat(document.getElementById('dd-adjust-input').value);
-  if (!id || isNaN(targetVal)) return;
-  const current = hitungSaldoDompet(id);
-  const diff = targetVal - current;
-  if (diff === 0) { closeModal('dompet-detail-backdrop'); return; }
-  const payload = {
-    id: 'adj_' + Date.now(),
-    'Kategori': diff > 0 ? 'Uang Masuk' : 'Uang Keluar',
-    'Kategori Uang Keluar': diff < 0 ? 'Lainnya' : null,
-    'Jumlah Uang': Math.abs(diff),
-    'Tanggal': new Date().toISOString(),
-    'Deskripsi': 'Penyesuaian Saldo Dompet',
-    'DompetId': id
-  };
-  S.transactions.unshift(payload);
-  refreshAll();
-  closeModal('dompet-detail-backdrop');
-  showSuccess('Saldo disesuaikan!');
-  postData('addData', payload).catch(() => {});
+  const sheetEl = document.getElementById('dompet-detail-sheet');
+  if (sheetEl) sheetEl.scrollTop = 0;
+  openModal('dompet-detail-backdrop');
 };
 
 window.openTransferDompetModal = function() {
@@ -2130,8 +2144,9 @@ function renderDompetProviders() {
   }
   listEl.innerHTML = src.map((p, idx) => {
     const isSel = dompetState.selectedProvider && dompetState.selectedProvider.nama === p.nama;
+    const pBg = p.background ? `background-image:url('${p.background}');background-size:cover;background-position:center` : 'background:linear-gradient(135deg,#0C3C78,#061F42)';
     return `<div onclick="pickDompetProvider(${idx})" class="prov-item ${isSel ? 'selected' : ''}">
-      ${p.gambar ? `<img src="${p.gambar}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0">` : '🏦'}
+      ${p.gambar ? `<div style="width:36px;height:24px;border-radius:6px;${pBg};display:flex;align-items:center;justify-content:center;padding:3px;flex-shrink:0;overflow:hidden"><img src="${p.gambar}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>` : '🏦'}
       <span class="text-xs font-extrabold text-zinc-800 truncate">${p.nama}</span>
     </div>`;
   }).join('');
@@ -2787,7 +2802,7 @@ function renderHomeRecentTransactions() {
     } else if (dompetTx && dompetTx.logo) {
       var iconBg = dompetTx.background
         ? 'background-image:url(\'' + dompetTx.background + '\');background-size:cover;background-position:center'
-        : 'background:#F4F4F5';
+        : 'background:linear-gradient(135deg,#0C3C78,#061F42)';
       iconHtml = '<div style="width:28px;height:28px;border-radius:8px;' + iconBg + ';border:1.5px solid #F4F4F5;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center">' +
         (dompetTx.background ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,.15)"></div>' : '') +
         '<img src="' + dompetTx.logo + '" style="width:100%;height:100%;object-fit:contain;padding:3px;position:relative;z-index:1" onerror="this.style.display=\'none\'">' +
