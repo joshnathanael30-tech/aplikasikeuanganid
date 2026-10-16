@@ -314,7 +314,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     <header class="pt-9 pb-3 px-5 sticky top-0 z-20" style="background:rgba(240,244,248,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <button onclick="openSettingsModal()" class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black text-base shadow-sm active:scale-90 transition-transform" id="user-avatar">
+          <button onclick="openSettingsModal()" class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-sm active:scale-90 transition-transform overflow-hidden relative" style="background:linear-gradient(135deg,#34D399,#0D9488)" id="user-avatar" title="Ubah Foto Profil / Pengaturan">
             P
           </button>
           <div>
@@ -1104,9 +1104,44 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         <button type="button" onclick="closeModal('settings-backdrop');openSubModal()" class="p-3 rounded-2xl bg-amber-50 text-amber-800 font-black text-xs flex items-center justify-center gap-2">🔔 Langganan Rutin</button>
       </div>
       <form id="settings-form" class="space-y-3.5" onsubmit="handleSettingsSubmit(event)">
+        <!-- FOTO PROFIL / AVATAR CUSTOMIZER -->
+        <div class="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-100 space-y-3">
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Foto Profil / Avatar</label>
+            <button type="button" onclick="resetAvatarToInitial()" class="text-[10px] font-extrabold text-zinc-400 hover:text-zinc-700">Reset ke Inisial</button>
+          </div>
+          <div class="flex items-center gap-3.5">
+            <div id="set-avatar-preview" class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-md overflow-hidden flex-shrink-0" style="background:linear-gradient(135deg,#34D399,#0D9488)">
+              P
+            </div>
+            <div class="flex-1 min-w-0 space-y-1.5">
+              <div class="flex gap-2">
+                <label class="px-3 py-2 rounded-xl bg-emerald-600 text-white font-black text-[11px] cursor-pointer active:scale-95 transition-transform inline-flex items-center gap-1.5 shadow-sm">
+                  <span>📷 Upload Foto</span>
+                  <input type="file" id="set-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)">
+                </label>
+                <button type="button" onclick="toggleEmojiPickerPanel()" class="px-3 py-2 rounded-xl bg-white border border-zinc-200 text-zinc-700 font-black text-[11px] active:scale-95 transition-transform">
+                  😎 Pilih Emoji
+                </button>
+              </div>
+              <p class="text-[10px] font-semibold text-zinc-400 leading-tight">Foto otomatis dikompres (&lt;6 KB) agar muat disimpan di Google Sheets &amp; perangkat.</p>
+            </div>
+          </div>
+          <!-- Panel Pilih Emoji & Warna Latar -->
+          <div id="set-emoji-panel" class="hidden pt-2 border-t border-zinc-200/70 space-y-2.5">
+            <div>
+              <p class="text-[9px] font-black text-zinc-400 uppercase tracking-wider mb-1.5">Pilih Karakter Emoji</p>
+              <div id="set-emoji-grid" class="grid grid-cols-8 gap-1.5"></div>
+            </div>
+            <div>
+              <p class="text-[9px] font-black text-zinc-400 uppercase tracking-wider mb-1.5">Warna Latar Avatar</p>
+              <div id="set-bg-grid" class="flex gap-2 overflow-x-auto no-scroll py-0.5"></div>
+            </div>
+          </div>
+        </div>
         <div>
           <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Nama Panggilan</label>
-          <input type="text" id="set-username" placeholder="Nama kamu" class="fi">
+          <input type="text" id="set-username" placeholder="Nama kamu" class="fi" oninput="updateSettingsAvatarPreview()">
         </div>
         <div>
           <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Batas Anggaran Bulanan (Rp)</label>
@@ -1551,7 +1586,11 @@ async function syncDataInBackground() {
     const d = await r.json();
     if (d && d.status === 'success') {
       S.transactions = d.data.transactions || [];
+      const prevAvatar   = S.settings.avatar   || storageGet('keuangan_user_avatar') || '';
+      const prevAvatarBg = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || '';
       S.settings     = d.data.settings     || {};
+      if (!S.settings.avatar && prevAvatar)     S.settings.avatar   = prevAvatar;
+      if (!S.settings.avatarBg && prevAvatarBg) S.settings.avatarBg = prevAvatarBg;
       if (Array.isArray(d.data.wishlist))      { S.wishlist = d.data.wishlist; saveWishLocal(); }
       if (Array.isArray(d.data.subscriptions)) { S.subscriptions = d.data.subscriptions; saveSubLocal(); }
       saveTransactionsCache();
@@ -1772,6 +1811,41 @@ function refreshAll() {
 // ================================================================
 // HOME RENDERERS
 // ================================================================
+var AVATAR_GRADIENTS = [
+  { id: 'emerald', css: 'linear-gradient(135deg,#34D399,#0D9488)' },
+  { id: 'ocean',   css: 'linear-gradient(135deg,#38BDF8,#2563EB)' },
+  { id: 'violet',  css: 'linear-gradient(135deg,#A78BFA,#6D28D9)' },
+  { id: 'amber',   css: 'linear-gradient(135deg,#FBBF24,#EA580C)' },
+  { id: 'rose',    css: 'linear-gradient(135deg,#F472B6,#E11D48)' },
+  { id: 'slate',   css: 'linear-gradient(135deg,#334155,#0F172A)' },
+  { id: 'gold',    css: 'linear-gradient(135deg,#FDE047,#CA8A04)' }
+];
+var AVATAR_EMOJIS = [
+  '😎','🚀','👑','💎','🔥','💰','🧑‍💻','🐱',
+  '🦊','🐼','🦁','🐸','🌸','⚡','🎯','☕',
+  '🎮','🎧','🏆','✨','🦸','🧙','🤖','🐉'
+];
+
+function getAvatarBgCss(bgId) {
+  const found = AVATAR_GRADIENTS.find(g => g.id === bgId);
+  return found ? found.css : AVATAR_GRADIENTS[0].css;
+}
+
+function applyAvatarElement(el, avatarVal, bgId, fallbackName, fontSizeEmoji, fontSizeInitial) {
+  if (!el) return;
+  el.style.background = getAvatarBgCss(bgId);
+  const initial = ((fallbackName || 'P').trim()[0] || 'P').toUpperCase();
+  if (avatarVal && (avatarVal.indexOf('data:image/') === 0 || avatarVal.indexOf('http') === 0)) {
+    el.innerHTML = `<img src="${avatarVal}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.textContent='${initial}'">`;
+  } else if (avatarVal && avatarVal.indexOf('emoji:') === 0) {
+    const em = avatarVal.slice(6);
+    el.innerHTML = `<span style="font-size:${fontSizeEmoji || '20px'};line-height:1">${em}</span>`;
+  } else {
+    el.textContent = initial;
+    el.style.fontSize = fontSizeInitial || '16px';
+  }
+}
+
 function renderHomeHeader() {
   const hr = new Date().getHours();
   const greet = hr < 11 ? 'Selamat Pagi,' : hr < 15 ? 'Selamat Siang,' : hr < 19 ? 'Selamat Sore,' : 'Selamat Malam,';
@@ -1781,7 +1855,9 @@ function renderHomeHeader() {
   const nameEl = document.getElementById('username-display');
   if (nameEl) nameEl.textContent = name;
   const avEl = document.getElementById('user-avatar');
-  if (avEl) avEl.textContent = (name.trim()[0] || 'P').toUpperCase();
+  const avatarVal = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
+  const avatarBg  = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || 'emerald';
+  applyAvatarElement(avEl, avatarVal, avatarBg, name, '20px', '16px');
 }
 
 function renderSubAlerts() {
@@ -2717,10 +2793,90 @@ window.handleAddSub = function(e) {
   renderSubAlerts();
 };
 
+var tempAvatarVal = '';
+var tempAvatarBg  = 'emerald';
+
+function renderAvatarPickerGrids() {
+  const eGrid = document.getElementById('set-emoji-grid');
+  if (eGrid) {
+    eGrid.innerHTML = AVATAR_EMOJIS.map(em => {
+      const isSel = tempAvatarVal === ('emoji:' + em);
+      return `<button type="button" onclick="selectAvatarEmoji('${em}')" class="h-9 rounded-xl flex items-center justify-center text-lg transition-transform active:scale-90" style="background:${isSel ? '#D1FAE5' : '#fff'};border:1.5px solid ${isSel ? '#10B981' : '#E4E4E7'}">${em}</button>`;
+    }).join('');
+  }
+  const bGrid = document.getElementById('set-bg-grid');
+  if (bGrid) {
+    bGrid.innerHTML = AVATAR_GRADIENTS.map(g => {
+      const isSel = tempAvatarBg === g.id;
+      return `<button type="button" onclick="selectAvatarBg('${g.id}')" class="w-8 h-8 rounded-xl flex-shrink-0 transition-transform active:scale-90" style="background:${g.css};border:2.5px solid ${isSel ? '#18181B' : 'transparent'};box-shadow:${isSel ? '0 0 0 2px #fff inset' : 'none'}"></button>`;
+    }).join('');
+  }
+}
+
+window.updateSettingsAvatarPreview = function() {
+  const prevEl = document.getElementById('set-avatar-preview');
+  const name = document.getElementById('set-username')?.value || S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
+  applyAvatarElement(prevEl, tempAvatarVal, tempAvatarBg, name, '28px', '20px');
+  renderAvatarPickerGrids();
+};
+
+window.toggleEmojiPickerPanel = function() {
+  const panel = document.getElementById('set-emoji-panel');
+  if (!panel) return;
+  panel.classList.toggle('hidden');
+  renderAvatarPickerGrids();
+};
+
+window.selectAvatarEmoji = function(em) {
+  tempAvatarVal = 'emoji:' + em;
+  updateSettingsAvatarPreview();
+};
+
+window.selectAvatarBg = function(bgId) {
+  tempAvatarBg = bgId;
+  if (tempAvatarVal && tempAvatarVal.indexOf('data:image/') === 0) {
+    tempAvatarVal = '';
+  }
+  updateSettingsAvatarPreview();
+};
+
+window.resetAvatarToInitial = function() {
+  tempAvatarVal = '';
+  updateSettingsAvatarPreview();
+};
+
+window.handleAvatarUpload = function(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const SIZE = 120;
+      canvas.width = SIZE;
+      canvas.height = SIZE;
+      const ctx = canvas.getContext('2d');
+      const minSide = Math.min(img.width, img.height);
+      const sx = (img.width - minSide) / 2;
+      const sy = (img.height - minSide) / 2;
+      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, SIZE, SIZE);
+      tempAvatarVal = canvas.toDataURL('image/jpeg', 0.78);
+      updateSettingsAvatarPreview();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+};
+
 window.openSettingsModal = function() {
   document.getElementById('set-username').value = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || '';
   document.getElementById('set-budget').value = S.settings.budget || S.settings.monthlyBudget || '';
   document.getElementById('set-pin').value = (S.settings.password && S.settings.password !== 'NONE') ? S.settings.password : '';
+  tempAvatarVal = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
+  tempAvatarBg  = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || 'emerald';
+  updateSettingsAvatarPreview();
   const infoEl = document.getElementById('set-account-info');
   if (infoEl) infoEl.textContent = (S.akun && S.akun.username) ? ('@' + S.akun.username) : 'Tersambung';
   openModal('settings-backdrop');
@@ -2734,10 +2890,14 @@ window.handleSettingsSubmit = async function(e) {
   S.settings.budget   = budget;
   S.settings.monthlyBudget = budget;
   S.settings.password = pin ? pin : 'NONE';
+  S.settings.avatar   = tempAvatarVal || '';
+  S.settings.avatarBg = tempAvatarBg || 'emerald';
+  storageSet('keuangan_user_avatar', S.settings.avatar);
+  storageSet('keuangan_user_avatar_bg', S.settings.avatarBg);
   try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(err) {}
   refreshAll();
   closeModal('settings-backdrop');
-  showSuccess('Pengaturan disimpan!');
+  showSuccess('Pengaturan & profil disimpan!');
   postData('saveSettings', S.settings).catch(() => {});
 };
 // ================================================================
