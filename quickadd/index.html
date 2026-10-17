@@ -1,1 +1,1597 @@
-print("Hello world")
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Atur Quick Add — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F0F4F8;
+  --surface: rgba(255,255,255,0.78);
+  --primary: #10B981;
+  --violet: #8B5CF6;
+  --amber: #F59E0B;
+  --sky: #0EA5E9;
+  --red: #EF4444;
+  --glass-bg: rgba(255,255,255,0.78);
+  --glass-border: rgba(255,255,255,0.7);
+  --glass-shadow: 0 4px 24px rgba(99,102,241,0.07), 0 1px 4px rgba(0,0,0,0.04);
+  --spring: 0.38s cubic-bezier(0.34,1.56,0.64,1);
+  --ease: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+body::before {
+  content:''; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(16,185,129,.10) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 85% 110%, rgba(139,92,246,.08) 0%, transparent 60%),
+    linear-gradient(160deg, #EEF2FF 0%, #F0F4F8 40%, #F0FDF4 100%);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: #18181B;
+  padding-bottom: 100px;
+  overflow-x: hidden;
+  margin: 0;
+}
+.ambient {
+  position: fixed; inset: 0; pointer-events: none; z-index: -1;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(16,185,129,0.07) 0%, transparent 70%);
+}
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow var(--ease), transform var(--ease);
+}
+.no-scroll::-webkit-scrollbar { display:none; }
+.no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+@keyframes floatSlow { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-6px); } }
+@keyframes pulseRing { 0% { transform:scale(0.92); opacity:0.75; } 70% { transform:scale(1.18); opacity:0; } 100% { transform:scale(1.18); opacity:0; } }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes checkDraw { to { stroke-dashoffset:0; } }
+
+.fade-up { animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) forwards; }
+.scale-in { animation: scaleIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
+.float-slow { animation: floatSlow 3.4s ease-in-out infinite; }
+
+.fi {
+  background:#F4F4F5;
+  border:1.5px solid transparent;
+  border-radius:14px;
+  padding:12px 14px;
+  width:100%;
+  font-size:14px;
+  font-weight:700;
+  color:#18181B;
+  outline:none;
+  transition:all 0.2s;
+  font-family:inherit;
+}
+.fi:focus {
+  outline:none;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.18), 0 2px 8px rgba(16,185,129,0.10);
+  border-color: #10B981 !important;
+  background: #FFFFFF !important;
+}
+.fi::placeholder { color:#A1A1AA; font-weight:500; }
+
+.subcat-icon-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  transition: transform .15s; width: 64px;
+}
+.subcat-icon-btn:active { transform: scale(0.88); }
+.subcat-icon-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; border: 2.5px solid transparent;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.subcat-icon-btn.active .subcat-icon-circle {
+  border-color: #EF4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.16);
+  transform: translateY(-2px);
+}
+.subcat-icon-label {
+  font-size: 10px; font-weight: 700; color: #71717A;
+  text-align: center; white-space: nowrap; width: 64px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.subcat-icon-btn.active .subcat-icon-label { color: #EF4444; font-weight: 900; }
+
+.color-swatch-btn {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:8px 6px; border-radius:16px; border:2px solid #E4E4E7;
+  background:#fff; cursor:pointer; transition:all .18s cubic-bezier(.34,1.56,.64,1);
+}
+.color-swatch-btn:active { transform:scale(0.92); }
+.color-swatch-btn.active {
+  border-color:#18181B;
+  background:#F8FAFC;
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(0,0,0,0.08);
+}
+
+.choice-card {
+  position:relative; overflow:hidden; border-radius:24px; padding:20px;
+  border:2px solid transparent; cursor:pointer; text-align:left;
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.choice-card:hover { transform:translateY(-2px); }
+.choice-card:active { transform:scale(0.97); }
+
+.modal-backdrop {
+  position:fixed; inset:0; background:rgba(9,9,11,0.45);
+  backdrop-filter:blur(8px); display:none; align-items:flex-end;
+  justify-content:center; z-index:70; opacity:0; transition:opacity 0.28s;
+}
+.modal-backdrop.show { opacity:1; }
+.modal-backdrop .sheet {
+  background:#fff; border-radius:28px 28px 0 0;
+  box-shadow: 0 -12px 48px rgba(0,0,0,0.12);
+  transform:translateY(100%); transition:transform 0.36s cubic-bezier(0.22,1,0.36,1);
+  width:100%; max-width:480px; max-height:90vh; overflow-y:auto;
+}
+.modal-backdrop.show .sheet { transform:translateY(0); }
+
+.check-path { stroke-dasharray:100; stroke-dashoffset:100; animation: checkDraw 0.6s cubic-bezier(0.65,0,0.45,1) 0.15s forwards; }
+.spin-sm { width:16px; height:16px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+
+.nav-btn { transition: color 0.2s, transform 0.15s; color:#A1A1AA; text-decoration:none; }
+.nav-btn.active { color:#18181B; }
+.nav-btn:active { transform:scale(0.88); }
+.ai-nav-orb {
+  width:46px; height:46px; border-radius:16px; background:#111;
+  border:1.5px solid rgba(255,255,255,.12); display:flex; align-items:center;
+  justify-content:center; position:relative; box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.orb-ping {
+  position:absolute; inset:-4px; border-radius:20px;
+  border:1px solid rgba(16,185,129,.4); animation:pulseRing 3s ease-out infinite; pointer-events:none;
+}
+
+/* Auth Screen Styles */
+#auth-screen { position: fixed; inset: 0; z-index: 95; display: none; flex-direction: column; background: #fff; overflow-y: auto; }
+.auth-header { position: relative; flex-shrink: 0; height: 34vh; min-height: 220px; max-height: 300px; overflow: hidden; background: #FBBFA0; }
+.auth-blob { position: absolute; border-radius: 50%; }
+.auth-blob-1 { width: 130%; height: 100%; left: -15%; top: -10%; background: linear-gradient(160deg, #7C3E66, #5B2C4D); border-radius: 40% 60% 65% 35% / 45% 40% 60% 55%; }
+.auth-blob-2 { width: 60%; height: 70%; right: -15%; top: 15%; background: linear-gradient(135deg, #F0D878, #E8C858); border-radius: 55% 45% 40% 60% / 60% 55% 45% 40%; }
+.auth-header-title { position: absolute; left: 24px; bottom: 28px; z-index: 2; font-size: 30px; font-weight: 900; color: #fff; line-height: 1.15; }
+.auth-body { flex: 1; padding: 28px 24px 36px; display: flex; flex-direction: column; max-width: 440px; width: 100%; margin: 0 auto; }
+.auth-form { display: flex; flex-direction: column; gap: 20px; }
+.auth-field label { display: block; font-size: 12px; font-weight: 700; color: #A1A1AA; margin-bottom: 6px; }
+.auth-form input { width: 100%; padding: 6px 0 10px; border: none; border-bottom: 1.5px solid #E4E4E7; outline: none; font-family: inherit; font-size: 16px; font-weight: 700; color: #18181B; background: transparent; }
+.auth-submit-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.auth-form button[type="submit"] { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #7C3E66, #5B2C4D); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<!-- ═══════════ AUTH SCREEN (JIKA BELUM LOGIN) ═══════════ -->
+<div id="auth-screen">
+  <div class="auth-header">
+    <div class="auth-blob auth-blob-1"></div>
+    <div class="auth-blob auth-blob-2"></div>
+    <h1 class="auth-header-title">Selamat<br>Datang</h1>
+  </div>
+  <div class="auth-body">
+    <p class="text-xs font-bold text-zinc-400 mb-6">Masuk ke akun Keloladuit.id untuk mengatur Quick Add Anda.</p>
+    <form id="login-form" class="auth-form" onsubmit="handleLoginSubmit(event)">
+      <div class="auth-field">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" placeholder="usernamemu" autocomplete="username" required>
+      </div>
+      <div class="auth-field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <p id="login-msg" class="text-xs font-bold text-red-500 min-h-[16px]"></p>
+      <div class="auth-submit-row">
+        <span class="text-lg font-black text-zinc-900">Masuk</span>
+        <button type="submit" id="login-submit-btn" aria-label="Masuk">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 z-[90] flex items-center justify-center hidden pointer-events-none bg-zinc-900/20 backdrop-blur-sm">
+  <div class="scale-in bg-white rounded-[28px] shadow-2xl p-7 flex flex-col items-center min-w-[230px] max-w-[300px] border border-zinc-100">
+    <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mb-3">
+      <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <p class="text-lg font-black text-zinc-900 mb-1">Berhasil!</p>
+    <p id="success-msg" class="text-xs text-zinc-500 font-bold text-center leading-relaxed">Tersimpan.</p>
+  </div>
+</div>
+
+<!-- ═══════════ CONFIRM DELETE MODAL ═══════════ -->
+<div id="delete-modal" class="modal-backdrop" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="sheet p-6 pb-8 text-center">
+    <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
+    <div class="w-14 h-14 bg-red-50 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-500">
+      <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-black text-zinc-900 mb-1">Hapus Transaksi Quick Add?</h3>
+    <p id="delete-modal-desc" class="text-xs font-semibold text-zinc-400 mb-6">Transaksi rutin ini akan dihapus dari Beranda dan Sheet Khusus.</p>
+    <div class="flex gap-3">
+      <button type="button" onclick="closeDeleteModal()" class="flex-1 py-3.5 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">Batal</button>
+      <button type="button" id="delete-confirm-btn" onclick="confirmDeleteQuickAdd()" class="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-black text-xs shadow-lg shadow-red-500/25 active:scale-95 transition-transform">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN APP CONTAINER ═══════════ -->
+<div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- Top Header -->
+  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center justify-between" style="background:rgba(240,244,248,.90);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+    <div class="flex items-center gap-3">
+      <a href="https://keloladuit.my.id/home" target="_top" class="w-10 h-10 rounded-2xl bg-white border border-zinc-200/80 flex items-center justify-center text-zinc-700 shadow-sm active:scale-90 transition-transform" style="text-decoration:none" title="Kembali ke Beranda">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-sm">⚡</span>
+          <h1 class="text-base font-black text-zinc-900 leading-none">Quick Add</h1>
+          <span id="header-count-badge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">0/10</span>
+        </div>
+        <p id="header-subtitle" class="text-[11px] font-bold text-zinc-400 mt-1 leading-none">Transaksi Rutin 1-Klik di Beranda</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button type="button" id="btn-replay-intro" onclick="showIntroView()" class="px-3 py-2 rounded-xl bg-white border border-zinc-200 text-[10px] font-black text-zinc-600 shadow-sm active:scale-95 transition-transform">
+        💡 Info
+      </button>
+    </div>
+  </header>
+
+  <main class="px-5 pt-2 pb-24 flex-1 flex flex-col">
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 1: INTRO OPENING (ONBOARDING SLIDES)
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-intro" class="hidden flex-1 flex flex-col justify-between py-2">
+      <div class="glass rounded-[28px] p-6 relative overflow-hidden flex-1 flex flex-col justify-between" style="border:1.5px solid rgba(16,185,129,0.22);min-height:470px">
+        <div style="position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.16) 0%,transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;bottom:-60px;left:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 70%);pointer-events:none"></div>
+
+        <!-- Top step indicator & Skip -->
+        <div class="flex items-center justify-between relative z-10">
+          <div class="flex items-center gap-1.5" id="intro-dots">
+            <span class="h-2 w-6 rounded-full bg-emerald-500 transition-all"></span>
+            <span class="h-2 w-2 rounded-full bg-zinc-200 transition-all"></span>
+            <span class="h-2 w-2 rounded-full bg-zinc-200 transition-all"></span>
+          </div>
+          <button type="button" onclick="finishIntroAndStart()" class="text-[11px] font-extrabold text-zinc-400 hover:text-zinc-700 px-2 py-1 rounded-lg">
+            Lewati →
+          </button>
+        </div>
+
+        <!-- Slide Content Container -->
+        <div id="intro-slide-body" class="my-auto py-6 relative z-10"></div>
+
+        <!-- Bottom Navigation Buttons -->
+        <div id="intro-nav-btns" class="relative z-10 pt-2"></div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 2: PILIH TIPE TRANSAKSI (UANG MASUK / UANG KELUAR)
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-choose-type" class="hidden space-y-4 py-2 fade-up">
+      <div class="glass rounded-[26px] p-6 text-center relative overflow-hidden" style="border:1.5px solid rgba(16,185,129,0.22)">
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-2xl shadow-md" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">
+          ⚡
+        </div>
+        <h2 class="text-xl font-black text-zinc-900 leading-snug">Transaksi apa yang ingin ditambahkan?</h2>
+        <p class="text-xs font-semibold text-zinc-500 mt-1.5 max-w-xs mx-auto leading-relaxed">
+          Pilih jenis transaksi rutin yang sering Anda lakukan agar muncul sebagai tombol 1-klik di Beranda.
+        </p>
+
+        <div class="grid grid-cols-1 gap-3.5 mt-6">
+          <!-- Pilihan Uang Masuk -->
+          <button type="button" onclick="openFormWithType('Uang Masuk')" class="choice-card" style="background:linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%);border-color:#6EE7B7">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669)">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600/15 text-emerald-800">Pemasukan Rutin</span>
+                  <h3 class="text-lg font-black text-emerald-950 mt-1">Uang Masuk</h3>
+                  <p class="text-[11px] font-semibold text-emerald-800/80 mt-0.5">Cth: Gaji, Bonus, Uang Saku, Hasil Jualan, Komisi</p>
+                </div>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-white/80 flex items-center justify-center text-emerald-700 font-black shadow-sm flex-shrink-0">→</div>
+            </div>
+          </button>
+
+          <!-- Pilihan Uang Keluar -->
+          <button type="button" onclick="openFormWithType('Uang Keluar')" class="choice-card" style="background:linear-gradient(135deg,#FEF2F2 0%,#FEE2E2 100%);border-color:#FCA5A5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-600/15 text-red-800">Pengeluaran Rutin</span>
+                  <h3 class="text-lg font-black text-red-950 mt-1">Uang Keluar</h3>
+                  <p class="text-[11px] font-semibold text-red-800/80 mt-0.5">Cth: Kopi Pagi, Parkir, Makan Siang, Bensin, Kuota</p>
+                </div>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-white/80 flex items-center justify-center text-red-600 font-black shadow-sm flex-shrink-0">→</div>
+            </div>
+          </button>
+        </div>
+
+        <div id="choose-type-back-wrap" class="mt-5 hidden">
+          <button type="button" onclick="showListView()" class="w-full py-3 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">
+            ← Batal &amp; Kembali ke Daftar Quick Add
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 3: FORM PENCATAT TRANSAKSI QUICK ADD
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-form" class="hidden space-y-4 py-1 fade-up">
+      <div class="glass rounded-[26px] p-5 space-y-4" style="border:1.5px solid rgba(24,24,27,0.08)">
+        <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <div>
+            <h2 id="form-title" class="text-base font-black text-zinc-900">Tambah Transaksi Quick Add</h2>
+            <p class="text-[11px] font-semibold text-zinc-400 mt-0.5">Atur detail transaksi rutin Anda di bawah ini</p>
+          </div>
+          <button type="button" onclick="handleFormCancel()" class="px-3 py-1.5 rounded-xl bg-zinc-100 text-zinc-600 text-[11px] font-black active:scale-95">
+            Kembali
+          </button>
+        </div>
+
+        <form id="qa-form" class="space-y-4" onsubmit="handleSaveQuickAdd(event)">
+          <input type="hidden" id="qa-edit-id" value="">
+
+          <!-- Switcher Uang Masuk / Uang Keluar -->
+          <div>
+            <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-2">Jenis Transaksi</label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <button type="button" id="btn-type-masuk" onclick="setFormType('Uang Masuk')"
+                class="py-3.5 px-3 rounded-2xl border-2 font-black text-xs flex items-center justify-center gap-2 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                </svg>
+                <span>UANG MASUK</span>
+              </button>
+              <button type="button" id="btn-type-keluar" onclick="setFormType('Uang Keluar')"
+                class="py-3.5 px-3 rounded-2xl border-2 font-black text-xs flex items-center justify-center gap-2 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                </svg>
+                <span>UANG KELUAR</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pilih Sumber Dana / Dompet -->
+          <div>
+            <label for="qa-dompet" class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Sumber Dana / Dompet</label>
+            <select id="qa-dompet" class="fi font-extrabold" onchange="updateLivePreview()"></select>
+          </div>
+
+          <!-- Sub-Kategori Pengeluaran (Hanya muncul jika Uang Keluar) -->
+          <div id="qa-subcat-wrap">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Kategori Pengeluaran</label>
+              <span id="qa-selected-subcat-badge" class="text-[10px] font-extrabold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Makanan &amp; Minuman</span>
+            </div>
+            <div id="qa-subcat-list" class="flex gap-3 overflow-x-auto no-scroll pb-2 pt-1 -mx-1 px-1"></div>
+          </div>
+
+          <!-- Nama / Catatan Transaksi + Saran Cepat -->
+          <div>
+            <label for="qa-desc" class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Nama / Catatan Transaksi Rutin</label>
+            <input type="text" id="qa-desc" placeholder="Cth: Kopi Pagi / Parkir Motor / Makan Siang…" class="fi" required oninput="updateLivePreview()">
+            <div class="mt-2">
+              <p class="text-[9px] font-extrabold text-zinc-400 uppercase tracking-wider mb-1.5">Inspirasi Cepat (Tap untuk isi):</p>
+              <div id="qa-preset-chips" class="flex gap-1.5 overflow-x-auto no-scroll pb-1"></div>
+            </div>
+          </div>
+
+          <!-- Nominal Transaksi & Toggle Nominal Transaksi Tidak Tetap -->
+          <div class="p-3.5 rounded-2xl bg-zinc-50/90 border border-zinc-200/80 space-y-3">
+            <div id="qa-nominal-input-group">
+              <label for="qa-amount" class="text-[10px] font-black text-zinc-500 uppercase tracking-wider block mb-1.5">Nominal Transaksi (Rp)</label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-black text-base">Rp</span>
+                <input type="number" id="qa-amount" placeholder="15000" min="1" class="fi py-3.5 pl-12 text-lg font-black bg-white" oninput="updateLivePreview()">
+              </div>
+              <div class="flex gap-1.5 overflow-x-auto no-scroll pt-2">
+                <button type="button" onclick="setQuickAmount(2000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 2.000</button>
+                <button type="button" onclick="setQuickAmount(5000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 5.000</button>
+                <button type="button" onclick="setQuickAmount(15000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 15.000</button>
+                <button type="button" onclick="setQuickAmount(25000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 25.000</button>
+                <button type="button" onclick="setQuickAmount(50000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 50.000</button>
+                <button type="button" onclick="setQuickAmount(100000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 100.000</button>
+              </div>
+            </div>
+
+            <!-- Info saat Nominal Tidak Tetap dipilih -->
+            <div id="qa-variable-info-banner" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200/80 flex items-start gap-2.5">
+              <span class="text-base leading-none mt-0.5">✨</span>
+              <div>
+                <p class="text-xs font-black text-amber-900">Nominal Transaksi Tidak Tetap Aktif</p>
+                <p class="text-[10px] font-semibold text-amber-800/90 mt-0.5 leading-relaxed">
+                  Nominal tidak perlu diisi sekarang. Saat Anda menekan tombol ini di Beranda, akan muncul input nominal cepat.
+                </p>
+              </div>
+            </div>
+
+            <!-- Checkbox / Toggle Nominal Transaksi Tidak Tetap -->
+            <label for="qa-variable-toggle" class="flex items-center justify-between gap-3 pt-2 border-t border-zinc-200/70 cursor-pointer select-none">
+              <div class="min-w-0">
+                <p class="text-xs font-black text-zinc-900">Nominal Transaksi tidak tetap</p>
+                <p class="text-[10px] font-semibold text-zinc-400 mt-0.5">Centang jika jumlah uang berubah-ubah setiap transaksi</p>
+              </div>
+              <div class="relative inline-flex items-center flex-shrink-0">
+                <input type="checkbox" id="qa-variable-toggle" class="sr-only peer" onchange="onToggleVariableAmount(this.checked)">
+                <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Pilihan Warna Transaksi (Efek muncul di Dashboard / Beranda) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Pilih Warna Kartu (Tampil di Beranda)</label>
+              <span id="qa-color-name-label" class="text-[10px] font-black text-emerald-700">Hijau Emerald</span>
+            </div>
+            <div id="qa-color-grid" class="grid grid-cols-4 gap-2"></div>
+          </div>
+
+          <!-- Live Preview Kartu di Dashboard Beranda -->
+          <div class="p-3.5 rounded-2xl bg-zinc-900/5 border border-zinc-200/70">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Preview Tampilan di Beranda</span>
+              <span class="text-[9px] font-bold text-zinc-400">Efek Warna Aktif</span>
+            </div>
+            <div class="flex justify-center py-1">
+              <div id="qa-live-preview-card" class="w-44 rounded-2xl p-3 text-left transition-all shadow-sm"></div>
+            </div>
+          </div>
+
+          <p id="qa-form-error" class="text-xs font-bold text-red-500 text-center hidden"></p>
+
+          <button type="submit" id="qa-submit-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all" style="background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 8px 24px rgba(16,185,129,0.30)">
+            <span id="qa-submit-text">Simpan Transaksi Quick Add</span>
+            <div id="qa-submit-spin" class="spin-sm hidden"></div>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 4: DAFTAR TRANSAKSI QUICK ADD (ATUR QUICKADD)
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-list" class="hidden space-y-4 py-1 fade-up">
+      <!-- Banner Info Ringkas -->
+      <div class="rounded-[24px] p-5 text-white relative overflow-hidden shadow-lg" style="background:linear-gradient(135deg,#0F172A 0%,#18181B 55%,#064E3B 100%)">
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.28) 0%,transparent 70%);pointer-events:none"></div>
+        <div class="flex items-center justify-between gap-3 relative z-10">
+          <div>
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-full">Atur Quickadd</span>
+            <h2 class="text-lg font-black text-white mt-2 leading-snug">Daftar Transaksi Rutin Anda</h2>
+            <p class="text-[11px] font-semibold text-zinc-300 mt-0.5 leading-relaxed">
+              Semua transaksi di bawah ini muncul di Beranda untuk pencatatan instan 1 klik.
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-2xl flex-shrink-0">
+            ⚡
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5 mt-4 pt-3.5 border-t border-white/10 relative z-10">
+          <button type="button" onclick="startAddAnotherTransaction()" class="py-3 px-3.5 rounded-xl font-black text-xs text-zinc-900 bg-emerald-400 hover:bg-emerald-300 active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md">
+            <span>+ Tambah Transaksi</span>
+          </button>
+          <a href="https://keloladuit.my.id/home" target="_top" class="py-3 px-3.5 rounded-xl font-black text-xs text-white bg-white/15 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center gap-1.5" style="text-decoration:none">
+            <span>Lihat di Beranda →</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Daftar Item Quick Add -->
+      <div id="qa-saved-list" class="space-y-3"></div>
+
+      <!-- Bottom Action Buttons -->
+      <div class="pt-2 space-y-2.5">
+        <button type="button" onclick="startAddAnotherTransaction()" class="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all" style="background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 8px 24px rgba(16,185,129,0.28)">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>Tambah Transaksi Quick Add</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[var(--bg)] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn active flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <button type="button" onclick="startAddAnotherTransaction()" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;background:none;border:none;cursor:pointer">
+      <div class="ai-nav-orb" style="background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.45)">
+        <div class="orb-ping"></div>
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Quick Add</span>
+    </button>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// CONFIG, PALET WARNA, & STATE
+// ================================================================
+let GS_URL = '';
+var GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const QUICK_ADD_MAX = 10;
+const QUICK_ADD_STORAGE_PREFIX = 'keuangan_quickadd_khusus_';
+const INTRO_SEEN_KEY = 'keuangan_quickadd_intro_seen';
+
+const QA_COLOR_THEMES = {
+  emerald: {
+    id: 'emerald', label: 'Hijau', fullName: 'Hijau Emerald',
+    dot: '#10B981', bg: 'linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%)',
+    border: '#6EE7B7', text: '#064E3B', accent: '#059669',
+    badgeBg: '#10B981', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  rose: {
+    id: 'rose', label: 'Merah', fullName: 'Merah Rose',
+    dot: '#EF4444', bg: 'linear-gradient(135deg,#FEF2F2 0%,#FEE2E2 100%)',
+    border: '#FCA5A5', text: '#7F1D1D', accent: '#DC2626',
+    badgeBg: '#EF4444', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  ocean: {
+    id: 'ocean', label: 'Biru', fullName: 'Biru Ocean',
+    dot: '#3B82F6', bg: 'linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%)',
+    border: '#93C5FD', text: '#1E3A8A', accent: '#2563EB',
+    badgeBg: '#3B82F6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  violet: {
+    id: 'violet', label: 'Ungu', fullName: 'Ungu Violet',
+    dot: '#8B5CF6', bg: 'linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)',
+    border: '#C4B5FD', text: '#4C1D95', accent: '#7C3AED',
+    badgeBg: '#8B5CF6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  amber: {
+    id: 'amber', label: 'Kuning', fullName: 'Kuning Amber',
+    dot: '#F59E0B', bg: 'linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%)',
+    border: '#FCD34D', text: '#78350F', accent: '#D97706',
+    badgeBg: '#F59E0B', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  pink: {
+    id: 'pink', label: 'Pink', fullName: 'Pink Fuchsia',
+    dot: '#EC4899', bg: 'linear-gradient(135deg,#FDF2F8 0%,#FCE7F3 100%)',
+    border: '#F9A8D4', text: '#831843', accent: '#DB2777',
+    badgeBg: '#EC4899', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  teal: {
+    id: 'teal', label: 'Teal', fullName: 'Teal Cyan',
+    dot: '#14B8A6', bg: 'linear-gradient(135deg,#F0FDFA 0%,#CCFBF1 100%)',
+    border: '#5EEAD4', text: '#134E4A', accent: '#0D9488',
+    badgeBg: '#14B8A6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  slate: {
+    id: 'slate', label: 'Gelap', fullName: 'Gelap Slate',
+    dot: '#334155', bg: 'linear-gradient(135deg,#1E293B 0%,#0F172A 100%)',
+    border: '#475569', text: '#FFFFFF', accent: '#38BDF8',
+    badgeBg: '#38BDF8', badgeText: '#0F172A', iconBg: 'rgba(255,255,255,0.14)'
+  }
+};
+
+const SUBCATEGORIES = [
+  { sub: 'Makanan & Minuman', label: 'Makanan', emoji: '🍚', bg: '#FEE2E2' },
+  { sub: 'Transportasi', label: 'Transportasi', emoji: '🚗', bg: '#FEE2E2' },
+  { sub: 'Tagihan Rutin', label: 'Tagihan', emoji: '🏆', bg: '#FEF9C3' },
+  { sub: 'Perawatan Pribadi', label: 'Perawatan', emoji: '🧴', bg: '#FEE2E2' },
+  { sub: 'Kebutuhan', label: 'Kebutuhan', emoji: '🛒', bg: '#F3E8FF' },
+  { sub: 'Hiburan & Langganan', label: 'Hiburan', emoji: '🎬', bg: '#EDE9FE' },
+  { sub: 'Internet', label: 'Internet', emoji: '📶', bg: '#DBEAFE' },
+  { sub: 'Pendidikan', label: 'Pendidikan', emoji: '📚', bg: '#DCFCE7' },
+  { sub: 'Kesehatan', label: 'Kesehatan', emoji: '💊', bg: '#DCFCE7' },
+  { sub: 'Cicilan & Utang', label: 'Cicilan', emoji: '💳', bg: '#FEE2E2' },
+  { sub: 'Sosial & Donasi', label: 'Sosial', emoji: '🤝', bg: '#FEF3C7' },
+  { sub: 'Olahraga & Kebugaran', label: 'Olahraga', emoji: '🏋️', bg: '#DCFCE7' },
+  { sub: 'Pajak & Administrasi', label: 'Pajak', emoji: '📋', bg: '#F3F4F6' },
+  { sub: 'Investasi', label: 'Investasi', emoji: '📈', bg: '#DCFCE7' },
+  { sub: 'Lainnya', label: 'Lainnya', emoji: '✏️', bg: '#F3F4F6' }
+];
+
+const PRESETS_KELUAR = [
+  { desc: 'Kopi Pagi', amt: 18000, sub: 'Makanan & Minuman', color: 'amber', varAmt: false },
+  { desc: 'Parkir Motor', amt: 2000, sub: 'Transportasi', color: 'ocean', varAmt: false },
+  { desc: 'Makan Siang', amt: 25000, sub: 'Makanan & Minuman', color: 'rose', varAmt: true },
+  { desc: 'Isi Bensin', amt: 35000, sub: 'Transportasi', color: 'violet', varAmt: true },
+  { desc: 'Beli Galon / Air', amt: 20000, sub: 'Kebutuhan', color: 'teal', varAmt: false },
+  { desc: 'Jajan Sore', amt: 15000, sub: 'Makanan & Minuman', color: 'pink', varAmt: true }
+];
+
+const PRESETS_MASUK = [
+  { desc: 'Gaji Bulanan', amt: 5000000, sub: null, color: 'emerald', varAmt: false },
+  { desc: 'Hasil Penjualan', amt: 0, sub: null, color: 'teal', varAmt: true },
+  { desc: 'Uang Saku / Kiriman', amt: 500000, sub: null, color: 'ocean', varAmt: false },
+  { desc: 'Bonus / Komisi', amt: 0, sub: null, color: 'amber', varAmt: true }
+];
+
+let S = {
+  akun: null,
+  dompetList: [],
+  quickAddList: [],
+  introStep: 0,
+  formType: 'Uang Keluar',
+  formSub: 'Makanan & Minuman',
+  formColor: 'rose',
+  formVarAmt: false,
+  deleteTargetId: null
+};
+
+const idr = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n||0);
+
+// ── STORAGE ABSTRACTION (localStorage -> cookie -> memory) ──
+var _storageMode = null;
+var _memoryStore = {};
+function detectStorageMode() {
+  if (_storageMode) return _storageMode;
+  try {
+    localStorage.setItem('__storage_test__', '1');
+    localStorage.removeItem('__storage_test__');
+    _storageMode = 'localStorage';
+    return _storageMode;
+  } catch(e) {}
+  try {
+    document.cookie = '__storage_test__=1; SameSite=Lax; path=/';
+    var ok = document.cookie.indexOf('__storage_test__=1') !== -1;
+    document.cookie = '__storage_test__=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    if (ok) { _storageMode = 'cookie'; return _storageMode; }
+  } catch(e) {}
+  _storageMode = 'memory';
+  return _storageMode;
+}
+function storageGet(key) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { return localStorage.getItem(key); } catch(e) { return null; } }
+  if (mode === 'cookie') {
+    try {
+      var m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch(e) { return null; }
+  }
+  return _memoryStore[key] || null;
+}
+function storageSet(key, value) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { localStorage.setItem(key, value); return true; } catch(e) { return false; } }
+  if (mode === 'cookie') {
+    try {
+      var exp = new Date(Date.now() + 90*86400000).toUTCString();
+      document.cookie = key + '=' + encodeURIComponent(value) + '; expires=' + exp + '; SameSite=Lax; path=/';
+      return true;
+    } catch(e) { return false; }
+  }
+  _memoryStore[key] = value;
+  return true;
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+function saveAkunSession(akunData) {
+  try {
+    const toSave = {
+      username: akunData.username,
+      email: akunData.email || '',
+      namaLengkap: akunData.namaLengkap || '',
+      id: akunData.id,
+      gsUrl: akunData.gsUrl || '',
+    };
+    storageSet(AUTH_SESSION_KEY, JSON.stringify(toSave));
+    S.akun = toSave;
+    GS_URL = toSave.gsUrl;
+  } catch(e) {}
+}
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
+    return true;
+  }
+  return false;
+}
+
+function getQuickAddStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? (QUICK_ADD_STORAGE_PREFIX + uname) : '';
+}
+
+function normalizeQuickAddList(rawArr) {
+  if (!Array.isArray(rawArr)) return [];
+  const out = [];
+  for (let i = 0; i < rawArr.length; i++) {
+    const it = rawArr[i];
+    if (!it || typeof it !== 'object') continue;
+    const desc = String(it.Deskripsi || it.deskripsi || it.nama || it['Nama Transaksi'] || it.catatan || '').trim();
+    if (!desc) continue;
+
+    const rawKat = String(it.Kategori || it.kategori || it.tipe || 'Uang Keluar').trim();
+    const kat = (rawKat === 'Uang Masuk' || rawKat.toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+
+    const rawVar = it.NominalTidakTetap !== undefined ? it.NominalTidakTetap : it.nominalTidakTetap;
+    const amtRaw = Number(it['Jumlah Uang'] !== undefined ? it['Jumlah Uang'] : (it.nominal !== undefined ? it.nominal : (it.Nominal !== undefined ? it.Nominal : (it.jumlah || it.amount || 0))));
+    const isVar = Boolean(
+      rawVar === true ||
+      String(rawVar).toUpperCase() === 'TRUE' ||
+      String(rawVar).toUpperCase() === 'YA' ||
+      (rawVar === undefined && !(amtRaw > 0))
+    );
+    const amt = isVar ? 0 : (amtRaw > 0 ? amtRaw : 0);
+    if (!isVar && !(amt > 0)) continue;
+
+    const sub = kat === 'Uang Keluar'
+      ? String(it['Kategori Uang Keluar'] || it.subKategori || it.kategoriKeluar || it['Sub Kategori'] || 'Lainnya').trim()
+      : '';
+    const dompetId = it.DompetId || it.dompetId || it['Dompet ID'] || '';
+    const defColor = kat === 'Uang Masuk' ? 'emerald' : 'rose';
+    const rawColor = String(it.Warna || it.warna || it.color || defColor).trim().toLowerCase();
+    const validColor = QA_COLOR_THEMES[rawColor] ? rawColor : defColor;
+
+    out.push({
+      id: String(it.id || it.ID || ('qa_item_' + Date.now() + '_' + i)),
+      Deskripsi: desc,
+      'Jumlah Uang': amt,
+      NominalTidakTetap: isVar,
+      Kategori: kat,
+      'Kategori Uang Keluar': sub,
+      Warna: validColor,
+      DompetId: dompetId ? String(dompetId) : ''
+    });
+    if (out.length >= QUICK_ADD_MAX) break;
+  }
+  return out;
+}
+
+function loadQuickAddLocal() {
+  S.quickAddList = [];
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const scopedKey = getQuickAddStorageKey();
+  try {
+    if (scopedKey) {
+      const rawScoped = storageGet(scopedKey);
+      if (rawScoped) {
+        const parsed = JSON.parse(rawScoped);
+        if (parsed && parsed.gsUrl === GS_URL && Array.isArray(parsed.items)) {
+          S.quickAddList = normalizeQuickAddList(parsed.items);
+          return;
+        } else if (Array.isArray(parsed)) {
+          S.quickAddList = normalizeQuickAddList(parsed);
+          return;
+        }
+      }
+    }
+    const rawShared = storageGet('keuangan_quickadd_khusus');
+    if (rawShared) {
+      const parsedShared = JSON.parse(rawShared);
+      if (parsedShared && parsedShared.username === S.akun.username && parsedShared.gsUrl === GS_URL && Array.isArray(parsedShared.items)) {
+        S.quickAddList = normalizeQuickAddList(parsedShared.items);
+      }
+    }
+  } catch(e) {}
+}
+
+function saveQuickAddLocal() {
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const normalized = normalizeQuickAddList(S.quickAddList);
+  S.quickAddList = normalized;
+  const payload = JSON.stringify({
+    username: S.akun.username,
+    gsUrl: GS_URL,
+    updatedAt: Date.now(),
+    items: normalized
+  });
+  const scopedKey = getQuickAddStorageKey();
+  if (scopedKey) storageSet(scopedKey, payload);
+  storageSet('keuangan_quickadd_khusus', payload);
+  updateHeaderCount();
+}
+
+function loadDompetLocal() {
+  try {
+    const raw = localStorage.getItem('keuangan_dompet_list');
+    if (raw) S.dompetList = JSON.parse(raw) || [];
+  } catch(e) { S.dompetList = []; }
+}
+
+function updateHeaderCount() {
+  const badge = document.getElementById('header-count-badge');
+  if (badge) badge.textContent = `${S.quickAddList.length}/${QUICK_ADD_MAX}`;
+}
+
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation='none'; void path.offsetWidth; path.style.animation=''; }
+  setTimeout(() => el.classList.add('hidden'), 2100);
+}
+
+async function postData(action, data) {
+  if (!GS_URL) return null;
+  try {
+    const r = await fetch(GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, data })
+    });
+    const j = await r.json();
+    if (j && j.status === 'success') return j;
+  } catch(e) {
+    console.warn('[QuickAdd postData]', action, e.message);
+  }
+  return null;
+}
+
+// ================================================================
+// INITIALIZATION & SERVER SYNC (SHEET "KHUSUS")
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  loadDompetLocal();
+  renderSubcategoryButtons();
+  renderColorSwatches();
+
+  if (checkAkunSession()) {
+    loadQuickAddLocal();
+    updateHeaderCount();
+    decideInitialView();
+    syncFromServer();
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+});
+
+function decideInitialView() {
+  // Jika sudah ada transaksi Quick Add yang disimpan, langsung tampilkan Daftar Transaksi (Atur Quickadd)
+  if (S.quickAddList.length > 0) {
+    showListView();
+  } else {
+    // Jika belum ada transaksi sama sekali, tampilkan Intro Opening terlebih dahulu
+    showIntroView();
+  }
+}
+
+async function syncFromServer() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read');
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      if (Array.isArray(d.data.dompet)) {
+        S.dompetList = d.data.dompet.map(w => ({
+          id: w.id,
+          nama: w.nama,
+          tipe: w.tipe || 'bank',
+          provider: w.keterangan || w.nama,
+          saldoAwal: Number(w.nominal) || 0
+        }));
+        try { localStorage.setItem('keuangan_dompet_list', JSON.stringify(S.dompetList)); } catch(e) {}
+      }
+      const rawKhusus = d.data.khusus || d.data.Khusus || d.data.quickAdd || d.data.quickadd;
+      if (Array.isArray(rawKhusus)) {
+        const hadNoneBefore = S.quickAddList.length === 0;
+        S.quickAddList = normalizeQuickAddList(rawKhusus);
+        saveQuickAddLocal();
+        if (hadNoneBefore && S.quickAddList.length > 0) {
+          showListView();
+        } else if (!document.getElementById('view-list').classList.contains('hidden')) {
+          renderSavedQuickAddList();
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('[QuickAdd Sync]', e.message);
+  }
+}
+
+async function handleLoginSubmit(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const msgEl = document.getElementById('login-msg');
+  msgEl.textContent = 'Memeriksa akun…';
+  try {
+    const r = await fetch(GLOBAL_GS_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'loginAkun', data: { username, password } })
+    });
+    const j = await r.json();
+    if (j.status === 'success') {
+      saveAkunSession(j.data);
+      document.getElementById('auth-screen').style.display = 'none';
+      loadQuickAddLocal();
+      updateHeaderCount();
+      decideInitialView();
+      await syncFromServer();
+    } else {
+      msgEl.textContent = j.message || 'Login gagal.';
+    }
+  } catch(err) {
+    msgEl.textContent = 'Gagal terhubung ke server.';
+  }
+}
+
+// ================================================================
+// VIEW NAVIGATION (INTRO -> CHOOSE TYPE -> FORM -> LIST)
+// ================================================================
+function hideAllViews() {
+  ['view-intro', 'view-choose-type', 'view-form', 'view-list'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+}
+
+window.showIntroView = function() {
+  hideAllViews();
+  S.introStep = 0;
+  document.getElementById('view-intro').classList.remove('hidden');
+  document.getElementById('header-subtitle').textContent = 'Kenalan dengan Fitur Quick Add';
+  renderIntroStep();
+};
+
+window.finishIntroAndStart = function() {
+  storageSet(INTRO_SEEN_KEY, '1');
+  if (S.quickAddList.length > 0) {
+    showListView();
+  } else {
+    showChooseTypeView();
+  }
+};
+
+window.showChooseTypeView = function() {
+  hideAllViews();
+  document.getElementById('view-choose-type').classList.remove('hidden');
+  document.getElementById('header-subtitle').textContent = 'Pilih Jenis Transaksi Rutin';
+  const backWrap = document.getElementById('choose-type-back-wrap');
+  if (backWrap) {
+    backWrap.classList.toggle('hidden', S.quickAddList.length === 0);
+  }
+};
+
+window.startAddAnotherTransaction = function() {
+  if (S.quickAddList.length >= QUICK_ADD_MAX) {
+    showSuccess(`Maksimal ${QUICK_ADD_MAX} transaksi Quick Add. Hapus salah satu untuk menambah baru.`);
+    return;
+  }
+  document.getElementById('qa-edit-id').value = '';
+  showChooseTypeView();
+};
+
+window.openFormWithType = function(type) {
+  hideAllViews();
+  document.getElementById('view-form').classList.remove('hidden');
+  document.getElementById('qa-form').reset();
+  document.getElementById('qa-edit-id').value = '';
+  document.getElementById('form-title').textContent = 'Tambah Transaksi Quick Add';
+  document.getElementById('qa-submit-text').textContent = 'Simpan ke Quick Add ⚡';
+  document.getElementById('qa-form-error').classList.add('hidden');
+
+  populateDompetDropdown();
+  S.formSub = 'Makanan & Minuman';
+  S.formVarAmt = false;
+  document.getElementById('qa-variable-toggle').checked = false;
+  onToggleVariableAmount(false);
+
+  setFormType(type, true);
+  updateLivePreview();
+};
+
+window.showListView = function() {
+  hideAllViews();
+  document.getElementById('view-list').classList.remove('hidden');
+  document.getElementById('header-subtitle').textContent = 'Atur Daftar Transaksi Quick Add';
+  updateHeaderCount();
+  renderSavedQuickAddList();
+};
+
+window.handleFormCancel = function() {
+  if (S.quickAddList.length > 0) {
+    showListView();
+  } else {
+    showChooseTypeView();
+  }
+};
+
+// ================================================================
+// INTRO OPENING SLIDES
+// ================================================================
+const INTRO_SLIDES = [
+  {
+    badge: 'LANGKAH 1 · TRANSAKSI RUTIN',
+    icon: '⚡',
+    title: 'Tambahkan Transaksi Rutin Anda',
+    desc: 'Punya transaksi yang dilakukan berulang kali setiap hari atau minggu? Seperti beli kopi pagi, bayar parkir, makan siang, isi bensin, hingga gajian — daftarkan sekali saja di Quick Add!',
+    illustration: `
+      <div class="space-y-2.5 max-w-[260px] mx-auto my-3">
+        <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-base shadow-sm">☕</span>
+            <div class="text-left">
+              <p class="text-xs font-black text-amber-950">Kopi Susu Pagi</p>
+              <p class="text-[9px] font-bold text-amber-700">Makanan &amp; Minuman</p>
+            </div>
+          </div>
+          <span class="text-xs font-black text-amber-900">-Rp 18.000</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-base shadow-sm">🛵</span>
+            <div class="text-left">
+              <p class="text-xs font-black text-blue-950">Parkir Motor</p>
+              <p class="text-[9px] font-bold text-blue-700">Transportasi</p>
+            </div>
+          </div>
+          <span class="text-xs font-black text-blue-900">-Rp 2.000</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: 'LANGKAH 2 · MUNCUL DI BERANDA',
+    icon: '🏠',
+    title: 'Transaksi Rutin Akan Muncul di Beranda',
+    desc: 'Transaksi yang Anda daftarkan langsung tampil rapi di bagian atas Beranda lengkap dengan warna kartu pilihan Anda (Hijau, Merah, Biru, Ungu, dll).',
+    illustration: `
+      <div class="p-3.5 rounded-2xl bg-white/90 border border-emerald-200 shadow-md max-w-[270px] mx-auto my-3 text-left">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-black text-zinc-800 flex items-center gap-1">⚡ Quick Add di Beranda</span>
+          <span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">Atur Quickadd</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="p-2.5 rounded-xl border border-emerald-300" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5)">
+            <span class="text-xs">💰</span>
+            <p class="text-[11px] font-black text-emerald-950 mt-1 truncate">Uang Saku</p>
+            <p class="text-[10px] font-black text-emerald-700">+Rp 100.000</p>
+          </div>
+          <div class="p-2.5 rounded-xl border border-rose-300" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2)">
+            <span class="text-xs">🍚</span>
+            <p class="text-[11px] font-black text-rose-950 mt-1 truncate">Makan Siang</p>
+            <p class="text-[10px] font-black text-rose-700">Nominal Fleksibel</p>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: 'LANGKAH 3 · PRAKTIS & HEMAT WAKTU',
+    icon: '🚀',
+    title: 'Cukup 1 Klik Transaksi Langsung Tercatat!',
+    desc: 'Hemat waktu, hemat tenaga, dan super praktis! Tidak perlu lagi mengetik ulang setiap hari. Bahkan jika nominalnya berubah-ubah, Anda bisa mengaktifkan opsi Nominal Transaksi Tidak Tetap.',
+    illustration: `
+      <div class="flex flex-col items-center justify-center my-3">
+        <div class="px-5 py-3.5 rounded-2xl bg-emerald-500 text-white font-black text-xs shadow-lg shadow-emerald-500/30 flex items-center gap-2.5 float-slow">
+          <span class="text-base">⚡</span>
+          <span>1 Klik → Langsung Tercatat!</span>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">✓ Hemat Waktu</span>
+          <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200">✓ Hemat Tenaga</span>
+          <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200">✓ Praktis</span>
+        </div>
+      </div>
+    `
+  }
+];
+
+function renderIntroStep() {
+  const slide = INTRO_SLIDES[S.introStep];
+  const dotsEl = document.getElementById('intro-dots');
+  if (dotsEl) {
+    dotsEl.innerHTML = INTRO_SLIDES.map((_, i) =>
+      `<span class="h-2 rounded-full transition-all ${i === S.introStep ? 'w-7 bg-emerald-500' : 'w-2 bg-zinc-200'}"></span>`
+    ).join('');
+  }
+
+  const bodyEl = document.getElementById('intro-slide-body');
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <div class="text-center fade-up">
+        <div class="w-16 h-16 rounded-3xl mx-auto mb-3 flex items-center justify-center text-3xl shadow-md float-slow" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">
+          ${slide.icon}
+        </div>
+        <span class="inline-block text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+          ${slide.badge}
+        </span>
+        <h2 class="text-xl font-black text-zinc-900 mt-3 leading-snug">${slide.title}</h2>
+        <p class="text-xs font-semibold text-zinc-500 mt-2 leading-relaxed px-1">${slide.desc}</p>
+        ${slide.illustration}
+      </div>
+    `;
+  }
+
+  const navEl = document.getElementById('intro-nav-btns');
+  if (navEl) {
+    if (S.introStep < INTRO_SLIDES.length - 1) {
+      navEl.innerHTML = `
+        <div class="flex gap-2.5">
+          ${S.introStep > 0 ? `<button type="button" onclick="prevIntroStep()" class="px-5 py-4 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">← Kembali</button>` : ''}
+          <button type="button" onclick="nextIntroStep()" class="flex-1 py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform" style="background:linear-gradient(135deg,#18181B,#27272A)">
+            <span>Next</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      `;
+    } else {
+      navEl.innerHTML = `
+        <div class="flex gap-2.5">
+          <button type="button" onclick="prevIntroStep()" class="px-5 py-4 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">← Kembali</button>
+          <button type="button" onclick="finishIntroAndStart()" class="flex-1 py-4 rounded-2xl text-white font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-transform" style="background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 8px 24px rgba(16,185,129,0.35)">
+            <span>Mulai ⚡</span>
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+window.nextIntroStep = function() {
+  if (S.introStep < INTRO_SLIDES.length - 1) {
+    S.introStep++;
+    renderIntroStep();
+  }
+};
+
+window.prevIntroStep = function() {
+  if (S.introStep > 0) {
+    S.introStep--;
+    renderIntroStep();
+  }
+};
+
+// ================================================================
+// FORM LOGIC (UANG MASUK / KELUAR, NOMINAL TIDAK TETAP, WARNA)
+// ================================================================
+function populateDompetDropdown(selectedId) {
+  const sel = document.getElementById('qa-dompet');
+  if (!sel) return;
+  if (!S.dompetList.length) {
+    sel.innerHTML = '<option value="">💵 Dompet Utama / Tunai</option>';
+    return;
+  }
+  const defId = selectedId !== undefined ? selectedId : S.dompetList[0].id;
+  sel.innerHTML = S.dompetList.map(d => {
+    const ic = d.tipe === 'tunai' ? '💵' : d.tipe === 'emoney' ? '📱' : '🏦';
+    return `<option value="${d.id}" ${String(d.id) === String(defId) ? 'selected' : ''}>${ic} ${d.nama || d.provider}</option>`;
+  }).join('');
+}
+
+function renderSubcategoryButtons() {
+  const wrap = document.getElementById('qa-subcat-list');
+  if (!wrap) return;
+  wrap.innerHTML = SUBCATEGORIES.map(item => `
+    <button type="button" data-sub="${item.sub}" onclick="selectSubcategory('${item.sub}')" class="subcat-icon-btn ${S.formSub === item.sub ? 'active' : ''}">
+      <div class="subcat-icon-circle" style="background:${item.bg}">${item.emoji}</div>
+      <span class="subcat-icon-label">${item.label}</span>
+    </button>
+  `).join('');
+}
+
+window.selectSubcategory = function(sub) {
+  S.formSub = sub;
+  document.querySelectorAll('#qa-subcat-list .subcat-icon-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.sub === sub);
+  });
+  const badge = document.getElementById('qa-selected-subcat-badge');
+  if (badge) badge.textContent = sub;
+  updateLivePreview();
+};
+
+function renderColorSwatches() {
+  const grid = document.getElementById('qa-color-grid');
+  if (!grid) return;
+  grid.innerHTML = Object.values(QA_COLOR_THEMES).map(c => `
+    <button type="button" data-color="${c.id}" onclick="selectColorTheme('${c.id}')" class="color-swatch-btn ${S.formColor === c.id ? 'active' : ''}">
+      <span class="w-7 h-7 rounded-full flex items-center justify-center shadow-sm border border-black/10" style="background:${c.dot}">
+        ${S.formColor === c.id ? '<svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+      </span>
+      <span class="text-[10px] font-extrabold text-zinc-700">${c.label}</span>
+    </button>
+  `).join('');
+}
+
+window.selectColorTheme = function(colorId) {
+  if (!QA_COLOR_THEMES[colorId]) return;
+  S.formColor = colorId;
+  renderColorSwatches();
+  const lbl = document.getElementById('qa-color-name-label');
+  if (lbl) {
+    lbl.textContent = QA_COLOR_THEMES[colorId].fullName;
+    lbl.style.color = QA_COLOR_THEMES[colorId].dot;
+  }
+  updateLivePreview();
+};
+
+window.setFormType = function(type, resetColorIfDefault) {
+  S.formType = (type === 'Uang Masuk') ? 'Uang Masuk' : 'Uang Keluar';
+  const btnIn  = document.getElementById('btn-type-masuk');
+  const btnOut = document.getElementById('btn-type-keluar');
+
+  if (S.formType === 'Uang Masuk') {
+    btnIn.style.cssText = 'background:linear-gradient(135deg,#10B981,#059669);border-color:#10B981;color:#fff;box-shadow:0 6px 18px rgba(16,185,129,.30)';
+    btnOut.style.cssText = 'background:#fff;border-color:#E4E4E7;color:#71717A';
+    document.getElementById('qa-subcat-wrap').classList.add('hidden');
+    if (resetColorIfDefault) selectColorTheme('emerald');
+  } else {
+    btnOut.style.cssText = 'background:linear-gradient(135deg,#EF4444,#DC2626);border-color:#EF4444;color:#fff;box-shadow:0 6px 18px rgba(239,68,68,.30)';
+    btnIn.style.cssText = 'background:#fff;border-color:#E4E4E7;color:#71717A';
+    document.getElementById('qa-subcat-wrap').classList.remove('hidden');
+    if (resetColorIfDefault) selectColorTheme('rose');
+  }
+  renderPresetChips();
+  updateLivePreview();
+};
+
+function renderPresetChips() {
+  const wrap = document.getElementById('qa-preset-chips');
+  if (!wrap) return;
+  const list = S.formType === 'Uang Masuk' ? PRESETS_MASUK : PRESETS_KELUAR;
+  wrap.innerHTML = list.map((p, idx) => `
+    <button type="button" onclick="applyPresetChip(${idx})" class="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-emerald-50 hover:text-emerald-700 text-[10px] font-extrabold text-zinc-700 flex-shrink-0 active:scale-95 transition-all">
+      ${p.desc} ${p.varAmt ? '(Fleksibel)' : ('· ' + idr(p.amt))}
+    </button>
+  `).join('');
+}
+
+window.applyPresetChip = function(idx) {
+  const list = S.formType === 'Uang Masuk' ? PRESETS_MASUK : PRESETS_KELUAR;
+  const p = list[idx];
+  if (!p) return;
+  document.getElementById('qa-desc').value = p.desc;
+  if (p.sub && S.formType === 'Uang Keluar') {
+    selectSubcategory(p.sub);
+  }
+  document.getElementById('qa-variable-toggle').checked = Boolean(p.varAmt);
+  onToggleVariableAmount(Boolean(p.varAmt));
+  if (!p.varAmt && p.amt > 0) {
+    document.getElementById('qa-amount').value = p.amt;
+  }
+  if (p.color) selectColorTheme(p.color);
+  updateLivePreview();
+};
+
+window.setQuickAmount = function(val) {
+  document.getElementById('qa-variable-toggle').checked = false;
+  onToggleVariableAmount(false);
+  document.getElementById('qa-amount').value = val;
+  updateLivePreview();
+};
+
+window.onToggleVariableAmount = function(isVariable) {
+  S.formVarAmt = Boolean(isVariable);
+  const inpGroup = document.getElementById('qa-nominal-input-group');
+  const infoBanner = document.getElementById('qa-variable-info-banner');
+  const amtInput = document.getElementById('qa-amount');
+
+  if (S.formVarAmt) {
+    inpGroup.classList.add('hidden');
+    infoBanner.classList.remove('hidden');
+    amtInput.required = false;
+    amtInput.value = '';
+  } else {
+    inpGroup.classList.remove('hidden');
+    infoBanner.classList.add('hidden');
+    amtInput.required = true;
+  }
+  updateLivePreview();
+};
+
+function getSubcatEmoji(kat, sub) {
+  if (kat === 'Uang Masuk') return '💰';
+  const found = SUBCATEGORIES.find(s => s.sub === sub);
+  return found ? found.emoji : '⚡';
+}
+
+window.updateLivePreview = function() {
+  const card = document.getElementById('qa-live-preview-card');
+  if (!card) return;
+  const theme = QA_COLOR_THEMES[S.formColor] || QA_COLOR_THEMES.emerald;
+  const desc = (document.getElementById('qa-desc')?.value || '').trim() || (S.formType === 'Uang Masuk' ? 'Gaji / Pemasukan' : 'Kopi Pagi');
+  const rawAmt = Number(document.getElementById('qa-amount')?.value) || 0;
+  const sign = S.formType === 'Uang Masuk' ? '+' : '-';
+  const amtText = S.formVarAmt
+    ? 'Nominal Fleksibel'
+    : (rawAmt > 0 ? (sign + idr(rawAmt)) : (sign + 'Rp 0'));
+  const subLbl = S.formType === 'Uang Masuk' ? 'Uang Masuk' : (S.formSub || 'Lainnya');
+  const emoji = getSubcatEmoji(S.formType, S.formSub);
+  const dompetSel = document.getElementById('qa-dompet');
+  const dompetObj = S.dompetList.find(d => String(d.id) === String(dompetSel?.value));
+  const dompetName = dompetObj ? (dompetObj.nama || dompetObj.provider) : 'Dompet Utama';
+  const subText = `${subLbl} · ${dompetName}`;
+  const isSlate = theme.id === 'slate';
+
+  card.style.background = theme.bg;
+  card.style.border = `1.5px solid ${theme.border}`;
+  card.innerHTML = `
+    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+      <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm" style="background:${theme.iconBg}">${emoji}</span>
+      <span class="text-[8px] font-black px-1.5 py-0.5 rounded-md" style="background:${theme.badgeBg};color:${theme.badgeText}">${S.formVarAmt ? 'Isi Cepat' : '1-Klik +'}</span>
+    </div>
+    <p class="text-xs font-extrabold truncate leading-snug" style="color:${theme.text}">${desc.replace(/</g,'&lt;')}</p>
+    <p class="text-[11px] font-black mt-0.5 truncate" style="color:${theme.accent}">${amtText}</p>
+    <p class="text-[9px] font-bold truncate mt-0.5" style="color:${isSlate ? 'rgba(255,255,255,0.65)' : '#71717A'}">${subText.replace(/</g,'&lt;')}</p>
+  `;
+};
+
+window.handleSaveQuickAdd = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('qa-form-error');
+  errEl.classList.add('hidden');
+
+  const desc = document.getElementById('qa-desc').value.trim();
+  const amtVal = Number(document.getElementById('qa-amount').value) || 0;
+  const dompetId = document.getElementById('qa-dompet').value || '';
+  const editId = document.getElementById('qa-edit-id').value;
+
+  if (!desc) {
+    errEl.textContent = 'Nama / catatan transaksi wajib diisi.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!S.formVarAmt && !(amtVal > 0)) {
+    errEl.textContent = 'Nominal transaksi wajib diisi (atau aktifkan Nominal Transaksi Tidak Tetap).';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const newItem = {
+    id: editId || ('qa_' + Date.now()),
+    Deskripsi: desc,
+    Kategori: S.formType,
+    'Kategori Uang Keluar': S.formType === 'Uang Keluar' ? (S.formSub || 'Lainnya') : '',
+    'Jumlah Uang': S.formVarAmt ? 0 : amtVal,
+    NominalTidakTetap: S.formVarAmt,
+    Warna: S.formColor,
+    DompetId: dompetId
+  };
+
+  const btn = document.getElementById('qa-submit-btn');
+  const spin = document.getElementById('qa-submit-spin');
+  btn.disabled = true;
+  spin.classList.remove('hidden');
+
+  if (editId) {
+    const idx = S.quickAddList.findIndex(x => String(x.id) === String(editId));
+    if (idx > -1) S.quickAddList[idx] = newItem;
+    else S.quickAddList.push(newItem);
+  } else {
+    S.quickAddList.push(newItem);
+  }
+  saveQuickAddLocal();
+
+  const action = editId ? 'editQuickAdd' : 'addQuickAdd';
+  postData(action, newItem).then(res => {
+    if (res && res.data && res.data.id && !editId) {
+      newItem.id = String(res.data.id);
+      saveQuickAddLocal();
+    }
+  }).catch(() => {});
+
+  btn.disabled = false;
+  spin.classList.add('hidden');
+  showSuccess(editId ? 'Transaksi Quick Add diperbarui!' : 'Transaksi ditambahkan ke Quick Add!');
+  showListView();
+};
+
+// ================================================================
+// DAFTAR TRANSAKSI QUICK ADD (EDIT & HAPUS)
+// ================================================================
+function renderSavedQuickAddList() {
+  const wrap = document.getElementById('qa-saved-list');
+  if (!wrap) return;
+
+  if (!S.quickAddList.length) {
+    wrap.innerHTML = `
+      <div class="glass rounded-3xl p-8 text-center space-y-3">
+        <div class="text-4xl">📭</div>
+        <h3 class="text-base font-black text-zinc-900">Belum Ada Transaksi Quick Add</h3>
+        <p class="text-xs font-semibold text-zinc-400 max-w-xs mx-auto">
+          Tambahkan transaksi rutin pertama Anda agar muncul di Beranda dan siap dicatat dengan 1 klik.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = S.quickAddList.map((item, idx) => {
+    const theme = QA_COLOR_THEMES[item.Warna] || (item.Kategori === 'Uang Masuk' ? QA_COLOR_THEMES.emerald : QA_COLOR_THEMES.rose);
+    const isIn = item.Kategori === 'Uang Masuk';
+    const subLbl = isIn ? 'Uang Masuk' : (item['Kategori Uang Keluar'] || 'Lainnya');
+    const emoji = getSubcatEmoji(item.Kategori, subLbl);
+    const dompetObj = item.DompetId ? S.dompetList.find(d => String(d.id) === String(item.DompetId)) : null;
+    const dompetName = dompetObj ? (dompetObj.nama || dompetObj.provider) : 'Dompet Utama';
+    const sign = isIn ? '+' : '-';
+    const amtDisplay = item.NominalTidakTetap
+      ? 'Nominal Tidak Tetap (Fleksibel)'
+      : `${sign}${idr(item['Jumlah Uang'])}`;
+    const isSlate = theme.id === 'slate';
+
+    return `
+      <div class="rounded-[22px] p-4 shadow-sm transition-all relative overflow-hidden" style="background:${theme.bg};border:1.5px solid ${theme.border}">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3 min-w-0 flex-1">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm flex-shrink-0" style="background:${theme.iconBg}">
+              ${emoji}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md" style="background:${theme.badgeBg};color:${theme.badgeText}">
+                  ${item.Kategori}
+                </span>
+                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-md" style="background:${isSlate ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.75)'};color:${theme.text}">
+                  🎨 ${theme.label}
+                </span>
+              </div>
+              <h3 class="text-sm font-black mt-1.5 truncate" style="color:${theme.text}">${String(item.Deskripsi).replace(/</g,'&lt;')}</h3>
+              <p class="text-xs font-black mt-0.5" style="color:${theme.accent}">${amtDisplay}</p>
+              <p class="text-[10px] font-bold mt-1" style="color:${isSlate ? 'rgba(255,255,255,0.7)' : '#52525B'}">
+                ${subLbl} · 👛 ${String(dompetName).replace(/</g,'&lt;')}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5 flex-shrink-0">
+            <button type="button" onclick="openEditQuickAdd('${item.id}')" class="px-3 py-2 rounded-xl bg-white/90 hover:bg-white text-zinc-800 font-black text-[10px] shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-1">
+              <span>✎ Edit</span>
+            </button>
+            <button type="button" onclick="promptDeleteQuickAdd('${item.id}')" class="px-3 py-2 rounded-xl bg-red-500/90 hover:bg-red-600 text-white font-black text-[10px] shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-1">
+              <span>🗑 Hapus</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openEditQuickAdd = function(id) {
+  const item = S.quickAddList.find(x => String(x.id) === String(id));
+  if (!item) return;
+
+  hideAllViews();
+  document.getElementById('view-form').classList.remove('hidden');
+  document.getElementById('form-title').textContent = 'Edit Transaksi Quick Add';
+  document.getElementById('qa-submit-text').textContent = 'Perbarui Quick Add ⚡';
+  document.getElementById('qa-edit-id').value = item.id;
+  document.getElementById('qa-form-error').classList.add('hidden');
+
+  populateDompetDropdown(item.DompetId);
+  S.formSub = item['Kategori Uang Keluar'] || 'Makanan & Minuman';
+  setFormType(item.Kategori, false);
+  if (item.Kategori === 'Uang Keluar') {
+    selectSubcategory(S.formSub);
+  }
+
+  document.getElementById('qa-desc').value = item.Deskripsi || '';
+  const isVar = Boolean(item.NominalTidakTetap);
+  document.getElementById('qa-variable-toggle').checked = isVar;
+  onToggleVariableAmount(isVar);
+  if (!isVar) {
+    document.getElementById('qa-amount').value = item['Jumlah Uang'] || '';
+  }
+
+  selectColorTheme(item.Warna || (item.Kategori === 'Uang Masuk' ? 'emerald' : 'rose'));
+  updateLivePreview();
+};
+
+window.promptDeleteQuickAdd = function(id) {
+  const item = S.quickAddList.find(x => String(x.id) === String(id));
+  if (!item) return;
+  S.deleteTargetId = item.id;
+  document.getElementById('delete-modal-desc').textContent =
+    `Hapus "${item.Deskripsi}" dari daftar Quick Add Anda?`;
+  const modal = document.getElementById('delete-modal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => modal.classList.add('show'));
+};
+
+window.closeDeleteModal = function() {
+  const modal = document.getElementById('delete-modal');
+  modal.classList.remove('show');
+  setTimeout(() => { modal.style.display = 'none'; }, 280);
+};
+
+window.confirmDeleteQuickAdd = function() {
+  const id = S.deleteTargetId;
+  if (!id) return;
+  S.quickAddList = S.quickAddList.filter(x => String(x.id) !== String(id));
+  saveQuickAddLocal();
+  closeDeleteModal();
+  renderSavedQuickAddList();
+  showSuccess('Transaksi dihapus dari Quick Add.');
+  postData('deleteQuickAdd', { id }).catch(() => {});
+};
+</script>
+</body>
+</html>
