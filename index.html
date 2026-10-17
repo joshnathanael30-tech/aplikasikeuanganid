@@ -209,6 +209,14 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 #lockscreen-msg { color: #EF4444; font-size: 12px; font-weight: 700; margin-top: 12px; min-height: 16px; }
 .dompet-card { flex-shrink:0; width:175px; height:106px; border-radius:20px; padding:14px; position:relative; overflow:hidden; cursor:pointer; transition:transform .18s, box-shadow .18s; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 6px 20px rgba(0,0,0,.08); }
 .dompet-card:active { transform:scale(.95); }
+.qa-home-card { border-radius: 22px; position: relative; overflow: hidden; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; }
+.qa-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(236,253,245,0.88) 100%); border: 1.5px solid rgba(16,185,129,0.28); box-shadow: 0 6px 22px rgba(16,185,129,0.08), 0 1px 4px rgba(0,0,0,0.03); }
+.qa-home-empty:hover { box-shadow: 0 10px 28px rgba(16,185,129,0.14); }
+.qa-home-empty:active { transform: scale(.98); }
+.qa-item-pill { flex-shrink: 0; width: 148px; background: #fff; border: 1.5px solid #E4E4E7; border-radius: 16px; padding: 10px 12px; cursor: pointer; text-align: left; position: relative; overflow: hidden; transition: transform .15s, border-color .15s, box-shadow .15s, background .15s; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.qa-item-pill:hover { border-color: #10B981; background: #F0FDF4; box-shadow: 0 4px 14px rgba(16,185,129,0.12); transform: translateY(-1px); }
+.qa-item-pill:active { transform: scale(.93); }
+.qa-item-pill.qa-just-added { border-color: #10B981 !important; background: #DCFCE7 !important; }
 .prov-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; border:1.5px solid #F4F4F5; background:#fff; cursor:pointer; transition:all .15s; }
 .prov-item.selected { border-color:#10B981; background:#F0FDF4; }
 </style>
@@ -377,40 +385,45 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         </div>
       </div>
 
-      <!-- ── AKSI CEPAT (8 MENU GRID 4x2) ── -->
+      <!-- ── QUICK ADD CONTAINER (CURVED RECTANGLE PERSIS DI BAWAH SALDO) ── -->
+      <div id="quick-add-home-section" class="fade-up s1">
+        <div id="quick-add-home-box"></div>
+      </div>
+
+      <!-- ── AKSI CEPAT (8 MENU GRID 4x2 — COMPACT) ── -->
       <div id="quick-action-section" class="fade-up s2">
-        <div class="grid grid-cols-4 gap-2.5">
-          <button onclick="openBulkModal()" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff">📋</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Tambah<br>Banyak</span>
+        <div class="grid grid-cols-4 gap-2">
+          <button onclick="openBulkModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff">📋</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Tambah<br>Banyak</span>
           </button>
-          <button onclick="openModal('receipt-backdrop')" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">🧾</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Upload<br>Struk</span>
+          <button onclick="openModal('receipt-backdrop')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">🧾</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Upload<br>Struk</span>
           </button>
-          <button onclick="openTransferDompetModal()" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff">💸</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Transfer</span>
+          <button onclick="openTransferDompetModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff">💸</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Transfer</span>
           </button>
-          <button onclick="openDepositoModal()" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff">🏦</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Deposito</span>
+          <button onclick="openDepositoModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff">🏦</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Deposito</span>
           </button>
-          <button onclick="openCicilanModal()" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff">💳</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Cicilan</span>
+          <button onclick="openCicilanModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff">💳</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Cicilan</span>
           </button>
-          <button onclick="openValasModal()" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black shadow-sm" style="background:linear-gradient(135deg,#0EA5E9,#0369A1);color:#fff">$€</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Transaksi<br>Valas</span>
+          <button onclick="openValasModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black shadow-sm" style="background:linear-gradient(135deg,#0EA5E9,#0369A1);color:#fff">$€</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Transaksi<br>Valas</span>
           </button>
-          <button onclick="openModal('dev-modal')" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#EC4899,#BE185D);color:#fff">🤝</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Utang/<br>Piutang</span>
+          <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EC4899,#BE185D);color:#fff">🤝</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Utang/<br>Piutang</span>
           </button>
-          <button onclick="openModal('dev-modal')" class="glass rounded-2xl p-3 flex flex-col items-center gap-1.5 active:scale-90 transition-transform">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
-            <span class="text-[10px] font-extrabold text-zinc-800 text-center leading-tight">Investasi</span>
+          <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Investasi</span>
           </button>
         </div>
       </div>
@@ -1357,6 +1370,9 @@ var dompetState = {
 
 var depositoList = [];
 var cicilanList  = [];
+var quickAddList = [];
+const QUICK_ADD_MAX = 10;
+const QUICK_ADD_STORAGE_PREFIX = 'keuangan_quickadd_khusus_';
 var receiptItems = [];
 let aiCatTimer   = null;
 var isFetchingBg = false;
@@ -1448,13 +1464,96 @@ function checkAkunSession() {
   }
   return false;
 }
+function getQuickAddStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? (QUICK_ADD_STORAGE_PREFIX + uname) : '';
+}
+
+function normalizeQuickAddList(rawArr) {
+  if (!Array.isArray(rawArr)) return [];
+  const out = [];
+  for (let i = 0; i < rawArr.length; i++) {
+    const it = rawArr[i];
+    if (!it || typeof it !== 'object') continue;
+    const desc = String(it.Deskripsi || it.deskripsi || it.nama || it['Nama Transaksi'] || it.catatan || '').trim();
+    const amt  = Number(it['Jumlah Uang'] !== undefined ? it['Jumlah Uang'] : (it.nominal !== undefined ? it.nominal : (it.Nominal !== undefined ? it.Nominal : (it.jumlah || it.amount || 0))));
+    if (!desc || !(amt > 0)) continue;
+    const rawKat = String(it.Kategori || it.kategori || it.tipe || 'Uang Keluar').trim();
+    const kat = (rawKat === 'Uang Masuk' || rawKat.toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+    const sub = kat === 'Uang Keluar'
+      ? String(it['Kategori Uang Keluar'] || it.subKategori || it.kategoriKeluar || it['Sub Kategori'] || 'Lainnya').trim()
+      : null;
+    const dompetId = it.DompetId || it.dompetId || it['Dompet ID'] || '';
+    out.push({
+      id: String(it.id || it.ID || ('qa_item_' + i)),
+      Deskripsi: desc,
+      'Jumlah Uang': amt,
+      Kategori: kat,
+      'Kategori Uang Keluar': sub,
+      DompetId: dompetId ? String(dompetId) : ''
+    });
+    if (out.length >= QUICK_ADD_MAX) break;
+  }
+  return out;
+}
+
+function loadQuickAddLocal() {
+  quickAddList = [];
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const scopedKey = getQuickAddStorageKey();
+  try {
+    if (scopedKey) {
+      const rawScoped = storageGet(scopedKey);
+      if (rawScoped) {
+        const parsed = JSON.parse(rawScoped);
+        if (parsed && parsed.gsUrl === GS_URL && Array.isArray(parsed.items)) {
+          quickAddList = normalizeQuickAddList(parsed.items);
+          return;
+        } else if (Array.isArray(parsed)) {
+          quickAddList = normalizeQuickAddList(parsed);
+          return;
+        }
+      }
+    }
+    const rawShared = storageGet('keuangan_quickadd_khusus');
+    if (rawShared) {
+      const parsedShared = JSON.parse(rawShared);
+      if (parsedShared && parsedShared.username === S.akun.username && parsedShared.gsUrl === GS_URL && Array.isArray(parsedShared.items)) {
+        quickAddList = normalizeQuickAddList(parsedShared.items);
+      }
+    }
+  } catch(e) {}
+}
+
+function saveQuickAddLocal() {
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const normalized = normalizeQuickAddList(quickAddList);
+  quickAddList = normalized;
+  const payload = JSON.stringify({
+    username: S.akun.username,
+    gsUrl: GS_URL,
+    updatedAt: Date.now(),
+    items: normalized
+  });
+  const scopedKey = getQuickAddStorageKey();
+  if (scopedKey) storageSet(scopedKey, payload);
+  storageSet('keuangan_quickadd_khusus', payload);
+}
+
 window.logoutAkun = function() {
   if (!confirm('Keluar dari akun ini?')) return;
+  const scopedKey = getQuickAddStorageKey();
+  if (scopedKey) storageRemove(scopedKey);
+  storageRemove('keuangan_quickadd_khusus');
   storageRemove(AUTH_SESSION_KEY);
   try {
     localStorage.removeItem(TX_CACHE_KEY);
     localStorage.removeItem('keuangan_settings_cache');
     localStorage.removeItem('keuangan_dompet_list');
+    localStorage.removeItem('keuangan_deposito_list');
+    localStorage.removeItem('keuangan_cicilan_list');
+    localStorage.removeItem('keuangan_wishlist');
+    localStorage.removeItem('keuangan_subscriptions');
     sessionStorage.removeItem('keuangan_pin_unlocked');
   } catch(e) {}
   location.reload();
@@ -1551,6 +1650,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch(e) {}
 
   if (checkAkunSession()) {
+    loadQuickAddLocal();
     const hasPin = S.settings.password && S.settings.password !== 'NONE';
     const unlocked = sessionStorage.getItem('keuangan_pin_unlocked') === '1';
     if (hasPin && !unlocked) {
@@ -1612,6 +1712,14 @@ async function syncDataInBackground() {
       }
       if (Array.isArray(d.data.deposito)) { depositoList = d.data.deposito; saveDepositoLocal(); }
       if (Array.isArray(d.data.cicilan))  { cicilanList  = d.data.cicilan;  saveCicilanLocal(); }
+
+      const rawKhusus = d.data.khusus || d.data.Khusus || d.data.quickAdd || d.data.quickadd;
+      if (Array.isArray(rawKhusus)) {
+        quickAddList = normalizeQuickAddList(rawKhusus);
+        saveQuickAddLocal();
+      } else {
+        await fetchQuickAddFromSheetKhusus();
+      }
     }
   } catch(e) {
     console.warn('[Home] Background sync:', e.message);
@@ -1619,6 +1727,26 @@ async function syncDataInBackground() {
     isFetchingBg = false;
     refreshAll();
     migrasikanLogoDompetLama().then(() => refreshAll()).catch(() => {});
+  }
+}
+
+async function fetchQuickAddFromSheetKhusus() {
+  if (!GS_URL || !S.akun || !S.akun.gsUrl || GS_URL !== S.akun.gsUrl) return;
+  try {
+    const r = await fetch(GS_URL + '?action=readKhusus&sheet=Khusus');
+    const j = await r.json();
+    if (j && j.status === 'success') {
+      const arr = Array.isArray(j.data)
+        ? j.data
+        : (j.data && (j.data.khusus || j.data.Khusus || j.data.quickAdd || j.data.rows || j.data.items));
+      if (Array.isArray(arr)) {
+        quickAddList = normalizeQuickAddList(arr);
+        saveQuickAddLocal();
+        renderQuickAddHomeSection();
+      }
+    }
+  } catch(e) {
+    console.warn('[QuickAdd Sheet Khusus]', e.message);
   }
 }
 
@@ -1668,7 +1796,9 @@ async function handleLoginSubmit(e) {
     });
     const j = await r.json();
     if (j.status === 'success') {
+      quickAddList = [];
       saveAkunSession(j.data);
+      loadQuickAddLocal();
       document.getElementById('auth-screen').style.display = 'none';
       S.isLoggedIn = true;
       try { sessionStorage.setItem('keuangan_pin_unlocked', '1'); } catch(err) {}
@@ -1802,11 +1932,158 @@ function refreshAll() {
   renderHomeHeader();
   renderSubAlerts();
   renderHomeSummary();
+  renderQuickAddHomeSection();
   renderHomeDompetList();
   renderDepositoSection();
   renderCicilanSection();
   renderHomeRecentTransactions();
 }
+
+// ================================================================
+// QUICK ADD (CONTAINER CURVED & 1-CLICK TRANSACTION DARI SHEET "KHUSUS")
+// ================================================================
+var SUBCAT_EMOJI_MAP = {
+  'Makanan & Minuman': '🍚',
+  'Makanan': '🍚',
+  'Transportasi': '🚗',
+  'Tagihan Rutin': '🏆',
+  'Perawatan Pribadi': '🧴',
+  'Kebutuhan': '🛒',
+  'Hiburan & Langganan': '🎬',
+  'Internet': '📶',
+  'Pendidikan': '📚',
+  'Kesehatan': '💊',
+  'Cicilan & Utang': '💳',
+  'Sosial & Donasi': '🤝',
+  'Olahraga & Kebugaran': '🏋️',
+  'Pajak & Administrasi': '📋',
+  'Investasi': '📈',
+  'Lainnya': '⚡'
+};
+
+window.goToQuickAddPage = function() {
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+    saveQuickAddLocal();
+  }
+  window.top.location.href = 'https://keloladuit.my.id/quickadd';
+};
+
+function renderQuickAddHomeSection() {
+  const box = document.getElementById('quick-add-home-box');
+  if (!box) return;
+  const items = normalizeQuickAddList(quickAddList).slice(0, QUICK_ADD_MAX);
+
+  // Kondisi 1: User belum mendaftarkan transaksi Quick Add
+  if (!items.length) {
+    box.innerHTML = `
+      <div onclick="goToQuickAddPage()" class="qa-home-card qa-home-empty p-4 flex items-center justify-between gap-3">
+        <div style="position:absolute;top:-24px;right:-24px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.16) 0%,transparent 70%);pointer-events:none"></div>
+        <div class="flex items-center gap-3.5 min-w-0 relative z-10">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">
+            ⚡
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-base font-black text-zinc-900 leading-tight tracking-tight">Quick Add</h3>
+            <p class="text-xs font-bold text-zinc-500 mt-0.5 leading-snug">Tambah transaksi hanya dengan 1 klik</p>
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center flex-shrink-0 relative z-10">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Kondisi 2: User sudah mendaftarkan transaksi Quick Add (maksimal 10 transaksi)
+  const cardsHtml = items.map((item, idx) => {
+    const isIn = item.Kategori === 'Uang Masuk';
+    const amtClr = isIn ? '#10B981' : '#EF4444';
+    const sign = isIn ? '+' : '-';
+    const subLbl = isIn ? 'Uang Masuk' : (item['Kategori Uang Keluar'] || 'Lainnya');
+    const emoji = isIn ? '💰' : (SUBCAT_EMOJI_MAP[subLbl] || '⚡');
+    const dompetObj = item.DompetId ? dompetState.list.find(d => String(d.id) === String(item.DompetId)) : null;
+    const dompetLbl = dompetObj ? (dompetObj.nama || dompetObj.provider) : '';
+    const safeDesc = String(item.Deskripsi || 'Transaksi').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeSub  = String(dompetLbl ? (subLbl + ' · ' + dompetLbl) : subLbl).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    return `
+      <button type="button" onclick="executeQuickAddOneClick(${idx}, this)" class="qa-item-pill" title="Klik untuk langsung tambah: ${safeDesc}">
+        <div class="flex items-center justify-between gap-1.5 mb-1.5">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style="background:${isIn ? '#ECFDF5' : '#FEF2F2'}">${emoji}</span>
+          <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:${isIn ? '#D1FAE5' : '#FEE2E2'};color:${ isIn ? '#065F46' : '#991B1B' }">1-Klik +</span>
+        </div>
+        <p class="text-xs font-extrabold text-zinc-900 truncate leading-snug">${safeDesc}</p>
+        <p class="text-[11px] font-black mt-0.5 truncate" style="color:${amtClr}">${sign}${idr(item['Jumlah Uang'])}</p>
+        <p class="text-[9px] font-bold text-zinc-400 truncate mt-0.5">${safeSub}</p>
+      </button>
+    `;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="qa-home-card glass p-3.5" style="border:1.5px solid rgba(16,185,129,0.22)">
+      <div class="flex items-center justify-between mb-2.5 px-0.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">⚡</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-xs font-black text-zinc-900 leading-none">Quick Add</h3>
+              <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">${items.length}/${QUICK_ADD_MAX}</span>
+            </div>
+            <p class="text-[10px] font-semibold text-zinc-400 mt-0.5 leading-none">Pilih untuk tambah transaksi 1 klik</p>
+          </div>
+        </div>
+        <button type="button" onclick="goToQuickAddPage()" class="text-[10px] font-black text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1 flex-shrink-0">
+          <span>Atur</span>
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="flex gap-2.5 overflow-x-auto no-scroll pb-0.5">
+        ${cardsHtml}
+      </div>
+    </div>
+  `;
+}
+
+var _qaClickLock = false;
+window.executeQuickAddOneClick = function(idx, btnEl) {
+  if (_qaClickLock) return;
+  const items = normalizeQuickAddList(quickAddList).slice(0, QUICK_ADD_MAX);
+  const item = items[idx];
+  if (!item) return;
+
+  if (!GS_URL || !S.akun || !S.akun.gsUrl) {
+    showSuccess('Sesi akun belum terhubung. Silakan login kembali.');
+    return;
+  }
+
+  _qaClickLock = true;
+  setTimeout(() => { _qaClickLock = false; }, 450);
+
+  if (btnEl) {
+    btnEl.classList.add('qa-just-added');
+    setTimeout(() => btnEl.classList.remove('qa-just-added'), 600);
+  }
+
+  const defaultDompetId = item.DompetId || (dompetState.list[0] ? dompetState.list[0].id : null);
+  const newTx = {
+    id: 'qa_' + Date.now(),
+    'Kategori': item.Kategori || 'Uang Keluar',
+    'Kategori Uang Keluar': (item.Kategori === 'Uang Masuk') ? null : (item['Kategori Uang Keluar'] || 'Lainnya'),
+    'Jumlah Uang': Number(item['Jumlah Uang']) || 0,
+    'Tanggal': new Date().toISOString(),
+    'Deskripsi': item.Deskripsi || 'Transaksi Cepat',
+    'DompetId': defaultDompetId
+  };
+
+  S.transactions.unshift(newTx);
+  refreshAll();
+  showSuccess(`⚡ ${newTx.Deskripsi} (${idr(newTx['Jumlah Uang'])}) berhasil ditambahkan!`);
+  postData('addData', newTx).catch(() => {});
+};
 
 // ================================================================
 // HOME RENDERERS
