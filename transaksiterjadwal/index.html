@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Transaksi Terjadwal — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F0F4F8;
+  --surface: rgba(255,255,255,0.80);
+  --primary: #6366F1;
+  --emerald: #10B981;
+  --violet: #8B5CF6;
+  --amber: #F59E0B;
+  --sky: #0EA5E9;
+  --red: #EF4444;
+  --glass-bg: rgba(255,255,255,0.80);
+  --glass-border: rgba(255,255,255,0.75);
+  --glass-shadow: 0 4px 24px rgba(99,102,241,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --spring: 0.38s cubic-bezier(0.34,1.56,0.64,1);
+  --ease: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+body::before {
+  content:''; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 85% -10%, rgba(99,102,241,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 15% 110%, rgba(16,185,129,.09) 0%, transparent 60%),
+    linear-gradient(160deg, #EEF2FF 0%, #F0F4F8 45%, #F5F3FF 100%);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: #18181B;
+  padding-bottom: 105px;
+  overflow-x: hidden;
+  margin: 0;
+}
+.ambient {
+  position: fixed; inset: 0; pointer-events: none; z-index: -1;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 70%);
+}
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow var(--ease), transform var(--ease);
+}
+.no-scroll::-webkit-scrollbar { display:none; }
+.no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+@keyframes floatSlow { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-6px); } }
+@keyframes pulseRing { 0% { transform:scale(0.92); opacity:0.75; } 70% { transform:scale(1.22); opacity:0; } 100% { transform:scale(1.22); opacity:0; } }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes checkDraw { to { stroke-dashoffset:0; } }
+@keyframes tickHand { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.fade-up { animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) forwards; }
+.scale-in { animation: scaleIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
+.float-slow { animation: floatSlow 3.4s ease-in-out infinite; }
+
+/* Animated Clock Elements */
+.clock-orb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.clock-orb::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 1.5px dashed rgba(99,102,241,0.35);
+  animation: tickHand 18s linear infinite;
+  pointer-events: none;
+}
+.clock-hand-min {
+  transform-origin: 12px 12px;
+  animation: tickHand 12s linear infinite;
+}
+.clock-hand-hr {
+  transform-origin: 12px 12px;
+  animation: tickHand 60s linear infinite;
+}
+
+.fi {
+  background:#F4F4F5;
+  border:1.5px solid transparent;
+  border-radius:14px;
+  padding:12px 14px;
+  width:100%;
+  font-size:14px;
+  font-weight:700;
+  color:#18181B;
+  outline:none;
+  transition:all 0.2s;
+  font-family:inherit;
+}
+.fi:focus {
+  outline:none;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.18), 0 2px 8px rgba(99,102,241,0.10);
+  border-color: #6366F1 !important;
+  background: #FFFFFF !important;
+}
+.fi::placeholder { color:#A1A1AA; font-weight:500; }
+
+.subcat-icon-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  transition: transform .15s; width: 64px;
+}
+.subcat-icon-btn:active { transform: scale(0.88); }
+.subcat-icon-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; border: 2.5px solid transparent;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.subcat-icon-btn.active .subcat-icon-circle {
+  border-color: #6366F1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.18);
+  transform: translateY(-2px);
+}
+.subcat-icon-label {
+  font-size: 10px; font-weight: 700; color: #71717A;
+  text-align: center; white-space: nowrap; width: 64px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.subcat-icon-btn.active .subcat-icon-label { color: #4F46E5; font-weight: 900; }
+
+/* Date Grid Buttons (1-31) */
+.day-cell-btn {
+  height: 38px;
+  border-radius: 12px;
+  border: 1.5px solid #E4E4E7;
+  background: #FFFFFF;
+  font-size: 12px;
+  font-weight: 800;
+  color: #3F3F46;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all .16s cubic-bezier(.34,1.56,.64,1);
+}
+.day-cell-btn:active { transform: scale(0.90); }
+.day-cell-btn.active {
+  background: linear-gradient(135deg,#6366F1,#4F46E5);
+  border-color: #4F46E5;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.32);
+  transform: translateY(-1px);
+}
+.day-cell-btn.special-day::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #F59E0B;
+}
+.day-cell-btn.active.special-day::after {
+  background: #FDE047;
+}
+
+/* End-of-month rule radio cards */
+.eom-option-card {
+  border-radius: 16px;
+  padding: 11px 13px;
+  border: 2px solid #E4E4E7;
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+  transition: all .18s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.eom-option-card:active { transform: scale(0.98); }
+.eom-option-card.active {
+  border-color: #6366F1;
+  background: #EEF2FF;
+  box-shadow: 0 4px 14px rgba(99,102,241,0.12);
+}
+
+.color-swatch-btn {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:8px 6px; border-radius:16px; border:2px solid #E4E4E7;
+  background:#fff; cursor:pointer; transition:all .18s cubic-bezier(.34,1.56,.64,1);
+}
+.color-swatch-btn:active { transform:scale(0.92); }
+.color-swatch-btn.active {
+  border-color:#18181B;
+  background:#F8FAFC;
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(0,0,0,0.08);
+}
+
+.choice-card {
+  position:relative; overflow:hidden; border-radius:24px; padding:20px;
+  border:2px solid transparent; cursor:pointer; text-align:left;
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.choice-card:hover { transform:translateY(-2px); }
+.choice-card:active { transform:scale(0.97); }
+
+.modal-backdrop {
+  position:fixed; inset:0; background:rgba(9,9,11,0.45);
+  backdrop-filter:blur(8px); display:none; align-items:flex-end;
+  justify-content:center; z-index:70; opacity:0; transition:opacity 0.28s;
+}
+.modal-backdrop.show { opacity:1; }
+.modal-backdrop .sheet {
+  background:#fff; border-radius:28px 28px 0 0;
+  box-shadow: 0 -12px 48px rgba(0,0,0,0.12);
+  transform:translateY(100%); transition:transform 0.36s cubic-bezier(0.22,1,0.36,1);
+  width:100%; max-width:480px; max-height:90vh; overflow-y:auto;
+}
+.modal-backdrop.show .sheet { transform:translateY(0); }
+
+.check-path { stroke-dasharray:100; stroke-dashoffset:100; animation: checkDraw 0.6s cubic-bezier(0.65,0,0.45,1) 0.15s forwards; }
+.spin-sm { width:16px; height:16px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+
+.nav-btn { transition: color 0.2s, transform 0.15s; color:#A1A1AA; text-decoration:none; }
+.nav-btn.active { color:#18181B; }
+.nav-btn:active { transform:scale(0.88); }
+.ai-nav-orb {
+  width:46px; height:46px; border-radius:16px; background:#111;
+  border:1.5px solid rgba(255,255,255,.12); display:flex; align-items:center;
+  justify-content:center; position:relative; box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.orb-ping {
+  position:absolute; inset:-4px; border-radius:20px;
+  border:1px solid rgba(99,102,241,.45); animation:pulseRing 3s ease-out infinite; pointer-events:none;
+}
+
+/* Auth Screen Styles */
+#auth-screen { position: fixed; inset: 0; z-index: 95; display: none; flex-direction: column; background: #fff; overflow-y: auto; }
+.auth-header { position: relative; flex-shrink: 0; height: 34vh; min-height: 220px; max-height: 300px; overflow: hidden; background: #C7D2FE; }
+.auth-blob { position: absolute; border-radius: 50%; }
+.auth-blob-1 { width: 130%; height: 100%; left: -15%; top: -10%; background: linear-gradient(160deg, #4338CA, #312E81); border-radius: 40% 60% 65% 35% / 45% 40% 60% 55%; }
+.auth-blob-2 { width: 60%; height: 70%; right: -15%; top: 15%; background: linear-gradient(135deg, #F0D878, #E8C858); border-radius: 55% 45% 40% 60% / 60% 55% 45% 40%; }
+.auth-header-title { position: absolute; left: 24px; bottom: 28px; z-index: 2; font-size: 30px; font-weight: 900; color: #fff; line-height: 1.15; }
+.auth-body { flex: 1; padding: 28px 24px 36px; display: flex; flex-direction: column; max-width: 440px; width: 100%; margin: 0 auto; }
+.auth-form { display: flex; flex-direction: column; gap: 20px; }
+.auth-field label { display: block; font-size: 12px; font-weight: 700; color: #A1A1AA; margin-bottom: 6px; }
+.auth-form input { width: 100%; padding: 6px 0 10px; border: none; border-bottom: 1.5px solid #E4E4E7; outline: none; font-family: inherit; font-size: 16px; font-weight: 700; color: #18181B; background: transparent; }
+.auth-submit-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.auth-form button[type="submit"] { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #4F46E5, #3730A3); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<!-- ═══════════ AUTH SCREEN (JIKA BELUM LOGIN) ═══════════ -->
+<div id="auth-screen">
+  <div class="auth-header">
+    <div class="auth-blob auth-blob-1"></div>
+    <div class="auth-blob auth-blob-2"></div>
+    <h1 class="auth-header-title">Transaksi<br>Terjadwal</h1>
+  </div>
+  <div class="auth-body">
+    <p class="text-xs font-bold text-zinc-400 mb-6">Masuk ke akun Keloladuit.id untuk mengelola jadwal transaksi otomatis Anda.</p>
+    <form id="login-form" class="auth-form" onsubmit="handleLoginSubmit(event)">
+      <div class="auth-field">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" placeholder="usernamemu" autocomplete="username" required>
+      </div>
+      <div class="auth-field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <p id="login-msg" class="text-xs font-bold text-red-500 min-h-[16px]"></p>
+      <div class="auth-submit-row">
+        <span class="text-lg font-black text-zinc-900">Masuk</span>
+        <button type="submit" id="login-submit-btn" aria-label="Masuk">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 z-[90] flex items-center justify-center hidden pointer-events-none bg-zinc-900/20 backdrop-blur-sm">
+  <div class="scale-in bg-white rounded-[28px] shadow-2xl p-7 flex flex-col items-center min-w-[240px] max-w-[310px] border border-zinc-100">
+    <div class="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mb-3">
+      <svg class="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <p class="text-lg font-black text-zinc-900 mb-1">Berhasil!</p>
+    <p id="success-msg" class="text-xs text-zinc-500 font-bold text-center leading-relaxed">Jadwal tersimpan.</p>
+  </div>
+</div>
+
+<!-- ═══════════ CONFIRM DELETE MODAL ═══════════ -->
+<div id="delete-modal" class="modal-backdrop" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="sheet p-6 pb-8 text-center">
+    <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
+    <div class="w-14 h-14 bg-red-50 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-500">
+      <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-black text-zinc-900 mb-1">Hapus Transaksi Terjadwal?</h3>
+    <p id="delete-modal-desc" class="text-xs font-semibold text-zinc-400 mb-6">Jadwal ini tidak akan lagi dikirim otomatis di bulan berikutnya.</p>
+    <div class="flex gap-3">
+      <button type="button" onclick="closeDeleteModal()" class="flex-1 py-3.5 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">Batal</button>
+      <button type="button" id="delete-confirm-btn" onclick="confirmDeleteSchedule()" class="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-black text-xs shadow-lg shadow-red-500/25 active:scale-95 transition-transform">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN APP CONTAINER ═══════════ -->
+<div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- Top Header with Live Clock Element -->
+  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center justify-between" style="background:rgba(240,244,248,.90);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+    <div class="flex items-center gap-3">
+      <a href="https://keloladuit.my.id/home" target="_top" class="w-10 h-10 rounded-2xl bg-white border border-zinc-200/80 flex items-center justify-center text-zinc-700 shadow-sm active:scale-90 transition-transform" style="text-decoration:none" title="Kembali ke Beranda">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="9"/>
+              <path class="clock-hand-min" stroke-linecap="round" d="M12 7v5"/>
+              <path class="clock-hand-hr" stroke-linecap="round" d="M12 12l3 2"/>
+            </svg>
+          </span>
+          <h1 class="text-base font-black text-zinc-900 leading-none">Transaksi Terjadwal</h1>
+          <span id="header-count-badge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">0</span>
+        </div>
+        <p id="header-subtitle" class="text-[11px] font-bold text-zinc-400 mt-1 leading-none">Otomatis Tercatat ke Histori Setiap Bulan</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <!-- Live Digital Clock Pill -->
+      <div class="px-2.5 py-1.5 rounded-xl bg-indigo-950 text-white flex items-center gap-1.5 shadow-sm" title="Waktu Sistem Aktif">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="live-clock-text" class="text-[10px] font-black tracking-tight tabular-nums">--:--</span>
+      </div>
+      <button type="button" id="btn-replay-intro" onclick="showIntroView()" class="px-2.5 py-1.5 rounded-xl bg-white border border-zinc-200 text-[10px] font-black text-zinc-600 shadow-sm active:scale-95 transition-transform">
+        💡 Info
+      </button>
+    </div>
+  </header>
+
+  <main class="px-5 pt-2 pb-24 flex-1 flex flex-col">
+
+    <!-- Auto-Execution Banner (Muncul jika ada transaksi terjadwal yang baru saja dieksekusi otomatis hari ini) -->
+    <div id="auto-exec-banner" class="hidden mb-3.5 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-emerald-950 shadow-sm fade-up">
+      <div class="flex items-start gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-base flex-shrink-0 shadow-sm">⏰</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-black text-emerald-950">Transaksi Terjadwal Otomatis Dicatat!</p>
+          <p id="auto-exec-desc" class="text-[11px] font-semibold text-emerald-800 mt-0.5 leading-relaxed"></p>
+        </div>
+        <button type="button" onclick="document.getElementById('auto-exec-banner').classList.add('hidden')" class="text-emerald-700 font-black text-xs px-1">✕</button>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 1: INTRO OPENING (ONBOARDING SLIDES TRANSAKSI TERJADWAL)
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-intro" class="hidden flex-1 flex flex-col justify-between py-2">
+      <div class="glass rounded-[28px] p-6 relative overflow-hidden flex-1 flex flex-col justify-between" style="border:1.5px solid rgba(99,102,241,0.24);min-height:480px">
+        <div style="position:absolute;top:-50px;right:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.18) 0%,transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;bottom:-60px;left:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.14) 0%,transparent 70%);pointer-events:none"></div>
+
+        <!-- Top step indicator & Skip -->
+        <div class="flex items-center justify-between relative z-10">
+          <div class="flex items-center gap-1.5" id="intro-dots">
+            <span class="h-2 w-7 rounded-full bg-indigo-600 transition-all"></span>
+            <span class="h-2 w-2 rounded-full bg-zinc-200 transition-all"></span>
+            <span class="h-2 w-2 rounded-full bg-zinc-200 transition-all"></span>
+          </div>
+          <button type="button" onclick="finishIntroAndStart()" class="text-[11px] font-extrabold text-zinc-400 hover:text-zinc-700 px-2 py-1 rounded-lg">
+            Lewati →
+          </button>
+        </div>
+
+        <!-- Slide Content Container -->
+        <div id="intro-slide-body" class="my-auto py-5 relative z-10"></div>
+
+        <!-- Bottom Navigation Buttons -->
+        <div id="intro-nav-btns" class="relative z-10 pt-2"></div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 2: PILIH TIPE TRANSAKSI TERJADWAL (UANG MASUK / KELUAR)
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-choose-type" class="hidden space-y-4 py-2 fade-up">
+      <div class="glass rounded-[26px] p-6 text-center relative overflow-hidden" style="border:1.5px solid rgba(99,102,241,0.22)">
+        <div class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-2xl shadow-md clock-orb" style="background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff">
+          ⏰
+        </div>
+        <h2 class="text-xl font-black text-zinc-900 leading-snug">Jadwalkan Transaksi Bulanan</h2>
+        <p class="text-xs font-semibold text-zinc-500 mt-1.5 max-w-xs mx-auto leading-relaxed">
+          Pilih jenis transaksi yang ingin dikirim &amp; dicatat otomatis ke Riwayat setiap tanggal yang Anda tentukan.
+        </p>
+
+        <div class="grid grid-cols-1 gap-3.5 mt-6">
+          <!-- Pilihan Uang Masuk Terjadwal -->
+          <button type="button" onclick="openFormWithType('Uang Masuk')" class="choice-card" style="background:linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%);border-color:#6EE7B7">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669)">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600/15 text-emerald-800">Pemasukan Terjadwal</span>
+                  <h3 class="text-lg font-black text-emerald-950 mt-1">Uang Masuk</h3>
+                  <p class="text-[11px] font-semibold text-emerald-800/80 mt-0.5">Cth: Gaji Bulanan (Tgl 25), Uang Saku (Tgl 1), Sewa</p>
+                </div>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-white/80 flex items-center justify-center text-emerald-700 font-black shadow-sm flex-shrink-0">→</div>
+            </div>
+          </button>
+
+          <!-- Pilihan Uang Keluar Terjadwal -->
+          <button type="button" onclick="openFormWithType('Uang Keluar')" class="choice-card" style="background:linear-gradient(135deg,#EEF2FF 0%,#E0E7FF 100%);border-color:#A5B4FC">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0" style="background:linear-gradient(135deg,#6366F1,#4F46E5)">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-600/15 text-indigo-800">Pengeluaran Terjadwal</span>
+                  <h3 class="text-lg font-black text-indigo-950 mt-1">Uang Keluar</h3>
+                  <p class="text-[11px] font-semibold text-indigo-900/80 mt-0.5">Cth: Bayar Kos, WiFi, Listrik, Netflix, Cicilan Bulanan</p>
+                </div>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-white/80 flex items-center justify-center text-indigo-700 font-black shadow-sm flex-shrink-0">→</div>
+            </div>
+          </button>
+        </div>
+
+        <div id="choose-type-back-wrap" class="mt-5 hidden">
+          <button type="button" onclick="showListView()" class="w-full py-3 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">
+            ← Batal &amp; Kembali ke Daftar Jadwal
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 3: FORM PENGATURAN TRANSAKSI TERJADWAL
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-form" class="hidden space-y-4 py-1 fade-up">
+      <div class="glass rounded-[26px] p-5 space-y-4" style="border:1.5px solid rgba(99,102,241,0.16)">
+        <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base font-black">🕒</div>
+            <div>
+              <h2 id="form-title" class="text-base font-black text-zinc-900">Buat Transaksi Terjadwal</h2>
+              <p class="text-[11px] font-semibold text-zinc-400 mt-0.5">Otomatis dikirim &amp; dicatat ke Histori</p>
+            </div>
+          </div>
+          <button type="button" onclick="handleFormCancel()" class="px-3 py-1.5 rounded-xl bg-zinc-100 text-zinc-600 text-[11px] font-black active:scale-95">
+            Kembali
+          </button>
+        </div>
+
+        <form id="sch-form" class="space-y-4" onsubmit="handleSaveSchedule(event)">
+          <input type="hidden" id="sch-edit-id" value="">
+
+          <!-- Switcher Uang Masuk / Uang Keluar -->
+          <div>
+            <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-2">Jenis Transaksi</label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <button type="button" id="btn-type-masuk" onclick="setFormType('Uang Masuk')"
+                class="py-3.5 px-3 rounded-2xl border-2 font-black text-xs flex items-center justify-center gap-2 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                </svg>
+                <span>UANG MASUK</span>
+              </button>
+              <button type="button" id="btn-type-keluar" onclick="setFormType('Uang Keluar')"
+                class="py-3.5 px-3 rounded-2xl border-2 font-black text-xs flex items-center justify-center gap-2 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                </svg>
+                <span>UANG KELUAR</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pilih Sumber Dana / Dompet -->
+          <div>
+            <label for="sch-dompet" class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Dompet Sumber / Tujuan Otomatis</label>
+            <select id="sch-dompet" class="fi font-extrabold" onchange="updateLivePreview()"></select>
+          </div>
+
+          <!-- Sub-Kategori Pengeluaran (Hanya muncul jika Uang Keluar) -->
+          <div id="sch-subcat-wrap">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Kategori Pengeluaran</label>
+              <span id="sch-selected-subcat-badge" class="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">Tagihan Rutin</span>
+            </div>
+            <div id="sch-subcat-list" class="flex gap-3 overflow-x-auto no-scroll pb-2 pt-1 -mx-1 px-1"></div>
+          </div>
+
+          <!-- Nama Transaksi + Inspirasi Cepat -->
+          <div>
+            <label for="sch-name" class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Nama Transaksi Terjadwal</label>
+            <input type="text" id="sch-name" placeholder="Cth: Bayar WiFi IndiHome / Gaji Bulanan / Kos…" class="fi" required oninput="updateLivePreview()">
+            <div class="mt-2">
+              <p class="text-[9px] font-extrabold text-zinc-400 uppercase tracking-wider mb-1.5">Inspirasi Cepat (Tap untuk isi otomatis):</p>
+              <div id="sch-preset-chips" class="flex gap-1.5 overflow-x-auto no-scroll pb-1"></div>
+            </div>
+          </div>
+
+          <!-- Nominal Transaksi -->
+          <div class="p-3.5 rounded-2xl bg-zinc-50/90 border border-zinc-200/80 space-y-2.5">
+            <label for="sch-amount" class="text-[10px] font-black text-zinc-500 uppercase tracking-wider block">Nominal Transaksi (Rp)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-black text-base">Rp</span>
+              <input type="number" id="sch-amount" placeholder="350000" min="1" class="fi py-3.5 pl-12 text-lg font-black bg-white" required oninput="updateLivePreview()">
+            </div>
+            <div class="flex gap-1.5 overflow-x-auto no-scroll pt-1">
+              <button type="button" onclick="setQuickAmount(50000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 50rb</button>
+              <button type="button" onclick="setQuickAmount(150000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 150rb</button>
+              <button type="button" onclick="setQuickAmount(350000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 350rb</button>
+              <button type="button" onclick="setQuickAmount(500000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 500rb</button>
+              <button type="button" onclick="setQuickAmount(1500000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 1,5 Jt</button>
+              <button type="button" onclick="setQuickAmount(5000000)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-extrabold text-zinc-600 flex-shrink-0">Rp 5 Jt</button>
+            </div>
+          </div>
+
+          <!-- Pemilih Setiap Tanggal Berapa (1 - 31) + Jam Eksekusi -->
+          <div class="p-4 rounded-2xl bg-indigo-50/55 border border-indigo-200/70 space-y-3.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-base">📅</span>
+                <div>
+                  <label class="text-[10px] font-black text-indigo-950 uppercase tracking-wider block">Jadwalkan Setiap Tanggal</label>
+                  <p class="text-[10px] font-semibold text-indigo-700/80">Pilih tanggal 1 s/d 31 setiap bulannya</p>
+                </div>
+              </div>
+              <span id="sch-selected-day-badge" class="text-xs font-black px-3 py-1 rounded-xl bg-indigo-600 text-white shadow-sm">
+                Setiap Tgl 1
+              </span>
+            </div>
+
+            <!-- Grid Tanggal 1 s/d 31 -->
+            <div id="sch-day-grid" class="grid grid-cols-7 gap-1.5"></div>
+
+            <!-- Elemen Jam Eksekusi -->
+            <div class="pt-2 border-t border-indigo-200/60 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-8 h-8 rounded-xl bg-white border border-indigo-200 flex items-center justify-center text-sm shadow-sm flex-shrink-0">⏰</span>
+                <div class="min-w-0">
+                  <label for="sch-time" class="text-[11px] font-black text-indigo-950 block">Jam Pengiriman Otomatis</label>
+                  <p class="text-[9px] font-semibold text-indigo-700/80">Waktu pencatatan pada tanggal jatuh tempo</p>
+                </div>
+              </div>
+              <input type="time" id="sch-time" value="08:00" class="fi w-28 py-2 px-3 text-xs font-black bg-white border border-indigo-200 text-center" onchange="updateLivePreview()">
+            </div>
+
+            <!-- OPSI KHUSUS TANGGAL 29, 30, & 31 (Solusi Bulan Pendek seperti Februari / Bulan 30 Hari) -->
+            <div id="sch-eom-rule-box" class="hidden pt-3 border-t border-amber-300/80 space-y-2.5 fade-up">
+              <div class="p-3 rounded-xl bg-amber-50 border border-amber-200/90 flex items-start gap-2.5">
+                <span class="text-base leading-none mt-0.5">🗓️</span>
+                <div>
+                  <p class="text-xs font-black text-amber-950">Bagaimana jika bulan berjalan tidak ada Tanggal <span id="eom-day-num">31</span>?</p>
+                  <p class="text-[10px] font-semibold text-amber-800/90 mt-0.5 leading-relaxed">
+                    Beberapa bulan hanya memiliki 28/29 hari (Februari) atau 30 hari (Apr, Jun, Sep, Nov). Pilih tindakan otomatisnya:
+                  </p>
+                </div>
+              </div>
+
+              <div class="space-y-2" id="sch-eom-options">
+                <!-- Opsi 1: Geser ke Tanggal 1 Bulan Berikutnya (Saran User 1) -->
+                <button type="button" onclick="selectEomRule('tanggal_1')" data-eom="tanggal_1" class="eom-option-card w-full active">
+                  <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">1</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-1">
+                      <p class="text-xs font-black text-zinc-900">Tetap Terjadwal di Tanggal 1</p>
+                      <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Populer</span>
+                    </div>
+                    <p class="text-[10px] font-semibold text-zinc-500 mt-0.5 leading-snug">
+                      Jika bulan tersebut tidak punya tanggal ini, transaksi otomatis dikirim pada <b>Tanggal 1</b> di awal bulan berikutnya.
+                    </p>
+                  </div>
+                </button>
+
+                <!-- Opsi 2: Majukan ke Tanggal Terakhir Bulan Itu -->
+                <button type="button" onclick="selectEomRule('akhir_bulan')" data-eom="akhir_bulan" class="eom-option-card w-full">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">28</div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-black text-zinc-900">Catat di Hari Terakhir Bulan Tersebut</p>
+                    <p class="text-[10px] font-semibold text-zinc-500 mt-0.5 leading-snug">
+                      Otomatis dikirim pada tanggal terakhir yang ada di bulan itu (tgl 28/29 Feb atau tgl 30).
+                    </p>
+                  </div>
+                </button>
+
+                <!-- Opsi 3: Diabaikan / Dilewati (Saran User 2) -->
+                <button type="button" onclick="selectEomRule('abaikan')" data-eom="abaikan" class="eom-option-card w-full">
+                  <div class="w-7 h-7 rounded-lg bg-zinc-500 text-white flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">⏭</div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-black text-zinc-900">Diabaikan / Lewati Bulan Tersebut</p>
+                    <p class="text-[10px] font-semibold text-zinc-500 mt-0.5 leading-snug">
+                      Hanya dikirim pada bulan yang memiliki tanggal <span class="eom-day-inline">31</span>; dilewati jika bulan tidak memiliki tanggal tersebut.
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pilihan Warna Kartu (Tampil di Beranda) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Pilih Warna Kartu Jadwal</label>
+              <span id="sch-color-name-label" class="text-[10px] font-black text-indigo-700">Ungu Violet</span>
+            </div>
+            <div id="sch-color-grid" class="grid grid-cols-4 gap-2"></div>
+          </div>
+
+          <!-- Live Preview Kartu di Container Transaksi Terjadwal Beranda -->
+          <div class="p-3.5 rounded-2xl bg-zinc-900/5 border border-zinc-200/70">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Preview Kartu di Beranda</span>
+              <span class="text-[9px] font-bold text-indigo-600 flex items-center gap-1">🕒 Auto-Send Aktif</span>
+            </div>
+            <div class="flex justify-center py-1">
+              <div id="sch-live-preview-card" class="w-52 rounded-2xl p-3 text-left transition-all shadow-sm"></div>
+            </div>
+          </div>
+
+          <p id="sch-form-error" class="text-xs font-bold text-red-500 text-center hidden"></p>
+
+          <button type="submit" id="sch-submit-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all" style="background:linear-gradient(135deg,#6366F1,#4F46E5);box-shadow:0 8px 24px rgba(99,102,241,0.32)">
+            <span id="sch-submit-text">Simpan Transaksi Terjadwal ⏰</span>
+            <div id="sch-submit-spin" class="spin-sm hidden"></div>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════════════════════════════════════════
+         VIEW 4: DAFTAR TRANSAKSI TERJADWAL & STATUS EKSEKUSI
+    ══════════════════════════════════════════════════════════════ -->
+    <section id="view-list" class="hidden space-y-4 py-1 fade-up">
+      <!-- Hero Summary Card with Clock Visuals -->
+      <div class="rounded-[26px] p-5 text-white relative overflow-hidden shadow-xl" style="background:linear-gradient(135deg,#1E1B4B 0%,#312E81 55%,#0F172A 100%)">
+        <div style="position:absolute;top:-35px;right:-35px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.35) 0%,transparent 70%);pointer-events:none"></div>
+        <!-- Decorative Background Clock SVG -->
+        <svg style="position:absolute;right:12px;bottom:-18px;width:110px;height:110px;opacity:0.08;pointer-events:none" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5">
+          <circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/>
+        </svg>
+
+        <div class="flex items-start justify-between gap-3 relative z-10">
+          <div>
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-indigo-300 bg-indigo-500/20 border border-indigo-400/25 px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+              <span>⏰ Auto-Scheduler Aktif</span>
+            </span>
+            <h2 class="text-lg font-black text-white mt-2 leading-snug">Jadwal Transaksi Rutin</h2>
+            <p id="list-next-countdown" class="text-[11px] font-semibold text-indigo-200 mt-0.5 leading-relaxed">
+              Otomatis dikirim &amp; dicatat ke Riwayat saat tanggal tiba.
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-2xl flex-shrink-0 clock-orb">
+            🕒
+          </div>
+        </div>
+
+        <!-- Ringkasan Estimasi Bulanan -->
+        <div class="grid grid-cols-2 gap-2.5 mt-4 pt-3.5 border-t border-white/10 relative z-10">
+          <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-[9px] font-bold text-indigo-200 uppercase">↑ Jadwal Masuk / Bln</p>
+            <p id="sum-sched-in" class="text-xs font-black text-emerald-400 mt-0.5">Rp 0</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-[9px] font-bold text-indigo-200 uppercase">↓ Jadwal Keluar / Bln</p>
+            <p id="sum-sched-out" class="text-xs font-black text-rose-400 mt-0.5">Rp 0</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 mt-3 relative z-10">
+          <button type="button" onclick="startAddAnotherSchedule()" class="py-3 px-3.5 rounded-xl font-black text-xs text-indigo-950 bg-indigo-300 hover:bg-indigo-200 active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md">
+            <span>+ Buat Jadwal Baru</span>
+          </button>
+          <a href="https://keloladuit.my.id/histori" target="_top" class="py-3 px-3.5 rounded-xl font-black text-xs text-white bg-white/15 hover:bg-white/20 active:scale-95 transition-all flex items-center justify-center gap-1.5" style="text-decoration:none">
+            <span>Cek Histori →</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Daftar Item Transaksi Terjadwal -->
+      <div id="sch-saved-list" class="space-y-3"></div>
+
+      <!-- Bottom Action Button -->
+      <div class="pt-2 space-y-2.5">
+        <button type="button" onclick="startAddAnotherSchedule()" class="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all" style="background:linear-gradient(135deg,#6366F1,#4F46E5);box-shadow:0 8px 24px rgba(99,102,241,0.28)">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>Tambah Transaksi Terjadwal</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[var(--bg)] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn active flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <button type="button" onclick="startAddAnotherSchedule()" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;background:none;border:none;cursor:pointer">
+      <div class="ai-nav-orb" style="background:linear-gradient(135deg,#6366F1,#4F46E5);box-shadow:0 6px 20px rgba(99,102,241,0.45)">
+        <div class="orb-ping"></div>
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.6">
+          <circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#4F46E5">Terjadwal</span>
+    </button>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// CONFIG, PALET WARNA, & STATE TRANSAKSI TERJADWAL
+// ================================================================
+let GS_URL = '';
+var GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY = 'keuangan_transactions_cache';
+const SCHEDULED_STORAGE_PREFIX = 'keuangan_scheduled_jadwal_';
+const SCHEDULED_SHARED_KEY = 'keuangan_scheduled_jadwal';
+const INTRO_SEEN_KEY = 'keuangan_scheduled_intro_seen';
+
+const SCH_COLOR_THEMES = {
+  violet: {
+    id: 'violet', label: 'Ungu', fullName: 'Ungu Violet',
+    dot: '#8B5CF6', bg: 'linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)',
+    border: '#C4B5FD', text: '#4C1D95', accent: '#6D28D9',
+    badgeBg: '#7C3AED', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  ocean: {
+    id: 'ocean', label: 'Biru', fullName: 'Biru Ocean',
+    dot: '#3B82F6', bg: 'linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%)',
+    border: '#93C5FD', text: '#1E3A8A', accent: '#2563EB',
+    badgeBg: '#3B82F6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  emerald: {
+    id: 'emerald', label: 'Hijau', fullName: 'Hijau Emerald',
+    dot: '#10B981', bg: 'linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%)',
+    border: '#6EE7B7', text: '#064E3B', accent: '#059669',
+    badgeBg: '#10B981', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  rose: {
+    id: 'rose', label: 'Merah', fullName: 'Merah Rose',
+    dot: '#EF4444', bg: 'linear-gradient(135deg,#FEF2F2 0%,#FEE2E2 100%)',
+    border: '#FCA5A5', text: '#7F1D1D', accent: '#DC2626',
+    badgeBg: '#EF4444', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  amber: {
+    id: 'amber', label: 'Kuning', fullName: 'Kuning Amber',
+    dot: '#F59E0B', bg: 'linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%)',
+    border: '#FCD34D', text: '#78350F', accent: '#D97706',
+    badgeBg: '#F59E0B', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  pink: {
+    id: 'pink', label: 'Pink', fullName: 'Pink Fuchsia',
+    dot: '#EC4899', bg: 'linear-gradient(135deg,#FDF2F8 0%,#FCE7F3 100%)',
+    border: '#F9A8D4', text: '#831843', accent: '#DB2777',
+    badgeBg: '#EC4899', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  teal: {
+    id: 'teal', label: 'Teal', fullName: 'Teal Cyan',
+    dot: '#14B8A6', bg: 'linear-gradient(135deg,#F0FDFA 0%,#CCFBF1 100%)',
+    border: '#5EEAD4', text: '#134E4A', accent: '#0D9488',
+    badgeBg: '#14B8A6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  slate: {
+    id: 'slate', label: 'Gelap', fullName: 'Gelap Slate',
+    dot: '#334155', bg: 'linear-gradient(135deg,#1E293B 0%,#0F172A 100%)',
+    border: '#475569', text: '#FFFFFF', accent: '#38BDF8',
+    badgeBg: '#38BDF8', badgeText: '#0F172A', iconBg: 'rgba(255,255,255,0.14)'
+  }
+};
+
+const SUBCATEGORIES = [
+  { sub: 'Tagihan Rutin', label: 'Tagihan', emoji: '🏆', bg: '#FEF9C3' },
+  { sub: 'Internet', label: 'Internet', emoji: '📶', bg: '#DBEAFE' },
+  { sub: 'Hiburan & Langganan', label: 'Hiburan', emoji: '🎬', bg: '#EDE9FE' },
+  { sub: 'Cicilan & Utang', label: 'Cicilan', emoji: '💳', bg: '#FEE2E2' },
+  { sub: 'Kebutuhan', label: 'Kebutuhan', emoji: '🛒', bg: '#F3E8FF' },
+  { sub: 'Makanan & Minuman', label: 'Makanan', emoji: '🍚', bg: '#FEE2E2' },
+  { sub: 'Transportasi', label: 'Transportasi', emoji: '🚗', bg: '#FEE2E2' },
+  { sub: 'Pendidikan', label: 'Pendidikan', emoji: '📚', bg: '#DCFCE7' },
+  { sub: 'Kesehatan', label: 'Kesehatan', emoji: '💊', bg: '#DCFCE7' },
+  { sub: 'Sosial & Donasi', label: 'Sosial', emoji: '🤝', bg: '#FEF3C7' },
+  { sub: 'Olahraga & Kebugaran', label: 'Olahraga', emoji: '🏋️', bg: '#DCFCE7' },
+  { sub: 'Pajak & Administrasi', label: 'Pajak', emoji: '📋', bg: '#F3F4F6' },
+  { sub: 'Investasi', label: 'Investasi', emoji: '📈', bg: '#DCFCE7' },
+  { sub: 'Perawatan Pribadi', label: 'Perawatan', emoji: '🧴', bg: '#FEE2E2' },
+  { sub: 'Lainnya', label: 'Lainnya', emoji: '✏️', bg: '#F3F4F6' }
+];
+
+const PRESETS_KELUAR = [
+  { name: 'Bayar WiFi & Internet', amt: 350000, day: 20, sub: 'Internet', color: 'ocean', eom: 'tanggal_1', time: '08:00' },
+  { name: 'Bayar Kos / Kontrakan', amt: 1500000, day: 1, sub: 'Tagihan Rutin', color: 'violet', eom: 'tanggal_1', time: '09:00' },
+  { name: 'Tagihan Listrik PLN', amt: 500000, day: 10, sub: 'Tagihan Rutin', color: 'amber', eom: 'tanggal_1', time: '08:00' },
+  { name: 'Langganan Netflix / Spotify', amt: 186000, day: 15, sub: 'Hiburan & Langganan', color: 'rose', eom: 'tanggal_1', time: '10:00' },
+  { name: 'Tabungan Akhir Bulan', amt: 1000000, day: 31, sub: 'Investasi', color: 'teal', eom: 'tanggal_1', time: '19:00' }
+];
+
+const PRESETS_MASUK = [
+  { name: 'Gaji Bulanan', amt: 6000000, day: 25, sub: '', color: 'emerald', eom: 'tanggal_1', time: '08:00' },
+  { name: 'Uang Saku Bulanan', amt: 1500000, day: 1, sub: '', color: 'ocean', eom: 'tanggal_1', time: '07:30' },
+  { name: 'Pemasukan Akhir Bulan', amt: 2000000, day: 31, sub: '', color: 'teal', eom: 'tanggal_1', time: '17:00' },
+  { name: 'Pendapatan Sewa / Bagi Hasil', amt: 2500000, day: 5, sub: '', color: 'amber', eom: 'tanggal_1', time: '09:00' }
+];
+
+const EOM_LABELS = {
+  tanggal_1: 'Tetap terjadwal di Tgl 1 bln depan',
+  akhir_bulan: 'Majukan ke hari terakhir bulan itu',
+  abaikan: 'Diabaikan pada bulan tanpa tgl ini'
+};
+
+let S = {
+  akun: null,
+  dompetList: [],
+  transactions: [],
+  scheduledList: [],
+  introStep: 0,
+  formType: 'Uang Keluar',
+  formSub: 'Tagihan Rutin',
+  formDay: 1,
+  formTime: '08:00',
+  formEomRule: 'tanggal_1',
+  formColor: 'violet',
+  deleteTargetId: null
+};
+
+const idr = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n||0);
+
+// ── STORAGE ABSTRACTION (localStorage -> cookie -> memory) ──
+var _storageMode = null;
+var _memoryStore = {};
+function detectStorageMode() {
+  if (_storageMode) return _storageMode;
+  try {
+    localStorage.setItem('__storage_test__', '1');
+    localStorage.removeItem('__storage_test__');
+    _storageMode = 'localStorage';
+    return _storageMode;
+  } catch(e) {}
+  try {
+    document.cookie = '__storage_test__=1; SameSite=Lax; path=/';
+    var ok = document.cookie.indexOf('__storage_test__=1') !== -1;
+    document.cookie = '__storage_test__=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    if (ok) { _storageMode = 'cookie'; return _storageMode; }
+  } catch(e) {}
+  _storageMode = 'memory';
+  return _storageMode;
+}
+function storageGet(key) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { return localStorage.getItem(key); } catch(e) { return null; } }
+  if (mode === 'cookie') {
+    try {
+      var m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch(e) { return null; }
+  }
+  return _memoryStore[key] || null;
+}
+function storageSet(key, value) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { localStorage.setItem(key, value); return true; } catch(e) { return false; } }
+  if (mode === 'cookie') {
+    try {
+      var exp = new Date(Date.now() + 90*86400000).toUTCString();
+      document.cookie = key + '=' + encodeURIComponent(value) + '; expires=' + exp + '; SameSite=Lax; path=/';
+      return true;
+    } catch(e) { return false; }
+  }
+  _memoryStore[key] = value;
+  return true;
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+function saveAkunSession(akunData) {
+  try {
+    const toSave = {
+      username: akunData.username,
+      email: akunData.email || '',
+      namaLengkap: akunData.namaLengkap || '',
+      id: akunData.id,
+      gsUrl: akunData.gsUrl || '',
+    };
+    storageSet(AUTH_SESSION_KEY, JSON.stringify(toSave));
+    S.akun = toSave;
+    GS_URL = toSave.gsUrl;
+  } catch(e) {}
+}
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
+    return true;
+  }
+  return false;
+}
+
+function getScheduledStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? (SCHEDULED_STORAGE_PREFIX + uname) : '';
+}
+
+/**
+ * Mengurai string "Setiap Tanggal" dan "Kategori" dari Sheet "Jadwal"
+ * sekaligus mendukung penyimpanan metadata (Aturan Tanggal 31, Jam, Subkategori, Warna, Dompet).
+ */
+function parseScheduleItem(it, idx, localMap) {
+  if (!it || typeof it !== 'object') return null;
+  const id = String(it.id || it.ID || ('sch_item_' + Date.now() + '_' + idx));
+  const localMatch = (localMap && localMap[id]) ? localMap[id] : {};
+
+  const nama = String(it['Nama Transaksi'] || it.nama || it.Deskripsi || it.deskripsi || localMatch['Nama Transaksi'] || '').trim();
+  if (!nama) return null;
+
+  const nominal = Number(it.Nominal !== undefined ? it.Nominal : (it['Jumlah Uang'] !== undefined ? it['Jumlah Uang'] : (it.nominal || localMatch.Nominal || 0)));
+  if (!(nominal > 0)) return null;
+
+  // Parse Kategori & Subkategori (Format di Sheet: "Uang Keluar · Tagihan Rutin" atau "Uang Masuk")
+  const rawKatStr = String(it.Kategori || it.kategori || localMatch.Kategori || 'Uang Keluar').trim();
+  let kat = 'Uang Keluar';
+  let subKat = String(it['Kategori Uang Keluar'] || it.subKategori || localMatch['Kategori Uang Keluar'] || '').trim();
+  if (rawKatStr.indexOf('·') !== -1) {
+    const parts = rawKatStr.split('·').map(s => s.trim());
+    kat = (parts[0] === 'Uang Masuk' || parts[0].toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+    if (!subKat && parts[1]) subKat = parts[1];
+  } else {
+    kat = (rawKatStr === 'Uang Masuk' || rawKatStr.toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+  }
+  if (kat === 'Uang Masuk') subKat = '';
+  else if (!subKat) subKat = 'Tagihan Rutin';
+
+  // Parse Setiap Tanggal, Jam, dan Aturan Bulan Pendek (29/30/31)
+  const rawTglStr = String(it['Setiap Tanggal'] !== undefined ? it['Setiap Tanggal'] : (it.tanggal || localMatch['Setiap Tanggal'] || '1')).trim();
+  const numMatch = rawTglStr.match(/(\d{1,2})/);
+  let day = numMatch ? Math.min(31, Math.max(1, parseInt(numMatch[1], 10))) : 1;
+
+  let time = String(it.Jam || it.jam || it.waktu || localMatch.Jam || '08:00').trim();
+  const timeMatch = rawTglStr.match(/(\d{2}:\d{2})/);
+  if (timeMatch) time = timeMatch[1];
+
+  let eomRule = String(it.AturanBulanPendek || it.eomRule || localMatch.AturanBulanPendek || 'tanggal_1').trim();
+  if (rawTglStr.toLowerCase().indexOf('akhir') !== -1) eomRule = 'akhir_bulan';
+  else if (rawTglStr.toLowerCase().indexOf('abaikan') !== -1) eomRule = 'abaikan';
+  else if (rawTglStr.toLowerCase().indexOf('tgl 1') !== -1 || rawTglStr.toLowerCase().indexOf('tanggal 1') !== -1) eomRule = 'tanggal_1';
+  if (!['tanggal_1', 'akhir_bulan', 'abaikan'].includes(eomRule)) eomRule = 'tanggal_1';
+
+  const defColor = kat === 'Uang Masuk' ? 'emerald' : 'violet';
+  const rawColor = String(it.Warna || it.warna || localMatch.Warna || defColor).trim().toLowerCase();
+  const warna = SCH_COLOR_THEMES[rawColor] ? rawColor : defColor;
+
+  const dompetId = String(it.DompetId || it.dompetId || localMatch.DompetId || '').trim();
+  const aktif = (it.Aktif !== undefined) ? Boolean(it.Aktif) : (localMatch.Aktif !== undefined ? Boolean(localMatch.Aktif) : true);
+  const lastExecutedPeriod = String(it.LastExecutedPeriod || localMatch.LastExecutedPeriod || '').trim();
+
+  return {
+    id,
+    'Nama Transaksi': nama,
+    Kategori: kat,
+    'Kategori Uang Keluar': subKat,
+    Nominal: nominal,
+    'Setiap Tanggal': day,
+    Jam: time,
+    AturanBulanPendek: eomRule,
+    Warna: warna,
+    DompetId: dompetId,
+    Aktif: aktif,
+    LastExecutedPeriod: lastExecutedPeriod
+  };
+}
+
+function normalizeScheduledList(rawArr, existingLocalList) {
+  if (!Array.isArray(rawArr)) return [];
+  const localMap = {};
+  if (Array.isArray(existingLocalList)) {
+    existingLocalList.forEach(item => {
+      if (item && item.id) localMap[String(item.id)] = item;
+    });
+  }
+  const out = [];
+  for (let i = 0; i < rawArr.length; i++) {
+    const parsed = parseScheduleItem(rawArr[i], i, localMap);
+    if (parsed) out.push(parsed);
+  }
+  return out;
+}
+
+/**
+ * Mengemas objek jadwal ke format 5 kolom Sheet "Jadwal"
+ * ("Nama Transaksi", "Kategori", "Setiap Tanggal", "Nominal", "id")
+ * agar terbaca rapi di Google Sheet sekaligus menyimpan detail jadwal.
+ */
+function buildSheetScheduledPayload(item) {
+  const isIn = item.Kategori === 'Uang Masuk';
+  const katSheet = isIn
+    ? 'Uang Masuk'
+    : `Uang Keluar · ${item['Kategori Uang Keluar'] || 'Tagihan Rutin'}`;
+
+  const day = Number(item['Setiap Tanggal']) || 1;
+  const time = item.Jam || '08:00';
+  let eomTag = '';
+  if (day >= 29) {
+    if (item.AturanBulanPendek === 'tanggal_1') eomTag = ' (Ke Tgl 1)';
+    else if (item.AturanBulanPendek === 'akhir_bulan') eomTag = ' (Akhir Bln)';
+    else if (item.AturanBulanPendek === 'abaikan') eomTag = ' (Abaikan)';
+  }
+  const setiapTanggalSheet = `${day}${eomTag} · ${time}`;
+
+  return {
+    id: item.id,
+    'Nama Transaksi': item['Nama Transaksi'],
+    'Kategori': katSheet,
+    'Setiap Tanggal': setiapTanggalSheet,
+    'Nominal': Number(item.Nominal) || 0,
+    // Field tambahan untuk kompatibilitas penuh
+    'Kategori Uang Keluar': item['Kategori Uang Keluar'] || '',
+    'Jam': time,
+    'AturanBulanPendek': item.AturanBulanPendek || 'tanggal_1',
+    'Warna': item.Warna || 'violet',
+    'DompetId': item.DompetId || '',
+    'Aktif': item.Aktif !== false,
+    'LastExecutedPeriod': item.LastExecutedPeriod || ''
+  };
+}
+
+function loadScheduledLocal() {
+  S.scheduledList = [];
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const scopedKey = getScheduledStorageKey();
+  try {
+    if (scopedKey) {
+      const rawScoped = storageGet(scopedKey);
+      if (rawScoped) {
+        const parsed = JSON.parse(rawScoped);
+        if (parsed && parsed.gsUrl === GS_URL && Array.isArray(parsed.items)) {
+          S.scheduledList = normalizeScheduledList(parsed.items);
+          return;
+        }
+      }
+    }
+    const rawShared = storageGet(SCHEDULED_SHARED_KEY);
+    if (rawShared) {
+      const parsedShared = JSON.parse(rawShared);
+      if (parsedShared && parsedShared.username === S.akun.username && parsedShared.gsUrl === GS_URL && Array.isArray(parsedShared.items)) {
+        S.scheduledList = normalizeScheduledList(parsedShared.items);
+      }
+    }
+  } catch(e) {}
+}
+
+function saveScheduledLocal() {
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const normalized = normalizeScheduledList(S.scheduledList, S.scheduledList);
+  S.scheduledList = normalized;
+  const payload = JSON.stringify({
+    username: S.akun.username,
+    gsUrl: GS_URL,
+    updatedAt: Date.now(),
+    items: normalized
+  });
+  const scopedKey = getScheduledStorageKey();
+  if (scopedKey) storageSet(scopedKey, payload);
+  storageSet(SCHEDULED_SHARED_KEY, payload);
+  updateHeaderCount();
+}
+
+function loadDompetAndTxLocal() {
+  try {
+    const rawD = localStorage.getItem('keuangan_dompet_list');
+    if (rawD) S.dompetList = JSON.parse(rawD) || [];
+  } catch(e) { S.dompetList = []; }
+  try {
+    const rawT = localStorage.getItem(TX_CACHE_KEY);
+    if (rawT) S.transactions = JSON.parse(rawT) || [];
+  } catch(e) { S.transactions = []; }
+}
+
+function saveTransactionsCache() {
+  try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(e) {}
+}
+
+function updateHeaderCount() {
+  const badge = document.getElementById('header-count-badge');
+  if (badge) badge.textContent = String(S.scheduledList.length);
+}
+
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation='none'; void path.offsetWidth; path.style.animation=''; }
+  setTimeout(() => el.classList.add('hidden'), 2200);
+}
+
+async function postData(action, data) {
+  if (!GS_URL) return { status: 'error', message: 'URL Google Sheet belum terhubung.' };
+  try {
+    const r = await fetch(GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, data })
+    });
+    const j = await r.json();
+    if (j && j.status === 'success') return j;
+    return j || { status: 'error' };
+  } catch(e) {
+    console.warn('[Scheduled postData]', action, e.message);
+    return { status: 'error', message: e.message };
+  }
+}
+
+// ================================================================
+// LIVE DIGITAL CLOCK & SCHEDULE DATE ENGINE (TERMASUK ATURAN TGL 31)
+// ================================================================
+var _clockTimer = null;
+function startLiveClock() {
+  function tick() {
+    const el = document.getElementById('live-clock-text');
+    if (!el) return;
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    el.textContent = `${hh}:${mm}:${ss}`;
+  }
+  tick();
+  if (_clockTimer) clearInterval(_clockTimer);
+  _clockTimer = setInterval(tick, 1000);
+}
+
+function getDaysInMonth(year, monthOneBased) {
+  return new Date(year, monthOneBased, 0).getDate();
+}
+
+/**
+ * Menghitung tanggal jatuh tempo berikutnya untuk suatu item jadwal
+ * dengan memperhitungkan opsi tanggal 29, 30, 31:
+ * - 'tanggal_1'   : Jika bulan tidak punya tanggal tsb, jatuh pada Tanggal 1 bulan berikutnya
+ * - 'akhir_bulan' : Jika bulan tidak punya tanggal tsb, dimajukan ke hari terakhir bulan itu
+ * - 'abaikan'     : Jika bulan tidak punya tanggal tsb, dilewati ke bulan berikutnya yang punya tanggal tsb
+ */
+function getNextOccurrenceInfo(item) {
+  const now = new Date();
+  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDay = Number(item['Setiap Tanggal']) || 1;
+  const rule = item.AturanBulanPendek || 'tanggal_1';
+
+  for (let offset = 0; offset <= 14; offset++) {
+    const mDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    const yr = mDate.getFullYear();
+    const mo = mDate.getMonth() + 1; // 1..12
+    const periodYM = `${yr}-${String(mo).padStart(2, '0')}`;
+    const dim = getDaysInMonth(yr, mo);
+
+    // Jika periode ini sudah dieksekusi, cek bulan berikutnya
+    if (item.LastExecutedPeriod === periodYM) continue;
+
+    let execDateObj = null;
+    let note = '';
+
+    if (targetDay <= dim) {
+      execDateObj = new Date(yr, mo - 1, targetDay);
+    } else {
+      if (rule === 'abaikan') {
+        continue; // Lewati bulan pendek ini
+      } else if (rule === 'akhir_bulan') {
+        execDateObj = new Date(yr, mo - 1, dim);
+        note = `Dimajukan ke akhir bln (Tgl ${dim})`;
+      } else {
+        // Default: 'tanggal_1' -> Geser ke Tanggal 1 bulan berikutnya
+        execDateObj = new Date(yr, mo, 1);
+        note = `Digeser ke Tgl 1 bln berikutnya`;
+      }
+    }
+
+    if (execDateObj) {
+      const diffMs = execDateObj.getTime() - todayDate.getTime();
+      const diffDays = Math.round(diffMs / 86400000);
+      if (diffDays >= 0) {
+        return {
+          dateObj: execDateObj,
+          periodYM,
+          diffDays,
+          note,
+          formattedDate: execDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+        };
+      }
+    }
+  }
+  return {
+    dateObj: todayDate,
+    periodYM: '',
+    diffDays: 99,
+    note: '',
+    formattedDate: '-'
+  };
+}
+
+/**
+ * Mengecek apakah jadwal jatuh tempo HARI INI (termasuk hasil geseran Tanggal 31 -> Tanggal 1
+ * atau Akhir Bulan) dan otomatis mengirimkannya ke Sheet1 & Histori.
+ */
+async function checkAndExecuteDueSchedules() {
+  if (!S.scheduledList.length || !GS_URL) return;
+  const now = new Date();
+  const yr = now.getFullYear();
+  const mo = now.getMonth() + 1;
+  const todayDay = now.getDate();
+  const dimThisMonth = getDaysInMonth(yr, mo);
+  const currentYM = `${yr}-${String(mo).padStart(2, '0')}`;
+
+  // Cek juga bulan lalu (untuk aturan 'tanggal_1' ketika bulan lalu tidak punya tanggal 29/30/31 dan hari ini tanggal 1)
+  const prevDate = new Date(yr, mo - 2, 1);
+  const prevYr = prevDate.getFullYear();
+  const prevMo = prevDate.getMonth() + 1;
+  const dimPrevMonth = getDaysInMonth(prevYr, prevMo);
+  const prevYM = `${prevYr}-${String(prevMo).padStart(2, '0')}`;
+
+  const executedNames = [];
+
+  for (let i = 0; i < S.scheduledList.length; i++) {
+    const item = S.scheduledList[i];
+    if (!item || item.Aktif === false) continue;
+
+    const targetDay = Number(item['Setiap Tanggal']) || 1;
+    const rule = item.AturanBulanPendek || 'tanggal_1';
+
+    let duePeriod = null;
+    let triggerReason = '';
+
+    // KASUS A: Hari ini adalah Tanggal 1, dan bulan lalu tidak memiliki targetDay (misal Tgl 31),
+    // serta user memilih opsi "Tetap Terjadwal di Tanggal 1" ('tanggal_1')
+    if (todayDay === 1 && targetDay > dimPrevMonth && rule === 'tanggal_1' && item.LastExecutedPeriod !== prevYM) {
+      duePeriod = prevYM;
+      triggerReason = `Jadwal Tgl ${targetDay} (Otomatis tercatat di Tgl 1)`;
+    }
+
+    // KASUS B: Bulan ini memiliki targetDay dan hari ini == targetDay
+    if (!duePeriod && targetDay <= dimThisMonth && todayDay === targetDay && item.LastExecutedPeriod !== currentYM) {
+      duePeriod = currentYM;
+      triggerReason = `Terjadwal Otomatis (Setiap Tgl ${targetDay})`;
+    }
+
+    // KASUS C: Bulan ini TIDAK memiliki targetDay, opsi 'akhir_bulan' dipilih, dan hari ini adalah hari terakhir bulan ini
+    if (!duePeriod && targetDay > dimThisMonth && rule === 'akhir_bulan' && todayDay === dimThisMonth && item.LastExecutedPeriod !== currentYM) {
+      duePeriod = currentYM;
+      triggerReason = `Jadwal Tgl ${targetDay} (Akhir Bulan Tgl ${dimThisMonth})`;
+    }
+
+    if (duePeriod) {
+      await executeSingleScheduledTransaction(item, duePeriod, triggerReason, true);
+      executedNames.push(`${item['Nama Transaksi']} (${idr(item.Nominal)})`);
+    }
+  }
+
+  if (executedNames.length > 0) {
+    saveScheduledLocal();
+    const banner = document.getElementById('auto-exec-banner');
+    const desc = document.getElementById('auto-exec-desc');
+    if (banner && desc) {
+      desc.textContent = `${executedNames.join(', ')} telah otomatis dikirim dan dicatat ke Riwayat transaksi Anda hari ini.`;
+      banner.classList.remove('hidden');
+    }
+    if (!document.getElementById('view-list').classList.contains('hidden')) {
+      renderSavedScheduledList();
+    }
+  }
+}
+
+async function executeSingleScheduledTransaction(item, periodYM, reasonNote, isAuto) {
+  const defaultDompetId = item.DompetId || (S.dompetList[0] ? S.dompetList[0].id : '');
+  const nowIso = new Date().toISOString();
+  const txDesc = reasonNote
+    ? `${item['Nama Transaksi']} — ${reasonNote}`
+    : `${item['Nama Transaksi']} (Transaksi Terjadwal)`;
+
+  const newTx = {
+    id: 'schtx_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+    'Kategori': item.Kategori || 'Uang Keluar',
+    'Kategori Uang Keluar': item.Kategori === 'Uang Masuk' ? '' : (item['Kategori Uang Keluar'] || 'Tagihan Rutin'),
+    'Jumlah Uang': Number(item.Nominal) || 0,
+    'Tanggal': nowIso,
+    'Deskripsi': txDesc,
+    'DompetId': defaultDompetId
+  };
+
+  S.transactions.unshift(newTx);
+  saveTransactionsCache();
+
+  if (periodYM) {
+    item.LastExecutedPeriod = periodYM;
+  }
+  saveScheduledLocal();
+
+  await postData('addData', newTx);
+  if (!isAuto) {
+    showSuccess(`⏰ "${item['Nama Transaksi']}" (${idr(item.Nominal)}) berhasil dikirim ke Histori!`);
+    renderSavedScheduledList();
+  }
+}
+
+window.runScheduleNowManual = async function(id) {
+  const item = S.scheduledList.find(x => String(x.id) === String(id));
+  if (!item) return;
+  const now = new Date();
+  const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  await executeSingleScheduledTransaction(item, currentYM, `Terjadwal Tgl ${item['Setiap Tanggal']}`, false);
+};
+
+window.toggleScheduleActive = function(id) {
+  const item = S.scheduledList.find(x => String(x.id) === String(id));
+  if (!item) return;
+  item.Aktif = !item.Aktif;
+  saveScheduledLocal();
+  renderSavedScheduledList();
+  showSuccess(item.Aktif ? '⏰ Jadwal diaktifkan!' : '⏸ Jadwal dijeda sementara.');
+};
+
+// ================================================================
+// INITIALIZATION & SERVER SYNC (SHEET "JADWAL")
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  startLiveClock();
+  loadDompetAndTxLocal();
+  renderSubcategoryButtons();
+  renderDayGrid();
+  renderColorSwatches();
+
+  if (checkAkunSession()) {
+    const customUrl = storageGet('keuangan_custom_gsurl_' + String(S.akun.username || '').toLowerCase());
+    if (customUrl) {
+      GS_URL = customUrl;
+      S.akun.gsUrl = customUrl;
+    }
+    loadScheduledLocal();
+    updateHeaderCount();
+    decideInitialView();
+    syncFromServer();
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+});
+
+function decideInitialView() {
+  if (S.scheduledList.length > 0) {
+    showListView();
+  } else {
+    showIntroView();
+  }
+}
+
+async function syncFromServer() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read&_t=' + Date.now());
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      if (Array.isArray(d.data.dompet)) {
+        S.dompetList = d.data.dompet.map(w => ({
+          id: w.id,
+          nama: w.nama,
+          tipe: w.tipe || 'bank',
+          provider: w.keterangan || w.nama,
+          saldoAwal: Number(w.nominal) || 0
+        }));
+        try { localStorage.setItem('keuangan_dompet_list', JSON.stringify(S.dompetList)); } catch(e) {}
+      }
+      if (Array.isArray(d.data.transactions)) {
+        S.transactions = d.data.transactions;
+        saveTransactionsCache();
+      }
+      if (Array.isArray(d.data.scheduled)) {
+        const serverItems = normalizeScheduledList(d.data.scheduled, S.scheduledList);
+        if (serverItems.length > 0) {
+          const hadNone = S.scheduledList.length === 0;
+          S.scheduledList = serverItems;
+          saveScheduledLocal();
+          if (hadNone) showListView();
+          else if (!document.getElementById('view-list').classList.contains('hidden')) {
+            renderSavedScheduledList();
+          }
+        }
+      }
+      await checkAndExecuteDueSchedules();
+    }
+  } catch(e) {
+    console.warn('[Scheduled Sync]', e.message);
+  }
+}
+
+async function handleLoginSubmit(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const msgEl = document.getElementById('login-msg');
+  msgEl.textContent = 'Memeriksa akun…';
+  try {
+    const r = await fetch(GLOBAL_GS_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'loginAkun', data: { username, password } })
+    });
+    const j = await r.json();
+    if (j.status === 'success') {
+      saveAkunSession(j.data);
+      document.getElementById('auth-screen').style.display = 'none';
+      loadScheduledLocal();
+      updateHeaderCount();
+      decideInitialView();
+      await syncFromServer();
+    } else {
+      msgEl.textContent = j.message || 'Login gagal.';
+    }
+  } catch(err) {
+    msgEl.textContent = 'Gagal terhubung ke server.';
+  }
+}
+
+// ================================================================
+// VIEW NAVIGATION (INTRO -> CHOOSE TYPE -> FORM -> LIST)
+// ================================================================
+function hideAllViews() {
+  ['view-intro', 'view-choose-type', 'view-form', 'view-list'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+}
+
+window.showIntroView = function() {
+  hideAllViews();
+  S.introStep = 0;
+  document.getElementById('view-intro').classList.remove('hidden');
+  document.getElementById('header-subtitle').textContent = 'Kenalan dengan Fitur Transaksi Terjadwal';
+  renderIntroStep();
+};
+
+window.finishIntroAndStart = function() {
+  storageSet(INTRO_SEEN_KEY, '1');
+  if (S.scheduledList.length > 0) {
+    showListView();
+  } else {
+    showChooseTypeView();
+  }
+};
+
+window.showChooseTypeView = function() {
+  hideAllViews();
+  document.getElementById('view-choose-type').classList.remove('hidden');
+  document.getElementById('header-subtitle').textContent = 'Pilih Jenis Transaksi Terjadwal';
+  const backWrap = document.getElementById('choose-type-back-wrap');
+  if (backWrap) {
+    backWrap.classList.toggle('hidden', S.scheduledList.length === 0);
+  }
+};
+
+window.startAddAnotherSchedule = function() {
+  document.getElementById('sch-edit-id').value = '';
+  showChooseTypeView();
+};
+
+window.openFormWithType = function(type) {
+  hideAllViews();
+  document.getElementById('view-form').classList.remove('hidden');
+  document.getElementById('sch-form').reset();
+  document.getElementById('sch-edit-id').value = '';
+  document.getElementById('form-title').textContent = 'Buat Transaksi Terjadwal';
+  document.getElementById('sch-submit-text').textContent = 'Simpan Transaksi Terjadwal ⏰';
+  document.getElementById('sch-form-error').classList.add('hidden');
+
+  populateDompetDropdown();
+  S.formSub = 'Tagihan Rutin';
+  S.formDay = (type === 'Uang Masuk') ? 25 : 1;
+  S.formTime = '08:00';
+  S.formEomRule = 'tanggal_1';
+  document.getElementById('sch-time').value = '08:00';
+
+  setFormType(type, true);
+  selectScheduleDay(S.formDay);
+  selectEomRule('tanggal_1');
+  updateLivePreview();
+};
+
+window.showListView = function() {
+  hideAllViews();
+  document.getElementById('view-list').classList.remove('hidden');
+  document.getElementById('header-subtitle').textContent = 'Kelola Jadwal Transaksi Otomatis';
+  updateHeaderCount();
+  renderSavedScheduledList();
+};
+
+window.handleFormCancel = function() {
+  if (S.scheduledList.length > 0) {
+    showListView();
+  } else {
+    showChooseTypeView();
+  }
+};
+
+// ================================================================
+// INTRO OPENING SLIDES (3 LANGKAH INFORMASI FITUR)
+// ================================================================
+const INTRO_SLIDES = [
+  {
+    badge: 'LANGKAH 1 · JADWALKAN SEKALI SAJA',
+    icon: '⏰',
+    title: 'Masukkan Nama, Nominal & Setiap Tanggal Berapa',
+    desc: 'Punya pemasukan atau tagihan rutin setiap bulan? Seperti Gajian, Bayar Kos, WiFi, Listrik, hingga Langganan Streaming — cukup atur Nama Transaksi, Nominal, dan Tanggalnya!',
+    illustration: `
+      <div class="space-y-2.5 max-w-[265px] mx-auto my-3">
+        <div class="p-3 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-base shadow-sm">📶</span>
+            <div class="text-left">
+              <p class="text-xs font-black text-indigo-950">WiFi IndiHome</p>
+              <p class="text-[9px] font-extrabold text-indigo-600">🕒 Setiap Tanggal 20 · 08:00</p>
+            </div>
+          </div>
+          <span class="text-xs font-black text-rose-600">-Rp 350.000</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-base shadow-sm">💰</span>
+            <div class="text-left">
+              <p class="text-xs font-black text-emerald-950">Gaji Bulanan</p>
+              <p class="text-[9px] font-extrabold text-emerald-700">🕒 Setiap Tanggal 25 · 08:00</p>
+            </div>
+          </div>
+          <span class="text-xs font-black text-emerald-700">+Rp 6.000.000</span>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: 'LANGKAH 2 · SOLUSI CERDAS TANGGAL 31',
+    icon: '🗓️',
+    title: 'Pilih Aturan Jika Bulan Tidak Punya Tanggal 31',
+    desc: 'Bagaimana jika Anda memilih tanggal 29, 30, atau 31 sedangkan bulan Februari atau April jumlah harinya lebih pendek? Anda bebas memilih opsi otomatisnya:',
+    illustration: `
+      <div class="space-y-2 max-w-[275px] mx-auto my-3 text-left">
+        <div class="p-2.5 rounded-xl bg-indigo-50/90 border border-indigo-300 flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">1</span>
+          <div>
+            <p class="text-[11px] font-black text-indigo-950">Tetap Terjadwal di Tanggal 1</p>
+            <p class="text-[9px] font-semibold text-indigo-700">Otomatis dikirim di Tgl 1 awal bulan depannya</p>
+          </div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200 flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">28</span>
+          <div>
+            <p class="text-[11px] font-black text-emerald-950">Majukan ke Akhir Bulan</p>
+            <p class="text-[9px] font-semibold text-emerald-700">Otomatis dicatat di tgl 28/29 Feb atau tgl 30</p>
+          </div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-lg bg-zinc-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">⏭</span>
+          <div>
+            <p class="text-[11px] font-black text-zinc-800">Diabaikan di Bulan Pendek</p>
+            <p class="text-[9px] font-semibold text-zinc-500">Hanya dicatat pada bulan yang punya tgl 31</p>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: 'LANGKAH 3 · OTOMATIS MASUK HISTORI',
+    icon: '🚀',
+    title: 'Otomatis Dikirim & Dicatat di Riwayat!',
+    desc: 'Saat tanggal jatuh tempo tiba, transaksi otomatis dikirim ke server, masuk ke halaman Riwayat (Histori), dan menyesuaikan saldo dompet Anda. Bisa juga digeser langsung dari container Quick Add di Beranda!',
+    illustration: `
+      <div class="flex flex-col items-center justify-center my-3">
+        <div class="px-5 py-3.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center gap-2.5 float-slow" style="background:linear-gradient(135deg,#6366F1,#4F46E5);box-shadow:0 8px 24px rgba(99,102,241,0.35)">
+          <span class="text-base">🕒</span>
+          <span>Tanggal Tiba → Otomatis Masuk Histori!</span>
+        </div>
+        <div class="flex gap-2 mt-3 flex-wrap justify-center">
+          <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">✓ Anti Lupa</span>
+          <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">✓ Auto-Histori</span>
+          <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200">✓ Support Tgl 31</span>
+        </div>
+      </div>
+    `
+  }
+];
+
+function renderIntroStep() {
+  const slide = INTRO_SLIDES[S.introStep];
+  const dotsEl = document.getElementById('intro-dots');
+  if (dotsEl) {
+    dotsEl.innerHTML = INTRO_SLIDES.map((_, i) =>
+      `<span class="h-2 rounded-full transition-all ${i === S.introStep ? 'w-7 bg-indigo-600' : 'w-2 bg-zinc-200'}"></span>`
+    ).join('');
+  }
+
+  const bodyEl = document.getElementById('intro-slide-body');
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <div class="text-center fade-up">
+        <div class="w-16 h-16 rounded-3xl mx-auto mb-3 flex items-center justify-center text-3xl shadow-md float-slow clock-orb" style="background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff">
+          ${slide.icon}
+        </div>
+        <span class="inline-block text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+          ${slide.badge}
+        </span>
+        <h2 class="text-xl font-black text-zinc-900 mt-3 leading-snug">${slide.title}</h2>
+        <p class="text-xs font-semibold text-zinc-500 mt-2 leading-relaxed px-1">${slide.desc}</p>
+        ${slide.illustration}
+      </div>
+    `;
+  }
+
+  const navEl = document.getElementById('intro-nav-btns');
+  if (navEl) {
+    if (S.introStep < INTRO_SLIDES.length - 1) {
+      navEl.innerHTML = `
+        <div class="flex gap-2.5">
+          ${S.introStep > 0 ? `<button type="button" onclick="prevIntroStep()" class="px-5 py-4 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">← Kembali</button>` : ''}
+          <button type="button" onclick="nextIntroStep()" class="flex-1 py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform" style="background:linear-gradient(135deg,#18181B,#27272A)">
+            <span>Next</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      `;
+    } else {
+      navEl.innerHTML = `
+        <div class="flex gap-2.5">
+          <button type="button" onclick="prevIntroStep()" class="px-5 py-4 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-xs active:scale-95 transition-transform">← Kembali</button>
+          <button type="button" onclick="finishIntroAndStart()" class="flex-1 py-4 rounded-2xl text-white font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-transform" style="background:linear-gradient(135deg,#6366F1,#4F46E5);box-shadow:0 8px 24px rgba(99,102,241,0.35)">
+            <span>Mulai Jadwalkan ⏰</span>
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+window.nextIntroStep = function() {
+  if (S.introStep < INTRO_SLIDES.length - 1) {
+    S.introStep++;
+    renderIntroStep();
+  }
+};
+
+window.prevIntroStep = function() {
+  if (S.introStep > 0) {
+    S.introStep--;
+    renderIntroStep();
+  }
+};
+
+// ================================================================
+// FORM LOGIC (PEMILIH TANGGAL 1-31, OPSI TGL 31, JAM, & WARNA)
+// ================================================================
+function populateDompetDropdown(selectedId) {
+  const sel = document.getElementById('sch-dompet');
+  if (!sel) return;
+  if (!S.dompetList.length) {
+    sel.innerHTML = '<option value="">💵 Dompet Utama / Tunai</option>';
+    return;
+  }
+  const defId = selectedId !== undefined ? selectedId : S.dompetList[0].id;
+  sel.innerHTML = S.dompetList.map(d => {
+    const ic = d.tipe === 'tunai' ? '💵' : d.tipe === 'emoney' ? '📱' : '🏦';
+    return `<option value="${d.id}" ${String(d.id) === String(defId) ? 'selected' : ''}>${ic} ${d.nama || d.provider}</option>`;
+  }).join('');
+}
+
+function renderSubcategoryButtons() {
+  const wrap = document.getElementById('sch-subcat-list');
+  if (!wrap) return;
+  wrap.innerHTML = SUBCATEGORIES.map(item => `
+    <button type="button" data-sub="${item.sub}" onclick="selectSubcategory('${item.sub}')" class="subcat-icon-btn ${S.formSub === item.sub ? 'active' : ''}">
+      <div class="subcat-icon-circle" style="background:${item.bg}">${item.emoji}</div>
+      <span class="subcat-icon-label">${item.label}</span>
+    </button>
+  `).join('');
+}
+
+window.selectSubcategory = function(sub) {
+  S.formSub = sub;
+  document.querySelectorAll('#sch-subcat-list .subcat-icon-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.sub === sub);
+  });
+  const badge = document.getElementById('sch-selected-subcat-badge');
+  if (badge) badge.textContent = sub;
+  updateLivePreview();
+};
+
+function renderDayGrid() {
+  const grid = document.getElementById('sch-day-grid');
+  if (!grid) return;
+  let html = '';
+  for (let d = 1; d <= 31; d++) {
+    const isSpecial = d >= 29;
+    html += `
+      <button type="button" data-day="${d}" onclick="selectScheduleDay(${d})"
+        class="day-cell-btn ${isSpecial ? 'special-day' : ''} ${S.formDay === d ? 'active' : ''}"
+        title="Setiap Tanggal ${d}${isSpecial ? ' (Pilih aturan bulan pendek di bawah)' : ''}">
+        ${d}
+      </button>
+    `;
+  }
+  grid.innerHTML = html;
+}
+
+window.selectScheduleDay = function(dayNum) {
+  S.formDay = Math.min(31, Math.max(1, Number(dayNum) || 1));
+  document.querySelectorAll('#sch-day-grid .day-cell-btn').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.day) === S.formDay);
+  });
+  const badge = document.getElementById('sch-selected-day-badge');
+  if (badge) badge.textContent = `Setiap Tgl ${S.formDay}`;
+
+  // Tampilkan kotak pengaturan khusus jika memilih tanggal 29, 30, atau 31
+  const eomBox = document.getElementById('sch-eom-rule-box');
+  if (eomBox) {
+    if (S.formDay >= 29) {
+      eomBox.classList.remove('hidden');
+      const numEl = document.getElementById('eom-day-num');
+      if (numEl) numEl.textContent = String(S.formDay);
+      document.querySelectorAll('.eom-day-inline').forEach(el => { el.textContent = String(S.formDay); });
+    } else {
+      eomBox.classList.add('hidden');
+    }
+  }
+  updateLivePreview();
+};
+
+window.selectEomRule = function(rule) {
+  if (!['tanggal_1', 'akhir_bulan', 'abaikan'].includes(rule)) rule = 'tanggal_1';
+  S.formEomRule = rule;
+  document.querySelectorAll('#sch-eom-options .eom-option-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.eom === rule);
+  });
+  updateLivePreview();
+};
+
+function renderColorSwatches() {
+  const grid = document.getElementById('sch-color-grid');
+  if (!grid) return;
+  grid.innerHTML = Object.values(SCH_COLOR_THEMES).map(c => `
+    <button type="button" data-color="${c.id}" onclick="selectColorTheme('${c.id}')" class="color-swatch-btn ${S.formColor === c.id ? 'active' : ''}">
+      <span class="w-7 h-7 rounded-full flex items-center justify-center shadow-sm border border-black/10" style="background:${c.dot}">
+        ${S.formColor === c.id ? '<svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+      </span>
+      <span class="text-[10px] font-extrabold text-zinc-700">${c.label}</span>
+    </button>
+  `).join('');
+}
+
+window.selectColorTheme = function(colorId) {
+  if (!SCH_COLOR_THEMES[colorId]) return;
+  S.formColor = colorId;
+  renderColorSwatches();
+  const lbl = document.getElementById('sch-color-name-label');
+  if (lbl) {
+    lbl.textContent = SCH_COLOR_THEMES[colorId].fullName;
+    lbl.style.color = SCH_COLOR_THEMES[colorId].dot;
+  }
+  updateLivePreview();
+};
+
+window.setFormType = function(type, resetColorIfDefault) {
+  S.formType = (type === 'Uang Masuk') ? 'Uang Masuk' : 'Uang Keluar';
+  const btnIn  = document.getElementById('btn-type-masuk');
+  const btnOut = document.getElementById('btn-type-keluar');
+
+  if (S.formType === 'Uang Masuk') {
+    btnIn.style.cssText = 'background:linear-gradient(135deg,#10B981,#059669);border-color:#10B981;color:#fff;box-shadow:0 6px 18px rgba(16,185,129,.30)';
+    btnOut.style.cssText = 'background:#fff;border-color:#E4E4E7;color:#71717A';
+    document.getElementById('sch-subcat-wrap').classList.add('hidden');
+    if (resetColorIfDefault) selectColorTheme('emerald');
+  } else {
+    btnOut.style.cssText = 'background:linear-gradient(135deg,#6366F1,#4F46E5);border-color:#6366F1;color:#fff;box-shadow:0 6px 18px rgba(99,102,241,.30)';
+    btnIn.style.cssText = 'background:#fff;border-color:#E4E4E7;color:#71717A';
+    document.getElementById('sch-subcat-wrap').classList.remove('hidden');
+    if (resetColorIfDefault) selectColorTheme('violet');
+  }
+  renderPresetChips();
+  updateLivePreview();
+};
+
+function renderPresetChips() {
+  const wrap = document.getElementById('sch-preset-chips');
+  if (!wrap) return;
+  const list = S.formType === 'Uang Masuk' ? PRESETS_MASUK : PRESETS_KELUAR;
+  wrap.innerHTML = list.map((p, idx) => `
+    <button type="button" onclick="applyPresetChip(${idx})" class="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-indigo-50 hover:text-indigo-700 text-[10px] font-extrabold text-zinc-700 flex-shrink-0 active:scale-95 transition-all">
+      🕒 ${p.name} (Tgl ${p.day})
+    </button>
+  `).join('');
+}
+
+window.applyPresetChip = function(idx) {
+  const list = S.formType === 'Uang Masuk' ? PRESETS_MASUK : PRESETS_KELUAR;
+  const p = list[idx];
+  if (!p) return;
+  document.getElementById('sch-name').value = p.name;
+  document.getElementById('sch-amount').value = p.amt;
+  if (p.sub && S.formType === 'Uang Keluar') {
+    selectSubcategory(p.sub);
+  }
+  if (p.time) {
+    document.getElementById('sch-time').value = p.time;
+  }
+  selectScheduleDay(p.day);
+  if (p.eom) selectEomRule(p.eom);
+  if (p.color) selectColorTheme(p.color);
+  updateLivePreview();
+};
+
+window.setQuickAmount = function(val) {
+  document.getElementById('sch-amount').value = val;
+  updateLivePreview();
+};
+
+function getSubcatEmoji(kat, sub) {
+  if (kat === 'Uang Masuk') return '💰';
+  const found = SUBCATEGORIES.find(s => s.sub === sub);
+  return found ? found.emoji : '🕒';
+}
+
+window.updateLivePreview = function() {
+  const card = document.getElementById('sch-live-preview-card');
+  if (!card) return;
+  const theme = SCH_COLOR_THEMES[S.formColor] || SCH_COLOR_THEMES.violet;
+  const name = (document.getElementById('sch-name')?.value || '').trim() || (S.formType === 'Uang Masuk' ? 'Gaji Bulanan' : 'Tagihan WiFi');
+  const rawAmt = Number(document.getElementById('sch-amount')?.value) || 0;
+  const timeVal = document.getElementById('sch-time')?.value || '08:00';
+  const sign = S.formType === 'Uang Masuk' ? '+' : '-';
+  const amtText = rawAmt > 0 ? (sign + idr(rawAmt)) : (sign + 'Rp 0');
+  const emoji = getSubcatEmoji(S.formType, S.formSub);
+  const isSlate = theme.id === 'slate';
+
+  let eomShort = '';
+  if (S.formDay >= 29) {
+    if (S.formEomRule === 'tanggal_1') eomShort = ' · Jika bln pendek → Tgl 1';
+    else if (S.formEomRule === 'akhir_bulan') eomShort = ' · Jika bln pendek → Akhir Bln';
+    else if (S.formEomRule === 'abaikan') eomShort = ' · Bln pendek diabaikan';
+  }
+
+  card.style.background = theme.bg;
+  card.style.border = `1.5px solid ${theme.border}`;
+  card.innerHTML = `
+    <div class="flex items-center justify-between gap-1.5 mb-1.5">
+      <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm" style="background:${theme.iconBg}">${emoji}</span>
+      <span class="text-[8px] font-black px-1.5 py-0.5 rounded-md flex items-center gap-1" style="background:${theme.badgeBg};color:${theme.badgeText}">
+        <span>🕒 Tgl ${S.formDay} · ${timeVal}</span>
+      </span>
+    </div>
+    <p class="text-xs font-extrabold truncate leading-snug" style="color:${theme.text}">${name.replace(/</g,'&lt;')}</p>
+    <p class="text-[11px] font-black mt-0.5 truncate" style="color:${theme.accent}">${amtText}</p>
+    <p class="text-[9px] font-bold truncate mt-0.5" style="color:${isSlate ? 'rgba(255,255,255,0.68)' : '#64748B'}">
+      Otomatis ke Histori${eomShort}
+    </p>
+  `;
+};
+
+window.handleSaveSchedule = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('sch-form-error');
+  errEl.classList.add('hidden');
+
+  const name = document.getElementById('sch-name').value.trim();
+  const amtVal = Number(document.getElementById('sch-amount').value) || 0;
+  const timeVal = document.getElementById('sch-time').value || '08:00';
+  const dompetId = document.getElementById('sch-dompet').value || '';
+  const editId = document.getElementById('sch-edit-id').value;
+
+  if (!name) {
+    errEl.textContent = 'Nama transaksi terjadwal wajib diisi.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!(amtVal > 0)) {
+    errEl.textContent = 'Nominal transaksi wajib lebih dari Rp 0.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const prevItem = editId ? S.scheduledList.find(x => String(x.id) === String(editId)) : null;
+
+  const newItem = {
+    id: editId || ('sch_' + Date.now()),
+    'Nama Transaksi': name,
+    Kategori: S.formType,
+    'Kategori Uang Keluar': S.formType === 'Uang Keluar' ? (S.formSub || 'Tagihan Rutin') : '',
+    Nominal: amtVal,
+    'Setiap Tanggal': S.formDay,
+    Jam: timeVal,
+    AturanBulanPendek: S.formEomRule || 'tanggal_1',
+    Warna: S.formColor,
+    DompetId: dompetId,
+    Aktif: prevItem ? prevItem.Aktif : true,
+    LastExecutedPeriod: prevItem ? (prevItem.LastExecutedPeriod || '') : ''
+  };
+
+  const btn = document.getElementById('sch-submit-btn');
+  const spin = document.getElementById('sch-submit-spin');
+  btn.disabled = true;
+  spin.classList.remove('hidden');
+
+  if (editId) {
+    const idx = S.scheduledList.findIndex(x => String(x.id) === String(editId));
+    if (idx > -1) S.scheduledList[idx] = newItem;
+    else S.scheduledList.push(newItem);
+  } else {
+    S.scheduledList.push(newItem);
+  }
+  saveScheduledLocal();
+
+  const sheetPayload = buildSheetScheduledPayload(newItem);
+  const action = editId ? 'editScheduled' : 'addScheduled';
+  const res = await postData(action, sheetPayload);
+  if (res && res.status === 'success' && res.data && res.data.id && !editId) {
+    newItem.id = String(res.data.id);
+    saveScheduledLocal();
+  }
+
+  btn.disabled = false;
+  spin.classList.add('hidden');
+  showSuccess(editId ? 'Jadwal berhasil diperbarui!' : 'Transaksi Terjadwal disimpan!');
+  await checkAndExecuteDueSchedules();
+  showListView();
+};
+
+// ================================================================
+// DAFTAR TRANSAKSI TERJADWAL (LIST, COUNTDOWN, EDIT & HAPUS)
+// ================================================================
+function renderSavedScheduledList() {
+  const wrap = document.getElementById('sch-saved-list');
+  if (!wrap) return;
+
+  // Hitung ringkasan bulanan & jadwal terdekat
+  let totalIn = 0, totalOut = 0;
+  let nearestInfo = null;
+  let nearestItem = null;
+
+  S.scheduledList.forEach(item => {
+    if (item.Aktif === false) return;
+    const v = Number(item.Nominal) || 0;
+    if (item.Kategori === 'Uang Masuk') totalIn += v;
+    else totalOut += v;
+
+    const info = getNextOccurrenceInfo(item);
+    if (!nearestInfo || info.diffDays < nearestInfo.diffDays) {
+      nearestInfo = info;
+      nearestItem = item;
+    }
+  });
+
+  const inEl = document.getElementById('sum-sched-in');
+  const outEl = document.getElementById('sum-sched-out');
+  const cdEl = document.getElementById('list-next-countdown');
+  if (inEl) inEl.textContent = idr(totalIn);
+  if (outEl) outEl.textContent = idr(totalOut);
+  if (cdEl) {
+    if (nearestItem && nearestInfo) {
+      const dayText = nearestInfo.diffDays === 0
+        ? 'Hari ini!'
+        : `${nearestInfo.diffDays} hari lagi (${nearestInfo.formattedDate})`;
+      cdEl.textContent = `Jadwal terdekat: ${nearestItem['Nama Transaksi']} — ${dayText}`;
+    } else {
+      cdEl.textContent = 'Otomatis dikirim & dicatat ke Riwayat saat tanggal tiba.';
+    }
+  }
+
+  if (!S.scheduledList.length) {
+    wrap.innerHTML = `
+      <div class="glass rounded-3xl p-8 text-center space-y-3">
+        <div class="text-4xl">⏰</div>
+        <h3 class="text-base font-black text-zinc-900">Belum Ada Transaksi Terjadwal</h3>
+        <p class="text-xs font-semibold text-zinc-400 max-w-xs mx-auto">
+          Tambahkan transaksi bulanan Anda agar otomatis dikirim dan tercatat di Histori setiap tanggal jatuh tempo.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  const now = new Date();
+  const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  wrap.innerHTML = S.scheduledList.map(item => {
+    const theme = SCH_COLOR_THEMES[item.Warna] || (item.Kategori === 'Uang Masuk' ? SCH_COLOR_THEMES.emerald : SCH_COLOR_THEMES.violet);
+    const isIn = item.Kategori === 'Uang Masuk';
+    const subLbl = isIn ? 'Uang Masuk' : (item['Kategori Uang Keluar'] || 'Tagihan Rutin');
+    const emoji = getSubcatEmoji(item.Kategori, subLbl);
+    const dompetObj = item.DompetId ? S.dompetList.find(d => String(d.id) === String(item.DompetId)) : null;
+    const dompetName = dompetObj ? (dompetObj.nama || dompetObj.provider) : 'Dompet Utama';
+    const sign = isIn ? '+' : '-';
+    const isSlate = theme.id === 'slate';
+    const dayNum = Number(item['Setiap Tanggal']) || 1;
+    const nextInfo = getNextOccurrenceInfo(item);
+    const isDoneThisMonth = item.LastExecutedPeriod === currentYM;
+
+    const countdownBadge = !item.Aktif
+      ? '⏸ Dijeda'
+      : isDoneThisMonth
+        ? '✅ Tercatat Bulan Ini'
+        : nextInfo.diffDays === 0
+          ? '🔥 Hari Ini!'
+          : `⏳ ${nextInfo.diffDays} hari lagi (${nextInfo.formattedDate})`;
+
+    const eomRuleBadge = dayNum >= 29
+      ? `<div class="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-extrabold" style="background:${isSlate ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.75)'};color:${theme.text}">
+           <span>🗓️ Bln Pendek: ${EOM_LABELS[item.AturanBulanPendek] || EOM_LABELS.tanggal_1}</span>
+         </div>`
+      : '';
+
+    return `
+      <div class="rounded-[24px] p-4 shadow-sm transition-all relative overflow-hidden ${!item.Aktif ? 'opacity-65' : ''}" style="background:${theme.bg};border:1.5px solid ${theme.border}">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3 min-w-0 flex-1">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm flex-shrink-0" style="background:${theme.iconBg}">
+              ${emoji}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md flex items-center gap-1" style="background:${theme.badgeBg};color:${theme.badgeText}">
+                  <span>🕒 Setiap Tgl ${dayNum} · ${item.Jam || '08:00'}</span>
+                </span>
+                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-md" style="background:${isSlate ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.82)'};color:${theme.text}">
+                  ${countdownBadge}
+                </span>
+              </div>
+              <h3 class="text-sm font-black mt-1.5 truncate" style="color:${theme.text}">${String(item['Nama Transaksi']).replace(/</g,'&lt;')}</h3>
+              <p class="text-xs font-black mt-0.5" style="color:${theme.accent}">${sign}${idr(item.Nominal)} <span class="text-[10px] font-bold opacity-80">/ bulan</span></p>
+              <p class="text-[10px] font-bold mt-1" style="color:${isSlate ? 'rgba(255,255,255,0.72)' : '#52525B'}">
+                ${subLbl} · 👛 ${String(dompetName).replace(/</g,'&lt;')}
+              </p>
+              ${eomRuleBadge}
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5 flex-shrink-0">
+            <button type="button" onclick="openEditSchedule('${item.id}')" class="px-3 py-1.5 rounded-xl bg-white/90 hover:bg-white text-zinc-800 font-black text-[10px] shadow-sm active:scale-95 transition-transform">
+              ✎ Edit
+            </button>
+            <button type="button" onclick="runScheduleNowManual('${item.id}')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] shadow-sm active:scale-95 transition-transform" title="Kirim & catat ke Histori sekarang">
+              ⚡ Catat Kini
+            </button>
+            <button type="button" onclick="promptDeleteSchedule('${item.id}')" class="px-3 py-1.5 rounded-xl bg-red-500/90 hover:bg-red-600 text-white font-black text-[10px] shadow-sm active:scale-95 transition-transform">
+              🗑 Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openEditSchedule = function(id) {
+  const item = S.scheduledList.find(x => String(x.id) === String(id));
+  if (!item) return;
+
+  hideAllViews();
+  document.getElementById('view-form').classList.remove('hidden');
+  document.getElementById('form-title').textContent = 'Edit Transaksi Terjadwal';
+  document.getElementById('sch-submit-text').textContent = 'Perbarui Jadwal ⏰';
+  document.getElementById('sch-edit-id').value = item.id;
+  document.getElementById('sch-form-error').classList.add('hidden');
+
+  populateDompetDropdown(item.DompetId);
+  S.formSub = item['Kategori Uang Keluar'] || 'Tagihan Rutin';
+  setFormType(item.Kategori, false);
+  if (item.Kategori === 'Uang Keluar') {
+    selectSubcategory(S.formSub);
+  }
+
+  document.getElementById('sch-name').value = item['Nama Transaksi'] || '';
+  document.getElementById('sch-amount').value = item.Nominal || '';
+  document.getElementById('sch-time').value = item.Jam || '08:00';
+
+  selectScheduleDay(Number(item['Setiap Tanggal']) || 1);
+  selectEomRule(item.AturanBulanPendek || 'tanggal_1');
+  selectColorTheme(item.Warna || (item.Kategori === 'Uang Masuk' ? 'emerald' : 'violet'));
+  updateLivePreview();
+};
+
+window.promptDeleteSchedule = function(id) {
+  const item = S.scheduledList.find(x => String(x.id) === String(id));
+  if (!item) return;
+  S.deleteTargetId = item.id;
+  document.getElementById('delete-modal-desc').textContent =
+    `Hapus jadwal "${item['Nama Transaksi']}" (Setiap Tanggal ${item['Setiap Tanggal']})?`;
+  const modal = document.getElementById('delete-modal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => modal.classList.add('show'));
+};
+
+window.closeDeleteModal = function() {
+  const modal = document.getElementById('delete-modal');
+  modal.classList.remove('show');
+  setTimeout(() => { modal.style.display = 'none'; }, 280);
+};
+
+window.confirmDeleteSchedule = function() {
+  const id = S.deleteTargetId;
+  if (!id) return;
+  S.scheduledList = S.scheduledList.filter(x => String(x.id) !== String(id));
+  saveScheduledLocal();
+  closeDeleteModal();
+  renderSavedScheduledList();
+  showSuccess('Jadwal transaksi dihapus.');
+  postData('deleteScheduled', { id }).catch(() => {});
+};
+</script>
+</body>
+</html>
