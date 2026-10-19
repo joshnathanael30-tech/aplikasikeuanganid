@@ -209,14 +209,28 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 #lockscreen-msg { color: #EF4444; font-size: 12px; font-weight: 700; margin-top: 12px; min-height: 16px; }
 .dompet-card { flex-shrink:0; width:175px; height:106px; border-radius:20px; padding:14px; position:relative; overflow:hidden; cursor:pointer; transition:transform .18s, box-shadow .18s; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 6px 20px rgba(0,0,0,.08); }
 .dompet-card:active { transform:scale(.95); }
-.qa-home-card { border-radius: 22px; position: relative; overflow: hidden; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; }
-.qa-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(236,253,245,0.88) 100%); border: 1.5px solid rgba(16,185,129,0.28); box-shadow: 0 6px 22px rgba(16,185,129,0.08), 0 1px 4px rgba(0,0,0,0.03); }
+.qa-home-card { border-radius: 21px; position: relative; overflow: hidden; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; }
+.qa-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(236,253,245,0.90) 100%); border: 1.5px solid rgba(16,185,129,0.22); box-shadow: 0 6px 22px rgba(16,185,129,0.08), 0 1px 4px rgba(0,0,0,0.03); }
 .qa-home-empty:hover { box-shadow: 0 10px 28px rgba(16,185,129,0.14); }
 .qa-home-empty:active { transform: scale(.98); }
+.sch-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(238,242,255,0.92) 55%, rgba(224,242,254,0.90) 100%); border: 1.5px solid rgba(99,102,241,0.22); box-shadow: 0 6px 22px rgba(99,102,241,0.09), 0 1px 4px rgba(0,0,0,0.03); }
+.sch-home-empty:hover { box-shadow: 0 10px 28px rgba(99,102,241,0.15); }
+.sch-home-empty:active { transform: scale(.98); }
 .qa-item-pill { flex-shrink: 0; width: 148px; background: #fff; border: 1.5px solid #E4E4E7; border-radius: 16px; padding: 10px 12px; cursor: pointer; text-align: left; position: relative; overflow: hidden; transition: transform .15s, border-color .15s, box-shadow .15s, background .15s; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 .qa-item-pill:hover { border-color: #10B981; background: #F0FDF4; box-shadow: 0 4px 14px rgba(16,185,129,0.12); transform: translateY(-1px); }
 .qa-item-pill:active { transform: scale(.93); }
 .qa-item-pill.qa-just-added { border-color: #10B981 !important; background: #DCFCE7 !important; }
+.feature-orbit-shell { position: relative; border-radius: 23px; padding: 2px; }
+.orbit-svg-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; overflow: visible; }
+.feature-banner-viewport { position: relative; overflow: hidden; border-radius: 21px; width: 100%; transition: height 0.36s cubic-bezier(0.22, 1, 0.36, 1); }
+.feature-banner-track { display: flex; width: 200%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
+.feature-slide-pane { width: 50%; flex-shrink: 0; box-sizing: border-box; }
+.feature-slider-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; }
+.feature-dot { height: 6px; width: 6px; border-radius: 99px; background: #CBD5E1; border: none; padding: 0; cursor: pointer; transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.feature-dot.active-qa { width: 22px; background: linear-gradient(90deg, #10B981, #059669); box-shadow: 0 2px 8px rgba(16,185,129,0.35); }
+.feature-dot.active-sch { width: 22px; background: linear-gradient(90deg, #6366F1, #0EA5E9); box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+@keyframes schClockTick { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.sch-clock-hand { transform-origin: 12px 12px; animation: schClockTick 14s linear infinite; }
 .prov-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; border:1.5px solid #F4F4F5; background:#fff; cursor:pointer; transition:all .15s; }
 .prov-item.selected { border-color:#10B981; background:#F0FDF4; }
 </style>
@@ -1207,6 +1221,44 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   </div>
 </div>
 
+<!-- ═══════════ QUICK ADD VARIABLE NOMINAL MODAL ═══════════ -->
+<div id="qa-var-backdrop" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'qa-var-backdrop')">
+  <div class="sheet pb-8">
+    <div class="p-6">
+      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-4"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2.5">
+          <div id="qa-var-icon" class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-lg">⚡</div>
+          <div>
+            <span id="qa-var-cat-badge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Quick Add</span>
+            <h2 id="qa-var-title" class="text-base font-black text-zinc-900 mt-0.5">Transaksi</h2>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal('qa-var-backdrop')" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500">✕</button>
+      </div>
+      <p class="text-[11px] font-semibold text-zinc-400 mb-3">Transaksi ini memiliki nominal tidak tetap. Masukkan nominal transaksi hari ini:</p>
+      <form onsubmit="submitVariableQuickAdd(event)" class="space-y-3">
+        <input type="hidden" id="qa-var-idx" value="">
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-black text-base">Rp</span>
+          <input type="number" id="qa-var-amount" placeholder="0" min="1" class="fi py-4 pl-12 text-xl font-black" required>
+        </div>
+        <div class="flex gap-1.5 overflow-x-auto no-scroll pb-1">
+          <button type="button" onclick="document.getElementById('qa-var-amount').value=5000" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 text-[10px] font-black text-zinc-700 flex-shrink-0">Rp 5.000</button>
+          <button type="button" onclick="document.getElementById('qa-var-amount').value=10000" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 text-[10px] font-black text-zinc-700 flex-shrink-0">Rp 10.000</button>
+          <button type="button" onclick="document.getElementById('qa-var-amount').value=15000" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 text-[10px] font-black text-zinc-700 flex-shrink-0">Rp 15.000</button>
+          <button type="button" onclick="document.getElementById('qa-var-amount').value=25000" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 text-[10px] font-black text-zinc-700 flex-shrink-0">Rp 25.000</button>
+          <button type="button" onclick="document.getElementById('qa-var-amount').value=50000" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 text-[10px] font-black text-zinc-700 flex-shrink-0">Rp 50.000</button>
+          <button type="button" onclick="document.getElementById('qa-var-amount').value=100000" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 text-[10px] font-black text-zinc-700 flex-shrink-0">Rp 100.000</button>
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-black text-sm shadow-lg" style="background:linear-gradient(135deg,#10B981,#059669)">
+          ⚡ Catat Transaksi Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ WEATHER & CRYPTO & AI CHAT MODALS ═══════════ -->
 <div id="weather-loc-modal" class="modal-backdrop" style="display:none;z-index:70" onclick="handleBackdropClick(event,'weather-loc-modal')">
   <div class="sheet" style="max-width:448px;margin:0 auto">
@@ -1371,8 +1423,11 @@ var dompetState = {
 var depositoList = [];
 var cicilanList  = [];
 var quickAddList = [];
+var scheduledList = [];
 const QUICK_ADD_MAX = 10;
 const QUICK_ADD_STORAGE_PREFIX = 'keuangan_quickadd_khusus_';
+const SCHEDULED_STORAGE_PREFIX = 'keuangan_scheduled_jadwal_';
+const SCHEDULED_SHARED_KEY = 'keuangan_scheduled_jadwal';
 var receiptItems = [];
 let aiCatTimer   = null;
 var isFetchingBg = false;
@@ -1469,6 +1524,49 @@ function getQuickAddStorageKey() {
   return uname ? (QUICK_ADD_STORAGE_PREFIX + uname) : '';
 }
 
+const QA_COLOR_THEMES = {
+  emerald: {
+    id: 'emerald', label: 'Hijau',
+    bg: 'linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%)', border: '#6EE7B7',
+    text: '#064E3B', accent: '#059669', badgeBg: '#10B981', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  rose: {
+    id: 'rose', label: 'Merah',
+    bg: 'linear-gradient(135deg,#FEF2F2 0%,#FEE2E2 100%)', border: '#FCA5A5',
+    text: '#7F1D1D', accent: '#DC2626', badgeBg: '#EF4444', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  ocean: {
+    id: 'ocean', label: 'Biru',
+    bg: 'linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%)', border: '#93C5FD',
+    text: '#1E3A8A', accent: '#2563EB', badgeBg: '#3B82F6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  violet: {
+    id: 'violet', label: 'Ungu',
+    bg: 'linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%)', border: '#C4B5FD',
+    text: '#4C1D95', accent: '#7C3AED', badgeBg: '#8B5CF6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  amber: {
+    id: 'amber', label: 'Kuning',
+    bg: 'linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%)', border: '#FCD34D',
+    text: '#78350F', accent: '#D97706', badgeBg: '#F59E0B', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  pink: {
+    id: 'pink', label: 'Pink',
+    bg: 'linear-gradient(135deg,#FDF2F8 0%,#FCE7F3 100%)', border: '#F9A8D4',
+    text: '#831843', accent: '#DB2777', badgeBg: '#EC4899', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  teal: {
+    id: 'teal', label: 'Teal',
+    bg: 'linear-gradient(135deg,#F0FDFA 0%,#CCFBF1 100%)', border: '#5EEAD4',
+    text: '#134E4A', accent: '#0D9488', badgeBg: '#14B8A6', badgeText: '#FFFFFF', iconBg: '#FFFFFF'
+  },
+  slate: {
+    id: 'slate', label: 'Gelap',
+    bg: 'linear-gradient(135deg,#1E293B 0%,#0F172A 100%)', border: '#475569',
+    text: '#FFFFFF', accent: '#38BDF8', badgeBg: '#38BDF8', badgeText: '#0F172A', iconBg: 'rgba(255,255,255,0.14)'
+  }
+};
+
 function normalizeQuickAddList(rawArr) {
   if (!Array.isArray(rawArr)) return [];
   const out = [];
@@ -1476,20 +1574,34 @@ function normalizeQuickAddList(rawArr) {
     const it = rawArr[i];
     if (!it || typeof it !== 'object') continue;
     const desc = String(it.Deskripsi || it.deskripsi || it.nama || it['Nama Transaksi'] || it.catatan || '').trim();
-    const amt  = Number(it['Jumlah Uang'] !== undefined ? it['Jumlah Uang'] : (it.nominal !== undefined ? it.nominal : (it.Nominal !== undefined ? it.Nominal : (it.jumlah || it.amount || 0))));
-    if (!desc || !(amt > 0)) continue;
+    if (!desc) continue;
     const rawKat = String(it.Kategori || it.kategori || it.tipe || 'Uang Keluar').trim();
     const kat = (rawKat === 'Uang Masuk' || rawKat.toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+    const rawVar = it.NominalTidakTetap !== undefined ? it.NominalTidakTetap : it.nominalTidakTetap;
+    const amtRaw = Number(it['Jumlah Uang'] !== undefined ? it['Jumlah Uang'] : (it.nominal !== undefined ? it.nominal : (it.Nominal !== undefined ? it.Nominal : (it.jumlah || it.amount || 0))));
+    const isVar = Boolean(
+      rawVar === true ||
+      String(rawVar).toUpperCase() === 'TRUE' ||
+      String(rawVar).toUpperCase() === 'YA' ||
+      (rawVar === undefined && !(amtRaw > 0))
+    );
+    const amt = isVar ? 0 : (amtRaw > 0 ? amtRaw : 0);
+    if (!isVar && !(amt > 0)) continue;
     const sub = kat === 'Uang Keluar'
       ? String(it['Kategori Uang Keluar'] || it.subKategori || it.kategoriKeluar || it['Sub Kategori'] || 'Lainnya').trim()
       : null;
     const dompetId = it.DompetId || it.dompetId || it['Dompet ID'] || '';
+    const defColor = kat === 'Uang Masuk' ? 'emerald' : 'rose';
+    const rawColor = String(it.Warna || it.warna || it.color || defColor).trim().toLowerCase();
+    const validColor = QA_COLOR_THEMES[rawColor] ? rawColor : defColor;
     out.push({
       id: String(it.id || it.ID || ('qa_item_' + i)),
       Deskripsi: desc,
       'Jumlah Uang': amt,
+      NominalTidakTetap: isVar,
       Kategori: kat,
       'Kategori Uang Keluar': sub,
+      Warna: validColor,
       DompetId: dompetId ? String(dompetId) : ''
     });
     if (out.length >= QUICK_ADD_MAX) break;
@@ -1540,8 +1652,102 @@ function saveQuickAddLocal() {
   storageSet('keuangan_quickadd_khusus', payload);
 }
 
+function getScheduledStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? (SCHEDULED_STORAGE_PREFIX + uname) : '';
+}
+
+function normalizeScheduledListHome(rawArr) {
+  if (!Array.isArray(rawArr)) return [];
+  const out = [];
+  for (let i = 0; i < rawArr.length; i++) {
+    const it = rawArr[i];
+    if (!it || typeof it !== 'object') continue;
+    const nama = String(it['Nama Transaksi'] || it.nama || it.Deskripsi || it.deskripsi || '').trim();
+    const nominal = Number(it.Nominal !== undefined ? it.Nominal : (it['Jumlah Uang'] !== undefined ? it['Jumlah Uang'] : (it.nominal || 0)));
+    if (!nama || !(nominal > 0)) continue;
+    const rawKat = String(it.Kategori || it.kategori || 'Uang Keluar').trim();
+    let kat = 'Uang Keluar';
+    let subKat = String(it['Kategori Uang Keluar'] || it.subKategori || '').trim();
+    if (rawKat.indexOf('·') !== -1) {
+      const parts = rawKat.split('·').map(s => s.trim());
+      kat = (parts[0] === 'Uang Masuk' || parts[0].toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+      if (!subKat && parts[1]) subKat = parts[1];
+    } else {
+      kat = (rawKat === 'Uang Masuk' || rawKat.toLowerCase() === 'masuk') ? 'Uang Masuk' : 'Uang Keluar';
+    }
+    const rawTglStr = String(it['Setiap Tanggal'] !== undefined ? it['Setiap Tanggal'] : (it.tanggal || '1')).trim();
+    const numMatch = rawTglStr.match(/(\d{1,2})/);
+    const day = numMatch ? Math.min(31, Math.max(1, parseInt(numMatch[1], 10))) : 1;
+    let time = String(it.Jam || it.jam || '08:00').trim();
+    const timeMatch = rawTglStr.match(/(\d{2}:\d{2})/);
+    if (timeMatch) time = timeMatch[1];
+    let eomRule = String(it.AturanBulanPendek || it.eomRule || 'tanggal_1').trim();
+    if (rawTglStr.toLowerCase().indexOf('akhir') !== -1) eomRule = 'akhir_bulan';
+    else if (rawTglStr.toLowerCase().indexOf('abaikan') !== -1) eomRule = 'abaikan';
+    const defColor = kat === 'Uang Masuk' ? 'emerald' : 'violet';
+    const rawColor = String(it.Warna || it.warna || defColor).trim().toLowerCase();
+    const validColor = QA_COLOR_THEMES[rawColor] ? rawColor : defColor;
+    out.push({
+      id: String(it.id || it.ID || ('sch_item_' + i)),
+      'Nama Transaksi': nama,
+      Kategori: kat,
+      'Kategori Uang Keluar': kat === 'Uang Masuk' ? '' : (subKat || 'Tagihan Rutin'),
+      Nominal: nominal,
+      'Setiap Tanggal': day,
+      Jam: time,
+      AturanBulanPendek: eomRule,
+      Warna: validColor,
+      DompetId: String(it.DompetId || it.dompetId || ''),
+      Aktif: it.Aktif !== false,
+      LastExecutedPeriod: String(it.LastExecutedPeriod || '')
+    });
+  }
+  return out;
+}
+
+function loadScheduledLocalHome() {
+  scheduledList = [];
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const scopedKey = getScheduledStorageKey();
+  try {
+    if (scopedKey) {
+      const rawScoped = storageGet(scopedKey);
+      if (rawScoped) {
+        const parsed = JSON.parse(rawScoped);
+        if (parsed && parsed.gsUrl === GS_URL && Array.isArray(parsed.items)) {
+          scheduledList = normalizeScheduledListHome(parsed.items);
+          return;
+        }
+      }
+    }
+    const rawShared = storageGet(SCHEDULED_SHARED_KEY);
+    if (rawShared) {
+      const parsedShared = JSON.parse(rawShared);
+      if (parsedShared && parsedShared.username === S.akun.username && parsedShared.gsUrl === GS_URL && Array.isArray(parsedShared.items)) {
+        scheduledList = normalizeScheduledListHome(parsedShared.items);
+      }
+    }
+  } catch(e) {}
+}
+
+function saveScheduledLocalHome() {
+  if (!S.akun || !S.akun.username || !GS_URL) return;
+  const normalized = normalizeScheduledListHome(scheduledList);
+  scheduledList = normalized;
+  const payload = JSON.stringify({
+    username: S.akun.username,
+    gsUrl: GS_URL,
+    updatedAt: Date.now(),
+    items: normalized
+  });
+  const scopedKey = getScheduledStorageKey();
+  if (scopedKey) storageSet(scopedKey, payload);
+  storageSet(SCHEDULED_SHARED_KEY, payload);
+}
+
 window.logoutAkun = function() {
-  if (!confirm('Keluar dari akun ini?')) return;
+  
   const scopedKey = getQuickAddStorageKey();
   if (scopedKey) storageRemove(scopedKey);
   storageRemove('keuangan_quickadd_khusus');
@@ -1651,6 +1857,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (checkAkunSession()) {
     loadQuickAddLocal();
+    loadScheduledLocalHome();
     const hasPin = S.settings.password && S.settings.password !== 'NONE';
     const unlocked = sessionStorage.getItem('keuangan_pin_unlocked') === '1';
     if (hasPin && !unlocked) {
@@ -1713,10 +1920,23 @@ async function syncDataInBackground() {
       if (Array.isArray(d.data.deposito)) { depositoList = d.data.deposito; saveDepositoLocal(); }
       if (Array.isArray(d.data.cicilan))  { cicilanList  = d.data.cicilan;  saveCicilanLocal(); }
 
+      if (Array.isArray(d.data.scheduled)) {
+        const srvSch = normalizeScheduledListHome(d.data.scheduled);
+        if (srvSch.length > 0) {
+          scheduledList = srvSch;
+          saveScheduledLocalHome();
+        }
+      }
+
       const rawKhusus = d.data.khusus || d.data.Khusus || d.data.quickAdd || d.data.quickadd;
       if (Array.isArray(rawKhusus)) {
-        quickAddList = normalizeQuickAddList(rawKhusus);
-        saveQuickAddLocal();
+        const srvKhusus = normalizeQuickAddList(rawKhusus);
+        if (srvKhusus.length > 0) {
+          quickAddList = srvKhusus;
+          saveQuickAddLocal();
+        } else if (quickAddList.length > 0) {
+          postData("syncQuickAdd", { items: quickAddList }).catch(() => {});
+        }
       } else {
         await fetchQuickAddFromSheetKhusus();
       }
@@ -1797,8 +2017,10 @@ async function handleLoginSubmit(e) {
     const j = await r.json();
     if (j.status === 'success') {
       quickAddList = [];
+      scheduledList = [];
       saveAkunSession(j.data);
       loadQuickAddLocal();
+      loadScheduledLocalHome();
       document.getElementById('auth-screen').style.display = 'none';
       S.isLoggedIn = true;
       try { sessionStorage.setItem('keuangan_pin_unlocked', '1'); } catch(err) {}
@@ -1969,23 +2191,43 @@ window.goToQuickAddPage = function() {
   window.top.location.href = 'https://keloladuit.my.id/quickadd';
 };
 
-function renderQuickAddHomeSection() {
-  const box = document.getElementById('quick-add-home-box');
-  if (!box) return;
-  const items = normalizeQuickAddList(quickAddList).slice(0, QUICK_ADD_MAX);
+window.goToScheduledPage = function() {
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+    saveScheduledLocalHome();
+  }
+  window.top.location.href = 'https://keloladuit.my.id/transaksiterjadwal';
+};
 
-  // Kondisi 1: User belum mendaftarkan transaksi Quick Add
+var featureBannerState = {
+  idx: 0,
+  elapsed: 0,
+  lastTs: 0,
+  rafId: null,
+  paused: false,
+  touchStartX: 0,
+  touchDeltaX: 0,
+  lastW: 0,
+  lastH: 0
+};
+const ORBIT_LAP_DURATION_MS = 5200; // 1 putaran penuh cahaya dari Titik 1 kembali ke Titik 1
+
+function buildQuickAddSlideHtml() {
+  const items = normalizeQuickAddList(quickAddList).slice(0, QUICK_ADD_MAX);
   if (!items.length) {
-    box.innerHTML = `
+    return `
       <div onclick="goToQuickAddPage()" class="qa-home-card qa-home-empty p-4 flex items-center justify-between gap-3">
-        <div style="position:absolute;top:-24px;right:-24px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.16) 0%,transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;top:-24px;right:-24px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.18) 0%,transparent 70%);pointer-events:none"></div>
         <div class="flex items-center gap-3.5 min-w-0 relative z-10">
-          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff;box-shadow:0 6px 16px rgba(16,185,129,0.28)">
             ⚡
           </div>
           <div class="min-w-0">
-            <h3 class="text-base font-black text-zinc-900 leading-tight tracking-tight">Quick Add</h3>
-            <p class="text-xs font-bold text-zinc-500 mt-0.5 leading-snug">Tambah transaksi hanya dengan 1 klik</p>
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-base font-black text-zinc-900 leading-tight tracking-tight">Quick Add</h3>
+              <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700">1-Klik</span>
+            </div>
+            <p class="text-xs font-bold text-zinc-500 mt-0.5 leading-snug truncate">Tambah transaksi hanya dengan 1 klik</p>
           </div>
         </div>
         <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center flex-shrink-0 relative z-10">
@@ -1995,13 +2237,12 @@ function renderQuickAddHomeSection() {
         </div>
       </div>
     `;
-    return;
   }
 
-  // Kondisi 2: User sudah mendaftarkan transaksi Quick Add (maksimal 10 transaksi)
   const cardsHtml = items.map((item, idx) => {
     const isIn = item.Kategori === 'Uang Masuk';
-    const amtClr = isIn ? '#10B981' : '#EF4444';
+    const themeKey = item.Warna || (isIn ? 'emerald' : 'rose');
+    const theme = QA_COLOR_THEMES[themeKey] || (isIn ? QA_COLOR_THEMES.emerald : QA_COLOR_THEMES.rose);
     const sign = isIn ? '+' : '-';
     const subLbl = isIn ? 'Uang Masuk' : (item['Kategori Uang Keluar'] || 'Lainnya');
     const emoji = isIn ? '💰' : (SUBCAT_EMOJI_MAP[subLbl] || '⚡');
@@ -2009,22 +2250,28 @@ function renderQuickAddHomeSection() {
     const dompetLbl = dompetObj ? (dompetObj.nama || dompetObj.provider) : '';
     const safeDesc = String(item.Deskripsi || 'Transaksi').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const safeSub  = String(dompetLbl ? (subLbl + ' · ' + dompetLbl) : subLbl).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const isVar = Boolean(item.NominalTidakTetap || !(Number(item['Jumlah Uang']) > 0));
+    const amtText = isVar ? 'Nominal Fleksibel' : `${sign}${idr(item['Jumlah Uang'])}`;
+    const badgeLabel = isVar ? 'Isi Cepat' : '1-Klik +';
+    const isSlate = theme.id === 'slate';
 
     return `
-      <button type="button" onclick="executeQuickAddOneClick(${idx}, this)" class="qa-item-pill" title="Klik untuk langsung tambah: ${safeDesc}">
+      <button type="button" onclick="executeQuickAddOneClick(${idx}, this)" class="qa-item-pill"
+        style="background:${theme.bg};border:1.5px solid ${theme.border}"
+        title="Klik untuk langsung tambah: ${safeDesc}">
         <div class="flex items-center justify-between gap-1.5 mb-1.5">
-          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style="background:${isIn ? '#ECFDF5' : '#FEF2F2'}">${emoji}</span>
-          <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:${isIn ? '#D1FAE5' : '#FEE2E2'};color:${ isIn ? '#065F46' : '#991B1B' }">1-Klik +</span>
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm" style="background:${theme.iconBg}">${emoji}</span>
+          <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:${theme.badgeBg};color:${theme.badgeText}">${badgeLabel}</span>
         </div>
-        <p class="text-xs font-extrabold text-zinc-900 truncate leading-snug">${safeDesc}</p>
-        <p class="text-[11px] font-black mt-0.5 truncate" style="color:${amtClr}">${sign}${idr(item['Jumlah Uang'])}</p>
-        <p class="text-[9px] font-bold text-zinc-400 truncate mt-0.5">${safeSub}</p>
+        <p class="text-xs font-extrabold truncate leading-snug" style="color:${theme.text}">${safeDesc}</p>
+        <p class="text-[11px] font-black mt-0.5 truncate" style="color:${theme.accent}">${amtText}</p>
+        <p class="text-[9px] font-bold truncate mt-0.5" style="color:${isSlate ? 'rgba(255,255,255,0.68)' : '#71717A'}">${safeSub}</p>
       </button>
     `;
   }).join('');
 
-  box.innerHTML = `
-    <div class="qa-home-card glass p-3.5" style="border:1.5px solid rgba(16,185,129,0.22)">
+  return `
+    <div class="qa-home-card glass p-3.5" style="border:1.5px solid rgba(16,185,129,0.20)">
       <div class="flex items-center justify-between mb-2.5 px-0.5">
         <div class="flex items-center gap-2 min-w-0">
           <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff">⚡</span>
@@ -2037,16 +2284,356 @@ function renderQuickAddHomeSection() {
           </div>
         </div>
         <button type="button" onclick="goToQuickAddPage()" class="text-[10px] font-black text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1 flex-shrink-0">
-          <span>Atur</span>
+          <span>Atur Quickadd</span>
           <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </button>
       </div>
-      <div class="flex gap-2.5 overflow-x-auto no-scroll pb-0.5">
+      <div class="flex gap-2.5 overflow-x-auto no-scroll pb-0.5"
+        ontouchstart="event.stopPropagation();featureBannerState.paused=true"
+        ontouchend="event.stopPropagation();featureBannerState.paused=false">
         ${cardsHtml}
       </div>
     </div>
   `;
 }
+
+function buildScheduledSlideHtml() {
+  const items = normalizeScheduledListHome(scheduledList).filter(x => x.Aktif !== false);
+  if (!items.length) {
+    return `
+      <div onclick="goToScheduledPage()" class="qa-home-card sch-home-empty p-4 flex items-center justify-between gap-3">
+        <div style="position:absolute;top:-26px;right:-20px;width:104px;height:104px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.18) 0%,rgba(14,165,233,0.08) 45%,transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;bottom:-28px;left:18%;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,0.14) 0%,transparent 70%);pointer-events:none"></div>
+        <div class="flex items-center gap-3.5 min-w-0 relative z-10">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#6366F1 0%,#0EA5E9 100%);box-shadow:0 6px 16px rgba(99,102,241,0.28)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+              <circle cx="12" cy="12" r="8.5"/>
+              <path class="sch-clock-hand" stroke-linecap="round" d="M12 7.5v4.5"/>
+              <path stroke-linecap="round" d="M12 12l3 2"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-base font-black text-zinc-900 leading-tight tracking-tight">Transaksi Terjadwal</h3>
+              <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:rgba(99,102,241,0.12);color:#4F46E5">Otomatis</span>
+            </div>
+            <p class="text-xs font-bold text-zinc-500 mt-0.5 leading-snug truncate">Jadwalkan transaksi rutin bulanan otomatis</p>
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 relative z-10" style="background:rgba(99,102,241,0.12);color:#4F46E5">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  const cardsHtml = items.slice(0, 10).map(item => {
+    const isIn = item.Kategori === 'Uang Masuk';
+    const themeKey = item.Warna || (isIn ? 'emerald' : 'violet');
+    const theme = QA_COLOR_THEMES[themeKey] || (isIn ? QA_COLOR_THEMES.emerald : QA_COLOR_THEMES.violet);
+    const sign = isIn ? '+' : '-';
+    const subLbl = isIn ? 'Uang Masuk' : (item['Kategori Uang Keluar'] || 'Tagihan Rutin');
+    const emoji = isIn ? '💰' : (SUBCAT_EMOJI_MAP[subLbl] || '🕒');
+    const safeName = String(item['Nama Transaksi'] || 'Jadwal').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const dayNum = Number(item['Setiap Tanggal']) || 1;
+    const isSlate = theme.id === 'slate';
+
+    return `
+      <button type="button" onclick="goToScheduledPage()" class="qa-item-pill"
+        style="background:${theme.bg};border:1.5px solid ${theme.border}"
+        title="Kelola jadwal: ${safeName}">
+        <div class="flex items-center justify-between gap-1.5 mb-1.5">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm" style="background:${theme.iconBg}">${emoji}</span>
+          <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md" style="background:${theme.badgeBg};color:${theme.badgeText}">Tgl ${dayNum}</span>
+        </div>
+        <p class="text-xs font-extrabold truncate leading-snug" style="color:${theme.text}">${safeName}</p>
+        <p class="text-[11px] font-black mt-0.5 truncate" style="color:${theme.accent}">${sign}${idr(item.Nominal)}</p>
+        <p class="text-[9px] font-bold truncate mt-0.5" style="color:${isSlate ? 'rgba(255,255,255,0.68)' : '#71717A'}">🕒 ${item.Jam || '08:00'} · ${subLbl}</p>
+      </button>
+    `;
+  }).join('');
+
+  return `
+    <div class="qa-home-card glass p-3.5" style="border:1.5px solid rgba(99,102,241,0.22)">
+      <div class="flex items-center justify-between mb-2.5 px-0.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#6366F1,#0EA5E9);color:#fff">🕒</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-xs font-black text-zinc-900 leading-none">Transaksi Terjadwal</h3>
+              <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700">${items.length} Aktif</span>
+            </div>
+            <p class="text-[10px] font-semibold text-zinc-400 mt-0.5 leading-none">Otomatis dicatat ke Histori setiap bulan</p>
+          </div>
+        </div>
+        <button type="button" onclick="goToScheduledPage()" class="text-[10px] font-black text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1 flex-shrink-0">
+          <span>Atur Jadwal</span>
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="flex gap-2.5 overflow-x-auto no-scroll pb-0.5"
+        ontouchstart="event.stopPropagation();featureBannerState.paused=true"
+        ontouchend="event.stopPropagation();featureBannerState.paused=false">
+        ${cardsHtml}
+      </div>
+    </div>
+  `;
+}
+
+function buildOrbitRoundedPath(w, h) {
+  const pad = 1.5;
+  const r = Math.min(21.5, Math.floor((Math.min(w, h) - pad * 2) / 2));
+  const x0 = pad;
+  const y0 = pad;
+  const x1 = Math.max(x0 + 2 * r + 2, w - pad);
+  const y1 = Math.max(y0 + 2 * r + 2, h - pad);
+  // Titik 1 dimulai di sisi kiri-atas (x0 + r, y0) lalu mengelilingi container searah jarum jam kembali ke Titik 1
+  return {
+    startX: x0 + r,
+    startY: y0,
+    d: [
+      `M ${x0 + r} ${y0}`,
+      `L ${x1 - r} ${y0}`,
+      `A ${r} ${r} 0 0 1 ${x1} ${y0 + r}`,
+      `L ${x1} ${y1 - r}`,
+      `A ${r} ${r} 0 0 1 ${x1 - r} ${y1}`,
+      `L ${x0 + r} ${y1}`,
+      `A ${r} ${r} 0 0 1 ${x0} ${y1 - r}`,
+      `L ${x0} ${y0 + r}`,
+      `A ${r} ${r} 0 0 1 ${x0 + r} ${y0}`,
+      `Z`
+    ].join(' ')
+  };
+}
+
+function syncFeatureBannerGeometry(forceUpdatePath) {
+  const shell = document.getElementById('feature-orbit-shell');
+  const viewport = document.getElementById('feature-banner-viewport');
+  const slide0 = document.getElementById('feature-slide-qa');
+  const slide1 = document.getElementById('feature-slide-sch');
+  if (!shell || !viewport || !slide0 || !slide1) return;
+
+  const activeSlide = featureBannerState.idx === 0 ? slide0 : slide1;
+  const targetH = activeSlide.offsetHeight;
+  if (targetH > 0) {
+    viewport.style.height = targetH + 'px';
+  }
+
+  const w = shell.clientWidth;
+  const h = (targetH > 0 ? targetH + 4 : shell.clientHeight);
+  if (w > 0 && h > 0 && (forceUpdatePath || Math.abs(w - featureBannerState.lastW) > 1 || Math.abs(h - featureBannerState.lastH) > 1)) {
+    featureBannerState.lastW = w;
+    featureBannerState.lastH = h;
+    const pathInfo = buildOrbitRoundedPath(w, h);
+    ['orbit-base-track', 'orbit-glow-halo', 'orbit-light-beam', 'orbit-spark-tip'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute('d', pathInfo.d);
+    });
+    const pt1 = document.getElementById('orbit-point-1');
+    if (pt1) {
+      pt1.setAttribute('transform', `translate(${pathInfo.startX.toFixed(1)}, ${pathInfo.startY.toFixed(1)})`);
+    }
+  }
+}
+
+function applyFeatureSlideTheme() {
+  const isQa = featureBannerState.idx === 0;
+  const gradUrl = isQa ? 'url(#orbit-grad-qa)' : 'url(#orbit-grad-sch)';
+  const baseTrack = document.getElementById('orbit-base-track');
+  const halo = document.getElementById('orbit-glow-halo');
+  const beam = document.getElementById('orbit-light-beam');
+  const orbHalo = document.getElementById('orbit-head-halo');
+  const pt1Halo = document.getElementById('orbit-pt1-halo');
+  const pt1Core = document.getElementById('orbit-pt1-core');
+
+  if (baseTrack) baseTrack.setAttribute('stroke', isQa ? 'rgba(16,185,129,0.18)' : 'rgba(99,102,241,0.20)');
+  if (halo) halo.setAttribute('stroke', gradUrl);
+  if (beam) beam.setAttribute('stroke', gradUrl);
+  if (orbHalo) orbHalo.setAttribute('fill', isQa ? '#10B981' : '#6366F1');
+  if (pt1Halo) pt1Halo.setAttribute('fill', isQa ? 'rgba(16,185,129,0.32)' : 'rgba(99,102,241,0.34)');
+  if (pt1Core) pt1Core.setAttribute('stroke', isQa ? '#10B981' : '#6366F1');
+
+  const dot0 = document.getElementById('fdot-0');
+  const dot1 = document.getElementById('fdot-1');
+  if (dot0) dot0.className = 'feature-dot ' + (isQa ? 'active-qa' : '');
+  if (dot1) dot1.className = 'feature-dot ' + (!isQa ? 'active-sch' : '');
+}
+
+window.goToFeatureSlide = function(idx, fromAutoLap) {
+  featureBannerState.idx = idx === 1 ? 1 : 0;
+  featureBannerState.elapsed = 0;
+  featureBannerState.lastTs = performance.now();
+
+  const track = document.getElementById('feature-banner-track');
+  if (track) {
+    track.style.transform = `translateX(-${featureBannerState.idx * 50}%)`;
+  }
+  applyFeatureSlideTheme();
+  syncFeatureBannerGeometry(true);
+
+  if (fromAutoLap) {
+    const pt1 = document.getElementById('orbit-pt1-halo');
+    if (pt1) {
+      pt1.setAttribute('r', '8');
+      setTimeout(() => { if (pt1) pt1.setAttribute('r', '5'); }, 320);
+    }
+  }
+};
+
+function startFeatureOrbitLoop() {
+  if (featureBannerState.rafId) cancelAnimationFrame(featureBannerState.rafId);
+  featureBannerState.lastTs = performance.now();
+
+  function step(now) {
+    const dt = Math.min(100, Math.max(0, now - featureBannerState.lastTs));
+    featureBannerState.lastTs = now;
+
+    if (!featureBannerState.paused && S.currentView === 'view-home') {
+      featureBannerState.elapsed += dt;
+      const progress = Math.min(1, featureBannerState.elapsed / ORBIT_LAP_DURATION_MS);
+      const pos = progress * 1000;
+
+      const halo = document.getElementById('orbit-glow-halo');
+      const beam = document.getElementById('orbit-light-beam');
+      const tip  = document.getElementById('orbit-spark-tip');
+      const baseTrack = document.getElementById('orbit-base-track');
+      const headOrb = document.getElementById('orbit-head-orb');
+
+      if (halo) halo.setAttribute('stroke-dashoffset', (195 - pos).toFixed(2));
+      if (beam) beam.setAttribute('stroke-dashoffset', (155 - pos).toFixed(2));
+      if (tip)  tip.setAttribute('stroke-dashoffset', (18 - pos).toFixed(2));
+
+      if (baseTrack && headOrb && typeof baseTrack.getTotalLength === 'function') {
+        try {
+          const totalLen = baseTrack.getTotalLength();
+          if (totalLen > 0) {
+            const pt = baseTrack.getPointAtLength(progress * totalLen);
+            headOrb.setAttribute('transform', `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
+          }
+        } catch(e) {}
+      }
+
+      // Saat cahaya sudah mengelilingi container penuh dari Titik 1 kembali ke Titik 1, otomatis slide ke container berikutnya!
+      if (progress >= 1) {
+        goToFeatureSlide((featureBannerState.idx + 1) % 2, true);
+      }
+    }
+    featureBannerState.rafId = requestAnimationFrame(step);
+  }
+  featureBannerState.rafId = requestAnimationFrame(step);
+}
+
+window.onFeatureBannerTouchStart = function(e) {
+  if (!e.touches || !e.touches.length) return;
+  featureBannerState.touchStartX = e.touches[0].clientX;
+  featureBannerState.touchDeltaX = 0;
+  featureBannerState.paused = true;
+};
+
+window.onFeatureBannerTouchMove = function(e) {
+  if (!e.touches || !e.touches.length) return;
+  featureBannerState.touchDeltaX = e.touches[0].clientX - featureBannerState.touchStartX;
+};
+
+window.onFeatureBannerTouchEnd = function() {
+  featureBannerState.paused = false;
+  if (Math.abs(featureBannerState.touchDeltaX) > 42) {
+    if (featureBannerState.touchDeltaX < 0 && featureBannerState.idx === 0) {
+      goToFeatureSlide(1, false);
+    } else if (featureBannerState.touchDeltaX > 0 && featureBannerState.idx === 1) {
+      goToFeatureSlide(0, false);
+    }
+  }
+  featureBannerState.touchDeltaX = 0;
+};
+
+function renderQuickAddHomeSection() {
+  const box = document.getElementById('quick-add-home-box');
+  if (!box) return;
+
+  const existingShell = document.getElementById('feature-orbit-shell');
+  if (existingShell) {
+    const slideQa = document.getElementById('feature-slide-qa');
+    const slideSch = document.getElementById('feature-slide-sch');
+    if (slideQa) slideQa.innerHTML = buildQuickAddSlideHtml();
+    if (slideSch) slideSch.innerHTML = buildScheduledSlideHtml();
+    requestAnimationFrame(() => syncFeatureBannerGeometry(true));
+    return;
+  }
+
+  box.innerHTML = `
+    <div id="feature-orbit-shell" class="feature-orbit-shell"
+      ontouchstart="onFeatureBannerTouchStart(event)"
+      ontouchmove="onFeatureBannerTouchMove(event)"
+      ontouchend="onFeatureBannerTouchEnd(event)">
+
+      <!-- Animasi Cahaya Mengelilingi Container dari Titik 1 Kembali ke Titik 1 -->
+      <svg class="orbit-svg-overlay" aria-hidden="true">
+        <defs>
+          <linearGradient id="orbit-grad-qa" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10B981"/>
+            <stop offset="55%" stop-color="#34D399"/>
+            <stop offset="100%" stop-color="#A7F3D0"/>
+          </linearGradient>
+          <linearGradient id="orbit-grad-sch" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6366F1"/>
+            <stop offset="55%" stop-color="#38BDF8"/>
+            <stop offset="100%" stop-color="#C4B5FD"/>
+          </linearGradient>
+          <filter id="orbit-glow-filter" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur stdDeviation="3.2" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <path id="orbit-base-track" fill="none" stroke="rgba(16,185,129,0.18)" stroke-width="1.5" pathLength="1000"/>
+        <path id="orbit-glow-halo" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="6" stroke-linecap="round" stroke-dasharray="195 805" stroke-dashoffset="195" pathLength="1000" filter="url(#orbit-glow-filter)" opacity="0.80"/>
+        <path id="orbit-light-beam" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="155 845" stroke-dashoffset="155" pathLength="1000"/>
+        <path id="orbit-spark-tip" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="18 982" stroke-dashoffset="18" pathLength="1000"/>
+        <!-- Titik 1 (Titik Awal & Akhir Putaran Cahaya) -->
+        <g id="orbit-point-1" transform="translate(23, 1.5)">
+          <circle id="orbit-pt1-halo" r="5" fill="rgba(16,185,129,0.32)" style="transition:r 0.25s ease"/>
+          <circle id="orbit-pt1-core" r="2.3" fill="#FFFFFF" stroke="#10B981" stroke-width="1.5"/>
+        </g>
+        <!-- Ujung Cahaya Berjalan -->
+        <g id="orbit-head-orb" transform="translate(23, 1.5)">
+          <circle id="orbit-head-halo" r="6.5" fill="#10B981" opacity="0.42" filter="url(#orbit-glow-filter)"/>
+          <circle r="2.8" fill="#FFFFFF"/>
+        </g>
+      </svg>
+
+      <!-- Viewport Banner 2 Slide: Quick Add & Transaksi Terjadwal -->
+      <div id="feature-banner-viewport" class="feature-banner-viewport">
+        <div id="feature-banner-track" class="feature-banner-track">
+          <div id="feature-slide-qa" class="feature-slide-pane">
+            ${buildQuickAddSlideHtml()}
+          </div>
+          <div id="feature-slide-sch" class="feature-slide-pane">
+            ${buildScheduledSlideHtml()}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indikator Titik-Titik Banner Slide -->
+    <div id="feature-banner-dots" class="feature-slider-dots">
+      <button type="button" id="fdot-0" onclick="goToFeatureSlide(0, false)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
+      <button type="button" id="fdot-1" onclick="goToFeatureSlide(1, false)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
+    </div>
+  `;
+
+  requestAnimationFrame(() => {
+    applyFeatureSlideTheme();
+    syncFeatureBannerGeometry(true);
+    startFeatureOrbitLoop();
+  });
+}
+
+window.addEventListener('resize', () => syncFeatureBannerGeometry(true));
 
 var _qaClickLock = false;
 window.executeQuickAddOneClick = function(idx, btnEl) {
@@ -2060,6 +2647,28 @@ window.executeQuickAddOneClick = function(idx, btnEl) {
     return;
   }
 
+  // Jika transaksi memilih "Nominal Transaksi tidak tetap", buka pop-up input nominal cepat
+  const isVar = Boolean(item.NominalTidakTetap || !(Number(item['Jumlah Uang']) > 0));
+  if (isVar) {
+    const isIn = item.Kategori === 'Uang Masuk';
+    const subLbl = isIn ? 'Uang Masuk' : (item['Kategori Uang Keluar'] || 'Lainnya');
+    const emoji = isIn ? '💰' : (SUBCAT_EMOJI_MAP[subLbl] || '⚡');
+    document.getElementById('qa-var-idx').value = String(idx);
+    document.getElementById('qa-var-title').textContent = item.Deskripsi || 'Transaksi';
+    document.getElementById('qa-var-icon').textContent = emoji;
+    const badgeEl = document.getElementById('qa-var-cat-badge');
+    if (badgeEl) {
+      badgeEl.textContent = `${item.Kategori}${!isIn ? ' · ' + subLbl : ''}`;
+      badgeEl.className = isIn
+        ? 'text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800'
+        : 'text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-100 text-red-800';
+    }
+    document.getElementById('qa-var-amount').value = '';
+    openModal('qa-var-backdrop');
+    setTimeout(() => document.getElementById('qa-var-amount')?.focus(), 120);
+    return;
+  }
+
   _qaClickLock = true;
   setTimeout(() => { _qaClickLock = false; }, 450);
 
@@ -2068,12 +2677,16 @@ window.executeQuickAddOneClick = function(idx, btnEl) {
     setTimeout(() => btnEl.classList.remove('qa-just-added'), 600);
   }
 
+  recordQuickAddTransaction(item, Number(item['Jumlah Uang']) || 0);
+};
+
+function recordQuickAddTransaction(item, amountVal) {
   const defaultDompetId = item.DompetId || (dompetState.list[0] ? dompetState.list[0].id : null);
   const newTx = {
     id: 'qa_' + Date.now(),
     'Kategori': item.Kategori || 'Uang Keluar',
     'Kategori Uang Keluar': (item.Kategori === 'Uang Masuk') ? null : (item['Kategori Uang Keluar'] || 'Lainnya'),
-    'Jumlah Uang': Number(item['Jumlah Uang']) || 0,
+    'Jumlah Uang': Number(amountVal) || 0,
     'Tanggal': new Date().toISOString(),
     'Deskripsi': item.Deskripsi || 'Transaksi Cepat',
     'DompetId': defaultDompetId
@@ -2083,6 +2696,18 @@ window.executeQuickAddOneClick = function(idx, btnEl) {
   refreshAll();
   showSuccess(`⚡ ${newTx.Deskripsi} (${idr(newTx['Jumlah Uang'])}) berhasil ditambahkan!`);
   postData('addData', newTx).catch(() => {});
+}
+
+window.submitVariableQuickAdd = function(e) {
+  e.preventDefault();
+  const idx = Number(document.getElementById('qa-var-idx').value);
+  const amt = Number(document.getElementById('qa-var-amount').value) || 0;
+  if (!(amt > 0)) return;
+  const items = normalizeQuickAddList(quickAddList).slice(0, QUICK_ADD_MAX);
+  const item = items[idx];
+  if (!item) return;
+  closeModal('qa-var-backdrop');
+  recordQuickAddTransaction(item, amt);
 };
 
 // ================================================================
@@ -2409,7 +3034,7 @@ window.handleTransferSubmit = async function(e) {
   const fee    = Number(document.getElementById('tf-fee').value) || 0;
   const dt     = document.getElementById('tf-date').value || today();
   const note   = document.getElementById('tf-note').value.trim();
-  if (!fromId || !toId || fromId === toId) { alert('Pilih dompet asal dan tujuan yang berbeda.'); return; }
+  if (!fromId || !toId || fromId === toId) { showSuccess('Pilih dompet asal dan tujuan yang berbeda.'); return; }
   if (amt <= 0) return;
 
   const dFrom = dompetState.list.find(d => d.id === fromId);
@@ -2564,7 +3189,7 @@ window.handleDompetSubmit = async function(e) {
 
 window.handleDeleteDompet = function() {
   const id = document.getElementById('dompet-id').value;
-  if (!id || !confirm('Hapus dompet ini?')) return;
+  if (!id) return;
   dompetState.list = dompetState.list.filter(d => String(d.id) !== String(id));
   saveDompetLocal();
   postData('deleteDompet', { id }).catch(() => {});
@@ -2661,7 +3286,7 @@ window.handleDepositoSubmit = function(e) {
 
 window.cairkanDeposito = function(id) {
   const dep = depositoList.find(x => x.id === id);
-  if (!dep || !confirm(`Cairkan ${dep.nama} senilai ${idr(dep.pokok + dep.netBunga)}?`)) return;
+  if (!dep) return;
   depositoList = depositoList.filter(x => x.id !== id);
   saveDepositoLocal();
   const tx = {
@@ -2779,7 +3404,7 @@ window.confirmBayarCicilan = function() {
 };
 
 window.hapusCicilan = function(id) {
-  if (!confirm('Hapus data cicilan ini?')) return;
+  
   cicilanList = cicilanList.filter(x => x.id !== id);
   saveCicilanLocal();
   refreshAll();
@@ -2844,7 +3469,7 @@ window.submitBulkTx = async function() {
       });
     }
   });
-  if (!toSave.length) { alert('Isi minimal 1 transaksi lengkap.'); return; }
+  if (!toSave.length) { showSuccess('Isi minimal 1 transaksi lengkap.'); return; }
   toSave.forEach(tx => {
     S.transactions.unshift(tx);
     postData('addData', tx).catch(() => {});
@@ -2914,7 +3539,7 @@ window.processReceiptAI = async function(input) {
 window.saveAllReceiptItems = function() {
   const dompetId = document.getElementById('receipt-dompet').value || null;
   const valid = receiptItems.filter(x => x.desc && x.amt > 0);
-  if (!valid.length) { alert('Tidak ada item valid untuk disimpan.'); return; }
+  if (!valid.length) { showSuccess('Tidak ada item valid untuk disimpan.'); return; }
   valid.forEach((it, idx) => {
     const tx = {
       id: 'rcp_' + Date.now() + '_' + idx,
@@ -3341,7 +3966,7 @@ window.printReceipt = function(txId) {
 </div><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),300));<\/script>\x3c/body>\x3c/html>`;
   const w = window.open('','_blank','width=460,height=680');
   if (w) { w.document.open(); w.document.write(html); w.document.close(); }
-  else alert('Izinkan popup untuk mencetak.');
+  else showSuccess('Izinkan popup untuk mencetak.');
 };
 
 function initTxModalListeners() {
