@@ -1,3 +1,7 @@
+Kode HTML Halaman Beranda / Home — Dengan Banner Slide Quick Add & Transaksi Terjadwal (Keloladuit.id)
+
+Klik tombol Copy / Salin di pojok kanan atas blok kode di bawah ini agar seluruh kode dari <!DOCTYPE html> hingga </html> tersalin utuh tanpa terpotong:
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -2427,14 +2431,10 @@ function syncFeatureBannerGeometry(forceUpdatePath) {
     featureBannerState.lastW = w;
     featureBannerState.lastH = h;
     const pathInfo = buildOrbitRoundedPath(w, h);
-    ['orbit-base-track', 'orbit-glow-halo', 'orbit-light-beam', 'orbit-spark-tip'].forEach(id => {
+    ['orbit-base-track', 'orbit-glow-halo', 'orbit-light-beam'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.setAttribute('d', pathInfo.d);
     });
-    const pt1 = document.getElementById('orbit-point-1');
-    if (pt1) {
-      pt1.setAttribute('transform', `translate(${pathInfo.startX.toFixed(1)}, ${pathInfo.startY.toFixed(1)})`);
-    }
   }
 }
 
@@ -2444,16 +2444,10 @@ function applyFeatureSlideTheme() {
   const baseTrack = document.getElementById('orbit-base-track');
   const halo = document.getElementById('orbit-glow-halo');
   const beam = document.getElementById('orbit-light-beam');
-  const orbHalo = document.getElementById('orbit-head-halo');
-  const pt1Halo = document.getElementById('orbit-pt1-halo');
-  const pt1Core = document.getElementById('orbit-pt1-core');
 
-  if (baseTrack) baseTrack.setAttribute('stroke', isQa ? 'rgba(16,185,129,0.18)' : 'rgba(99,102,241,0.20)');
+  if (baseTrack) baseTrack.setAttribute('stroke', isQa ? 'rgba(16,185,129,0.16)' : 'rgba(99,102,241,0.18)');
   if (halo) halo.setAttribute('stroke', gradUrl);
   if (beam) beam.setAttribute('stroke', gradUrl);
-  if (orbHalo) orbHalo.setAttribute('fill', isQa ? '#10B981' : '#6366F1');
-  if (pt1Halo) pt1Halo.setAttribute('fill', isQa ? 'rgba(16,185,129,0.32)' : 'rgba(99,102,241,0.34)');
-  if (pt1Core) pt1Core.setAttribute('stroke', isQa ? '#10B981' : '#6366F1');
 
   const dot0 = document.getElementById('fdot-0');
   const dot1 = document.getElementById('fdot-1');
@@ -2461,7 +2455,7 @@ function applyFeatureSlideTheme() {
   if (dot1) dot1.className = 'feature-dot ' + (!isQa ? 'active-sch' : '');
 }
 
-window.goToFeatureSlide = function(idx, fromAutoLap) {
+window.goToFeatureSlide = function(idx) {
   featureBannerState.idx = idx === 1 ? 1 : 0;
   featureBannerState.elapsed = 0;
   featureBannerState.lastTs = performance.now();
@@ -2472,14 +2466,6 @@ window.goToFeatureSlide = function(idx, fromAutoLap) {
   }
   applyFeatureSlideTheme();
   syncFeatureBannerGeometry(true);
-
-  if (fromAutoLap) {
-    const pt1 = document.getElementById('orbit-pt1-halo');
-    if (pt1) {
-      pt1.setAttribute('r', '8');
-      setTimeout(() => { if (pt1) pt1.setAttribute('r', '5'); }, 320);
-    }
-  }
 };
 
 function startFeatureOrbitLoop() {
@@ -2497,25 +2483,11 @@ function startFeatureOrbitLoop() {
 
       const halo = document.getElementById('orbit-glow-halo');
       const beam = document.getElementById('orbit-light-beam');
-      const tip  = document.getElementById('orbit-spark-tip');
-      const baseTrack = document.getElementById('orbit-base-track');
-      const headOrb = document.getElementById('orbit-head-orb');
 
-      if (halo) halo.setAttribute('stroke-dashoffset', (195 - pos).toFixed(2));
+      if (halo) halo.setAttribute('stroke-dashoffset', (185 - pos).toFixed(2));
       if (beam) beam.setAttribute('stroke-dashoffset', (155 - pos).toFixed(2));
-      if (tip)  tip.setAttribute('stroke-dashoffset', (18 - pos).toFixed(2));
 
-      if (baseTrack && headOrb && typeof baseTrack.getTotalLength === 'function') {
-        try {
-          const totalLen = baseTrack.getTotalLength();
-          if (totalLen > 0) {
-            const pt = baseTrack.getPointAtLength(progress * totalLen);
-            headOrb.setAttribute('transform', `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
-          }
-        } catch(e) {}
-      }
-
-      // Saat cahaya sudah mengelilingi container penuh dari Titik 1 kembali ke Titik 1, otomatis slide ke container berikutnya!
+      // Saat garis cahaya selesai mengelilingi container 1 putaran penuh (tanpa titik menonjol), otomatis slide ke container berikutnya!
       if (progress >= 1) {
         goToFeatureSlide((featureBannerState.idx + 1) % 2, true);
       }
@@ -2590,20 +2562,9 @@ function renderQuickAddHomeSection() {
             </feMerge>
           </filter>
         </defs>
-        <path id="orbit-base-track" fill="none" stroke="rgba(16,185,129,0.18)" stroke-width="1.5" pathLength="1000"/>
-        <path id="orbit-glow-halo" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="6" stroke-linecap="round" stroke-dasharray="195 805" stroke-dashoffset="195" pathLength="1000" filter="url(#orbit-glow-filter)" opacity="0.80"/>
-        <path id="orbit-light-beam" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="155 845" stroke-dashoffset="155" pathLength="1000"/>
-        <path id="orbit-spark-tip" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="18 982" stroke-dashoffset="18" pathLength="1000"/>
-        <!-- Titik 1 (Titik Awal & Akhir Putaran Cahaya) -->
-        <g id="orbit-point-1" transform="translate(23, 1.5)">
-          <circle id="orbit-pt1-halo" r="5" fill="rgba(16,185,129,0.32)" style="transition:r 0.25s ease"/>
-          <circle id="orbit-pt1-core" r="2.3" fill="#FFFFFF" stroke="#10B981" stroke-width="1.5"/>
-        </g>
-        <!-- Ujung Cahaya Berjalan -->
-        <g id="orbit-head-orb" transform="translate(23, 1.5)">
-          <circle id="orbit-head-halo" r="6.5" fill="#10B981" opacity="0.42" filter="url(#orbit-glow-filter)"/>
-          <circle r="2.8" fill="#FFFFFF"/>
-        </g>
+        <path id="orbit-base-track" fill="none" stroke="rgba(16,185,129,0.16)" stroke-width="1.5" pathLength="1000"/>
+        <path id="orbit-glow-halo" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="185 815" stroke-dashoffset="185" pathLength="1000" filter="url(#orbit-glow-filter)" opacity="0.65"/>
+        <path id="orbit-light-beam" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="155 845" stroke-dashoffset="155" pathLength="1000"/>
       </svg>
 
       <!-- Viewport Banner 2 Slide: Quick Add & Transaksi Terjadwal -->
