@@ -169,31 +169,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .market-dot.active { width: 18px; border-radius: 3px; background: #18181B; }
 .mc-glow { position: absolute; border-radius: 50%; background: rgba(255,255,255,.12); filter: blur(24px); pointer-events: none; }
 .hidden { display: none; }
-#auth-screen { position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column; background: #fff; overflow-y: auto; }
-#auth-screen.hidden { display: none; }
-.auth-header { position: relative; flex-shrink: 0; height: 38vh; min-height: 260px; max-height: 340px; overflow: hidden; background: #FBBFA0; }
-.auth-blob { position: absolute; border-radius: 50%; }
-.auth-blob-1 { width: 130%; height: 100%; left: -15%; top: -10%; background: linear-gradient(160deg, #7C3E66, #5B2C4D); border-radius: 40% 60% 65% 35% / 45% 40% 60% 55%; }
-.auth-blob-2 { width: 60%; height: 70%; right: -15%; top: 15%; background: linear-gradient(135deg, #F0D878, #E8C858); border-radius: 55% 45% 40% 60% / 60% 55% 45% 40%; }
-.auth-header-title { position: absolute; left: 24px; bottom: 32px; z-index: 2; font-size: 32px; font-weight: 900; color: #fff; line-height: 1.15; text-shadow: 0 2px 12px rgba(0,0,0,.15); }
-.auth-body { flex: 1; padding: 32px 28px 40px; display: flex; flex-direction: column; }
-.auth-desc { font-size: 13px; color: #A1A1AA; font-weight: 600; margin-bottom: 24px; }
-.auth-form { display: flex; flex-direction: column; gap: 22px; }
-.auth-form.hidden { display: none; }
-.auth-field { position: relative; }
-.auth-field label { display: block; font-size: 12px; font-weight: 700; color: #A1A1AA; margin-bottom: 6px; }
-.auth-form input { width: 100%; box-sizing: border-box; padding: 6px 0 10px; border: none; border-bottom: 1.5px solid #E4E4E7; outline: none; font-family: inherit; font-size: 16px; font-weight: 700; color: #18181B; background: transparent; transition: border-color .15s; }
-.auth-form input::placeholder { color: #D4D4D8; font-weight: 500; }
-.auth-form input:focus { border-color: #5B2C4D; }
-.auth-submit-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-.auth-submit-label { font-size: 19px; font-weight: 900; color: #18181B; }
-.auth-form button[type="submit"] { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, #7C3E66, #5B2C4D); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px -6px rgba(91,44,77,.5); transition: transform .12s; }
-.auth-form button[type="submit"]:active { transform: scale(.92); }
-.auth-form button[type="submit"] svg { width: 22px; height: 22px; color: #fff; }
-.auth-msg { color: #EF4444; font-size: 12px; font-weight: 700; min-height: 16px; margin-top: -8px; }
-.auth-switch { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 700; margin-top: auto; padding-top: 32px; }
-.auth-switch a { color: #18181B; text-decoration: underline; text-underline-offset: 3px; }
-.auth-spin { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 #lockscreen { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; background: rgba(24,24,27,.5); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); opacity: 0; transition: opacity .3s; padding: 0 24px; }
 #lockscreen.hidden { display: none; }
 #lockscreen.show { opacity: 1; }
@@ -237,66 +212,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 </head>
 <body>
 <div class="ambient"></div>
-
-<!-- ═══════════ AUTH SCREEN (LOGIN / REGISTER) ═══════════ -->
-<div id="auth-screen" class="hidden">
-  <div class="auth-header">
-    <div class="auth-blob auth-blob-1"></div>
-    <div class="auth-blob auth-blob-2"></div>
-    <h1 class="auth-header-title" id="auth-title">Selamat<br>Datang</h1>
-  </div>
-  <div class="auth-body">
-    <p class="auth-desc" id="auth-desc">Kelola keuanganmu dengan aman.</p>
-    <form id="login-form" class="auth-form">
-      <div class="auth-field">
-        <label for="login-username">Username</label>
-        <input type="text" id="login-username" placeholder="usernamemu" autocomplete="username" required>
-      </div>
-      <div class="auth-field">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
-      </div>
-      <p id="login-msg" class="auth-msg"></p>
-      <div class="auth-submit-row">
-        <span class="auth-submit-label">Masuk</span>
-        <button type="submit" id="login-submit-btn" aria-label="Masuk">
-          <svg id="login-submit-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-          <div id="login-submit-spin" class="auth-spin hidden"></div>
-        </button>
-      </div>
-    </form>
-    <form id="register-form" class="auth-form hidden">
-      <div class="auth-field">
-        <label for="register-username">Username</label>
-        <input type="text" id="register-username" placeholder="usernamemu" autocomplete="username" required>
-      </div>
-      <div class="auth-field">
-        <label for="register-password">Password</label>
-        <input type="password" id="register-password" placeholder="min. 4 karakter" autocomplete="new-password" required>
-      </div>
-      <div class="auth-field">
-        <label for="register-email">Email <span style="font-weight:500;color:#D4D4D8">(opsional)</span></label>
-        <input type="email" id="register-email" placeholder="kamu@email.com" autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label for="register-nama">Nama Lengkap <span style="font-weight:500;color:#D4D4D8">(opsional)</span></label>
-        <input type="text" id="register-nama" placeholder="Nama kamu" autocomplete="name">
-      </div>
-      <p id="register-msg" class="auth-msg"></p>
-      <div class="auth-submit-row">
-        <span class="auth-submit-label">Daftar</span>
-        <button type="submit" id="register-submit-btn" aria-label="Daftar">
-          <svg id="register-submit-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-          <div id="register-submit-spin" class="auth-spin hidden"></div>
-        </button>
-      </div>
-    </form>
-    <p class="auth-switch">
-      <span id="auth-switch-text">Belum punya akun?</span>
-      <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)">Daftar</a>
-    </p>
-  </div>
-</div>
 
 <!-- ═══════════ LOCKSCREEN ═══════════ -->
 <div id="lockscreen" class="hidden">
@@ -1746,8 +1661,15 @@ function saveScheduledLocalHome() {
   storageSet(SCHEDULED_SHARED_KEY, payload);
 }
 
+function redirectToLogin() {
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/login';
+  } catch(e) {
+    window.location.href = 'https://keloladuit.my.id/login';
+  }
+}
+
 window.logoutAkun = function() {
-  
   const scopedKey = getQuickAddStorageKey();
   if (scopedKey) storageRemove(scopedKey);
   storageRemove('keuangan_quickadd_khusus');
@@ -1762,7 +1684,7 @@ window.logoutAkun = function() {
     localStorage.removeItem('keuangan_subscriptions');
     sessionStorage.removeItem('keuangan_pin_unlocked');
   } catch(e) {}
-  location.reload();
+  redirectToLogin();
 };
 
 // ── LOCAL CACHES ──
@@ -1845,39 +1767,41 @@ function calcTotalSaldoGlobal() {
 // ================================================================
 // INSTANT INIT & BACKGROUND SYNC (SAT SET TANPA LOADING SCREEN)
 // ================================================================
+// Cek sesi instan: jika belum login, langsung alihkan ke keloladuit.my.id/login
+if (!checkAkunSession()) {
+  redirectToLogin();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    redirectToLogin();
+    return;
+  }
   loadAllLocalCaches();
   try { initTxModalListeners(); } catch(e) {}
   try { initRippleEffects(); } catch(e) {}
   try {
     document.getElementById('lockscreen-form')?.addEventListener('submit', handleLockscreen);
-    document.getElementById('login-form')?.addEventListener('submit', handleLoginSubmit);
-    document.getElementById('register-form')?.addEventListener('submit', handleRegisterSubmit);
   } catch(e) {}
 
-  if (checkAkunSession()) {
-    loadQuickAddLocal();
-    loadScheduledLocalHome();
-    const hasPin = S.settings.password && S.settings.password !== 'NONE';
-    const unlocked = sessionStorage.getItem('keuangan_pin_unlocked') === '1';
-    if (hasPin && !unlocked) {
-      openModal('lockscreen');
-    } else {
-      S.isLoggedIn = true;
-    }
-    if (S.transactions.length === 0) isFetchingBg = true;
-    // Render instan (0ms) dari cache localStorage!
-    refreshAll();
-    initWeather();
-    startCryptoPolling();
-    fetchHomeNews();
-    checkHashAction();
-    // Sinkronisasi data terbaru dari server secara senyap di background
-    syncDataInBackground();
+  loadQuickAddLocal();
+  loadScheduledLocalHome();
+  const hasPin = S.settings.password && S.settings.password !== 'NONE';
+  const unlocked = sessionStorage.getItem('keuangan_pin_unlocked') === '1';
+  if (hasPin && !unlocked) {
+    openModal('lockscreen');
   } else {
-    const authEl = document.getElementById('auth-screen');
-    if (authEl) { authEl.classList.remove('hidden'); authEl.style.display = 'flex'; }
+    S.isLoggedIn = true;
   }
+  if (S.transactions.length === 0) isFetchingBg = true;
+  // Render instan (0ms) dari cache localStorage!
+  refreshAll();
+  initWeather();
+  startCryptoPolling();
+  fetchHomeNews();
+  checkHashAction();
+  // Sinkronisasi data terbaru dari server secara senyap di background
+  syncDataInBackground();
 });
 
 function checkHashAction() {
@@ -1984,106 +1908,6 @@ function handleLockscreen(e) {
   }
 }
 
-window.toggleAuthMode = function(e) {
-  if (e) e.preventDefault();
-  const lf = document.getElementById('login-form');
-  const rf = document.getElementById('register-form');
-  const isLogin = !lf.classList.contains('hidden');
-  lf.classList.toggle('hidden', isLogin);
-  rf.classList.toggle('hidden', !isLogin);
-  document.getElementById('auth-title').innerHTML = isLogin ? 'Buat<br>Akun' : 'Selamat<br>Datang';
-  document.getElementById('auth-desc').textContent = isLogin ? 'Mulai kelola keuanganmu sekarang.' : 'Kelola keuanganmu dengan aman.';
-  document.getElementById('auth-switch-text').textContent = isLogin ? 'Sudah punya akun?' : 'Belum punya akun?';
-  document.getElementById('auth-switch-link').textContent = isLogin ? 'Masuk' : 'Daftar';
-  document.getElementById('login-msg').textContent = '';
-  document.getElementById('register-msg').textContent = '';
-};
-
-async function handleLoginSubmit(e) {
-  e.preventDefault();
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  const msgEl = document.getElementById('login-msg');
-  msgEl.textContent = '';
-  const btn = document.getElementById('login-submit-btn');
-  const icon = document.getElementById('login-submit-icon');
-  const spin = document.getElementById('login-submit-spin');
-  btn.disabled = true; icon?.classList.add('hidden'); spin?.classList.remove('hidden');
-  try {
-    const r = await fetch(GLOBAL_GS_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'loginAkun', data: { username, password } })
-    });
-    const j = await r.json();
-    if (j.status === 'success') {
-      quickAddList = [];
-      scheduledList = [];
-      saveAkunSession(j.data);
-      loadQuickAddLocal();
-      loadScheduledLocalHome();
-      document.getElementById('auth-screen').style.display = 'none';
-      S.isLoggedIn = true;
-      try { sessionStorage.setItem('keuangan_pin_unlocked', '1'); } catch(err) {}
-      isFetchingBg = true;
-      refreshAll();
-      initWeather();
-      startCryptoPolling();
-      fetchHomeNews();
-      await syncDataInBackground();
-    } else {
-      msgEl.textContent = j.message || 'Login gagal. Coba lagi.';
-    }
-  } catch (err) {
-    msgEl.textContent = 'Gagal terhubung ke server.';
-  } finally {
-    btn.disabled = false; icon?.classList.remove('hidden'); spin?.classList.add('hidden');
-  }
-}
-
-async function handleRegisterSubmit(e) {
-  e.preventDefault();
-  const username = document.getElementById('register-username').value.trim();
-  const password = document.getElementById('register-password').value;
-  const email = document.getElementById('register-email').value.trim();
-  const namaLengkap = document.getElementById('register-nama').value.trim();
-  const msgEl = document.getElementById('register-msg');
-  msgEl.textContent = '';
-  if (password.length < 4) { msgEl.textContent = 'Password minimal 4 karakter.'; return; }
-  const btn = document.getElementById('register-submit-btn');
-  const icon = document.getElementById('register-submit-icon');
-  const spin = document.getElementById('register-submit-spin');
-  btn.disabled = true; icon?.classList.add('hidden'); spin?.classList.remove('hidden');
-  try {
-    const r = await fetch(GLOBAL_GS_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'registerAkun', data: { username, password, email, namaLengkap } })
-    });
-    const j = await r.json();
-    if (j.status === 'success') {
-      if (!j.data.gsUrl) {
-        msgEl.style.color = '#059669';
-        msgEl.textContent = 'Akun dibuat! Hubungi admin untuk menghubungkan data keuangan.';
-        return;
-      }
-      saveAkunSession(j.data);
-      document.getElementById('auth-screen').style.display = 'none';
-      S.isLoggedIn = true;
-      isFetchingBg = true;
-      refreshAll();
-      initWeather();
-      startCryptoPolling();
-      fetchHomeNews();
-      await syncDataInBackground();
-      showSuccess('Selamat datang, ' + username + '!');
-    } else {
-      msgEl.textContent = j.message || 'Registrasi gagal.';
-    }
-  } catch (err) {
-    msgEl.textContent = 'Gagal terhubung ke server.';
-  } finally {
-    btn.disabled = false; icon?.classList.remove('hidden'); spin?.classList.add('hidden');
-  }
-}
 // ================================================================
 // MODAL, FAB & DATA HELPERS
 // ================================================================
@@ -2600,7 +2424,7 @@ window.executeQuickAddOneClick = function(idx, btnEl) {
   if (!item) return;
 
   if (!GS_URL || !S.akun || !S.akun.gsUrl) {
-    showSuccess('Sesi akun belum terhubung. Silakan login kembali.');
+    redirectToLogin();
     return;
   }
 
