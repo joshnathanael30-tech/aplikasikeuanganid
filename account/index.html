@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Akun — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F4FAF8;
+  --primary: #10B981;
+  --teal-dark: #0F3F38;
+  --ease: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(180deg, #E6F7F2 0%, #F4FAF8 260px, #F8FAFC 100%);
+  color: #0F172A;
+  margin: 0;
+  padding-bottom: 98px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes orbPing {
+  0% { opacity: 0.8; transform: scale(0.9); }
+  70% { opacity: 0; transform: scale(1.18); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+.fade-up { animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.s1 { animation-delay: 0.04s; }
+.s2 { animation-delay: 0.09s; }
+.s3 { animation-delay: 0.14s; }
+.s4 { animation-delay: 0.19s; }
+
+/* Profile Hero Card (Mint-Teal Gradient sesuai referensi) */
+.profile-hero-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 20px 20px;
+  background: linear-gradient(135deg, #6EE7B7 0%, #A7F3D0 48%, #5EEAD4 100%);
+  box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.28), 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  overflow: hidden;
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+.profile-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -30px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, transparent 70%);
+  pointer-events: none;
+}
+.profile-hero-card:active { transform: scale(0.985); }
+
+.avatar-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 3px;
+  box-shadow: 0 6px 18px rgba(15, 63, 56, 0.14);
+  flex-shrink: 0;
+  position: relative;
+}
+.avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 26px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #10B981, #0D9488);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4.5px 12px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0F3F38;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(15, 63, 56, 0.08);
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.status-pill:active { transform: scale(0.95); }
+
+/* Balance Summary Card with Stacked Wallet Badges */
+.balance-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+  border: 1px solid #EEF2F6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.balance-card:hover {
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.balance-card:active { transform: scale(0.985); }
+
+.wallet-stack {
+  display: flex;
+  align-items: center;
+}
+.wallet-bubble {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2.5px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+  margin-left: -9px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #F1F5F9;
+}
+.wallet-bubble:first-child { margin-left: 0; }
+
+/* Section Group & Menu Item Rows */
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0 4px;
+  margin-bottom: 8px;
+}
+.menu-group-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 6px 8px;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F1F5F9;
+}
+.menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+  padding: 12px 10px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #0F172A;
+  transition: background 0.16s ease, transform 0.14s ease;
+  position: relative;
+}
+.menu-row:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 62px;
+  right: 12px;
+  height: 1px;
+  background: #F1F5F9;
+}
+.menu-row:hover { background: #F8FAFC; }
+.menu-row:active { transform: scale(0.985); background: #F1F5F9; }
+
+.menu-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.10);
+}
+.menu-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.menu-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+  line-height: 1.25;
+}
+.menu-desc {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+  margin-top: 2px;
+  line-height: 1.35;
+}
+.menu-chevron {
+  color: #94A3B8;
+  flex-shrink: 0;
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+.menu-row:hover .menu-chevron {
+  transform: translateX(2px);
+  color: #475569;
+}
+
+/* Danger / Logout & Delete Rows */
+.menu-row-danger .menu-title {
+  color: #EF4444;
+}
+.menu-row-danger .menu-desc {
+  color: #FCA5A5;
+}
+
+/* Bottom Navigation Bar */
+.nav-btn { transition: color 0.2s, transform 0.15s; color: #A1A1AA; text-decoration: none; }
+.nav-btn.active { color: #18181B; }
+.nav-btn.active svg { stroke-width: 2.5; }
+.nav-btn.active span { font-weight: 800; }
+.nav-btn:active { transform: scale(0.88); }
+.ai-nav-orb {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+.orb-ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  animation: orbPing 3s ease-out infinite;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="max-w-md mx-auto">
+
+  <!-- ═══════════ TOP HEADER (Sesuai Referensi Gambar) ═══════════ -->
+  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center justify-between" style="background:rgba(230,247,242,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
+    <div class="flex items-center gap-2.5">
+      <a href="https://keloladuit.my.id/home" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Kembali ke Beranda">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <h1 class="text-2xl font-black tracking-tight" style="color:#0F3F38">Akun</h1>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Ikon Notifikasi / Langganan -->
+      <a href="https://keloladuit.my.id/status-langganan" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 relative active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Status & Notifikasi">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <span class="w-2 h-2 rounded-full bg-red-500 absolute top-1.5 right-1.5 border border-white"></span>
+      </a>
+      <!-- Ikon Pengaturan Cepat -> Edit Profil -->
+      <a href="https://keloladuit.my.id/edit-profil" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Edit Profil">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="px-5 pt-2 space-y-5">
+
+    <!-- ═══════════ PROFILE HERO CARD (Sesuai Referensi Gambar) ═══════════ -->
+    <div class="profile-hero-card fade-up s1">
+      <div class="flex items-center gap-4 relative z-10">
+        <!-- Klik Avatar langsung ke Edit Profil -->
+        <a href="https://keloladuit.my.id/edit-profil" target="_top" class="avatar-ring" style="text-decoration:none" title="Ubah Foto Profil">
+          <div id="acc-avatar" class="avatar-inner">P</div>
+          <span class="w-6 h-6 rounded-full bg-teal-900 text-white flex items-center justify-center text-[11px] absolute -bottom-0.5 -right-0.5 border-2 border-white shadow">✎</span>
+        </a>
+
+        <div class="min-w-0 flex-1">
+          <a href="https://keloladuit.my.id/edit-profil" target="_top" style="text-decoration:none">
+            <h2 id="acc-name" class="text-lg font-black truncate leading-tight" style="color:#0B3B34">Pengguna</h2>
+            <p id="acc-email" class="text-xs font-semibold truncate mt-0.5" style="color:#1F5E55">pengguna@keloladuit.id</p>
+          </a>
+          <div class="mt-2.5 flex items-center gap-2 flex-wrap">
+            <a href="https://keloladuit.my.id/status-langganan" target="_top" class="status-pill" id="acc-tier-pill">
+              <span class="text-amber-500 text-xs">★</span>
+              <span id="acc-tier-text">Anggota Premium</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TOTAL SALDO CARD + STACKED WALLET ICONS ═══════════ -->
+    <a href="https://keloladuit.my.id/daftar-rekening" target="_top" class="balance-card fade-up s1" title="Lihat Daftar Rekening & Dompet">
+      <div class="min-w-0">
+        <p class="text-xs font-bold text-slate-400">Total Saldo Anda</p>
+        <p id="acc-total-balance" class="text-2xl font-black text-slate-900 tracking-tight mt-0.5 truncate">Rp 0</p>
+      </div>
+      <div id="acc-wallet-bubbles" class="wallet-stack">
+        <div class="wallet-bubble" style="background:linear-gradient(135deg,#1D4ED8,#1E3A8A)">🏦</div>
+        <div class="wallet-bubble" style="background:linear-gradient(135deg,#0EA5E9,#0284C7)">👛</div>
+        <div class="wallet-bubble" style="background:linear-gradient(135deg,#F59E0B,#D97706)">💳</div>
+      </div>
+    </a>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         1. PENGATURAN PROFIL & KEAMANAN
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="fade-up s2">
+      <p class="section-label">Pengaturan Profil &amp; Keamanan</p>
+      <div class="menu-group-card">
+
+        <!-- Edit Profil -->
+        <a href="https://keloladuit.my.id/edit-profil" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#10B981,#059669)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Edit Profil</p>
+            <p class="menu-desc">Mengubah foto, nama pengguna, email, dan nomor telepon</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Keamanan & PIN -->
+        <a href="https://keloladuit.my.id/keamanan-pin" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#0F766E,#115E59)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Keamanan &amp; PIN</p>
+            <p class="menu-desc">Mengatur PIN keamanan aplikasi dan kata sandi akun</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Status Langganan -->
+        <a href="https://keloladuit.my.id/status-langganan" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#F59E0B,#D97706)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <div class="flex items-center gap-2">
+              <p class="menu-title">Status Langganan</p>
+              <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Upgrade Pro</span>
+            </div>
+            <p class="menu-desc">Memeriksa status akun gratis/berbayar &amp; upgrade ke fitur premium</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         2. MANAJEMEN DATA & KEUANGAN
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="fade-up s3">
+      <p class="section-label">Manajemen Data &amp; Keuangan</p>
+      <div class="menu-group-card">
+
+        <!-- Kelola Kategori -->
+        <a href="https://keloladuit.my.id/kelola-kategori" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#F97316,#EA580C)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Kelola Kategori</p>
+            <p class="menu-desc">Menambah, mengubah, atau menghapus kategori &amp; subkategori transaksi</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Daftar Rekening -->
+        <a href="https://keloladuit.my.id/daftar-rekening" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#34D399,#10B981)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Daftar Rekening</p>
+            <p class="menu-desc">Mengatur daftar dompet digital, rekening bank, dan kartu kredit terhubung</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Ekspor Data -->
+        <a href="https://keloladuit.my.id/ekspor-data" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <div class="flex items-center gap-1.5">
+              <p class="menu-title">Ekspor Data</p>
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-violet-100 text-violet-700">CSV · Excel · PDF</span>
+            </div>
+            <p class="menu-desc">Mengunduh rekap laporan keuangan dalam format CSV, Excel, atau PDF</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Mata Uang & Bahasa -->
+        <a href="https://keloladuit.my.id/mata-uang-bahasa" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#3B82F6,#2563EB)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <div class="flex items-center justify-between pr-1">
+              <p class="menu-title">Mata Uang &amp; Bahasa</p>
+              <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">IDR · ID</span>
+            </div>
+            <p class="menu-desc">Menentukan mata uang acuan utama dan bahasa antarmuka aplikasi</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         3. BANTUAN & SESI AKUN
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="fade-up s4">
+      <p class="section-label">Bantuan &amp; Sesi Akun</p>
+      <div class="menu-group-card">
+
+        <!-- Pusat Bantuan -->
+        <a href="https://keloladuit.my.id/pusat-bantuan" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#14B8A6,#0D9488)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Pusat Bantuan</p>
+            <p class="menu-desc">Mengakses panduan cara penggunaan aplikasi dan pertanyaan umum (FAQ)</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Hubungi Dukungan -->
+        <a href="https://keloladuit.my.id/hubungi-dukungan" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#0EA5E9,#0284C7)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Hubungi Dukungan</p>
+            <p class="menu-desc">Mengirim pesan atau tiket bantuan ke tim layanan pelanggan</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Kebijakan Privasi -->
+        <a href="https://keloladuit.my.id/kebijakan-privasi" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#64748B,#475569)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Kebijakan Privasi</p>
+            <p class="menu-desc">Membaca dokumen hukum terkait perlindungan data pengguna</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Keluar dari Akun -->
+        <a href="https://keloladuit.my.id/login?logout=1" target="_top" onclick="handleDirectLogout(event)" class="menu-row menu-row-danger">
+          <div class="menu-icon-circle" style="background:#FEE2E2;color:#EF4444;box-shadow:none">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Keluar dari Akun</p>
+            <p class="menu-desc" style="color:#94A3B8">Mengakhiri sesi masuk saat ini di perangkat Anda</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" style="color:#FCA5A5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Hapus Akun Permanen -->
+        <a href="https://keloladuit.my.id/hapus-akun" target="_top" class="menu-row menu-row-danger">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Hapus Akun Permanen</p>
+            <p class="menu-desc" style="color:#94A3B8">Menghapus akun beserta seluruh data transaksi secara permanen</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" style="color:#FCA5A5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- App Version Footer -->
+    <div class="text-center pt-1 pb-4">
+      <p class="text-[11px] font-bold text-slate-400">Keloladuit.id v2.4 · Manajemen Keuangan Cerdas</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR (Direct Links) ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[#F8FAFC] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <a href="https://keloladuit.my.id/home#tambah" target="_top" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;text-decoration:none">
+      <div class="ai-nav-orb">
+        <div class="orb-ping"></div>
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Tambah</span>
+    </a>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// SESSION, SALDO & PROFIL SYNC (INSTAN DARI CACHE + BACKGROUND SYNC)
+// ================================================================
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY = 'keuangan_transactions_cache';
+const QUICK_ADD_STORAGE_PREFIX = 'keuangan_quickadd_khusus_';
+
+let GS_URL = '';
+let S = {
+  akun: null,
+  settings: {},
+  transactions: [],
+  dompetList: []
+};
+
+const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+
+var AVATAR_GRADIENTS = [
+  { id: 'emerald', css: 'linear-gradient(135deg,#34D399,#0D9488)' },
+  { id: 'ocean',   css: 'linear-gradient(135deg,#38BDF8,#2563EB)' },
+  { id: 'violet',  css: 'linear-gradient(135deg,#A78BFA,#6D28D9)' },
+  { id: 'amber',   css: 'linear-gradient(135deg,#FBBF24,#EA580C)' },
+  { id: 'rose',    css: 'linear-gradient(135deg,#F472B6,#E11D48)' },
+  { id: 'slate',   css: 'linear-gradient(135deg,#334155,#0F172A)' },
+  { id: 'gold',    css: 'linear-gradient(135deg,#FDE047,#CA8A04)' }
+];
+
+function getAvatarBgCss(bgId) {
+  const found = AVATAR_GRADIENTS.find(g => g.id === bgId);
+  return found ? found.css : AVATAR_GRADIENTS[0].css;
+}
+
+// ── STORAGE ABSTRACTION ──
+var _storageMode = null;
+var _memoryStore = {};
+function detectStorageMode() {
+  if (_storageMode) return _storageMode;
+  try {
+    localStorage.setItem('__storage_test__', '1');
+    localStorage.removeItem('__storage_test__');
+    _storageMode = 'localStorage';
+    return _storageMode;
+  } catch(e) {}
+  try {
+    document.cookie = '__storage_test__=1; SameSite=Lax; path=/';
+    var ok = document.cookie.indexOf('__storage_test__=1') !== -1;
+    document.cookie = '__storage_test__=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    if (ok) { _storageMode = 'cookie'; return _storageMode; }
+  } catch(e) {}
+  _storageMode = 'memory';
+  return _storageMode;
+}
+function storageGet(key) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { return localStorage.getItem(key); } catch(e) { return null; } }
+  if (mode === 'cookie') {
+    try {
+      var m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch(e) { return null; }
+  }
+  return _memoryStore[key] || null;
+}
+function storageRemove(key) {
+  try { localStorage.removeItem(key); } catch(e) {}
+  try { document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; } catch(e) {}
+  delete _memoryStore[key];
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
+    return true;
+  }
+  return false;
+}
+
+function loadLocalCaches() {
+  try { const r = localStorage.getItem(TX_CACHE_KEY); if (r) S.transactions = JSON.parse(r) || []; } catch(e) {}
+  try { const r = localStorage.getItem('keuangan_settings_cache'); if (r) S.settings = JSON.parse(r) || {}; } catch(e) {}
+  try { const r = localStorage.getItem('keuangan_dompet_list'); if (r) S.dompetList = JSON.parse(r) || []; } catch(e) {}
+}
+
+function hitungSaldoDompet(dompetId) {
+  var dompet = S.dompetList.find(d => String(d.id) === String(dompetId));
+  if (!dompet) return 0;
+  var saldo = Number(dompet.saldoAwal) || 0;
+  S.transactions.forEach(tx => {
+    if (String(tx.DompetId) !== String(dompetId)) return;
+    var v = Number(tx['Jumlah Uang']) || 0;
+    if (tx.Kategori === 'Uang Masuk')  saldo += v;
+    if (tx.Kategori === 'Uang Keluar') saldo -= v;
+  });
+  return saldo;
+}
+
+function calcTotalSaldo() {
+  if (S.dompetList.length > 0) {
+    return S.dompetList.reduce((sum, d) => sum + hitungSaldoDompet(d.id), 0);
+  }
+  let bal = 0;
+  S.transactions.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') bal += v;
+    else if (t.Kategori === 'Uang Keluar') bal -= v;
+  });
+  return bal;
+}
+
+function renderAccountUI() {
+  const displayName = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
+  const rawEmail = (S.settings.email && S.settings.email !== 'NONE')
+    ? S.settings.email
+    : (S.akun && S.akun.email ? S.akun.email : (S.akun && S.akun.username ? `@${S.akun.username}` : 'pengguna@keloladuit.id'));
+
+  const nameEl = document.getElementById('acc-name');
+  const emailEl = document.getElementById('acc-email');
+  if (nameEl) nameEl.textContent = displayName;
+  if (emailEl) emailEl.textContent = rawEmail;
+
+  // Render Avatar
+  const avEl = document.getElementById('acc-avatar');
+  const avatarVal = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
+  const avatarBg  = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || 'emerald';
+  if (avEl) {
+    avEl.style.background = getAvatarBgCss(avatarBg);
+    const initial = ((displayName || 'P').trim()[0] || 'P').toUpperCase();
+    if (avatarVal && (avatarVal.indexOf('data:image/') === 0 || avatarVal.indexOf('http') === 0)) {
+      avEl.innerHTML = `<img src="${avatarVal}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.textContent='${initial}'">`;
+    } else if (avatarVal && avatarVal.indexOf('emoji:') === 0) {
+      avEl.innerHTML = `<span style="font-size:32px;line-height:1">${avatarVal.slice(6)}</span>`;
+    } else {
+      avEl.textContent = initial;
+    }
+  }
+
+  // Render Total Saldo
+  const hideBal = localStorage.getItem('keuangan_hide_balance') === '1';
+  const totalBal = calcTotalSaldo();
+  const balEl = document.getElementById('acc-total-balance');
+  if (balEl) balEl.textContent = hideBal ? 'Rp ••••••••' : idr(totalBal);
+
+  // Render Tumpukan Ikon Dompet (Wallet Bubbles)
+  const stackEl = document.getElementById('acc-wallet-bubbles');
+  if (stackEl && S.dompetList.length > 0) {
+    const topWallets = S.dompetList.slice(0, 3);
+    const fallbackGrads = [
+      'linear-gradient(135deg,#1D4ED8,#1E3A8A)',
+      'linear-gradient(135deg,#0EA5E9,#0284C7)',
+      'linear-gradient(135deg,#F59E0B,#D97706)'
+    ];
+    stackEl.innerHTML = topWallets.map((w, idx) => {
+      if (w.logo) {
+        return `<div class="wallet-bubble" style="background:#FFFFFF;padding:4px" title="${w.nama || w.provider}">
+          <img src="${w.logo}" alt="" style="width:100%;height:100%;object-fit:contain" onerror="this.parentNode.textContent='🏦'">
+        </div>`;
+      }
+      const ic = w.tipe === 'tunai' ? '💵' : w.tipe === 'emoney' ? '📱' : '🏦';
+      return `<div class="wallet-bubble" style="background:${fallbackGrads[idx % fallbackGrads.length]}" title="${w.nama || w.provider}">${ic}</div>`;
+    }).join('');
+  }
+}
+
+async function syncAccountInBackground() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read&_t=' + Date.now());
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      if (Array.isArray(d.data.transactions)) {
+        S.transactions = d.data.transactions;
+        try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(e) {}
+      }
+      if (d.data.settings) {
+        const prevAvatar = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
+        const prevBg     = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || '';
+        S.settings = d.data.settings;
+        if (!S.settings.avatar && prevAvatar) S.settings.avatar = prevAvatar;
+        if (!S.settings.avatarBg && prevBg)   S.settings.avatarBg = prevBg;
+        try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(e) {}
+      }
+      if (Array.isArray(d.data.dompet)) {
+        S.dompetList = d.data.dompet.map(w => ({
+          id: w.id,
+          nama: w.nama,
+          tipe: w.tipe || 'bank',
+          provider: w.keterangan || w.nama,
+          logo: w.logo || null,
+          background: w.background || null,
+          saldoAwal: Number(w.nominal) || 0
+        }));
+        try { localStorage.setItem('keuangan_dompet_list', JSON.stringify(S.dompetList)); } catch(e) {}
+      }
+      renderAccountUI();
+    }
+  } catch(e) {}
+}
+
+window.handleDirectLogout = function(e) {
+  if (e) e.preventDefault();
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  if (uname) storageRemove(QUICK_ADD_STORAGE_PREFIX + uname);
+  storageRemove('keuangan_quickadd_khusus');
+  storageRemove(AUTH_SESSION_KEY);
+  try {
+    localStorage.removeItem(TX_CACHE_KEY);
+    localStorage.removeItem('keuangan_settings_cache');
+    localStorage.removeItem('keuangan_dompet_list');
+    localStorage.removeItem('keuangan_deposito_list');
+    localStorage.removeItem('keuangan_cicilan_list');
+    localStorage.removeItem('keuangan_wishlist');
+    localStorage.removeItem('keuangan_subscriptions');
+    sessionStorage.removeItem('keuangan_pin_unlocked');
+  } catch(err) {}
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/login?logout=1';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/login?logout=1';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch(e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+  loadLocalCaches();
+  renderAccountUI();
+  syncAccountInBackground();
+});
+</script>
+</body>
+</html>
