@@ -247,13 +247,13 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 
   <!-- ═══ VIEW: HOME ═══ -->
   <div id="view-home" class="view-section active">
-    <!-- Header -->
+    <!-- Header (Klik Avatar / Pengaturan langsung menuju keloladuit.my.id/account) -->
     <header class="pt-9 pb-3 px-5 sticky top-0 z-20" style="background:rgba(240,244,248,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <button onclick="openSettingsModal()" class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-sm active:scale-90 transition-transform overflow-hidden relative" style="background:linear-gradient(135deg,#34D399,#0D9488)" id="user-avatar" title="Ubah Foto Profil / Pengaturan">
+          <a href="https://keloladuit.my.id/account" target="_top" onclick="goToAccountPage(event)" class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-sm active:scale-90 transition-transform overflow-hidden relative" style="background:linear-gradient(135deg,#34D399,#0D9488);text-decoration:none" id="user-avatar" title="Akun & Pengaturan">
             P
-          </button>
+          </a>
           <div>
             <p id="greeting-text" class="text-[11px] font-bold text-zinc-400 leading-none">Selamat Sore,</p>
             <h1 id="username-display" class="text-base font-black text-zinc-900 mt-1 leading-tight">Pengguna</h1>
@@ -265,12 +265,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
             </svg>
           </button>
-          <button onclick="openSettingsModal()" class="w-9 h-9 rounded-xl bg-white border border-zinc-200 text-zinc-600 flex items-center justify-center active:scale-90 transition-transform shadow-sm" title="Pengaturan">
+          <a href="https://keloladuit.my.id/account" target="_top" onclick="goToAccountPage(event)" class="w-9 h-9 rounded-xl bg-white border border-zinc-200 text-zinc-600 flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Akun & Pengaturan">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
-          </button>
+          </a>
         </div>
       </div>
     </header>
@@ -491,6 +491,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     </a>
   </div>
 </nav>
+
 <!-- ═══════════ TRANSACTION MODAL (TAMBAH / EDIT) ═══════════ -->
 <div id="tx-backdrop" class="modal-backdrop" style="display:none;align-items:stretch;justify-content:center">
   <div id="tx-sheet" style="background:#fff;width:100%;max-width:480px;height:100vh;max-height:100vh;display:flex;flex-direction:column;border-radius:0;overflow:hidden">
@@ -878,6 +879,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     </div>
   </div>
 </div>
+
 <!-- ═══════════ BULK ADD MODAL (TAMBAH BANYAK) ═══════════ -->
 <div id="bulk-backdrop" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'bulk-backdrop')">
   <div class="sheet pb-8">
@@ -1028,80 +1030,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         </div>
       </form>
       <div id="sub-list-container" class="space-y-2 max-h-60 overflow-y-auto"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ SETTINGS / PENGATURAN MODAL ═══════════ -->
-<div id="settings-backdrop" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'settings-backdrop')">
-  <div class="sheet pb-8">
-    <div class="p-6">
-      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-black text-zinc-900">Pengaturan &amp; Fitur</h2>
-        <button onclick="closeModal('settings-backdrop')" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500">✕</button>
-      </div>
-      <div class="grid grid-cols-2 gap-2.5 mb-4">
-        <button type="button" onclick="closeModal('settings-backdrop');openWishModal()" class="p-3 rounded-2xl bg-pink-50 text-pink-700 font-black text-xs flex items-center justify-center gap-2">🎯 Daftar Keinginan</button>
-        <button type="button" onclick="closeModal('settings-backdrop');openSubModal()" class="p-3 rounded-2xl bg-amber-50 text-amber-800 font-black text-xs flex items-center justify-center gap-2">🔔 Langganan Rutin</button>
-      </div>
-      <form id="settings-form" class="space-y-3.5" onsubmit="handleSettingsSubmit(event)">
-        <!-- FOTO PROFIL / AVATAR CUSTOMIZER -->
-        <div class="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-100 space-y-3">
-          <div class="flex items-center justify-between">
-            <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Foto Profil / Avatar</label>
-            <button type="button" onclick="resetAvatarToInitial()" class="text-[10px] font-extrabold text-zinc-400 hover:text-zinc-700">Reset ke Inisial</button>
-          </div>
-          <div class="flex items-center gap-3.5">
-            <div id="set-avatar-preview" class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-md overflow-hidden flex-shrink-0" style="background:linear-gradient(135deg,#34D399,#0D9488)">
-              P
-            </div>
-            <div class="flex-1 min-w-0 space-y-1.5">
-              <div class="flex gap-2">
-                <label class="px-3 py-2 rounded-xl bg-emerald-600 text-white font-black text-[11px] cursor-pointer active:scale-95 transition-transform inline-flex items-center gap-1.5 shadow-sm">
-                  <span>📷 Upload Foto</span>
-                  <input type="file" id="set-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)">
-                </label>
-                <button type="button" onclick="toggleEmojiPickerPanel()" class="px-3 py-2 rounded-xl bg-white border border-zinc-200 text-zinc-700 font-black text-[11px] active:scale-95 transition-transform">
-                  😎 Pilih Emoji
-                </button>
-              </div>
-              <p class="text-[10px] font-semibold text-zinc-400 leading-tight">Foto otomatis dikompres (&lt;6 KB) agar muat disimpan di Google Sheets &amp; perangkat.</p>
-            </div>
-          </div>
-          <!-- Panel Pilih Emoji & Warna Latar -->
-          <div id="set-emoji-panel" class="hidden pt-2 border-t border-zinc-200/70 space-y-2.5">
-            <div>
-              <p class="text-[9px] font-black text-zinc-400 uppercase tracking-wider mb-1.5">Pilih Karakter Emoji</p>
-              <div id="set-emoji-grid" class="grid grid-cols-8 gap-1.5"></div>
-            </div>
-            <div>
-              <p class="text-[9px] font-black text-zinc-400 uppercase tracking-wider mb-1.5">Warna Latar Avatar</p>
-              <div id="set-bg-grid" class="flex gap-2 overflow-x-auto no-scroll py-0.5"></div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Nama Panggilan</label>
-          <input type="text" id="set-username" placeholder="Nama kamu" class="fi" oninput="updateSettingsAvatarPreview()">
-        </div>
-        <div>
-          <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">Batas Anggaran Bulanan (Rp)</label>
-          <input type="number" id="set-budget" placeholder="Cth: 5000000" class="fi">
-        </div>
-        <div>
-          <label class="text-[10px] font-black text-zinc-400 uppercase tracking-wider block mb-1.5">PIN Keamanan (Kosongkan jika tanpa PIN)</label>
-          <input type="password" id="set-pin" inputmode="numeric" placeholder="••••" class="fi">
-        </div>
-        <button type="submit" class="w-full py-3.5 rounded-2xl bg-zinc-900 text-white font-black text-sm">Simpan Pengaturan</button>
-      </form>
-      <div class="mt-5 pt-4 border-t border-zinc-100 flex items-center justify-between">
-        <div>
-          <p class="text-[10px] font-bold text-zinc-400 uppercase">Akun Terhubung</p>
-          <p id="set-account-info" class="text-xs font-black text-zinc-800 mt-0.5">—</p>
-        </div>
-        <button onclick="logoutAkun()" class="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-black active:scale-95 transition-transform">Keluar Akun</button>
-      </div>
     </div>
   </div>
 </div>
@@ -1299,6 +1227,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     </div>
   </div>
 </div>
+
 <!-- ═══════════ JAVASCRIPT ═══════════ -->
 <script>
 // ================================================================
@@ -1417,6 +1346,7 @@ function saveAkunSession(akunData) {
       username: akunData.username,
       email: akunData.email || '',
       namaLengkap: akunData.namaLengkap || '',
+      tanggalLahir: akunData.tanggalLahir || '',
       id: akunData.id,
       gsUrl: akunData.gsUrl || '',
     };
@@ -1434,6 +1364,23 @@ function checkAkunSession() {
   }
   return false;
 }
+
+// ── REDIRECT KE HALAMAN ACCOUNT (keloladuit.my.id/account) ──
+window.goToAccountPage = function(e) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/account';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/account';
+  }
+};
+window.openSettingsModal = function() {
+  window.goToAccountPage();
+};
+
 function getQuickAddStorageKey() {
   const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
   return uname ? (QUICK_ADD_STORAGE_PREFIX + uname) : '';
@@ -1767,7 +1714,6 @@ function calcTotalSaldoGlobal() {
 // ================================================================
 // INSTANT INIT & BACKGROUND SYNC (SAT SET TANPA LOADING SCREEN)
 // ================================================================
-// Cek sesi instan: jika belum login, langsung alihkan ke keloladuit.my.id/login
 if (!checkAkunSession()) {
   redirectToLogin();
 }
@@ -1794,13 +1740,11 @@ document.addEventListener('DOMContentLoaded', () => {
     S.isLoggedIn = true;
   }
   if (S.transactions.length === 0) isFetchingBg = true;
-  // Render instan (0ms) dari cache localStorage!
   refreshAll();
   initWeather();
   startCryptoPolling();
   fetchHomeNews();
   checkHashAction();
-  // Sinkronisasi data terbaru dari server secara senyap di background
   syncDataInBackground();
 });
 
@@ -2034,7 +1978,7 @@ var featureBannerState = {
   lastW: 0,
   lastH: 0
 };
-const ORBIT_LAP_DURATION_MS = 5200; // 1 putaran penuh cahaya dari Titik 1 kembali ke Titik 1
+const ORBIT_LAP_DURATION_MS = 5200;
 
 function buildQuickAddSlideHtml() {
   const items = normalizeQuickAddList(quickAddList).slice(0, QUICK_ADD_MAX);
@@ -2213,7 +2157,6 @@ function buildOrbitRoundedPath(w, h) {
   const y0 = pad;
   const x1 = Math.max(x0 + 2 * r + 2, w - pad);
   const y1 = Math.max(y0 + 2 * r + 2, h - pad);
-  // Titik 1 dimulai di sisi kiri-atas (x0 + r, y0) lalu mengelilingi container searah jarum jam kembali ke Titik 1
   return {
     startX: x0 + r,
     startY: y0,
@@ -2307,7 +2250,6 @@ function startFeatureOrbitLoop() {
       if (halo) halo.setAttribute('stroke-dashoffset', (185 - pos).toFixed(2));
       if (beam) beam.setAttribute('stroke-dashoffset', (155 - pos).toFixed(2));
 
-      // Saat garis cahaya selesai mengelilingi container 1 putaran penuh (tanpa titik menonjol), otomatis slide ke container berikutnya!
       if (progress >= 1) {
         goToFeatureSlide((featureBannerState.idx + 1) % 2, true);
       }
@@ -2361,7 +2303,6 @@ function renderQuickAddHomeSection() {
       ontouchmove="onFeatureBannerTouchMove(event)"
       ontouchend="onFeatureBannerTouchEnd(event)">
 
-      <!-- Animasi Cahaya Mengelilingi Container dari Titik 1 Kembali ke Titik 1 -->
       <svg class="orbit-svg-overlay" aria-hidden="true">
         <defs>
           <linearGradient id="orbit-grad-qa" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -2387,7 +2328,6 @@ function renderQuickAddHomeSection() {
         <path id="orbit-light-beam" fill="none" stroke="url(#orbit-grad-qa)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="155 845" stroke-dashoffset="155" pathLength="1000"/>
       </svg>
 
-      <!-- Viewport Banner 2 Slide: Quick Add & Transaksi Terjadwal -->
       <div id="feature-banner-viewport" class="feature-banner-viewport">
         <div id="feature-banner-track" class="feature-banner-track">
           <div id="feature-slide-qa" class="feature-slide-pane">
@@ -2400,7 +2340,6 @@ function renderQuickAddHomeSection() {
       </div>
     </div>
 
-    <!-- Indikator Titik-Titik Banner Slide -->
     <div id="feature-banner-dots" class="feature-slider-dots">
       <button type="button" id="fdot-0" onclick="goToFeatureSlide(0, false)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
       <button type="button" id="fdot-1" onclick="goToFeatureSlide(1, false)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
@@ -2428,7 +2367,6 @@ window.executeQuickAddOneClick = function(idx, btnEl) {
     return;
   }
 
-  // Jika transaksi memilih "Nominal Transaksi tidak tetap", buka pop-up input nominal cepat
   const isVar = Boolean(item.NominalTidakTetap || !(Number(item['Jumlah Uang']) > 0));
   if (isVar) {
     const isIn = item.Kategori === 'Uang Masuk';
@@ -2502,11 +2440,6 @@ var AVATAR_GRADIENTS = [
   { id: 'rose',    css: 'linear-gradient(135deg,#F472B6,#E11D48)' },
   { id: 'slate',   css: 'linear-gradient(135deg,#334155,#0F172A)' },
   { id: 'gold',    css: 'linear-gradient(135deg,#FDE047,#CA8A04)' }
-];
-var AVATAR_EMOJIS = [
-  '😎','🚀','👑','💎','🔥','💰','🧑‍💻','🐱',
-  '🦊','🐼','🦁','🐸','🌸','⚡','🎯','☕',
-  '🎮','🎧','🏆','✨','🦸','🧙','🤖','🐉'
 ];
 
 function getAvatarBgCss(bgId) {
@@ -2845,6 +2778,7 @@ window.handleTransferSubmit = async function(e) {
   postData('addData', txOut).catch(() => {});
   postData('addData', txIn).catch(() => {});
 };
+
 // ================================================================
 // DOMPET ADD / EDIT MODAL
 // ================================================================
@@ -3185,13 +3119,13 @@ window.confirmBayarCicilan = function() {
 };
 
 window.hapusCicilan = function(id) {
-  
   cicilanList = cicilanList.filter(x => x.id !== id);
   saveCicilanLocal();
   refreshAll();
 };
+
 // ================================================================
-// BULK ADD, RECEIPT AI, VALAS, WISHLIST, SUBSCRIPTION, SETTINGS
+// BULK ADD, RECEIPT AI, VALAS, WISHLIST, SUBSCRIPTION
 // ================================================================
 var bulkRowCount = 0;
 window.openBulkModal = function() {
@@ -3407,7 +3341,7 @@ window.handleValasSubmit = function(e) {
   showSuccess('Transaksi valas disimpan!');
 };
 
-// ── WISHLIST & SUBSCRIPTION & SETTINGS ──
+// ── WISHLIST & SUBSCRIPTION ──
 window.openWishModal = function() { renderWishlist(); openModal('wish-backdrop'); };
 function renderWishlist() {
   const wrap = document.getElementById('wishlist-container');
@@ -3476,113 +3410,6 @@ window.handleAddSub = function(e) {
   renderSubAlerts();
 };
 
-var tempAvatarVal = '';
-var tempAvatarBg  = 'emerald';
-
-function renderAvatarPickerGrids() {
-  const eGrid = document.getElementById('set-emoji-grid');
-  if (eGrid) {
-    eGrid.innerHTML = AVATAR_EMOJIS.map(em => {
-      const isSel = tempAvatarVal === ('emoji:' + em);
-      return `<button type="button" onclick="selectAvatarEmoji('${em}')" class="h-9 rounded-xl flex items-center justify-center text-lg transition-transform active:scale-90" style="background:${isSel ? '#D1FAE5' : '#fff'};border:1.5px solid ${isSel ? '#10B981' : '#E4E4E7'}">${em}</button>`;
-    }).join('');
-  }
-  const bGrid = document.getElementById('set-bg-grid');
-  if (bGrid) {
-    bGrid.innerHTML = AVATAR_GRADIENTS.map(g => {
-      const isSel = tempAvatarBg === g.id;
-      return `<button type="button" onclick="selectAvatarBg('${g.id}')" class="w-8 h-8 rounded-xl flex-shrink-0 transition-transform active:scale-90" style="background:${g.css};border:2.5px solid ${isSel ? '#18181B' : 'transparent'};box-shadow:${isSel ? '0 0 0 2px #fff inset' : 'none'}"></button>`;
-    }).join('');
-  }
-}
-
-window.updateSettingsAvatarPreview = function() {
-  const prevEl = document.getElementById('set-avatar-preview');
-  const name = document.getElementById('set-username')?.value || S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
-  applyAvatarElement(prevEl, tempAvatarVal, tempAvatarBg, name, '28px', '20px');
-  renderAvatarPickerGrids();
-};
-
-window.toggleEmojiPickerPanel = function() {
-  const panel = document.getElementById('set-emoji-panel');
-  if (!panel) return;
-  panel.classList.toggle('hidden');
-  renderAvatarPickerGrids();
-};
-
-window.selectAvatarEmoji = function(em) {
-  tempAvatarVal = 'emoji:' + em;
-  updateSettingsAvatarPreview();
-};
-
-window.selectAvatarBg = function(bgId) {
-  tempAvatarBg = bgId;
-  if (tempAvatarVal && tempAvatarVal.indexOf('data:image/') === 0) {
-    tempAvatarVal = '';
-  }
-  updateSettingsAvatarPreview();
-};
-
-window.resetAvatarToInitial = function() {
-  tempAvatarVal = '';
-  updateSettingsAvatarPreview();
-};
-
-window.handleAvatarUpload = function(input) {
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const SIZE = 120;
-      canvas.width = SIZE;
-      canvas.height = SIZE;
-      const ctx = canvas.getContext('2d');
-      const minSide = Math.min(img.width, img.height);
-      const sx = (img.width - minSide) / 2;
-      const sy = (img.height - minSide) / 2;
-      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, SIZE, SIZE);
-      tempAvatarVal = canvas.toDataURL('image/jpeg', 0.78);
-      updateSettingsAvatarPreview();
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-  input.value = '';
-};
-
-window.openSettingsModal = function() {
-  document.getElementById('set-username').value = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || '';
-  document.getElementById('set-budget').value = S.settings.budget || S.settings.monthlyBudget || '';
-  document.getElementById('set-pin').value = (S.settings.password && S.settings.password !== 'NONE') ? S.settings.password : '';
-  tempAvatarVal = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
-  tempAvatarBg  = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || 'emerald';
-  updateSettingsAvatarPreview();
-  const infoEl = document.getElementById('set-account-info');
-  if (infoEl) infoEl.textContent = (S.akun && S.akun.username) ? ('@' + S.akun.username) : 'Tersambung';
-  openModal('settings-backdrop');
-};
-window.handleSettingsSubmit = async function(e) {
-  e.preventDefault();
-  const username = document.getElementById('set-username').value.trim();
-  const budget   = Number(document.getElementById('set-budget').value) || 0;
-  const pin      = document.getElementById('set-pin').value.trim();
-  S.settings.username = username || 'Pengguna';
-  S.settings.budget   = budget;
-  S.settings.monthlyBudget = budget;
-  S.settings.password = pin ? pin : 'NONE';
-  S.settings.avatar   = tempAvatarVal || '';
-  S.settings.avatarBg = tempAvatarBg || 'emerald';
-  storageSet('keuangan_user_avatar', S.settings.avatar);
-  storageSet('keuangan_user_avatar_bg', S.settings.avatarBg);
-  try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(err) {}
-  refreshAll();
-  closeModal('settings-backdrop');
-  showSuccess('Pengaturan & profil disimpan!');
-  postData('saveSettings', S.settings).catch(() => {});
-};
 // ================================================================
 // RECENT TRANSACTIONS, PRINT RECEIPT & TX MODAL
 // ================================================================
@@ -3951,6 +3778,7 @@ async function handleTxSubmit(e) {
   showSuccess(isEdit ? 'Transaksi diperbarui!' : 'Transaksi ditambahkan!');
   postData(isEdit ? 'editData' : 'addData', payload).catch(() => {});
 }
+
 // ================================================================
 // AI AUTO-CATEGORIZE, OCR, WEATHER, LIVE CRYPTO, NEWS & AI CHAT
 // ================================================================
