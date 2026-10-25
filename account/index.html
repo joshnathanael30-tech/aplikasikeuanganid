@@ -62,6 +62,16 @@ body {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
 @keyframes orbPing {
   0% { opacity: 0.8; transform: scale(0.9); }
   70% { opacity: 0; transform: scale(1.18); }
@@ -73,7 +83,7 @@ body {
 .s3 { animation-delay: 0.14s; }
 .s4 { animation-delay: 0.19s; }
 
-/* Profile Hero Card (Mint-Teal Gradient sesuai referensi) */
+/* Profile Hero Card (Mint-Teal Gradient) */
 .profile-hero-card {
   position: relative;
   border-radius: 26px;
@@ -208,6 +218,12 @@ body {
   color: #0F172A;
   transition: background 0.16s ease, transform 0.14s ease;
   position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
 }
 .menu-row:not(:last-child)::after {
   content: '';
@@ -264,7 +280,108 @@ body {
   color: #EF4444;
 }
 .menu-row-danger .menu-desc {
-  color: #FCA5A5;
+  color: #94A3B8;
+}
+
+/* Modal & Bottom Sheet Styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 70;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.modal-backdrop.show { opacity: 1; }
+.modal-backdrop .sheet {
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -12px 48px rgba(15, 23, 42, 0.14);
+  transform: translateY(100%);
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.modal-backdrop.show .sheet { transform: translateY(0); }
+
+.fi {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 11px 14px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.fi:focus {
+  border-color: #10B981;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+}
+
+.period-pill {
+  padding: 9px 10px;
+  border-radius: 13px;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-align: center;
+}
+.period-pill.active {
+  border-color: #8B5CF6;
+  background: #F5F3FF;
+  color: #6D28D9;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+}
+
+.export-fmt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  border-radius: 16px;
+  border: 1.5px solid #F1F5F9;
+  background: #F8FAFC;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.18s ease;
+}
+.export-fmt-btn:hover {
+  border-color: #CBD5E1;
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+}
+.export-fmt-btn:active { transform: scale(0.98); }
+
+.check-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: checkDraw 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.15s forwards;
+}
+.spin-sm {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
 /* Bottom Navigation Bar */
@@ -293,14 +410,28 @@ body {
   animation: orbPing 3s ease-out infinite;
   pointer-events: none;
 }
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 z-[90] flex items-center justify-center hidden pointer-events-none bg-slate-900/20 backdrop-blur-sm">
+  <div class="bg-white rounded-[28px] shadow-2xl p-7 flex flex-col items-center min-w-[230px] max-w-[300px] border border-slate-100" style="animation:scaleIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards">
+    <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mb-3">
+      <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <p class="text-lg font-black text-slate-900 mb-1">Berhasil!</p>
+    <p id="success-msg" class="text-xs text-slate-500 font-bold text-center leading-relaxed">Selesai.</p>
+  </div>
+</div>
+
 <div class="max-w-md mx-auto">
 
-  <!-- ═══════════ TOP HEADER (Sesuai Referensi Gambar) ═══════════ -->
-  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center justify-between" style="background:rgba(230,247,242,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
+  <!-- ═══════════ TOP HEADER (Tanpa Tombol Lonceng & Gerigi) ═══════════ -->
+  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center" style="background:rgba(230,247,242,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
     <div class="flex items-center gap-2.5">
       <a href="https://keloladuit.my.id/home" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Kembali ke Beranda">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
@@ -309,28 +440,11 @@ body {
       </a>
       <h1 class="text-2xl font-black tracking-tight" style="color:#0F3F38">Akun</h1>
     </div>
-
-    <div class="flex items-center gap-2">
-      <!-- Ikon Notifikasi / Langganan -->
-      <a href="https://keloladuit.my.id/status-langganan" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 relative active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Status & Notifikasi">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-        </svg>
-        <span class="w-2 h-2 rounded-full bg-red-500 absolute top-1.5 right-1.5 border border-white"></span>
-      </a>
-      <!-- Ikon Pengaturan Cepat -> Edit Profil -->
-      <a href="https://keloladuit.my.id/edit-profil" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Edit Profil">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-        </svg>
-      </a>
-    </div>
   </header>
 
   <main class="px-5 pt-2 space-y-5">
 
-    <!-- ═══════════ PROFILE HERO CARD (Sesuai Referensi Gambar) ═══════════ -->
+    <!-- ═══════════ PROFILE HERO CARD ═══════════ -->
     <div class="profile-hero-card fade-up s1">
       <div class="flex items-center gap-4 relative z-10">
         <!-- Klik Avatar langsung ke Edit Profil -->
@@ -467,8 +581,8 @@ body {
           </svg>
         </a>
 
-        <!-- Ekspor Data -->
-        <a href="https://keloladuit.my.id/ekspor-data" target="_top" class="menu-row">
+        <!-- Ekspor Data (LANGSUNG BUKA POP-UP TANPA REDIRECT) -->
+        <button type="button" onclick="openExportModal()" class="menu-row">
           <div class="menu-icon-circle" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -484,7 +598,7 @@ body {
           <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
           </svg>
-        </a>
+        </button>
 
         <!-- Mata Uang & Bahasa -->
         <a href="https://keloladuit.my.id/mata-uang-bahasa" target="_top" class="menu-row">
@@ -563,8 +677,8 @@ body {
           </svg>
         </a>
 
-        <!-- Keluar dari Akun -->
-        <a href="https://keloladuit.my.id/login?logout=1" target="_top" onclick="handleDirectLogout(event)" class="menu-row menu-row-danger">
+        <!-- Keluar dari Akun (LANGSUNG BUKA POP-UP KONFIRMASI) -->
+        <button type="button" onclick="openModal('logout-modal')" class="menu-row menu-row-danger">
           <div class="menu-icon-circle" style="background:#FEE2E2;color:#EF4444;box-shadow:none">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -572,15 +686,15 @@ body {
           </div>
           <div class="menu-text-wrap">
             <p class="menu-title">Keluar dari Akun</p>
-            <p class="menu-desc" style="color:#94A3B8">Mengakhiri sesi masuk saat ini di perangkat Anda</p>
+            <p class="menu-desc">Mengakhiri sesi masuk saat ini di perangkat Anda</p>
           </div>
           <svg class="w-5 h-5 menu-chevron" style="color:#FCA5A5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
           </svg>
-        </a>
+        </button>
 
-        <!-- Hapus Akun Permanen -->
-        <a href="https://keloladuit.my.id/hapus-akun" target="_top" class="menu-row menu-row-danger">
+        <!-- Hapus Akun Permanen (LANGSUNG BUKA POP-UP & EKSEKUSI) -->
+        <button type="button" onclick="openDeleteAccountModal()" class="menu-row menu-row-danger">
           <div class="menu-icon-circle" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -588,12 +702,12 @@ body {
           </div>
           <div class="menu-text-wrap">
             <p class="menu-title">Hapus Akun Permanen</p>
-            <p class="menu-desc" style="color:#94A3B8">Menghapus akun beserta seluruh data transaksi secara permanen</p>
+            <p class="menu-desc">Menghapus akun beserta seluruh data transaksi secara permanen</p>
           </div>
           <svg class="w-5 h-5 menu-chevron" style="color:#FCA5A5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
           </svg>
-        </a>
+        </button>
 
       </div>
     </section>
@@ -604,6 +718,169 @@ body {
     </div>
 
   </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     POP-UP 1: EKSPOR DATA (CSV, EXCEL, PDF)
+════════════════════════════════════════════════════════════════════ -->
+<div id="export-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('export-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 leading-tight">Ekspor Laporan Keuangan</h3>
+          <p id="export-summary-count" class="text-[11px] font-semibold text-slate-400 mt-0.5">0 transaksi siap diekspor</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeModal('export-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">✕</button>
+    </div>
+
+    <!-- Pilih Periode Waktu -->
+    <div class="mb-4">
+      <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2">Pilih Rentang Waktu</label>
+      <div class="grid grid-cols-4 gap-2">
+        <button type="button" onclick="setExportPeriod('this_month')" id="ep-this_month" class="period-pill active">Bulan Ini</button>
+        <button type="button" onclick="setExportPeriod('last_month')" id="ep-last_month" class="period-pill">Bulan Lalu</button>
+        <button type="button" onclick="setExportPeriod('all')" id="ep-all" class="period-pill">Semua</button>
+        <button type="button" onclick="setExportPeriod('custom')" id="ep-custom" class="period-pill">Tanggal</button>
+      </div>
+
+      <!-- Input Tanggal Kustom -->
+      <div id="export-custom-dates" class="hidden grid grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-slate-100">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 block mb-1">Dari Tanggal</label>
+          <input type="date" id="export-date-start" class="fi py-2 text-xs" onchange="updateExportPreviewCount()">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 block mb-1">Sampai Tanggal</label>
+          <input type="date" id="export-date-end" class="fi py-2 text-xs" onchange="updateExportPreviewCount()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Ringkasan Singkat Data yang Akan Diekspor -->
+    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 mb-4 grid grid-cols-2 gap-3">
+      <div>
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Pemasukan</p>
+        <p id="export-prev-in" class="text-xs font-black text-emerald-600 mt-0.5">+Rp 0</p>
+      </div>
+      <div>
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Pengeluaran</p>
+        <p id="export-prev-out" class="text-xs font-black text-red-500 mt-0.5">-Rp 0</p>
+      </div>
+    </div>
+
+    <!-- Pilihan Format File -->
+    <div class="space-y-2.5">
+      <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Pilih Format Unduhan</label>
+
+      <!-- Format CSV -->
+      <button type="button" onclick="executeExportData('csv')" class="export-fmt-btn">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs">CSV</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Unduh Format CSV (.csv)</p>
+            <p class="text-[10px] font-semibold text-slate-400">Cocok untuk Google Sheets, Excel &amp; aplikasi olah data</p>
+          </div>
+        </div>
+        <span class="text-xs font-black text-emerald-600">Unduh ↓</span>
+      </button>
+
+      <!-- Format Excel (.xls) -->
+      <button type="button" onclick="executeExportData('excel')" class="export-fmt-btn">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-xs">XLS</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Unduh Microsoft Excel (.xls)</p>
+            <p class="text-[10px] font-semibold text-slate-400">Tabel rapi lengkap dengan ringkasan saldo &amp; kategori</p>
+          </div>
+        </div>
+        <span class="text-xs font-black text-blue-600">Unduh ↓</span>
+      </button>
+
+      <!-- Format PDF / Cetak -->
+      <button type="button" onclick="executeExportData('pdf')" class="export-fmt-btn">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-black text-xs">PDF</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Simpan PDF / Cetak Laporan</p>
+            <p class="text-[10px] font-semibold text-slate-400">Dokumen laporan resmi siap cetak atau simpan sebagai PDF</p>
+          </div>
+        </div>
+        <span class="text-xs font-black text-violet-600">Buka ↗</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     POP-UP 2: KONFIRMASI KELUAR DARI AKUN
+════════════════════════════════════════════════════════════════════ -->
+<div id="logout-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('logout-modal')">
+  <div class="sheet p-6 pb-8 text-center">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="w-14 h-14 bg-red-50 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-500">
+      <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-black text-slate-900 mb-1">Keluar dari Akun?</h3>
+    <p class="text-xs font-semibold text-slate-400 mb-6 max-w-xs mx-auto leading-relaxed">
+      Sesi Anda di perangkat ini akan diakhiri. Data keuangan Anda tetap tersimpan aman di Cloud Spreadsheet.
+    </p>
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('logout-modal')" class="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-black text-xs active:scale-95 transition-transform">
+        Batal
+      </button>
+      <button type="button" onclick="confirmLogoutAccount()" class="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-black text-xs shadow-lg shadow-red-500/25 active:scale-95 transition-transform">
+        Ya, Keluar Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     POP-UP 3: KONFIRMASI HAPUS AKUN PERMANEN
+════════════════════════════════════════════════════════════════════ -->
+<div id="delete-account-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('delete-account-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="text-center">
+      <div class="w-14 h-14 bg-red-100 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-600">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-black text-slate-900 mb-1">Hapus Akun Permanen?</h3>
+      <p class="text-xs font-semibold text-slate-500 leading-relaxed mb-4">
+        Tindakan ini <b>tidak dapat dibatalkan</b>. Akun <span id="del-acc-username" class="font-extrabold text-red-600">@pengguna</span> beserta akses seluruh data transaksi, dompet, dan jadwal akan dihapus secara permanen.
+      </p>
+    </div>
+
+    <div class="p-3.5 rounded-2xl bg-red-50 border border-red-200/80 mb-4">
+      <label for="delete-confirm-input" class="block text-[11px] font-extrabold text-red-900 mb-1.5">
+        Ketik kata <span class="underline font-black">HAPUS</span> untuk mengonfirmasi:
+      </label>
+      <input type="text" id="delete-confirm-input" placeholder="Ketik HAPUS di sini…" autocomplete="off" class="fi bg-white border-red-200 text-center font-black uppercase tracking-widest" oninput="onDeleteConfirmInput(this.value)">
+      <p id="delete-acc-error" class="text-[11px] font-bold text-red-600 text-center mt-2 hidden"></p>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('delete-account-modal')" class="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-black text-xs active:scale-95 transition-transform">
+        Batal
+      </button>
+      <button type="button" id="btn-exec-delete-acc" onclick="executeDeleteAccountPermanent()" disabled class="flex-1 py-3.5 rounded-2xl bg-red-600 text-white font-black text-xs shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 opacity-40 cursor-not-allowed transition-all">
+        <span id="del-acc-btn-text">Hapus Permanen</span>
+        <div id="del-acc-spin" class="spin-sm hidden"></div>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════════ BOTTOM NAV BAR (Direct Links) ═══════════ -->
@@ -640,18 +917,21 @@ body {
 
 <script>
 // ================================================================
-// SESSION, SALDO & PROFIL SYNC (INSTAN DARI CACHE + BACKGROUND SYNC)
+// SESSION, SALDO, PROFIL & POP-UP ACTIONS (EKSPOR, LOGOUT, HAPUS AKUN)
 // ================================================================
+const GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
 const AUTH_SESSION_KEY = 'keuangan_akun_session';
 const TX_CACHE_KEY = 'keuangan_transactions_cache';
 const QUICK_ADD_STORAGE_PREFIX = 'keuangan_quickadd_khusus_';
+const SCHEDULED_STORAGE_PREFIX = 'keuangan_scheduled_jadwal_';
 
 let GS_URL = '';
 let S = {
   akun: null,
   settings: {},
   transactions: [],
-  dompetList: []
+  dompetList: [],
+  exportPeriod: 'this_month'
 };
 
 const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
@@ -754,6 +1034,29 @@ function calcTotalSaldo() {
   return bal;
 }
 
+// ── MODAL HELPERS ──
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 300);
+};
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
+  setTimeout(() => el.classList.add('hidden'), 2200);
+}
+
+// ── RENDER ACCOUNT PROFILE & BALANCE ──
 function renderAccountUI() {
   const displayName = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
   const rawEmail = (S.settings.email && S.settings.email !== 'NONE')
@@ -843,11 +1146,283 @@ async function syncAccountInBackground() {
   } catch(e) {}
 }
 
-window.handleDirectLogout = function(e) {
-  if (e) e.preventDefault();
+// ================================================================
+// 1. FUNGSI POP-UP EKSPOR DATA (CSV, EXCEL, PDF)
+// ================================================================
+window.openExportModal = function() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const startDefault = `${y}-${m}-01`;
+  const endDefault   = now.toISOString().split('T')[0];
+
+  const startEl = document.getElementById('export-date-start');
+  const endEl   = document.getElementById('export-date-end');
+  if (startEl && !startEl.value) startEl.value = startDefault;
+  if (endEl && !endEl.value)     endEl.value   = endDefault;
+
+  setExportPeriod(S.exportPeriod || 'this_month');
+  openModal('export-modal');
+};
+
+window.setExportPeriod = function(period) {
+  S.exportPeriod = period;
+  ['this_month', 'last_month', 'all', 'custom'].forEach(p => {
+    const btn = document.getElementById('ep-' + p);
+    if (btn) btn.classList.toggle('active', p === period);
+  });
+  const customBox = document.getElementById('export-custom-dates');
+  if (customBox) customBox.classList.toggle('hidden', period !== 'custom');
+  updateExportPreviewCount();
+};
+
+function getFilteredExportTransactions() {
+  const now = new Date();
+  const thisYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const lastDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastYM = `${lastDate.getFullYear()}-${String(lastDate.getMonth() + 1).padStart(2, '0')}`;
+  const startCustom = document.getElementById('export-date-start')?.value || '1970-01-01';
+  const endCustom   = document.getElementById('export-date-end')?.value   || '2099-12-31';
+
+  return S.transactions.filter(tx => {
+    const rawDate = String(tx.Tanggal || '').split('T')[0];
+    if (!rawDate) return false;
+    if (S.exportPeriod === 'this_month') return rawDate.startsWith(thisYM);
+    if (S.exportPeriod === 'last_month') return rawDate.startsWith(lastYM);
+    if (S.exportPeriod === 'custom')     return rawDate >= startCustom && rawDate <= endCustom;
+    return true;
+  }).sort((a, b) => String(b.Tanggal || '').localeCompare(String(a.Tanggal || '')));
+}
+
+function getExportPeriodLabel() {
+  const now = new Date();
+  if (S.exportPeriod === 'this_month') {
+    return 'Bulan Ini (' + now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + ')';
+  }
+  if (S.exportPeriod === 'last_month') {
+    const lastDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return 'Bulan Lalu (' + lastDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + ')';
+  }
+  if (S.exportPeriod === 'custom') {
+    const s = document.getElementById('export-date-start')?.value || '-';
+    const e = document.getElementById('export-date-end')?.value || '-';
+    return `Periode ${s} s/d ${e}`;
+  }
+  return 'Semua Periode Transaksi';
+}
+
+window.updateExportPreviewCount = function() {
+  const list = getFilteredExportTransactions();
+  let tIn = 0, tOut = 0;
+  list.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') tIn += v;
+    else if (t.Kategori === 'Uang Keluar') tOut += v;
+  });
+  const countEl = document.getElementById('export-summary-count');
+  const inEl    = document.getElementById('export-prev-in');
+  const outEl   = document.getElementById('export-prev-out');
+  if (countEl) countEl.textContent = `${list.length} transaksi siap diekspor`;
+  if (inEl)    inEl.textContent    = '+' + idr(tIn);
+  if (outEl)   outEl.textContent   = '-' + idr(tOut);
+};
+
+function getWalletNameById(dompetId) {
+  if (!dompetId) return 'Tunai / Utama';
+  const w = S.dompetList.find(d => String(d.id) === String(dompetId));
+  return w ? (w.nama || w.provider || 'Dompet') : 'Tunai / Utama';
+}
+
+window.executeExportData = function(format) {
+  const list = getFilteredExportTransactions();
+  if (!list.length) {
+    showSuccess('Tidak ada transaksi pada rentang waktu yang dipilih.');
+    return;
+  }
+
+  const periodLbl = getExportPeriodLabel();
+  const dateStamp = new Date().toISOString().split('T')[0];
+  const userName  = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
+
+  if (format === 'csv') {
+    const headers = ['No', 'Tanggal', 'Jenis Transaksi', 'Subkategori', 'Deskripsi / Catatan', 'Sumber Dana', 'Nominal (Rp)'];
+    const rows = list.map((tx, idx) => {
+      const dt = String(tx.Tanggal || '').split('T')[0];
+      const jenis = tx.Kategori || 'Uang Keluar';
+      const sub = jenis === 'Uang Masuk' ? 'Pemasukan' : (tx['Kategori Uang Keluar'] || 'Lainnya');
+      const desc = String(tx.Deskripsi || '').replace(/"/g, '""');
+      const wallet = getWalletNameById(tx.DompetId).replace(/"/g, '""');
+      const amt = Number(tx['Jumlah Uang']) || 0;
+      return [
+        idx + 1,
+        `"${dt}"`,
+        `"${jenis}"`,
+        `"${sub}"`,
+        `"${desc}"`,
+        `"${wallet}"`,
+        amt
+      ].join(',');
+    });
+
+    const csvContent = '\uFEFF' + headers.join(',') + '\r\n' + rows.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_Keloladuit_${dateStamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    closeModal('export-modal');
+    showSuccess('File CSV berhasil diunduh!');
+    return;
+  }
+
+  let totIn = 0, totOut = 0;
+  list.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') totIn += v;
+    else if (t.Kategori === 'Uang Keluar') totOut += v;
+  });
+  const net = totIn - totOut;
+
+  if (format === 'excel') {
+    const rowsHtml = list.map((tx, idx) => {
+      const dt = String(tx.Tanggal || '').split('T')[0];
+      const jenis = tx.Kategori || 'Uang Keluar';
+      const sub = jenis === 'Uang Masuk' ? 'Pemasukan' : (tx['Kategori Uang Keluar'] || 'Lainnya');
+      const desc = String(tx.Deskripsi || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const wallet = getWalletNameById(tx.DompetId).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const amt = Number(tx['Jumlah Uang']) || 0;
+      const clr = jenis === 'Uang Masuk' ? '#059669' : '#DC2626';
+      return `<tr>
+        <td style="border:1px solid #CBD5E1;padding:6px;text-align:center">${idx + 1}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${dt}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px;font-weight:bold;color:${clr}">${jenis}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${sub}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${desc}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${wallet}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px;text-align:right;font-weight:bold;color:${clr}">${jenis === 'Uang Masuk' ? amt : -amt}</td>
+      </tr>`;
+    }).join('');
+
+    const excelHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="UTF-8"></head>
+      <body>
+        <h2>LAPORAN KEUANGAN KELOLADUIT.ID</h2>
+        <p><b>Nama Akun:</b> ${userName} &nbsp;|&nbsp; <b>Periode:</b> ${periodLbl}</p>
+        <p><b>Total Pemasukan:</b> ${idr(totIn)} &nbsp;|&nbsp; <b>Total Pengeluaran:</b> ${idr(totOut)} &nbsp;|&nbsp; <b>Selisih Bersih:</b> ${idr(net)}</p>
+        <table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px">
+          <thead>
+            <tr style="background:#0F3F38;color:#FFFFFF">
+              <th style="border:1px solid #0F3F38;padding:8px">No</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Tanggal</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Jenis</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Kategori</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Deskripsi / Catatan</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Sumber Dana</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Nominal (Rp)</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </body>
+    </html>`;
+
+    const blob = new Blob(['\uFEFF' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_Keloladuit_${dateStamp}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    closeModal('export-modal');
+    showSuccess('File Excel (.xls) berhasil diunduh!');
+    return;
+  }
+
+  if (format === 'pdf') {
+    const printedAt = new Date().toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const txRows = list.map((tx, i) => {
+      const isI = tx.Kategori === 'Uang Masuk';
+      const clr = isI ? '#10B981' : '#EF4444';
+      const sgn = isI ? '+' : '-';
+      const dt = String(tx.Tanggal || '').split('T')[0];
+      const sub = isI ? 'Pemasukan' : (tx['Kategori Uang Keluar'] || 'Lainnya');
+      const wallet = getWalletNameById(tx.DompetId);
+      return `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#F8FAFC'}">
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center;color:#94A3B8;font-size:10px">${i + 1}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-size:11px;white-space:nowrap">${dt}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-weight:800;font-size:12px">${String(tx.Deskripsi || '').replace(/</g, '&lt;')}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-size:11px;color:#64748B">${sub}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-size:11px;color:#64748B">${wallet}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:right;font-weight:900;font-size:12px;color:${clr};white-space:nowrap">${sgn}${idr(tx['Jumlah Uang'])}</td>
+      </tr>`;
+    }).join('');
+
+    const pdfHtml = `\x3c!DOCTYPE html>\x3chtml lang="id">\x3chead><meta charset="UTF-8"><title>Laporan Keuangan — ${userName}</title>
+    \x3cstyle>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;background:#F8FAFC;color:#0F172A;padding:24px}
+    .page{max-width:840px;margin:0 auto}
+    .hdr{background:linear-gradient(135deg,#0F3F38,#064E3B);border-radius:18px;padding:24px 28px;color:#fff;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start}
+    .brand{font-size:11px;font-weight:900;color:#6EE7B7;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+    .title{font-size:22px;font-weight:900}.sub{font-size:12px;color:#A7F3D0;margin-top:4px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+    .card{background:#fff;border-radius:14px;padding:16px;border:1px solid #E2E8F0}
+    .cl{font-size:9px;font-weight:900;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    .cv{font-size:17px;font-weight:900}
+    .tw{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #E2E8F0}
+    table{width:100%;border-collapse:collapse}
+    thead th{background:#F1F5F9;padding:10px 12px;text-align:left;font-size:9px;font-weight:900;color:#475569;text-transform:uppercase;letter-spacing:.05em}
+    .ft{text-align:center;padding:16px;font-size:10px;color:#94A3B8;margin-top:8px}
+    @media print{body{background:#fff;padding:10px}.hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}}\x3c/style>\x3c/head>
+    \x3cbody><div class="page">
+      <div class="hdr">
+        <div><div class="brand">💰 KELOLADUIT.ID</div><div class="title">Laporan Rekapitulasi Keuangan</div><div class="sub">${periodLbl} · ${list.length} Transaksi</div></div>
+        <div style="text-align:right"><div style="font-size:14px;font-weight:800">${userName}</div><div style="font-size:10px;color:#A7F3D0;margin-top:3px">Dicetak: ${printedAt}</div></div>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="cl">Total Pemasukan</div><div class="cv" style="color:#10B981">+${idr(totIn)}</div></div>
+        <div class="card"><div class="cl">Total Pengeluaran</div><div class="cv" style="color:#EF4444">-${idr(totOut)}</div></div>
+        <div class="card"><div class="cl">Arus Kas Bersih</div><div class="cv" style="color:${net >= 0 ? '#10B981' : '#EF4444'}">${net >= 0 ? '+' : ''}${idr(net)}</div></div>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th style="width:36px;text-align:center">#</th><th>Tanggal</th><th>Deskripsi / Catatan</th><th>Kategori</th><th>Sumber Dana</th><th style="text-align:right">Nominal</th></tr></thead>
+        <tbody>${txRows}</tbody>
+      </table></div>
+      <div class="ft">Dokumen Resmi Otomatis · Keloladuit.id · ${printedAt}</div>
+    </div><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));<\/script>\x3c/body>\x3c/html>`;
+
+    const w = window.open('', '_blank', 'width=900,height=760');
+    if (w) {
+      w.document.open();
+      w.document.write(pdfHtml);
+      w.document.close();
+      closeModal('export-modal');
+    } else {
+      showSuccess('Izinkan pop-up di browser untuk menyimpan PDF / mencetak.');
+    }
+  }
+};
+
+// ================================================================
+// 2. FUNGSI POP-UP KELUAR DARI AKUN
+// ================================================================
+function clearAllUserSessionAndCaches() {
   const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
-  if (uname) storageRemove(QUICK_ADD_STORAGE_PREFIX + uname);
+  if (uname) {
+    storageRemove(QUICK_ADD_STORAGE_PREFIX + uname);
+    storageRemove(SCHEDULED_STORAGE_PREFIX + uname);
+    storageRemove('keuangan_custom_gsurl_' + uname);
+  }
   storageRemove('keuangan_quickadd_khusus');
+  storageRemove('keuangan_scheduled_jadwal');
+  storageRemove('keuangan_user_avatar');
+  storageRemove('keuangan_user_avatar_bg');
   storageRemove(AUTH_SESSION_KEY);
   try {
     localStorage.removeItem(TX_CACHE_KEY);
@@ -859,10 +1434,100 @@ window.handleDirectLogout = function(e) {
     localStorage.removeItem('keuangan_subscriptions');
     sessionStorage.removeItem('keuangan_pin_unlocked');
   } catch(err) {}
+}
+
+window.confirmLogoutAccount = function() {
+  closeModal('logout-modal');
+  clearAllUserSessionAndCaches();
   try {
     window.top.location.href = 'https://keloladuit.my.id/login?logout=1';
   } catch(err) {
     window.location.href = 'https://keloladuit.my.id/login?logout=1';
+  }
+};
+
+// ================================================================
+// 3. FUNGSI POP-UP HAPUS AKUN PERMANEN
+// ================================================================
+window.openDeleteAccountModal = function() {
+  const uname = (S.akun && S.akun.username) ? ('@' + S.akun.username) : (S.settings.username || 'Anda');
+  const unameEl = document.getElementById('del-acc-username');
+  if (unameEl) unameEl.textContent = uname;
+
+  const inp = document.getElementById('delete-confirm-input');
+  if (inp) inp.value = '';
+  document.getElementById('delete-acc-error')?.classList.add('hidden');
+  onDeleteConfirmInput('');
+  openModal('delete-account-modal');
+};
+
+window.onDeleteConfirmInput = function(val) {
+  const isMatch = String(val || '').trim().toUpperCase() === 'HAPUS';
+  const btn = document.getElementById('btn-exec-delete-acc');
+  if (!btn) return;
+  btn.disabled = !isMatch;
+  btn.style.opacity = isMatch ? '1' : '0.4';
+  btn.style.cursor  = isMatch ? 'pointer' : 'not-allowed';
+};
+
+window.executeDeleteAccountPermanent = async function() {
+  const inpVal = document.getElementById('delete-confirm-input')?.value || '';
+  if (inpVal.trim().toUpperCase() !== 'HAPUS') return;
+
+  const btn     = document.getElementById('btn-exec-delete-acc');
+  const btnText = document.getElementById('del-acc-btn-text');
+  const spin    = document.getElementById('del-acc-spin');
+  const errEl   = document.getElementById('delete-acc-error');
+
+  btn.disabled = true;
+  if (btnText) btnText.textContent = 'Menghapus…';
+  spin?.classList.remove('hidden');
+  errEl?.classList.add('hidden');
+
+  try {
+    // 1. Jika akun memiliki ID di DATA MASTER, panggil deleteAkun ke GLOBAL_GS_URL
+    let akunId = S.akun && S.akun.id ? S.akun.id : '';
+    if (!akunId && S.akun && S.akun.username) {
+      try {
+        const rList = await fetch(GLOBAL_GS_URL + '?type=akun&_t=' + Date.now());
+        const jList = await rList.json();
+        if (jList && jList.status === 'success' && Array.isArray(jList.data)) {
+          const found = jList.data.find(a => String(a.username || '').toLowerCase() === String(S.akun.username).toLowerCase());
+          if (found && found.id) akunId = found.id;
+        }
+      } catch(e) {}
+    }
+
+    if (akunId) {
+      try {
+        await fetch(GLOBAL_GS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'deleteAkun', data: { id: akunId } })
+        });
+      } catch(e) {}
+    }
+
+    // 2. Bersihkan seluruh cache & sesi di perangkat
+    clearAllUserSessionAndCaches();
+    closeModal('delete-account-modal');
+    showSuccess('Akun Anda telah dihapus secara permanen.');
+
+    setTimeout(() => {
+      try {
+        window.top.location.href = 'https://keloladuit.my.id/login?deleted=1';
+      } catch(err) {
+        window.location.href = 'https://keloladuit.my.id/login?deleted=1';
+      }
+    }, 1100);
+  } catch (err) {
+    if (errEl) {
+      errEl.textContent = 'Gagal menghapus akun. Periksa koneksi internet Anda.';
+      errEl.classList.remove('hidden');
+    }
+    btn.disabled = false;
+    if (btnText) btnText.textContent = 'Hapus Permanen';
+    spin?.classList.add('hidden');
   }
 };
 
