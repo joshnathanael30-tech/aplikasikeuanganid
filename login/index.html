@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Masuk — Keloladuit.id</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>
 (function() {
@@ -76,11 +77,12 @@ body {
 .auth-header {
   position: relative;
   flex-shrink: 0;
-  height: 36vh;
-  min-height: 250px;
-  max-height: 330px;
+  height: 32vh;
+  min-height: 220px;
+  max-height: 300px;
   overflow: hidden;
   background: var(--peach);
+  transition: height 0.3s ease;
 }
 .auth-blob { position: absolute; border-radius: 50%; }
 .auth-blob-1 {
@@ -121,9 +123,9 @@ body {
 .auth-header-title {
   position: absolute;
   left: 24px;
-  bottom: 30px;
+  bottom: 28px;
   z-index: 2;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 900;
   color: #FFFFFF;
   line-height: 1.15;
@@ -131,7 +133,7 @@ body {
 }
 .auth-body {
   flex: 1;
-  padding: 30px 28px 38px;
+  padding: 26px 28px 36px;
   display: flex;
   flex-direction: column;
 }
@@ -139,20 +141,27 @@ body {
   font-size: 13px;
   color: #A1A1AA;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 .auth-field { position: relative; }
 .auth-field label {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 12px;
   font-weight: 700;
-  color: #A1A1AA;
+  color: #71717A;
   margin-bottom: 6px;
+}
+.req-star {
+  color: #EF4444;
+  font-weight: 900;
+  margin-left: 2px;
 }
 .auth-form input {
   width: 100%;
@@ -161,7 +170,7 @@ body {
   border-bottom: 1.5px solid #E4E4E7;
   outline: none;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #18181B;
   background: transparent;
@@ -169,6 +178,26 @@ body {
 }
 .auth-form input::placeholder { color: #D4D4D8; font-weight: 500; }
 .auth-form input:focus { border-color: #5B2C4D; }
+.auth-form input[readonly] {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 10px 38px 10px 12px;
+  color: #475569;
+  cursor: not-allowed;
+}
+.locked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #059669;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
 .pw-toggle-btn {
   position: absolute;
   right: 0;
@@ -186,7 +215,7 @@ body {
 .forgot-row {
   display: flex;
   justify-content: flex-end;
-  margin-top: -8px;
+  margin-top: -6px;
 }
 .forgot-link {
   font-size: 12px;
@@ -201,10 +230,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .auth-submit-label {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 900;
   color: #18181B;
 }
@@ -229,8 +258,83 @@ body {
   font-size: 12px;
   font-weight: 700;
   min-height: 18px;
-  margin-top: -6px;
+  margin-top: -4px;
 }
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 14px;
+  color: #A1A1AA;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #E4E4E7;
+}
+.google-custom-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1.5px solid #E4E4E7;
+  background: #FFFFFF;
+  color: #18181B;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: all 0.18s;
+}
+.google-custom-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+.google-custom-btn:active { transform: scale(0.98); }
+
+.bg-sheet-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  transition: all 0.25s ease;
+}
+.bg-sheet-banner.loading {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #1E40AF;
+}
+.bg-sheet-banner.ready {
+  background: #ECFDF5;
+  border: 1.5px solid #A7F3D0;
+  color: #065F46;
+}
+.bg-sheet-spin {
+  width: 15px;
+  height: 15px;
+  border: 2.2px solid rgba(30, 64, 175, 0.25);
+  border-top-color: #1D4ED8;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
 .auth-switch {
   display: flex;
   align-items: center;
@@ -238,7 +342,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   margin-top: auto;
-  padding-top: 32px;
+  padding-top: 26px;
 }
 .auth-switch a {
   color: #18181B;
@@ -266,20 +370,37 @@ body {
       <span>💰</span>
       <span>Keloladuit.id</span>
     </div>
-    <h1 class="auth-header-title">Selamat<br>Datang</h1>
+    <h1 class="auth-header-title" id="header-title">Selamat<br>Datang</h1>
   </div>
 
-  <div class="auth-body fade-up">
+  <!-- ═══════════ STEP 1: FORM LOGIN & TOMBOL GOOGLE ═══════════ -->
+  <div id="login-view" class="auth-body fade-up">
     <p class="auth-desc">Kelola keuanganmu dengan aman.</p>
+
+    <!-- Tombol Login / Tautkan Akun Google -->
+    <div class="space-y-2">
+      <div id="g-id-button-wrap" class="w-full flex justify-center"></div>
+      <button type="button" id="google-fallback-btn" onclick="triggerGoogleOAuthPopup()" class="google-custom-btn">
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <span id="google-btn-text">Lanjutkan dengan Akun Google</span>
+      </button>
+    </div>
+
+    <div class="auth-divider">atau masuk dengan username</div>
 
     <form id="login-form" class="auth-form">
       <div class="auth-field">
-        <label for="login-username">Username</label>
+        <label for="login-username"><span>Username</span></label>
         <input type="text" id="login-username" placeholder="usernamemu" autocomplete="username" required>
       </div>
 
       <div class="auth-field">
-        <label for="login-password">Password</label>
+        <label for="login-password"><span>Password</span></label>
         <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
         <button type="button" class="pw-toggle-btn" onclick="togglePasswordVisibility()" aria-label="Tampilkan Password" title="Lihat / Sembunyikan Password">
           <svg id="eye-open" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -315,11 +436,92 @@ body {
       <a href="https://keloladuit.my.id/signup" target="_top">Daftar</a>
     </div>
   </div>
+
+  <!-- ═══════════ STEP 2: FORM KONFIRMASI DATA AKUN GOOGLE BARU ═══════════ -->
+  <div id="google-confirm-view" class="auth-body fade-up hidden">
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2.5">
+        <img id="gconf-avatar" src="" alt="" class="w-9 h-9 rounded-full object-cover border border-zinc-200 hidden">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Akun Google Tertaut</span>
+          <p class="text-xs font-bold text-zinc-500 mt-1">Pastikan data profilmu di bawah ini sudah benar.</p>
+        </div>
+      </div>
+      <button type="button" onclick="cancelGoogleConfirm()" class="text-[11px] font-extrabold text-zinc-400 hover:text-zinc-700 px-2 py-1 rounded-lg">
+        Ganti Akun
+      </button>
+    </div>
+
+    <!-- Banner Status Pembuatan Spreadsheet di Belakang Layar (Background) -->
+    <div id="bg-sheet-status" class="bg-sheet-banner loading">
+      <div id="bg-sheet-spinner" class="bg-sheet-spin"></div>
+      <span id="bg-sheet-icon" class="hidden text-sm">✅</span>
+      <span id="bg-sheet-text">Menyiapkan Spreadsheet keuangan barumu di belakang layar…</span>
+    </div>
+
+    <form id="google-confirm-form" class="auth-form">
+      <div class="auth-field">
+        <label for="gconf-username">
+          <span>Username <span class="req-star">*</span></span>
+          <span style="font-size:10px;color:#A1A1AA;font-weight:600">Wajib diisi</span>
+        </label>
+        <input type="text" id="gconf-username" placeholder="Pilih usernamemu" autocomplete="username" required>
+      </div>
+
+      <div class="auth-field">
+        <label for="gconf-email">
+          <span>Email Akun Google <span class="req-star">*</span></span>
+          <span class="locked-badge">🔒 Terkunci sesuai Google</span>
+        </label>
+        <input type="email" id="gconf-email" readonly required>
+      </div>
+
+      <div class="auth-field">
+        <label for="gconf-nama">
+          <span>Nama Lengkap <span class="req-star">*</span></span>
+          <span style="font-size:10px;color:#A1A1AA;font-weight:600">Wajib diisi</span>
+        </label>
+        <input type="text" id="gconf-nama" placeholder="Nama lengkap sesuai identitas" autocomplete="name" required>
+      </div>
+
+      <div class="auth-field">
+        <label for="gconf-tgllahir">
+          <span>Tanggal Lahir <span class="req-star">*</span></span>
+          <span style="font-size:10px;color:#A1A1AA;font-weight:600">Wajib diisi</span>
+        </label>
+        <input type="date" id="gconf-tgllahir" required>
+      </div>
+
+      <p id="gconf-msg" class="auth-msg"></p>
+
+      <div class="auth-submit-row">
+        <div>
+          <span class="auth-submit-label block leading-tight">Simpan &amp; Masuk</span>
+          <span class="text-[11px] font-bold text-zinc-400">Langsung masuk ke Beranda</span>
+        </div>
+        <button type="submit" id="gconf-submit-btn" aria-label="Simpan dan Masuk">
+          <svg id="gconf-submit-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          <div id="gconf-submit-spin" class="auth-spin hidden"></div>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
 const GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const GOOGLE_CLIENT_ID = '447280631672-vusej7mqo02foleg4pddnee1epd65doq.apps.googleusercontent.com';
 const AUTH_SESSION_KEY = 'keuangan_akun_session';
+
+// State untuk Pre-Creation Spreadsheet di Belakang Layar (Background)
+var bgSheetState = {
+  promise: null,
+  readyData: null,
+  email: ''
+};
+var googleTokenClient = null;
 
 // ── STORAGE ABSTRACTION (localStorage -> cookie -> memory) ──
 var _storageMode = null;
@@ -379,6 +581,7 @@ function saveAkunSession(akunData) {
       username: akunData.username,
       email: akunData.email || '',
       namaLengkap: akunData.namaLengkap || '',
+      tanggalLahir: akunData.tanggalLahir || '',
       id: akunData.id,
       gsUrl: akunData.gsUrl || '',
     };
@@ -398,6 +601,22 @@ function redirectToHome() {
   }
 }
 
+async function callMasterApi(action, data) {
+  try {
+    const r = await fetch(GLOBAL_GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, data })
+    });
+    const j = await r.json();
+    if (j) return j;
+  } catch(err) {}
+  // Fallback via GET jika POST terkena blokir redirect 302
+  const url = GLOBAL_GS_URL + '?action=' + encodeURIComponent(action) + '&payload=' + encodeURIComponent(JSON.stringify(data || {})) + '&_t=' + Date.now();
+  const r2 = await fetch(url);
+  return await r2.json();
+}
+
 window.togglePasswordVisibility = function() {
   const inp = document.getElementById('login-password');
   const eyeOpen = document.getElementById('eye-open');
@@ -409,6 +628,304 @@ window.togglePasswordVisibility = function() {
   eyeClosed?.classList.toggle('hidden', !isPass);
 };
 
+// ── INISIALISASI GOOGLE IDENTITY SERVICES (GIS) ──
+function decodeJwtPayload(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
+function initGoogleAuth() {
+  if (!window.google || !window.google.accounts) {
+    setTimeout(initGoogleAuth, 300);
+    return;
+  }
+  try {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
+    const wrap = document.getElementById('g-id-button-wrap');
+    if (wrap) {
+      google.accounts.id.renderButton(wrap, {
+        theme: 'outline',
+        size: 'large',
+        shape: 'pill',
+        text: 'continue_with',
+        width: 340,
+        locale: 'id'
+      });
+    }
+  } catch(e) {}
+
+  try {
+    if (google.accounts.oauth2) {
+      googleTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'openid email profile',
+        callback: async function(tokenResponse) {
+          if (tokenResponse && tokenResponse.access_token) {
+            try {
+              const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: 'Bearer ' + tokenResponse.access_token }
+              });
+              const profile = await r.json();
+              if (profile && profile.email) {
+                onGoogleAccountLinked({
+                  email: profile.email,
+                  name: profile.name || profile.given_name || '',
+                  picture: profile.picture || ''
+                });
+              }
+            } catch (err) {
+              const msgEl = document.getElementById('login-msg');
+              if (msgEl) msgEl.textContent = 'Gagal mengambil profil Google. Silakan coba lagi.';
+            }
+          }
+        }
+      });
+    }
+  } catch(e) {}
+}
+
+window.triggerGoogleOAuthPopup = function() {
+  if (googleTokenClient) {
+    googleTokenClient.requestAccessToken({ prompt: 'select_account' });
+  } else if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.prompt();
+  } else {
+    const msgEl = document.getElementById('login-msg');
+    if (msgEl) msgEl.textContent = 'Layanan Google sedang dimuat, tunggu 1 detik lalu klik lagi.';
+  }
+};
+
+function handleGoogleCredentialResponse(response) {
+  if (!response || !response.credential) return;
+  const payload = decodeJwtPayload(response.credential);
+  if (payload && payload.email) {
+    onGoogleAccountLinked({
+      email: payload.email,
+      name: payload.name || payload.given_name || '',
+      picture: payload.picture || ''
+    });
+  }
+}
+
+// ── ALUR SETELAH USER TAUTKAN AKUN GOOGLE ──
+async function onGoogleAccountLinked(profile) {
+  const email = String(profile.email || '').trim();
+  const name  = String(profile.name || '').trim();
+  const msgEl = document.getElementById('login-msg');
+  if (msgEl) {
+    msgEl.style.color = '#5B2C4D';
+    msgEl.textContent = 'Memeriksa akun Google (' + email + ')…';
+  }
+
+  try {
+    const res = await callMasterApi('checkGoogleAccount', { email: email, namaLengkap: name });
+    if (res && res.status === 'success' && res.registered === true && res.data) {
+      // Akun Google sudah terdaftar -> Langsung Masuk!
+      saveAkunSession(res.data);
+      if (profile.picture) storageSet('keuangan_user_avatar', profile.picture);
+      try { sessionStorage.setItem('keuangan_pin_unlocked', '1'); } catch(e) {}
+      if (msgEl) {
+        msgEl.style.color = '#10B981';
+        msgEl.textContent = 'Login Google berhasil! Mengalihkan ke Beranda…';
+      }
+      redirectToHome();
+      return;
+    }
+
+    // Akun Google belum terdaftar -> Tampilkan Form Konfirmasi & langsung buat Spreadsheet di background!
+    const suggestedUname = (res && res.data && res.data.suggestedUsername)
+      ? res.data.suggestedUsername
+      : email.split('@')[0].replace(/[^a-zA-Z0-9._]/g, '').toLowerCase();
+
+    openGoogleConfirmationForm({
+      email: email,
+      name: name,
+      picture: profile.picture || '',
+      suggestedUsername: suggestedUname
+    });
+  } catch (err) {
+    // Jika server belum di-redeploy ke versi baru, tetap tampilkan form konfirmasi & mulai pre-create
+    openGoogleConfirmationForm({
+      email: email,
+      name: name,
+      picture: profile.picture || '',
+      suggestedUsername: email.split('@')[0].replace(/[^a-zA-Z0-9._]/g, '').toLowerCase()
+    });
+  }
+}
+
+function openGoogleConfirmationForm(info) {
+  document.getElementById('login-view').classList.add('hidden');
+  document.getElementById('google-confirm-view').classList.remove('hidden');
+  document.getElementById('header-title').innerHTML = 'Lengkapi<br>Profilmu';
+
+  const av = document.getElementById('gconf-avatar');
+  if (av && info.picture) {
+    av.src = info.picture;
+    av.classList.remove('hidden');
+  }
+
+  document.getElementById('gconf-username').value = info.suggestedUsername || '';
+  document.getElementById('gconf-email').value = info.email || '';
+  document.getElementById('gconf-nama').value = info.name || '';
+  document.getElementById('gconf-tgllahir').value = '';
+  document.getElementById('gconf-msg').textContent = '';
+
+  // LANGSUNG JALANKAN PEMBUATAN SPREADSHEET BARU DI BELAKANG LAYAR SAAT FORM MUNCUL!
+  startBackgroundSheetPrecreation(info.email, info.name);
+}
+
+window.cancelGoogleConfirm = function() {
+  document.getElementById('google-confirm-view').classList.add('hidden');
+  document.getElementById('login-view').classList.remove('hidden');
+  document.getElementById('header-title').innerHTML = 'Selamat<br>Datang';
+  document.getElementById('login-msg').textContent = '';
+};
+
+function startBackgroundSheetPrecreation(email, namaLengkap) {
+  // Jika sudah pernah dibuat untuk email yang sama pada sesi ini, tidak perlu buat ulang
+  if (bgSheetState.readyData && bgSheetState.email === email) {
+    setBgSheetBannerReady();
+    return bgSheetState.promise;
+  }
+  if (bgSheetState.promise && bgSheetState.email === email) {
+    return bgSheetState.promise;
+  }
+
+  bgSheetState.email = email;
+  bgSheetState.readyData = null;
+  setBgSheetBannerLoading();
+
+  bgSheetState.promise = (async function() {
+    try {
+      const res = await callMasterApi('precreateUserSheet', {
+        email: email,
+        namaLengkap: namaLengkap
+      });
+      if (res && res.status === 'success' && res.data && res.data.gsUrl) {
+        bgSheetState.readyData = res.data;
+        setBgSheetBannerReady();
+        return res.data;
+      }
+    } catch (e) {
+      console.warn('[Precreate Sheet]', e.message);
+    }
+    return null;
+  })();
+
+  return bgSheetState.promise;
+}
+
+function setBgSheetBannerLoading() {
+  const banner = document.getElementById('bg-sheet-status');
+  const spin   = document.getElementById('bg-sheet-spinner');
+  const icon   = document.getElementById('bg-sheet-icon');
+  const txt    = document.getElementById('bg-sheet-text');
+  if (!banner) return;
+  banner.className = 'bg-sheet-banner loading';
+  spin?.classList.remove('hidden');
+  icon?.classList.add('hidden');
+  if (txt) txt.textContent = 'Menyiapkan Spreadsheet keuangan barumu di belakang layar…';
+}
+
+function setBgSheetBannerReady() {
+  const banner = document.getElementById('bg-sheet-status');
+  const spin   = document.getElementById('bg-sheet-spinner');
+  const icon   = document.getElementById('bg-sheet-icon');
+  const txt    = document.getElementById('bg-sheet-text');
+  if (!banner) return;
+  banner.className = 'bg-sheet-banner ready';
+  spin?.classList.add('hidden');
+  icon?.classList.remove('hidden');
+  if (txt) txt.textContent = 'Spreadsheet baru sudah siap! Klik Simpan & Masuk untuk langsung masuk.';
+}
+
+async function handleGoogleConfirmSubmit(e) {
+  e.preventDefault();
+  const username     = document.getElementById('gconf-username').value.trim();
+  const email        = document.getElementById('gconf-email').value.trim();
+  const namaLengkap  = document.getElementById('gconf-nama').value.trim();
+  const tanggalLahir = document.getElementById('gconf-tgllahir').value.trim();
+  const msgEl        = document.getElementById('gconf-msg');
+  msgEl.style.color  = '#EF4444';
+  msgEl.textContent  = '';
+
+  if (!username || !email || !namaLengkap || !tanggalLahir) {
+    msgEl.textContent = 'Semua kolom (Username, Email, Nama Lengkap, Tanggal Lahir) wajib diisi.';
+    return;
+  }
+
+  const btn  = document.getElementById('gconf-submit-btn');
+  const icon = document.getElementById('gconf-submit-icon');
+  const spin = document.getElementById('gconf-submit-spin');
+  btn.disabled = true;
+  icon?.classList.add('hidden');
+  spin?.classList.remove('hidden');
+
+  try {
+    // Tunggu pembuatan spreadsheet di belakang layar jika masih sedang berjalan
+    let sheetInfo = bgSheetState.readyData;
+    if (!sheetInfo && bgSheetState.promise) {
+      msgEl.style.color = '#1E40AF';
+      msgEl.textContent = 'Menyelesaikan persiapan Spreadsheet…';
+      sheetInfo = await bgSheetState.promise;
+    }
+
+    const payload = {
+      username:     username,
+      email:        email,
+      namaLengkap:  namaLengkap,
+      tanggalLahir: tanggalLahir,
+      password:     'GOOGLE_' + email,
+      precreated:   Boolean(sheetInfo && sheetInfo.gsUrl),
+      sheetId:      sheetInfo ? (sheetInfo.sheetId || '') : '',
+      gsUrl:        sheetInfo ? (sheetInfo.gsUrl || '') : '',
+      sheetUrl:     sheetInfo ? (sheetInfo.sheetUrl || '') : ''
+    };
+
+    let res = await callMasterApi('registerGoogleAkun', payload);
+    // Fallback ke registerAkun jika server belum mengenal registerGoogleAkun
+    if (res && res.status === 'error' && String(res.message || '').indexOf('Aksi tidak dikenal') !== -1) {
+      res = await callMasterApi('registerAkun', payload);
+    }
+
+    if (res && res.status === 'success' && res.data) {
+      saveAkunSession(res.data);
+      const avSrc = document.getElementById('gconf-avatar')?.src;
+      if (avSrc && avSrc.indexOf('http') === 0) {
+        storageSet('keuangan_user_avatar', avSrc);
+      }
+      try { sessionStorage.setItem('keuangan_pin_unlocked', '1'); } catch(err) {}
+      msgEl.style.color = '#10B981';
+      msgEl.textContent = 'Akun siap! Mengalihkan ke Beranda…';
+      redirectToHome();
+    } else {
+      msgEl.style.color = '#EF4444';
+      msgEl.textContent = (res && res.message) ? res.message : 'Gagal menyimpan akun. Coba pilih username lain.';
+    }
+  } catch (err) {
+    msgEl.style.color = '#EF4444';
+    msgEl.textContent = 'Gagal terhubung ke server. Periksa koneksi internet.';
+  } finally {
+    btn.disabled = false;
+    icon?.classList.remove('hidden');
+    spin?.classList.add('hidden');
+  }
+}
+
 // Jika sudah login, langsung alihkan ke Beranda
 document.addEventListener('DOMContentLoaded', () => {
   const session = getAkunSession();
@@ -418,6 +935,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   document.getElementById('login-form')?.addEventListener('submit', handleLoginSubmit);
+  document.getElementById('google-confirm-form')?.addEventListener('submit', handleGoogleConfirmSubmit);
+  initGoogleAuth();
 });
 
 async function handleLoginSubmit(e) {
@@ -441,20 +960,15 @@ async function handleLoginSubmit(e) {
   spin?.classList.remove('hidden');
 
   try {
-    const r = await fetch(GLOBAL_GS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'loginAkun', data: { username, password } })
-    });
-    const j = await r.json();
-    if (j.status === 'success') {
+    const j = await callMasterApi('loginAkun', { username, password });
+    if (j && j.status === 'success') {
       saveAkunSession(j.data);
       try { sessionStorage.setItem('keuangan_pin_unlocked', '1'); } catch(err) {}
       msgEl.style.color = '#10B981';
       msgEl.textContent = 'Login berhasil! Mengalihkan ke Beranda…';
       redirectToHome();
     } else {
-      msgEl.textContent = j.message || 'Login gagal. Periksa username atau password.';
+      msgEl.textContent = (j && j.message) || 'Login gagal. Periksa username atau password.';
     }
   } catch (err) {
     msgEl.textContent = 'Gagal terhubung ke server. Periksa koneksi internet.';
