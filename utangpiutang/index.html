@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Buku Utang &amp; Piutang — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F4FAF8;
+  --primary: #10B981;
+  --rose: #E11D48;
+  --teal-dark: #0F3F38;
+  --ease: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(180deg, #E6F7F2 0%, #F4FAF8 260px, #F8FAFC 100%);
+  color: #0F172A;
+  margin: 0;
+  padding-bottom: 104px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes orbPing {
+  0% { opacity: 0.8; transform: scale(0.9); }
+  70% { opacity: 0; transform: scale(1.18); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+.fade-up { animation: fadeUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.s1 { animation-delay: 0.04s; }
+.s2 { animation-delay: 0.08s; }
+.s3 { animation-delay: 0.12s; }
+.s4 { animation-delay: 0.16s; }
+
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Net Worth Hero Card */
+.networth-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 20px;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 52%, #064E3B 100%);
+  color: #FFFFFF;
+  box-shadow: 0 14px 34px -8px rgba(15, 23, 42, 0.32);
+  overflow: hidden;
+}
+.networth-card::before {
+  content: '';
+  position: absolute;
+  top: -45px;
+  right: -35px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.32) 0%, transparent 70%);
+  pointer-events: none;
+}
+.networth-card::after {
+  content: '';
+  position: absolute;
+  bottom: -55px;
+  left: -30px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.formula-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 10px;
+  font-weight: 700;
+  color: #A7F3D0;
+}
+
+/* Segmented Tabs (Buku Utang vs Buku Piutang) */
+.seg-wrap {
+  background: #FFFFFF;
+  padding: 5px;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+.seg-btn {
+  padding: 11px 12px;
+  border-radius: 15px;
+  border: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  color: #64748B;
+  background: transparent;
+}
+.seg-btn.active-utang {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.28);
+}
+.seg-btn.active-piutang {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
+}
+
+/* Filter Status Pills */
+.status-filter-pill {
+  padding: 7px 14px;
+  border-radius: 99px;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  white-space: nowrap;
+}
+.status-filter-pill.active {
+  background: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
+}
+
+/* Debt / Receivable Card */
+.book-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px;
+  border: 1.5px solid #F1F5F9;
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.04);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.book-card:hover {
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
+}
+
+/* Impact Preview Box */
+.impact-box {
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+}
+.impact-badge-up {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #059669;
+  background: #ECFDF5;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.impact-badge-down {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #DC2626;
+  background: #FEF2F2;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.impact-badge-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #475569;
+  background: #F1F5F9;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+/* Modal & Bottom Sheet */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 70;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.modal-backdrop.show { opacity: 1; }
+.modal-backdrop .sheet {
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -12px 48px rgba(15, 23, 42, 0.16);
+  transform: translateY(100%);
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.modal-backdrop.show .sheet { transform: translateY(0); }
+
+.fi {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 11.5px 14px;
+  width: 100%;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0F172A;
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.fi:focus {
+  border-color: #10B981;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+}
+.fi::placeholder { color: #94A3B8; font-weight: 500; }
+
+.mode-card-btn {
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 2px solid #E2E8F0;
+  background: #FFFFFF;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.mode-card-btn.active {
+  border-color: #EF4444;
+  background: #FEF2F2;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12);
+}
+
+.check-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: checkDraw 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.15s forwards;
+}
+.spin-sm {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Bottom Navigation Bar */
+.nav-btn { transition: color 0.2s, transform 0.15s; color: #A1A1AA; text-decoration: none; }
+.nav-btn.active { color: #18181B; }
+.nav-btn.active svg { stroke-width: 2.5; }
+.nav-btn.active span { font-weight: 800; }
+.nav-btn:active { transform: scale(0.88); }
+.ai-nav-orb {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+.orb-ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  animation: orbPing 3s ease-out infinite;
+  pointer-events: none;
+}
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 z-[90] flex items-center justify-center hidden pointer-events-none bg-slate-900/20 backdrop-blur-sm">
+  <div class="bg-white rounded-[28px] shadow-2xl p-7 flex flex-col items-center min-w-[240px] max-w-[310px] border border-slate-100" style="animation:scaleIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards">
+    <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mb-3">
+      <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <p class="text-lg font-black text-slate-900 mb-1">Berhasil!</p>
+    <p id="success-msg" class="text-xs text-slate-500 font-bold text-center leading-relaxed">Tersimpan.</p>
+  </div>
+</div>
+
+<div class="max-w-md mx-auto">
+
+  <!-- ═══════════ TOP HEADER ═══════════ -->
+  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center justify-between" style="background:rgba(230,247,242,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
+    <div class="flex items-center gap-2.5">
+      <a href="https://keloladuit.my.id/home" target="_top" class="w-9 h-9 rounded-xl bg-white/85 border border-emerald-900/10 flex items-center justify-center text-teal-950 active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Kembali ke Beranda">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-lg font-black tracking-tight leading-none" style="color:#0F3F38">Buku Utang &amp; Piutang</h1>
+        <p class="text-[10.5px] font-bold text-teal-800/70 mt-1 leading-none">Terpisah dari Pemasukan &amp; Pengeluaran Reguler</p>
+      </div>
+    </div>
+    <button type="button" onclick="openModal('matrix-guide-modal')" class="px-3 py-1.5 rounded-xl bg-white border border-emerald-900/10 text-[11px] font-extrabold text-teal-900 shadow-sm active:scale-95 transition-transform flex items-center gap-1">
+      <span>📊 Logika Saldo</span>
+    </button>
+  </header>
+
+  <main class="px-5 pt-2 space-y-4">
+
+    <!-- ═══════════ KARTU KEKAYAAN BERSIH (NET WORTH) & RINGKASAN POSISI ═══════════ -->
+    <section class="networth-card fade-up s1">
+      <div class="relative z-10">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-300">Estimasi Kekayaan Bersih</span>
+          <button type="button" onclick="toggleHideNetWorth()" class="text-slate-300 hover:text-white p-1" title="Sembunyikan/Tampilkan Angka">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+        </div>
+
+        <h2 id="nw-total-display" class="text-3xl font-black tracking-tight text-white">Rp 0</h2>
+
+        <div class="mt-2 mb-4">
+          <span class="formula-pill">
+            <span>🧮 (Saldo Kas + Total Piutang) − Total Utang</span>
+          </span>
+        </div>
+
+        <!-- 3 Kolom Posisi Keuangan Asli -->
+        <div class="grid grid-cols-3 gap-2 pt-3.5 border-t border-white/10">
+          <div class="bg-white/5 rounded-2xl p-2.5 border border-white/10">
+            <p class="text-[9px] font-bold text-slate-300 uppercase">💰 Saldo Kas</p>
+            <p id="nw-kas-display" class="text-xs font-black text-sky-300 mt-1 truncate">Rp 0</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-2.5 border border-white/10">
+            <p class="text-[9px] font-bold text-slate-300 uppercase">📈 Hak Piutang</p>
+            <p id="nw-piutang-display" class="text-xs font-black text-emerald-400 mt-1 truncate">+Rp 0</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-2.5 border border-white/10">
+            <p class="text-[9px] font-bold text-slate-300 uppercase">📉 Kewajiban Utang</p>
+            <p id="nw-utang-display" class="text-xs font-black text-rose-400 mt-1 truncate">-Rp 0</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ TOMBOL AKSI CEPAT (CATAT UTANG BARU / CATAT PIUTANG BARU) ═══════════ -->
+    <section class="grid grid-cols-2 gap-2.5 fade-up s2">
+      <button type="button" onclick="openCreateDebtModal('Utang')" class="p-3.5 rounded-2xl text-left text-white shadow-md active:scale-95 transition-transform flex items-center gap-3" style="background:linear-gradient(135deg,#EF4444,#BE123C)">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg flex-shrink-0 font-black">📥</div>
+        <div class="min-w-0">
+          <p class="text-xs font-black leading-tight">+ Catat Utang</p>
+          <p class="text-[10px] font-semibold text-rose-100 mt-0.5 truncate">Pinjam Uang / Paylater</p>
+        </div>
+      </button>
+
+      <button type="button" onclick="openCreateDebtModal('Piutang')" class="p-3.5 rounded-2xl text-left text-white shadow-md active:scale-95 transition-transform flex items-center gap-3" style="background:linear-gradient(135deg,#10B981,#047857)">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg flex-shrink-0 font-black">📤</div>
+        <div class="min-w-0">
+          <p class="text-xs font-black leading-tight">+ Beri Piutang</p>
+          <p class="text-[10px] font-semibold text-emerald-100 mt-0.5 truncate">Pinjamkan ke Orang</p>
+        </div>
+      </button>
+    </section>
+
+    <!-- ═══════════ PEMISAHAN MODUL TAB: BUKU UTANG vs BUKU PIUTANG ═══════════ -->
+    <section class="fade-up s2 space-y-3">
+      <div class="seg-wrap">
+        <button type="button" id="tab-btn-utang" onclick="switchBookTab('Utang')" class="seg-btn active-utang">
+          <span>📕 Buku Utang</span>
+          <span id="badge-count-utang" class="text-[10px] px-2 py-0.5 rounded-full bg-white/25 text-white font-black">0</span>
+        </button>
+        <button type="button" id="tab-btn-piutang" onclick="switchBookTab('Piutang')" class="seg-btn">
+          <span>📗 Buku Piutang</span>
+          <span id="badge-count-piutang" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-black">0</span>
+        </button>
+      </div>
+
+      <!-- Filter Status & Pencarian Nama Kontak -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex gap-1.5 overflow-x-auto no-scroll py-0.5">
+          <button type="button" onclick="setStatusFilter('Belum Lunas')" id="sf-belum" class="status-filter-pill active">Belum Lunas</button>
+          <button type="button" onclick="setStatusFilter('Lunas')" id="sf-lunas" class="status-filter-pill">Sudah Lunas</button>
+          <button type="button" onclick="setStatusFilter('Semua')" id="sf-semua" class="status-filter-pill">Semua</button>
+        </div>
+        <div class="relative flex-1 max-w-[155px]">
+          <input type="text" id="search-contact-input" placeholder="Cari nama…" oninput="renderBookList()" class="fi py-1.5 px-3 text-xs bg-white rounded-full border-slate-200">
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ INFO BANNER KONSEP ALIRAN SALDO ═══════════ -->
+    <section id="tab-explainer-banner" class="fade-up s3 p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200/80 flex items-start gap-2.5">
+      <span id="explainer-icon" class="text-base leading-none mt-0.5">📕</span>
+      <div class="min-w-0 flex-1">
+        <p id="explainer-title" class="text-xs font-black text-rose-950">Buku Utang (Kewajiban Anda)</p>
+        <p id="explainer-desc" class="text-[11px] font-semibold text-rose-800/90 mt-0.5 leading-relaxed">
+          Pinjaman tunai menambah Saldo Kas (+) &amp; Utang (+). Ngutang barang/Paylater langsung tercatat sebagai Pengeluaran (+) &amp; Utang (+). Saat bayar utang, Saldo Kas berkurang (-).
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════ DAFTAR CATATAN BUKU UTANG / PIUTANG ═══════════ -->
+    <section id="book-list-container" class="fade-up s3 space-y-3 pb-6"></section>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 1: CATAT UTANG BARU / BERI PIUTANG BARU (DENGAN MATRIKS DAMPAK SALDO)
+════════════════════════════════════════════════════════════════════ -->
+<div id="create-debt-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('create-debt-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2.5">
+        <div id="cd-header-icon" class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-sm" style="background:linear-gradient(135deg,#EF4444,#DC2626)">📥</div>
+        <div>
+          <h3 id="cd-header-title" class="text-base font-black text-slate-900 leading-tight">Catat Utang Baru</h3>
+          <p id="cd-header-sub" class="text-[11px] font-semibold text-slate-400 mt-0.5">Meminjam uang atau ngutang barang/Paylater</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeModal('create-debt-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">✕</button>
+    </div>
+
+    <form id="create-debt-form" class="space-y-3.5" onsubmit="handleCreateDebtSubmit(event)">
+      <input type="hidden" id="cd-edit-id" value="">
+
+      <!-- Switcher Tipe: Utang vs Piutang -->
+      <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-slate-100">
+        <button type="button" id="cd-type-utang" onclick="setCreateDebtType('Utang')" class="py-2.5 rounded-xl font-black text-xs transition-all bg-red-500 text-white shadow-sm">
+          📕 Utang (Saya Pinjam)
+        </button>
+        <button type="button" id="cd-type-piutang" onclick="setCreateDebtType('Piutang')" class="py-2.5 rounded-xl font-black text-xs transition-all text-slate-600">
+          📗 Piutang (Pinjamkan)
+        </button>
+      </div>
+
+      <!-- KHUSUS UTANG: Pilihan Pinjaman Uang Tunai vs Ngutang Barang / Paylater -->
+      <div id="cd-utang-mode-wrap" class="space-y-2">
+        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Bentuk Utang</label>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" id="umode-tunai" onclick="setUtangMode('tunai')" class="mode-card-btn active">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm">💵</span>
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">Kas +</span>
+            </div>
+            <p class="text-xs font-black text-slate-900">Terima Uang Tunai</p>
+            <p class="text-[10px] font-semibold text-slate-400 mt-0.5 leading-snug">Uang masuk ke dompet/rekening Anda</p>
+          </button>
+
+          <button type="button" id="umode-barang" onclick="setUtangMode('barang')" class="mode-card-btn">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm">🛍️</span>
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Paylater / Barang</span>
+            </div>
+            <p class="text-xs font-black text-slate-900">Ngutang Barang</p>
+            <p class="text-[10px] font-semibold text-slate-400 mt-0.5 leading-snug">Langsung jadi Pengeluaran + &amp; Utang +</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nama Orang / Pihak / Platform -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="col-span-2 sm:col-span-1">
+          <label for="cd-contact" id="cd-contact-label" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Nama Pemberi Pinjaman / Kontak</label>
+          <input type="text" id="cd-contact" placeholder="Cth: Budi / Shopee PayLater / Bank" class="fi" required>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+          <label for="cd-phone" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">No. WhatsApp (Opsional)</label>
+          <input type="tel" id="cd-phone" placeholder="Cth: 08123456789" class="fi">
+        </div>
+      </div>
+
+      <!-- Nominal Pinjaman -->
+      <div>
+        <label for="cd-amount" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Nominal (Rp)</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black text-sm">Rp</span>
+          <input type="number" id="cd-amount" placeholder="0" min="1" class="fi py-3.5 pl-11 text-lg font-black" required oninput="updateCreateImpactPreview()">
+        </div>
+      </div>
+
+      <!-- Pilih Dompet / Rekening (Wajib untuk Terima Uang Utang & Beri Piutang) -->
+      <div id="cd-wallet-wrap">
+        <label for="cd-wallet" id="cd-wallet-label" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Masuk ke Dompet / Rekening Mana?</label>
+        <select id="cd-wallet" class="fi font-extrabold" onchange="updateCreateImpactPreview()"></select>
+        <p id="cd-wallet-warn" class="text-[11px] font-extrabold text-red-600 mt-1.5 hidden"></p>
+      </div>
+
+      <!-- Pilih Kategori Pengeluaran (Khusus Ngutang Barang / Paylater) -->
+      <div id="cd-expense-cat-wrap" class="hidden">
+        <label for="cd-expense-cat" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Kategori Pengeluaran Barang / Paylater</label>
+        <select id="cd-expense-cat" class="fi font-extrabold">
+          <option value="Makanan & Minuman">🍚 Makanan &amp; Minuman</option>
+          <option value="Kebutuhan">🛒 Kebutuhan Belanja</option>
+          <option value="Transportasi">🚗 Transportasi</option>
+          <option value="Tagihan Rutin">🏆 Tagihan Rutin</option>
+          <option value="Hiburan & Langganan">🎬 Hiburan &amp; Langganan</option>
+          <option value="Kesehatan">💊 Kesehatan</option>
+          <option value="Pendidikan">📚 Pendidikan</option>
+          <option value="Lainnya">✏️ Lainnya</option>
+        </select>
+      </div>
+
+      <!-- Tanggal Transaksi & Jatuh Tempo -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label for="cd-date" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Tanggal Catat</label>
+          <input type="date" id="cd-date" class="fi text-xs" required>
+        </div>
+        <div>
+          <label for="cd-due-date" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Jatuh Tempo (Opsional)</label>
+          <input type="date" id="cd-due-date" class="fi text-xs">
+        </div>
+      </div>
+
+      <!-- Catatan / Keterangan -->
+      <div>
+        <label for="cd-notes" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Catatan / Keperluan</label>
+        <input type="text" id="cd-notes" placeholder="Cth: Pinjam uang darurat / Beli makan diutang" class="fi">
+      </div>
+
+      <!-- Preview Dampak Matriks Aliran Dana -->
+      <div class="impact-box space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Dampak Otomatis ke Saldo</span>
+          <span id="cd-impact-mode-tag" class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-slate-200 text-slate-700">Terima Utang</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+          <div class="bg-white p-2 rounded-xl border border-slate-100">
+            <p class="text-[9px] font-bold text-slate-400">Saldo Kas</p>
+            <div id="cd-imp-kas" class="mt-1"><span class="impact-badge-up">📈 Bertambah</span></div>
+          </div>
+          <div class="bg-white p-2 rounded-xl border border-slate-100">
+            <p class="text-[9px] font-bold text-slate-400">Buku Utang</p>
+            <div id="cd-imp-utang" class="mt-1"><span class="impact-badge-up">📈 Bertambah</span></div>
+          </div>
+          <div class="bg-white p-2 rounded-xl border border-slate-100">
+            <p class="text-[9px] font-bold text-slate-400">Buku Piutang</p>
+            <div id="cd-imp-piutang" class="mt-1"><span class="impact-badge-neutral">— Tidak Ada</span></div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" id="cd-submit-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
+        <span id="cd-submit-text">Simpan Catatan Utang</span>
+        <div id="cd-submit-spin" class="spin-sm hidden"></div>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 2: PELUNASAN / CICIL UTANG & TERIMA PEMBAYARAN PIUTANG
+     (Wajib Memilih Sumber Dana / Dompet)
+════════════════════════════════════════════════════════════════════ -->
+<div id="settle-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('settle-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2.5">
+        <div id="st-icon" class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-sm" style="background:linear-gradient(135deg,#EF4444,#DC2626)">💸</div>
+        <div>
+          <h3 id="st-title" class="text-base font-black text-slate-900 leading-tight">Bayar / Lunasi Utang</h3>
+          <p id="st-subtitle" class="text-[11px] font-semibold text-slate-400 mt-0.5">Pilih sumber dana &amp; nominal pembayaran</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeModal('settle-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">✕</button>
+    </div>
+
+    <form id="settle-form" class="space-y-3.5" onsubmit="handleSettleSubmit(event)">
+      <input type="hidden" id="st-debt-id" value="">
+
+      <!-- Info Kontak & Sisa Tagihan -->
+      <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+        <div>
+          <p id="st-contact-name" class="text-xs font-black text-slate-900">—</p>
+          <p id="st-total-initial" class="text-[10px] font-bold text-slate-400 mt-0.5">Total Awal: Rp 0</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[9px] font-extrabold text-slate-400 uppercase">Sisa Saat Ini</p>
+          <p id="st-remaining-amount" class="text-sm font-black text-rose-600">Rp 0</p>
+        </div>
+      </div>
+
+      <!-- Pilihan Bayar Lunas vs Cicil Sebagian -->
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" id="st-mode-full" onclick="setSettleAmountMode('full')" class="py-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-black text-xs">
+          ✓ Lunasi Penuh (100%)
+        </button>
+        <button type="button" id="st-mode-partial" onclick="setSettleAmountMode('partial')" class="py-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-600 font-black text-xs">
+          ⏳ Cicil Sebagian
+        </button>
+      </div>
+
+      <!-- Nominal Pembayaran -->
+      <div>
+        <label for="st-pay-amount" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Nominal Pembayaran (Rp)</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black text-sm">Rp</span>
+          <input type="number" id="st-pay-amount" placeholder="0" min="1" class="fi py-3.5 pl-11 text-lg font-black" required oninput="checkSettleBalance()">
+        </div>
+      </div>
+
+      <!-- WAJIB PILIH SUMBER DANA / DOMPET REKENING -->
+      <div>
+        <label for="st-wallet" id="st-wallet-label" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Ambil dari Sumber Dana (Dompet/Rekening)</label>
+        <select id="st-wallet" class="fi font-extrabold" required onchange="checkSettleBalance()"></select>
+        <p id="st-wallet-warn" class="text-[11px] font-extrabold text-red-600 mt-1.5 hidden"></p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label for="st-date" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Tanggal Bayar</label>
+          <input type="date" id="st-date" class="fi text-xs" required>
+        </div>
+        <div>
+          <label for="st-note" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Catatan (Opsional)</label>
+          <input type="text" id="st-note" placeholder="Cth: Cicilan ke-1 / Lunas" class="fi text-xs">
+        </div>
+      </div>
+
+      <!-- Dampak Matriks Pelunasan -->
+      <div class="impact-box">
+        <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1.5">Dampak Pelunasan ke Saldo:</p>
+        <div id="st-impact-summary" class="text-xs font-bold text-slate-700 leading-relaxed"></div>
+      </div>
+
+      <button type="submit" id="st-submit-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform" style="background:linear-gradient(135deg,#10B981,#059669)">
+        <span id="st-submit-text">Konfirmasi Pembayaran</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 3: TABEL MATRIKS PERGERAKAN SALDO (PANDUAN LOGIKA UTANG/PIUTANG)
+════════════════════════════════════════════════════════════════════ -->
+<div id="matrix-guide-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('matrix-guide-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-base font-black text-slate-900">📊 Matriks Aliran Dana Utang &amp; Piutang</h3>
+        <p class="text-[11px] font-semibold text-slate-400 mt-0.5">Cara kerja pencatatan terhadap Saldo Kas &amp; Kekayaan Bersih</p>
+      </div>
+      <button type="button" onclick="closeModal('matrix-guide-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">✕</button>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl border border-slate-200 mb-4">
+      <table class="w-full text-left border-collapse text-[11px]">
+        <thead>
+          <tr class="bg-slate-900 text-white font-extrabold">
+            <th class="p-2.5">Aksi Pengguna</th>
+            <th class="p-2.5">Saldo Kas</th>
+            <th class="p-2.5">Buku Utang</th>
+            <th class="p-2.5">Buku Piutang</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 font-bold">
+          <tr class="bg-white">
+            <td class="p-2.5 text-slate-900">Terima Utang<br><span class="text-[9px] text-slate-400 font-semibold">(Dapat uang tunai)</span></td>
+            <td class="p-2.5 text-emerald-600">📈 Bertambah (+)</td>
+            <td class="p-2.5 text-rose-600">📈 Bertambah (+)</td>
+            <td class="p-2.5 text-slate-400">Tidak ada</td>
+          </tr>
+          <tr class="bg-slate-50/70">
+            <td class="p-2.5 text-slate-900">Ngutang Barang<br><span class="text-[9px] text-amber-700 font-semibold">(Paylater / Beli makan)</span></td>
+            <td class="p-2.5 text-amber-700">Tetap (Jadi Pengeluaran +)</td>
+            <td class="p-2.5 text-rose-600">📈 Bertambah (+)</td>
+            <td class="p-2.5 text-slate-400">Tidak ada</td>
+          </tr>
+          <tr class="bg-white">
+            <td class="p-2.5 text-slate-900">Bayar Utang<br><span class="text-[9px] text-slate-400 font-semibold">(Cicil / Lunas)</span></td>
+            <td class="p-2.5 text-rose-600">📉 Berkurang (-)</td>
+            <td class="p-2.5 text-emerald-600">📉 Berkurang (-)</td>
+            <td class="p-2.5 text-slate-400">Tidak ada</td>
+          </tr>
+          <tr class="bg-slate-50/70">
+            <td class="p-2.5 text-slate-900">Beri Piutang<br><span class="text-[9px] text-slate-400 font-semibold">(Pinjamkan uang)</span></td>
+            <td class="p-2.5 text-rose-600">📉 Berkurang (-)</td>
+            <td class="p-2.5 text-slate-400">Tidak ada</td>
+            <td class="p-2.5 text-emerald-600">📈 Bertambah (+)</td>
+          </tr>
+          <tr class="bg-white">
+            <td class="p-2.5 text-slate-900">Ditagih Piutang<br><span class="text-[9px] text-slate-400 font-semibold">(Uang kembali)</span></td>
+            <td class="p-2.5 text-emerald-600">📈 Bertambah (+)</td>
+            <td class="p-2.5 text-slate-400">Tidak ada</td>
+            <td class="p-2.5 text-rose-600">📉 Berkurang (-)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-xs font-bold text-emerald-950 leading-relaxed mb-4">
+      💡 <b>Rumus Kekayaan Bersih:</b><br>
+      <span class="font-black text-emerald-700">(Total Saldo Kas + Total Piutang) − Total Utang</span>
+    </div>
+
+    <button type="button" onclick="closeModal('matrix-guide-modal')" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-black text-xs">
+      Mengerti &amp; Tutup
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 4: KONFIRMASI HAPUS CATATAN UTANG / PIUTANG
+════════════════════════════════════════════════════════════════════ -->
+<div id="delete-debt-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('delete-debt-modal')">
+  <div class="sheet p-6 pb-8 text-center">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="w-14 h-14 bg-red-50 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-500">
+      <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-black text-slate-900 mb-1">Hapus Catatan Ini?</h3>
+    <p id="del-debt-desc" class="text-xs font-semibold text-slate-400 mb-6 max-w-xs mx-auto leading-relaxed">
+      Catatan ini akan dihapus dari Buku Utang/Piutang Anda.
+    </p>
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('delete-debt-modal')" class="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-black text-xs">Batal</button>
+      <button type="button" onclick="confirmDeleteDebt()" class="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-black text-xs shadow-lg shadow-red-500/25">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[#F8FAFC] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <button type="button" onclick="openCreateDebtModal(S.activeTab)" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;background:none;border:none;cursor:pointer">
+      <div class="ai-nav-orb">
+        <div class="orb-ping"></div>
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Catat</span>
+    </button>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// BUKU UTANG & PIUTANG ENGINE — KELOLADUIT.ID
+// ================================================================
+const GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY = 'keuangan_transactions_cache';
+const DEBTS_CACHE_PREFIX = 'keuangan_utangpiutang_';
+const DEBTS_SHARED_KEY = 'keuangan_debts_cache';
+
+let GS_URL = '';
+let S = {
+  akun: null,
+  transactions: [],
+  dompetList: [],
+  debts: [],
+  activeTab: 'Utang',       // 'Utang' | 'Piutang'
+  statusFilter: 'Belum Lunas', // 'Belum Lunas' | 'Lunas' | 'Semua'
+  hideNumbers: localStorage.getItem('keuangan_hide_balance') === '1',
+  createType: 'Utang',      // 'Utang' | 'Piutang'
+  utangMode: 'tunai',       // 'tunai' (Terima Uang) | 'barang' (Ngutang Barang / Paylater)
+  settleMode: 'full',       // 'full' | 'partial'
+  deleteTargetId: null
+};
+
+const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+const today = () => new Date().toISOString().split('T')[0];
+
+// ── STORAGE ABSTRACTION ──
+var _storageMode = null;
+var _memoryStore = {};
+function detectStorageMode() {
+  if (_storageMode) return _storageMode;
+  try {
+    localStorage.setItem('__storage_test__', '1');
+    localStorage.removeItem('__storage_test__');
+    _storageMode = 'localStorage';
+    return _storageMode;
+  } catch(e) {}
+  try {
+    document.cookie = '__storage_test__=1; SameSite=Lax; path=/';
+    var ok = document.cookie.indexOf('__storage_test__=1') !== -1;
+    document.cookie = '__storage_test__=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    if (ok) { _storageMode = 'cookie'; return _storageMode; }
+  } catch(e) {}
+  _storageMode = 'memory';
+  return _storageMode;
+}
+function storageGet(key) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { return localStorage.getItem(key); } catch(e) { return null; } }
+  if (mode === 'cookie') {
+    try {
+      var m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch(e) { return null; }
+  }
+  return _memoryStore[key] || null;
+}
+function storageSet(key, value) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { localStorage.setItem(key, value); return true; } catch(e) { return false; } }
+  if (mode === 'cookie') {
+    try {
+      var exp = new Date(Date.now() + 90 * 86400000).toUTCString();
+      document.cookie = key + '=' + encodeURIComponent(value) + '; expires=' + exp + '; SameSite=Lax; path=/';
+      return true;
+    } catch(e) { return false; }
+  }
+  _memoryStore[key] = value;
+  return true;
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
+    return true;
+  }
+  return false;
+}
+
+function getDebtStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? (DEBTS_CACHE_PREFIX + uname) : DEBTS_SHARED_KEY;
+}
+
+/**
+ * Menormalisasi baris Utang/Piutang dari Google Sheet tab "Utang" maupun localStorage.
+ * Mendukung penyimpanan riwayat pembayaran bertahap, sisa tagihan, jatuh tempo, nomor WA, & mode utang.
+ */
+function normalizeDebtItem(raw, idx, localMap) {
+  if (!raw || typeof raw !== 'object') return null;
+  const id = String(raw.id || raw.ID || ('debt_' + Date.now() + '_' + idx));
+  const local = (localMap && localMap[id]) ? localMap[id] : {};
+
+  // Parse Tipe ("Utang" / "Piutang")
+  const rawTipe = String(raw.Tipe || raw.tipe || local.Tipe || 'Utang').trim();
+  const tipe = rawTipe.toLowerCase().includes('piutang') ? 'Piutang' : 'Utang';
+
+  // Parse Nama Kontak & Metadata jika dikemas di dalam Nama Kontak / Keterangan
+  let rawKontak = String(raw['Nama Kontak'] || raw.namaKontak || raw.kontak || local['Nama Kontak'] || '').trim();
+  let catatan = String(raw.Catatan || raw.catatan || local.Catatan || '').trim();
+  if (rawKontak.includes(' — ')) {
+    const parts = rawKontak.split(' — ');
+    rawKontak = parts[0].trim();
+    if (!catatan) catatan = parts.slice(1).join(' — ').trim();
+  }
+  if (!rawKontak) return null;
+
+  const nominalAwal = Number(raw.Nominal !== undefined ? raw.Nominal : (raw.nominal || local.Nominal || 0));
+  if (!(nominalAwal > 0)) return null;
+
+  // Parse Status ("Belum Lunas" / "Lunas" atau "Dibayar: X")
+  const rawStatus = String(raw.Status || raw.status || local.Status || 'Belum Lunas').trim();
+  const isLunas = rawStatus.toLowerCase() === 'lunas';
+
+  let terbayar = Number(raw.Terbayar !== undefined ? raw.Terbayar : (local.Terbayar !== undefined ? local.Terbayar : 0));
+  const matchPaid = rawStatus.match(/Terbayar:\s*(\d+)/i);
+  if (matchPaid) terbayar = Number(matchPaid[1]) || terbayar;
+  if (isLunas) terbayar = nominalAwal;
+  terbayar = Math.min(nominalAwal, Math.max(0, terbayar));
+
+  const statusClean = (terbayar >= nominalAwal || isLunas) ? 'Lunas' : 'Belum Lunas';
+  const tanggal = String(raw.Tanggal || raw.tanggal || local.Tanggal || today()).split('T')[0];
+  const jatuhTempo = String(raw.JatuhTempo || raw.jatuhTempo || local.JatuhTempo || '').split('T')[0];
+  const noWa = String(raw.NoWa || raw.noWa || local.NoWa || '').trim();
+  const dompetId = String(raw.DompetId || raw.dompetId || local.DompetId || '').trim();
+  const modeUtang = String(raw.ModeUtang || raw.modeUtang || local.ModeUtang || 'tunai').trim(); // 'tunai' | 'barang'
+  const kategoriBarang = String(raw.KategoriBarang || local.KategoriBarang || 'Kebutuhan').trim();
+  const riwayatBayar = Array.isArray(raw.RiwayatBayar) ? raw.RiwayatBayar : (Array.isArray(local.RiwayatBayar) ? local.RiwayatBayar : []);
+
+  return {
+    id,
+    Tipe: tipe,
+    'Nama Kontak': rawKontak,
+    Nominal: nominalAwal,
+    Terbayar: terbayar,
+    Status: statusClean,
+    Tanggal: tanggal,
+    JatuhTempo: jatuhTempo,
+    Catatan: catatan,
+    NoWa: noWa,
+    DompetId: dompetId,
+    ModeUtang: modeUtang,
+    KategoriBarang: kategoriBarang,
+    RiwayatBayar: riwayatBayar
+  };
+}
+
+function normalizeDebtList(rawArr, existingLocalList) {
+  if (!Array.isArray(rawArr)) return [];
+  const localMap = {};
+  if (Array.isArray(existingLocalList)) {
+    existingLocalList.forEach(it => { if (it && it.id) localMap[String(it.id)] = it; });
+  }
+  const out = [];
+  for (let i = 0; i < rawArr.length; i++) {
+    const item = normalizeDebtItem(rawArr[i], i, localMap);
+    if (item) out.push(item);
+  }
+  return out;
+}
+
+function buildSheetDebtPayload(item) {
+  const kontakDisplay = item.Catatan
+    ? `${item['Nama Kontak']} — ${item.Catatan}`
+    : item['Nama Kontak'];
+  const statusSheet = item.Status === 'Lunas'
+    ? 'Lunas'
+    : (item.Terbayar > 0 ? `Belum Lunas (Terbayar: ${item.Terbayar})` : 'Belum Lunas');
+
+  return {
+    id: item.id,
+    'Tipe': item.Tipe,
+    'Nama Kontak': kontakDisplay,
+    'Nominal': Number(item.Nominal) || 0,
+    'Status': statusSheet,
+    'Tanggal': item.Tanggal || today()
+  };
+}
+
+function loadLocalCaches() {
+  try { const r = localStorage.getItem(TX_CACHE_KEY); if (r) S.transactions = JSON.parse(r) || []; } catch(e) {}
+  try { const r = localStorage.getItem('keuangan_dompet_list'); if (r) S.dompetList = JSON.parse(r) || []; } catch(e) {}
+  try {
+    const rawScoped = storageGet(getDebtStorageKey());
+    if (rawScoped) {
+      const parsed = JSON.parse(rawScoped);
+      if (Array.isArray(parsed)) S.debts = normalizeDebtList(parsed);
+      else if (parsed && Array.isArray(parsed.items)) S.debts = normalizeDebtList(parsed.items);
+    }
+  } catch(e) {}
+}
+
+function saveTransactionsLocal() {
+  try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(e) {}
+}
+
+function saveDebtsLocal() {
+  const normalized = normalizeDebtList(S.debts, S.debts);
+  S.debts = normalized;
+  const payload = JSON.stringify({
+    username: S.akun ? S.akun.username : '',
+    gsUrl: GS_URL,
+    updatedAt: Date.now(),
+    items: normalized
+  });
+  storageSet(getDebtStorageKey(), payload);
+  storageSet(DEBTS_SHARED_KEY, payload);
+}
+
+// ── PERHITUNGAN SALDO KAS, UTANG, PIUTANG & KEKAYAAN BERSIH ──
+function hitungSaldoDompet(dompetId) {
+  const dompet = S.dompetList.find(d => String(d.id) === String(dompetId));
+  if (!dompet) return 0;
+  let saldo = Number(dompet.saldoAwal) || 0;
+  S.transactions.forEach(tx => {
+    if (String(tx.DompetId) !== String(dompetId)) return;
+    const v = Number(tx['Jumlah Uang']) || 0;
+    if (tx.Kategori === 'Uang Masuk' || tx.Kategori === 'Mutasi Kas Masuk')  saldo += v;
+    if (tx.Kategori === 'Uang Keluar' || tx.Kategori === 'Mutasi Kas Keluar') saldo -= v;
+  });
+  return saldo;
+}
+
+function calcTotalSaldoKas() {
+  if (S.dompetList.length > 0) {
+    return S.dompetList.reduce((sum, d) => sum + hitungSaldoDompet(d.id), 0);
+  }
+  let bal = 0;
+  S.transactions.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk' || t.Kategori === 'Mutasi Kas Masuk') bal += v;
+    else if (t.Kategori === 'Uang Keluar' || t.Kategori === 'Mutasi Kas Keluar') bal -= v;
+  });
+  return bal;
+}
+
+function calcSisaUtangAktif() {
+  return S.debts
+    .filter(d => d.Tipe === 'Utang' && d.Status !== 'Lunas')
+    .reduce((sum, d) => sum + Math.max(0, (Number(d.Nominal) || 0) - (Number(d.Terbayar) || 0)), 0);
+}
+
+function calcSisaPiutangAktif() {
+  return S.debts
+    .filter(d => d.Tipe === 'Piutang' && d.Status !== 'Lunas')
+    .reduce((sum, d) => sum + Math.max(0, (Number(d.Nominal) || 0) - (Number(d.Terbayar) || 0)), 0);
+}
+
+// ── MODAL HELPERS ──
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 300);
+};
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
+  setTimeout(() => el.classList.add('hidden'), 2200);
+}
+
+async function postData(action, data) {
+  if (!GS_URL) return null;
+  try {
+    const r = await fetch(GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, data })
+    });
+    return await r.json();
+  } catch(e) {
+    return null;
+  }
+}
+
+function populateWalletSelect(selectId, selectedId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  if (!S.dompetList.length) {
+    sel.innerHTML = '<option value="">💵 Dompet Tunai / Utama</option>';
+    return;
+  }
+  const defId = selectedId || S.dompetList[0].id;
+  sel.innerHTML = S.dompetList.map(d => {
+    const s = hitungSaldoDompet(d.id);
+    const ic = d.tipe === 'tunai' ? '💵' : d.tipe === 'emoney' ? '📱' : '🏦';
+    return `<option value="${d.id}" ${String(d.id) === String(defId) ? 'selected' : ''}>${ic} ${d.nama || d.provider} (${idr(s)})</option>`;
+  }).join('');
+}
+
+function getWalletName(dompetId) {
+  if (!dompetId) return 'Dompet Utama';
+  const w = S.dompetList.find(d => String(d.id) === String(dompetId));
+  return w ? (w.nama || w.provider || 'Dompet') : 'Dompet Utama';
+}
+
+// ================================================================
+// RENDER DASHBOARD KEKAYAAN BERSIH & DAFTAR BUKU UTANG/PIUTANG
+// ================================================================
+window.toggleHideNetWorth = function() {
+  S.hideNumbers = !S.hideNumbers;
+  try { localStorage.setItem('keuangan_hide_balance', S.hideNumbers ? '1' : '0'); } catch(e) {}
+  renderAll();
+};
+
+function renderNetWorthHero() {
+  const saldoKas     = calcTotalSaldoKas();
+  const totalPiutang = calcSisaPiutangAktif();
+  const totalUtang   = calcSisaUtangAktif();
+  // Rumus Kekayaan Bersih = (Total Saldo Kas + Total Piutang) - Total Utang
+  const netWorth     = (saldoKas + totalPiutang) - totalUtang;
+
+  const nwEl  = document.getElementById('nw-total-display');
+  const kasEl = document.getElementById('nw-kas-display');
+  const piuEl = document.getElementById('nw-piutang-display');
+  const utgEl = document.getElementById('nw-utang-display');
+
+  if (nwEl)  nwEl.textContent  = S.hideNumbers ? 'Rp ••••••••' : (netWorth < 0 ? '-' + idr(Math.abs(netWorth)) : idr(netWorth));
+  if (kasEl) kasEl.textContent = S.hideNumbers ? 'Rp ••••••' : idr(saldoKas);
+  if (piuEl) piuEl.textContent = S.hideNumbers ? 'Rp ••••••' : ('+' + idr(totalPiutang));
+  if (utgEl) utgEl.textContent = S.hideNumbers ? 'Rp ••••••' : ('-' + idr(totalUtang));
+
+  const activeUtangCount   = S.debts.filter(d => d.Tipe === 'Utang' && d.Status !== 'Lunas').length;
+  const activePiutangCount = S.debts.filter(d => d.Tipe === 'Piutang' && d.Status !== 'Lunas').length;
+  const bUtang   = document.getElementById('badge-count-utang');
+  const bPiutang = document.getElementById('badge-count-piutang');
+  if (bUtang)   bUtang.textContent   = String(activeUtangCount);
+  if (bPiutang) bPiutang.textContent = String(activePiutangCount);
+}
+
+window.switchBookTab = function(tab) {
+  S.activeTab = tab === 'Piutang' ? 'Piutang' : 'Utang';
+  const btnU = document.getElementById('tab-btn-utang');
+  const btnP = document.getElementById('tab-btn-piutang');
+  const bU   = document.getElementById('badge-count-utang');
+  const bP   = document.getElementById('badge-count-piutang');
+
+  if (S.activeTab === 'Utang') {
+    btnU.className = 'seg-btn active-utang';
+    btnP.className = 'seg-btn';
+    bU.className = 'text-[10px] px-2 py-0.5 rounded-full bg-white/25 text-white font-black';
+    bP.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-black';
+  } else {
+    btnP.className = 'seg-btn active-piutang';
+    btnU.className = 'seg-btn';
+    bP.className = 'text-[10px] px-2 py-0.5 rounded-full bg-white/25 text-white font-black';
+    bU.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-black';
+  }
+
+  const banner = document.getElementById('tab-explainer-banner');
+  const icon   = document.getElementById('explainer-icon');
+  const title  = document.getElementById('explainer-title');
+  const desc   = document.getElementById('explainer-desc');
+  if (S.activeTab === 'Utang') {
+    banner.className = 'fade-up s3 p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200/80 flex items-start gap-2.5';
+    icon.textContent = '📕';
+    title.className  = 'text-xs font-black text-rose-950';
+    title.textContent = 'Buku Utang (Kewajiban Anda)';
+    desc.className   = 'text-[11px] font-semibold text-rose-800/90 mt-0.5 leading-relaxed';
+    desc.innerHTML   = 'Pinjaman tunai menambah <b>Saldo Kas (+)</b> &amp; <b>Utang (+)</b>. Ngutang barang/Paylater langsung menjadi <b>Pengeluaran (+)</b> &amp; <b>Utang (+)</b>. Saat bayar utang, <b>Saldo Kas berkurang (-)</b>.';
+  } else {
+    banner.className = 'fade-up s3 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 flex items-start gap-2.5';
+    icon.textContent = '📗';
+    title.className  = 'text-xs font-black text-emerald-950';
+    title.textContent = 'Buku Piutang (Hak Tagih Anda)';
+    desc.className   = 'text-[11px] font-semibold text-emerald-800/90 mt-0.5 leading-relaxed';
+    desc.innerHTML   = 'Saat meminjamkan uang ke orang lain, <b>Saldo Kas berkurang (-)</b> &amp; <b>Piutang bertambah (+)</b>. Saat piutang dibayar kembali, <b>Saldo Kas bertambah (+)</b> &amp; <b>Piutang berkurang (-)</b>.';
+  }
+
+  renderBookList();
+};
+
+window.setStatusFilter = function(st) {
+  S.statusFilter = st;
+  document.getElementById('sf-belum').classList.toggle('active', st === 'Belum Lunas');
+  document.getElementById('sf-lunas').classList.toggle('active', st === 'Lunas');
+  document.getElementById('sf-semua').classList.toggle('active', st === 'Semua');
+  renderBookList();
+};
+
+function renderBookList() {
+  const wrap = document.getElementById('book-list-container');
+  if (!wrap) return;
+
+  const kw = (document.getElementById('search-contact-input')?.value || '').toLowerCase().trim();
+  const filtered = S.debts.filter(d => {
+    if (d.Tipe !== S.activeTab) return false;
+    if (S.statusFilter === 'Belum Lunas' && d.Status === 'Lunas') return false;
+    if (S.statusFilter === 'Lunas' && d.Status !== 'Lunas') return false;
+    if (kw) {
+      const hay = `${d['Nama Kontak']} ${d.Catatan || ''}`.toLowerCase();
+      if (!hay.includes(kw)) return false;
+    }
+    return true;
+  }).sort((a, b) => String(b.Tanggal || '').localeCompare(String(a.Tanggal || '')));
+
+  if (!filtered.length) {
+    const isUtang = S.activeTab === 'Utang';
+    wrap.innerHTML = `
+      <div class="book-card text-center py-10 px-5">
+        <div class="text-4xl mb-2.5">${isUtang ? '📕' : '📗'}</div>
+        <h3 class="text-sm font-black text-slate-800">Tidak Ada Catatan ${S.activeTab} (${S.statusFilter})</h3>
+        <p class="text-xs font-semibold text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+          ${isUtang
+            ? 'Catat pinjaman uang tunai atau utang barang/Paylater agar kewajiban & saldo kas Anda selalu akurat.'
+            : 'Catat uang yang Anda pinjamkan ke teman/keluarga agar hak tagih & saldo dompet Anda terpantau rapi.'}
+        </p>
+        <button type="button" onclick="openCreateDebtModal('${S.activeTab}')" class="mt-4 px-4 py-2.5 rounded-xl text-white font-black text-xs shadow-sm active:scale-95 transition-transform" style="background:${isUtang ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#10B981,#059669)'}">
+          + Catat ${S.activeTab} Sekarang
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = filtered.map(item => {
+    const isUtang = item.Tipe === 'Utang';
+    const nominal = Number(item.Nominal) || 0;
+    const terbayar = Number(item.Terbayar) || 0;
+    const sisa = Math.max(0, nominal - terbayar);
+    const pct = nominal > 0 ? Math.min(100, Math.round((terbayar / nominal) * 100)) : 0;
+    const isLunas = item.Status === 'Lunas' || sisa <= 0;
+
+    const dtFmt = item.Tanggal
+      ? new Date(item.Tanggal + 'T12:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+      : '-';
+
+    let dueBadge = '';
+    if (item.JatuhTempo && !isLunas) {
+      const diffDays = Math.ceil((new Date(item.JatuhTempo + 'T12:00:00') - new Date()) / 86400000);
+      const dueStr = new Date(item.JatuhTempo + 'T12:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      if (diffDays < 0) {
+        dueBadge = `<span class="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-red-100 text-red-700">⚠️ Lewat ${Math.abs(diffDays)} hari (${dueStr})</span>`;
+      } else if (diffDays <= 5) {
+        dueBadge = `<span class="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">⏰ Jatuh tempo ${diffDays === 0 ? 'Hari ini' : diffDays + ' hr lagi'} (${dueStr})</span>`;
+      } else {
+        dueBadge = `<span class="text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">📅 Tempo: ${dueStr}</span>`;
+      }
+    }
+
+    const modeBadge = isUtang
+      ? (item.ModeUtang === 'barang'
+          ? `<span class="text-[9.5px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">🛍️ Barang / Paylater (${item.KategoriBarang || 'Pengeluaran'})</span>`
+          : `<span class="text-[9.5px] font-extrabold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">💵 Pinjaman Uang · ${getWalletName(item.DompetId)}</span>`)
+      : `<span class="text-[9.5px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">📤 Sumber: ${getWalletName(item.DompetId)}</span>`;
+
+    const waBtn = (!isLunas && item.NoWa)
+      ? `<button type="button" onclick="sendWhatsAppReminder('${item.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black active:scale-95 transition-transform">💬 WA</button>`
+      : '';
+
+    const historyLogsHtml = (Array.isArray(item.RiwayatBayar) && item.RiwayatBayar.length > 0)
+      ? `<div class="mt-3 pt-2.5 border-t border-slate-100 space-y-1">
+           <p class="text-[9.5px] font-extrabold text-slate-400 uppercase">Riwayat Pembayaran:</p>
+           ${item.RiwayatBayar.map(log => `
+             <div class="flex items-center justify-between text-[10.5px] font-bold text-slate-600">
+               <span>• ${log.tanggal} (${getWalletName(log.dompetId)}${log.catatan ? ' · ' + log.catatan : ''})</span>
+               <span class="font-black ${isUtang ? 'text-rose-600' : 'text-emerald-600'}">${idr(log.nominal)}</span>
+             </div>
+           `).join('')}
+         </div>`
+      : '';
+
+    return `
+      <div class="book-card">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3 min-w-0 flex-1">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-base flex-shrink-0 shadow-sm" style="background:${isUtang ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#10B981,#059669)'}">
+              ${(item['Nama Kontak'] || 'K').trim()[0].toUpperCase()}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                ${modeBadge}
+                ${dueBadge}
+              </div>
+              <h3 class="text-sm font-black text-slate-900 mt-1.5 truncate">${String(item['Nama Kontak']).replace(/</g, '&lt;')}</h3>
+              ${item.Catatan ? `<p class="text-xs font-semibold text-slate-500 mt-0.5 leading-snug">${String(item.Catatan).replace(/</g, '&lt;')}</p>` : ''}
+              <p class="text-[10px] font-bold text-slate-400 mt-1">Dicatat: ${dtFmt}</p>
+            </div>
+          </div>
+
+          <div class="text-right flex-shrink-0">
+            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${isLunas ? 'bg-emerald-100 text-emerald-800' : (isUtang ? 'bg-rose-100 text-rose-700' : 'bg-teal-100 text-teal-800')}">
+              ${isLunas ? '✓ Lunas' : (isUtang ? 'Sisa Utang' : 'Sisa Piutang')}
+            </span>
+            <p class="text-base font-black mt-1 ${isLunas ? 'text-slate-400 line-through' : (isUtang ? 'text-rose-600' : 'text-emerald-600')}">
+              ${S.hideNumbers ? 'Rp ••••••' : idr(isLunas ? nominal : sisa)}
+            </p>
+            ${terbayar > 0 && !isLunas ? `<p class="text-[10px] font-bold text-slate-400">dari ${idr(nominal)}</p>` : ''}
+          </div>
+        </div>
+
+        <!-- Progress Bar Pelunasan -->
+        <div class="mt-3">
+          <div class="flex justify-between text-[10px] font-extrabold text-slate-400 mb-1">
+            <span>Terbayar: ${idr(terbayar)} (${pct}%)</span>
+            <span>Total: ${idr(nominal)}</span>
+          </div>
+          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all" style="width:${pct}%;background:${isUtang ? '#EF4444' : '#10B981'}"></div>
+          </div>
+        </div>
+
+        ${historyLogsHtml}
+
+        <!-- Tombol Aksi (Bayar Utang / Terima Piutang, WA, Hapus) -->
+        <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="promptDeleteDebt('${item.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 text-[10px] font-black active:scale-95 transition-transform">
+              🗑 Hapus
+            </button>
+            ${waBtn}
+          </div>
+
+          ${!isLunas ? `
+            <button type="button" onclick="openSettleModal('${item.id}')" class="px-4 py-2 rounded-xl text-white font-black text-xs shadow-sm active:scale-95 transition-transform flex items-center gap-1.5" style="background:${isUtang ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#10B981,#059669)'}">
+              <span>${isUtang ? '💸 Bayar / Cicil Utang' : '💰 Terima Pembayaran'}</span>
+            </button>
+          ` : `
+            <span class="text-[11px] font-black text-emerald-600">🎉 Sudah Lunas Sepenuhnya</span>
+          `}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAll() {
+  renderNetWorthHero();
+  renderBookList();
+}
+
+// ================================================================
+// LOGIKA 1 & 2: PENCATATAN AWAL UTANG & PIUTANG
+// ================================================================
+window.openCreateDebtModal = function(defaultType) {
+  document.getElementById('create-debt-form').reset();
+  document.getElementById('cd-edit-id').value = '';
+  document.getElementById('cd-date').value = today();
+  document.getElementById('cd-due-date').value = '';
+  populateWalletSelect('cd-wallet');
+
+  const targetType = defaultType === 'Piutang' ? 'Piutang' : 'Utang';
+  S.utangMode = 'tunai';
+  setCreateDebtType(targetType);
+  openModal('create-debt-modal');
+};
+
+window.setCreateDebtType = function(type) {
+  S.createType = type === 'Piutang' ? 'Piutang' : 'Utang';
+  const btnU = document.getElementById('cd-type-utang');
+  const btnP = document.getElementById('cd-type-piutang');
+  const hdrIcon  = document.getElementById('cd-header-icon');
+  const hdrTitle = document.getElementById('cd-header-title');
+  const hdrSub   = document.getElementById('cd-header-sub');
+  const modeWrap = document.getElementById('cd-utang-mode-wrap');
+  const contactLbl = document.getElementById('cd-contact-label');
+  const submitBtn  = document.getElementById('cd-submit-btn');
+  const submitTxt  = document.getElementById('cd-submit-text');
+
+  if (S.createType === 'Utang') {
+    btnU.className = 'py-2.5 rounded-xl font-black text-xs transition-all bg-red-500 text-white shadow-sm';
+    btnP.className = 'py-2.5 rounded-xl font-black text-xs transition-all text-slate-600';
+    hdrIcon.style.background = 'linear-gradient(135deg,#EF4444,#DC2626)';
+    hdrIcon.textContent = '📥';
+    hdrTitle.textContent = 'Catat Utang Baru';
+    hdrSub.textContent = 'Meminjam uang dari orang lain atau Paylater';
+    modeWrap.classList.remove('hidden');
+    contactLbl.textContent = 'Nama Pemberi Pinjaman / Platform';
+    submitBtn.style.background = 'linear-gradient(135deg,#EF4444,#DC2626)';
+    submitTxt.textContent = 'Simpan Catatan Utang';
+    setUtangMode(S.utangMode || 'tunai');
+  } else {
+    btnP.className = 'py-2.5 rounded-xl font-black text-xs transition-all bg-emerald-600 text-white shadow-sm';
+    btnU.className = 'py-2.5 rounded-xl font-black text-xs transition-all text-slate-600';
+    hdrIcon.style.background = 'linear-gradient(135deg,#10B981,#059669)';
+    hdrIcon.textContent = '📤';
+    hdrTitle.textContent = 'Catat Pemberian Piutang';
+    hdrSub.textContent = 'Meminjamkan uang Anda ke orang lain';
+    modeWrap.classList.add('hidden');
+    document.getElementById('cd-wallet-wrap').classList.remove('hidden');
+    document.getElementById('cd-expense-cat-wrap').classList.add('hidden');
+    document.getElementById('cd-wallet-label').textContent = 'Ambil dari Sumber Dana (Dompet/Rekening) *';
+    contactLbl.textContent = 'Nama Peminjam (Orang yang Berutang ke Anda)';
+    submitBtn.style.background = 'linear-gradient(135deg,#10B981,#059669)';
+    submitTxt.textContent = 'Simpan Catatan Piutang';
+    updateCreateImpactPreview();
+  }
+};
+
+window.setUtangMode = function(mode) {
+  S.utangMode = mode === 'barang' ? 'barang' : 'tunai';
+  document.getElementById('umode-tunai').classList.toggle('active', S.utangMode === 'tunai');
+  document.getElementById('umode-barang').classList.toggle('active', S.utangMode === 'barang');
+
+  const walletWrap = document.getElementById('cd-wallet-wrap');
+  const expCatWrap = document.getElementById('cd-expense-cat-wrap');
+  const walletLbl  = document.getElementById('cd-wallet-label');
+
+  if (S.utangMode === 'tunai') {
+    walletWrap.classList.remove('hidden');
+    expCatWrap.classList.add('hidden');
+    walletLbl.textContent = 'Uang Pinjaman Masuk ke Dompet / Rekening Mana? *';
+  } else {
+    walletWrap.classList.add('hidden');
+    expCatWrap.classList.remove('hidden');
+  }
+  updateCreateImpactPreview();
+};
+
+window.updateCreateImpactPreview = function() {
+  const amt = Number(document.getElementById('cd-amount')?.value) || 0;
+  const walletId = document.getElementById('cd-wallet')?.value;
+  const warnEl = document.getElementById('cd-wallet-warn');
+  const submitBtn = document.getElementById('cd-submit-btn');
+
+  const tagEl = document.getElementById('cd-impact-mode-tag');
+  const kasEl = document.getElementById('cd-imp-kas');
+  const utgEl = document.getElementById('cd-imp-utang');
+  const piuEl = document.getElementById('cd-imp-piutang');
+
+  if (warnEl) warnEl.classList.add('hidden');
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+
+  if (S.createType === 'Utang') {
+    if (S.utangMode === 'tunai') {
+      tagEl.textContent = 'Terima Utang (Dapat Uang)';
+      kasEl.innerHTML = `<span class="impact-badge-up">📈 +${amt > 0 ? idr(amt) : 'Bertambah'}</span>`;
+      utgEl.innerHTML = `<span class="impact-badge-up">📈 +${amt > 0 ? idr(amt) : 'Bertambah'}</span>`;
+      piuEl.innerHTML = `<span class="impact-badge-neutral">— Tidak Ada</span>`;
+    } else {
+      tagEl.textContent = 'Ngutang Barang / Paylater';
+      kasEl.innerHTML = `<span class="impact-badge-neutral">Tetap (Pengeluaran +)</span>`;
+      utgEl.innerHTML = `<span class="impact-badge-up">📈 +${amt > 0 ? idr(amt) : 'Bertambah'}</span>`;
+      piuEl.innerHTML = `<span class="impact-badge-neutral">— Tidak Ada</span>`;
+    }
+  } else {
+    // Beri Piutang -> Cek apakah saldo dompet mencukupi
+    tagEl.textContent = 'Beri Piutang (Pinjamkan Uang)';
+    kasEl.innerHTML = `<span class="impact-badge-down">📉 -${amt > 0 ? idr(amt) : 'Berkurang'}</span>`;
+    utgEl.innerHTML = `<span class="impact-badge-neutral">— Tidak Ada</span>`;
+    piuEl.innerHTML = `<span class="impact-badge-up">📈 +${amt > 0 ? idr(amt) : 'Bertambah'}</span>`;
+
+    if (S.dompetList.length > 0 && walletId && amt > 0) {
+      const avail = hitungSaldoDompet(walletId);
+      if (amt > avail) {
+        if (warnEl) {
+          warnEl.textContent = `⚠️ Saldo ${getWalletName(walletId)} (${idr(avail)}) tidak cukup untuk meminjamkan ${idr(amt)}.`;
+          warnEl.classList.remove('hidden');
+        }
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.45'; }
+      }
+    }
+  }
+};
+
+window.handleCreateDebtSubmit = async function(e) {
+  e.preventDefault();
+  const contact = document.getElementById('cd-contact').value.trim();
+  const phone   = document.getElementById('cd-phone').value.trim();
+  const amt     = Number(document.getElementById('cd-amount').value) || 0;
+  const walletId = document.getElementById('cd-wallet').value || (S.dompetList[0] ? S.dompetList[0].id : '');
+  const expCat  = document.getElementById('cd-expense-cat').value || 'Kebutuhan';
+  const dt      = document.getElementById('cd-date').value || today();
+  const dueDt   = document.getElementById('cd-due-date').value || '';
+  const notes   = document.getElementById('cd-notes').value.trim();
+
+  if (!contact || !(amt > 0)) return;
+
+  const newDebt = {
+    id: 'debt_' + Date.now(),
+    Tipe: S.createType,
+    'Nama Kontak': contact,
+    Nominal: amt,
+    Terbayar: 0,
+    Status: 'Belum Lunas',
+    Tanggal: dt,
+    JatuhTempo: dueDt,
+    Catatan: notes,
+    NoWa: phone,
+    DompetId: walletId,
+    ModeUtang: S.createType === 'Utang' ? S.utangMode : 'tunai',
+    KategoriBarang: S.createType === 'Utang' && S.utangMode === 'barang' ? expCat : '',
+    RiwayatBayar: []
+  };
+
+  S.debts.unshift(newDebt);
+  saveDebtsLocal();
+
+  // GERAKKAN SALDO KAS / PENGELUARAN SESUAI MATRIKS LOGIKA:
+  let cashTx = null;
+  if (S.createType === 'Utang' && S.utangMode === 'tunai') {
+    // 1A. Terima Utang Uang Tunai -> Saldo Kas Bertambah (+), Buku Utang Bertambah (+)
+    cashTx = {
+      id: 'utg_in_' + Date.now(),
+      'Kategori': 'Uang Masuk',
+      'Kategori Uang Keluar': 'Buku Utang',
+      'Jumlah Uang': amt,
+      'Tanggal': dt + 'T12:00:00',
+      'Deskripsi': `[Terima Pinjaman Utang] dari ${contact}${notes ? ' — ' + notes : ''}`,
+      'DompetId': walletId
+    };
+  } else if (S.createType === 'Utang' && S.utangMode === 'barang') {
+    // 1B. Kasus Khusus Ngutang Barang / Paylater -> Saldo Kas Tidak Berubah, Pengeluaran (+), Buku Utang (+)
+    cashTx = {
+      id: 'utg_brg_' + Date.now(),
+      'Kategori': 'Uang Keluar',
+      'Kategori Uang Keluar': expCat,
+      'Jumlah Uang': amt,
+      'Tanggal': dt + 'T12:00:00',
+      'Deskripsi': `${notes || ('Belanja via ' + contact)} (Dicatat via Utang/Paylater ${contact})`,
+      'DompetId': '' // Kosong agar tidak memotong Saldo Kas dompet tunai/rekening saat ini
+    };
+  } else if (S.createType === 'Piutang') {
+    // 2A. Beri Piutang -> Saldo Kas Berkurang (-), Buku Piutang Bertambah (+)
+    cashTx = {
+      id: 'piu_out_' + Date.now(),
+      'Kategori': 'Uang Keluar',
+      'Kategori Uang Keluar': 'Cicilan & Utang',
+      'Jumlah Uang': amt,
+      'Tanggal': dt + 'T12:00:00',
+      'Deskripsi': `[Beri Piutang] Pinjamkan ke ${contact}${notes ? ' — ' + notes : ''}`,
+      'DompetId': walletId
+    };
+  }
+
+  if (cashTx) {
+    S.transactions.unshift(cashTx);
+    saveTransactionsLocal();
+    postData('addData', cashTx).catch(() => {});
+  }
+
+  const sheetDebtPayload = buildSheetDebtPayload(newDebt);
+  postData('addDebt', sheetDebtPayload).then(res => {
+    if (res && res.status === 'success' && res.data && res.data.id) {
+      newDebt.id = String(res.data.id);
+      saveDebtsLocal();
+    }
+  }).catch(() => {});
+
+  S.activeTab = S.createType;
+  switchBookTab(S.activeTab);
+  renderAll();
+  closeModal('create-debt-modal');
+  showSuccess(S.createType === 'Utang'
+    ? (S.utangMode === 'barang' ? 'Utang barang/Paylater & Pengeluaran tercatat!' : 'Pinjaman Utang & penambahan Saldo Kas tercatat!')
+    : 'Piutang baru & pemotongan Saldo Kas tercatat!');
+};
+
+// ================================================================
+// PELUNASAN UTANG & PENERIMAAN PEMBAYARAN PIUTANG (CICIL / LUNAS)
+// ================================================================
+window.openSettleModal = function(debtId) {
+  const item = S.debts.find(d => String(d.id) === String(debtId));
+  if (!item) return;
+
+  const isUtang = item.Tipe === 'Utang';
+  const sisa = Math.max(0, (Number(item.Nominal) || 0) - (Number(item.Terbayar) || 0));
+
+  document.getElementById('st-debt-id').value = item.id;
+  document.getElementById('st-contact-name').textContent = `${item.Tipe}: ${item['Nama Kontak']}${item.Catatan ? ' (' + item.Catatan + ')' : ''}`;
+  document.getElementById('st-total-initial').textContent = `Total Awal: ${idr(item.Nominal)} · Terbayar: ${idr(item.Terbayar)}`;
+  document.getElementById('st-remaining-amount').textContent = idr(sisa);
+  document.getElementById('st-remaining-amount').className = `text-sm font-black ${isUtang ? 'text-rose-600' : 'text-emerald-600'}`;
+
+  const stIcon  = document.getElementById('st-icon');
+  const stTitle = document.getElementById('st-title');
+  const stSub   = document.getElementById('st-subtitle');
+  const wLabel  = document.getElementById('st-wallet-label');
+  const subBtn  = document.getElementById('st-submit-btn');
+  const subTxt  = document.getElementById('st-submit-text');
+
+  if (isUtang) {
+    stIcon.style.background = 'linear-gradient(135deg,#EF4444,#DC2626)';
+    stIcon.textContent = '💸';
+    stTitle.textContent = 'Bayar / Lunasi Utang';
+    stSub.textContent = 'Saldo Kas berkurang (-) & Saldo Utang berkurang (-)';
+    wLabel.textContent = 'Wajib Pilih Sumber Dana Pembayaran (Dompet/Rekening) *';
+    subBtn.style.background = 'linear-gradient(135deg,#EF4444,#DC2626)';
+    subTxt.textContent = 'Bayar Utang Sekarang';
+  } else {
+    stIcon.style.background = 'linear-gradient(135deg,#10B981,#059669)';
+    stIcon.textContent = '💰';
+    stTitle.textContent = 'Terima Pembayaran Piutang';
+    stSub.textContent = 'Saldo Kas bertambah (+) & Saldo Piutang berkurang (-)';
+    wLabel.textContent = 'Wajib Pilih Dompet / Rekening Penerima Dana *';
+    subBtn.style.background = 'linear-gradient(135deg,#10B981,#059669)';
+    subTxt.textContent = 'Terima Dana Piutang';
+  }
+
+  populateWalletSelect('st-wallet', item.DompetId);
+  document.getElementById('st-date').value = today();
+  document.getElementById('st-note').value = '';
+  setSettleAmountMode('full');
+  openModal('settle-modal');
+};
+
+window.setSettleAmountMode = function(mode) {
+  S.settleMode = mode === 'partial' ? 'partial' : 'full';
+  const id = document.getElementById('st-debt-id').value;
+  const item = S.debts.find(d => String(d.id) === String(id));
+  const sisa = item ? Math.max(0, (Number(item.Nominal) || 0) - (Number(item.Terbayar) || 0)) : 0;
+
+  const btnFull = document.getElementById('st-mode-full');
+  const btnPart = document.getElementById('st-mode-partial');
+  const inpAmt  = document.getElementById('st-pay-amount');
+
+  if (S.settleMode === 'full') {
+    btnFull.className = 'py-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-black text-xs';
+    btnPart.className = 'py-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-600 font-black text-xs';
+    inpAmt.value = sisa;
+    inpAmt.readOnly = true;
+  } else {
+    btnPart.className = 'py-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-black text-xs';
+    btnFull.className = 'py-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-600 font-black text-xs';
+    inpAmt.value = '';
+    inpAmt.readOnly = false;
+    setTimeout(() => inpAmt.focus(), 80);
+  }
+  checkSettleBalance();
+};
+
+window.checkSettleBalance = function() {
+  const id = document.getElementById('st-debt-id').value;
+  const item = S.debts.find(d => String(d.id) === String(id));
+  if (!item) return;
+
+  const isUtang = item.Tipe === 'Utang';
+  const sisa = Math.max(0, (Number(item.Nominal) || 0) - (Number(item.Terbayar) || 0));
+  let payAmt = Number(document.getElementById('st-pay-amount')?.value) || 0;
+  if (payAmt > sisa) {
+    payAmt = sisa;
+    document.getElementById('st-pay-amount').value = sisa;
+  }
+
+  const walletId = document.getElementById('st-wallet')?.value;
+  const walletName = getWalletName(walletId);
+  const warnEl = document.getElementById('st-wallet-warn');
+  const submitBtn = document.getElementById('st-submit-btn');
+  const sumEl = document.getElementById('st-impact-summary');
+
+  if (warnEl) warnEl.classList.add('hidden');
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+
+  const sisaBaru = Math.max(0, sisa - payAmt);
+  if (isUtang) {
+    sumEl.innerHTML = `• Saldo <b>${walletName}</b> berkurang <span class="text-rose-600 font-black">-${idr(payAmt)}</span><br>• Sisa Utang ke <b>${item['Nama Kontak']}</b> menjadi <b>${idr(sisaBaru)}</b> ${sisaBaru === 0 ? '<span class="text-emerald-600 font-black">(LUNAS)</span>' : ''}`;
+    if (S.dompetList.length > 0 && walletId && payAmt > 0) {
+      const avail = hitungSaldoDompet(walletId);
+      if (payAmt > avail) {
+        warnEl.textContent = `⚠️ Saldo ${walletName} (${idr(avail)}) kurang untuk membayar ${idr(payAmt)}.`;
+        warnEl.classList.remove('hidden');
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.45';
+      }
+    }
+  } else {
+    sumEl.innerHTML = `• Saldo <b>${walletName}</b> bertambah <span class="text-emerald-600 font-black">+${idr(payAmt)}</span><br>• Sisa Piutang <b>${item['Nama Kontak']}</b> menjadi <b>${idr(sisaBaru)}</b> ${sisaBaru === 0 ? '<span class="text-emerald-600 font-black">(LUNAS)</span>' : ''}`;
+  }
+};
+
+window.handleSettleSubmit = async function(e) {
+  e.preventDefault();
+  const id = document.getElementById('st-debt-id').value;
+  const item = S.debts.find(d => String(d.id) === String(id));
+  if (!item) return;
+
+  const isUtang = item.Tipe === 'Utang';
+  const sisa = Math.max(0, (Number(item.Nominal) || 0) - (Number(item.Terbayar) || 0));
+  const payAmt = Math.min(sisa, Number(document.getElementById('st-pay-amount').value) || 0);
+  const walletId = document.getElementById('st-wallet').value || (S.dompetList[0] ? S.dompetList[0].id : '');
+  const dt = document.getElementById('st-date').value || today();
+  const note = document.getElementById('st-note').value.trim();
+
+  if (!(payAmt > 0)) return;
+
+  item.Terbayar = (Number(item.Terbayar) || 0) + payAmt;
+  if (item.Terbayar >= item.Nominal) {
+    item.Terbayar = item.Nominal;
+    item.Status = 'Lunas';
+  } else {
+    item.Status = 'Belum Lunas';
+  }
+
+  if (!Array.isArray(item.RiwayatBayar)) item.RiwayatBayar = [];
+  item.RiwayatBayar.push({
+    tanggal: dt,
+    nominal: payAmt,
+    dompetId: walletId,
+    catatan: note || (item.Status === 'Lunas' ? 'Pelunasan' : 'Cicilan')
+  });
+  saveDebtsLocal();
+
+  // CATAT PERGERAKAN SALDO KAS DI TRANSAKSI DOMPET:
+  const settleTx = isUtang
+    ? {
+        id: 'utg_pay_' + Date.now(),
+        'Kategori': 'Uang Keluar',
+        'Kategori Uang Keluar': 'Cicilan & Utang',
+        'Jumlah Uang': payAmt,
+        'Tanggal': dt + 'T12:00:00',
+        'Deskripsi': `[Bayar Utang] ke ${item['Nama Kontak']}${note ? ' (' + note + ')' : ''}${item.Status === 'Lunas' ? ' — LUNAS' : ''}`,
+        'DompetId': walletId
+      }
+    : {
+        id: 'piu_rcv_' + Date.now(),
+        'Kategori': 'Uang Masuk',
+        'Kategori Uang Keluar': 'Pelunasan Piutang',
+        'Jumlah Uang': payAmt,
+        'Tanggal': dt + 'T12:00:00',
+        'Deskripsi': `[Terima Piutang] dari ${item['Nama Kontak']}${note ? ' (' + note + ')' : ''}${item.Status === 'Lunas' ? ' — LUNAS' : ''}`,
+        'DompetId': walletId
+      };
+
+  S.transactions.unshift(settleTx);
+  saveTransactionsLocal();
+  postData('addData', settleTx).catch(() => {});
+
+  const statusForSheet = item.Status === 'Lunas'
+    ? 'Lunas'
+    : `Belum Lunas (Terbayar: ${item.Terbayar})`;
+  postData('updateDebtStatus', { id: item.id, status: statusForSheet }).catch(() => {});
+
+  renderAll();
+  closeModal('settle-modal');
+  showSuccess(item.Status === 'Lunas'
+    ? `🎉 ${item.Tipe} ${item['Nama Kontak']} telah LUNAS!`
+    : `Pembayaran ${idr(payAmt)} berhasil dicatat!`);
+};
+
+// ================================================================
+// PENGINGAT WHATSAPP & HAPUS CATATAN
+// ================================================================
+window.sendWhatsAppReminder = function(id) {
+  const item = S.debts.find(d => String(d.id) === String(id));
+  if (!item || !item.NoWa) return;
+  let phone = String(item.NoWa).replace(/[^0-9]/g, '');
+  if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+  const sisa = Math.max(0, (Number(item.Nominal) || 0) - (Number(item.Terbayar) || 0));
+  const msg = item.Tipe === 'Piutang'
+    ? `Halo ${item['Nama Kontak']}, sekadar mengingatkan untuk pinjaman sebesar ${idr(sisa)}${item.Catatan ? ' (' + item.Catatan + ')' : ''}. Terima kasih ya! 🙏`
+    : `Halo ${item['Nama Kontak']}, saya ingin konfirmasi mengenai catatan utang saya sebesar ${idr(sisa)}${item.Catatan ? ' (' + item.Catatan + ')' : ''}. 🙏`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+window.promptDeleteDebt = function(id) {
+  const item = S.debts.find(d => String(d.id) === String(id));
+  if (!item) return;
+  S.deleteTargetId = item.id;
+  document.getElementById('del-debt-desc').textContent =
+    `Hapus catatan ${item.Tipe} "${item['Nama Kontak']}" sebesar ${idr(item.Nominal)}?`;
+  openModal('delete-debt-modal');
+};
+
+window.confirmDeleteDebt = function() {
+  const id = S.deleteTargetId;
+  if (!id) return;
+  S.debts = S.debts.filter(d => String(d.id) !== String(id));
+  saveDebtsLocal();
+  closeModal('delete-debt-modal');
+  renderAll();
+  showSuccess('Catatan berhasil dihapus.');
+  postData('deleteDebt', { id }).catch(() => {});
+};
+
+// ================================================================
+// SINKRONISASI LATAR BELAKANG DENGAN GOOGLE SHEETS USER
+// ================================================================
+async function syncWithServer() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read&_t=' + Date.now());
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      if (Array.isArray(d.data.transactions)) {
+        S.transactions = d.data.transactions;
+        saveTransactionsLocal();
+      }
+      if (Array.isArray(d.data.dompet)) {
+        S.dompetList = d.data.dompet.map(w => ({
+          id: w.id,
+          nama: w.nama,
+          tipe: w.tipe || 'bank',
+          provider: w.keterangan || w.nama,
+          logo: w.logo || null,
+          background: w.background || null,
+          saldoAwal: Number(w.nominal) || 0
+        }));
+        try { localStorage.setItem('keuangan_dompet_list', JSON.stringify(S.dompetList)); } catch(e) {}
+      }
+      if (Array.isArray(d.data.debts)) {
+        const srvDebts = normalizeDebtList(d.data.debts, S.debts);
+        if (srvDebts.length > 0 || S.debts.length === 0) {
+          S.debts = srvDebts;
+          saveDebtsLocal();
+        }
+      }
+      renderAll();
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch(e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+  loadLocalCaches();
+  renderAll();
+  syncWithServer();
+});
+</script>
+</body>
+</html>
