@@ -1,3 +1,13 @@
+Kode HTML Halaman Beranda / Home (keloladuit.my.id/home) — Tombol Utang/Piutang Langsung Menuju keloladuit.my.id/utangpiutang
+
+Pembaruan pada halaman https://keloladuit.my.id/home:
+
+Direct Link ke Halaman Utang & Piutang: Tombol 🤝 Utang/Piutang pada deretan Aksi Cepat di Beranda kini langsung terhubung ke https://keloladuit.my.id/utangpiutang (target="_top" + fungsi goToUtangPiutangPage(event) yang mengamankan sesi pengguna terlebih dahulu sebelum berpindah halaman).
+
+Direct Link ke Halaman Akun: Tombol Avatar & ikon Pengaturan di atas tetap langsung mengarah ke https://keloladuit.my.id/account.
+
+Klik tombol Copy / Salin di pojok kanan atas blok kode di bawah ini:
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -346,10 +356,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black shadow-sm" style="background:linear-gradient(135deg,#0EA5E9,#0369A1);color:#fff">$€</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Transaksi<br>Valas</span>
           </button>
-          <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+          <!-- DIRECT LINK KE KELOLADUIT.MY.ID/UTANGPIUTANG -->
+          <a href="https://keloladuit.my.id/utangpiutang" target="_top" onclick="goToUtangPiutangPage(event)" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform" style="text-decoration:none">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EC4899,#BE185D);color:#fff">🤝</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Utang/<br>Piutang</span>
-          </button>
+          </a>
           <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Investasi</span>
@@ -1365,7 +1376,7 @@ function checkAkunSession() {
   return false;
 }
 
-// ── REDIRECT KE HALAMAN ACCOUNT (keloladuit.my.id/account) ──
+// ── REDIRECT KE HALAMAN ACCOUNT (keloladuit.my.id/account) & UTANG/PIUTANG (keloladuit.my.id/utangpiutang) ──
 window.goToAccountPage = function(e) {
   if (e) e.preventDefault();
   if (S.akun && S.akun.gsUrl) {
@@ -1379,6 +1390,20 @@ window.goToAccountPage = function(e) {
 };
 window.openSettingsModal = function() {
   window.goToAccountPage();
+};
+
+window.goToUtangPiutangPage = function(e) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/utangpiutang';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/utangpiutang';
+  }
 };
 
 function getQuickAddStorageKey() {
