@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Daftar Rekening — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F4FAF8;
+  --primary: #10B981;
+  --teal-dark: #0F3F38;
+  --ease: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(180deg, #E6F7F2 0%, #F4FAF8 260px, #F8FAFC 100%);
+  color: #0F172A;
+  margin: 0;
+  padding-bottom: 104px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes orbPing {
+  0% { opacity: 0.8; transform: scale(0.9); }
+  70% { opacity: 0; transform: scale(1.18); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+.fade-up { animation: fadeUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.s1 { animation-delay: 0.04s; }
+.s2 { animation-delay: 0.08s; }
+.s3 { animation-delay: 0.12s; }
+
+/* Portfolio Hero Card */
+.rek-hero-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 22px 20px;
+  background: linear-gradient(135deg, #064E3B 0%, #0F3F38 52%, #047857 100%);
+  color: #FFFFFF;
+  box-shadow: 0 16px 36px -8px rgba(6, 78, 59, 0.35), 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+.rek-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -40px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.28) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Filter Pills */
+.rek-tab-pill {
+  padding: 8px 14px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #64748B;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.16s ease;
+}
+.rek-tab-pill.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+/* Bank / Wallet Visual Card */
+.wallet-visual-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #FFFFFF;
+  border: 1.5px solid #EEF2F6;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.05);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.wallet-visual-card:hover {
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+.wallet-banner-top {
+  position: relative;
+  padding: 18px 18px 16px;
+  color: #FFFFFF;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+.wallet-banner-top::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.34) 100%);
+  pointer-events: none;
+}
+
+/* Provider Selection Item */
+.prov-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.prov-item:hover { border-color: #CBD5E1; background: #F8FAFC; }
+.prov-item.selected {
+  border-color: #10B981;
+  background: #ECFDF5;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.14);
+}
+
+/* Form Input */
+.fi {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.fi:focus {
+  border-color: #10B981;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+/* Modal Backdrop & Sheet */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 60;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.26s ease;
+}
+.modal-backdrop.show { opacity: 1; }
+.sheet {
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.34s cubic-bezier(0.32, 1.25, 0.64, 1);
+  box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.14);
+}
+.modal-backdrop.show .sheet { transform: translateY(0); }
+
+/* Bottom Nav */
+.nav-btn { color: #94A3B8; transition: color 0.2s, transform 0.15s; text-decoration: none; }
+.nav-btn.active { color: #10B981; }
+.nav-btn:active { transform: scale(0.92); }
+.ai-nav-orb {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10B981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.42);
+}
+.orb-ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(16, 185, 129, 0.35);
+  animation: orbPing 2.2s ease-out infinite;
+  pointer-events: none;
+}
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+.check-svg .check-path { stroke-dasharray: 28; stroke-dashoffset: 28; animation: checkDraw 0.38s ease 0.05s forwards; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 bg-black/25 backdrop-blur-sm z-[90] hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl p-6 text-center max-w-xs w-full shadow-2xl" style="animation:scaleIn .25s ease forwards">
+    <div class="w-14 h-14 bg-emerald-50 rounded-full mx-auto flex items-center justify-center mb-3">
+      <svg class="w-7 h-7 text-emerald-500 check-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <h3 class="text-base font-black text-slate-900 mb-0.5">Berhasil!</h3>
+    <p id="success-msg" class="text-xs text-slate-400 font-medium"></p>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN CONTAINER ═══════════ -->
+<div class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- TOP HEADER -->
+  <header class="px-5 pt-7 pb-3 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="https://keloladuit.my.id/account" target="_top" class="w-10 h-10 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-700 active:scale-90 transition-transform flex-shrink-0" aria-label="Kembali ke Akun">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="min-w-0">
+        <h1 class="text-lg font-black text-slate-900 tracking-tight leading-tight truncate">Daftar Rekening</h1>
+        <p class="text-[11px] font-semibold text-slate-400 truncate">Dompet Digital, Bank &amp; Kartu Kredit</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button type="button" onclick="openTransferModal()" class="px-3 py-2.5 rounded-2xl bg-violet-50 border border-violet-200/80 text-violet-700 font-black text-xs active:scale-95 transition-transform flex items-center gap-1">
+        <span>💸 Transfer</span>
+      </button>
+      <button type="button" onclick="openDompetModal()" class="px-3.5 py-2.5 rounded-2xl text-white font-black text-xs shadow-md active:scale-95 transition-transform flex items-center gap-1" style="background:linear-gradient(135deg,#10B981,#059669)">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        <span>Tambah</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="px-5 space-y-4 flex-1">
+
+    <!-- ═══════════ PORTFOLIO HERO CARD ═══════════ -->
+    <div class="rek-hero-card fade-up">
+      <div class="relative z-10 flex items-center justify-between mb-1">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-extrabold uppercase tracking-wider text-emerald-200">
+          💳 Portofolio Rekening Terhubung
+        </span>
+        <button type="button" onclick="toggleHideBalance()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white active:scale-90 transition-transform" title="Sembunyikan / Tampilkan Saldo">
+          <svg id="eye-icon-open" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="relative z-10 mt-2">
+        <p class="text-xs font-bold text-emerald-100/80">Total Saldo Aktif Bersih</p>
+        <h2 id="hero-net-balance" class="text-3xl font-black tracking-tight mt-0.5">Rp 0</h2>
+      </div>
+
+      <div class="relative z-10 grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/15">
+        <div class="bg-black/15 rounded-xl p-2.5">
+          <p class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-200/80">🏦 Bank &amp; Tunai</p>
+          <p id="sum-bank-cash" class="text-xs font-black mt-1 truncate">Rp 0</p>
+        </div>
+        <div class="bg-black/15 rounded-xl p-2.5">
+          <p class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-200/80">📱 E-Wallet</p>
+          <p id="sum-emoney" class="text-xs font-black mt-1 truncate">Rp 0</p>
+        </div>
+        <div class="bg-black/15 rounded-xl p-2.5">
+          <p class="text-[9px] font-extrabold uppercase tracking-wider text-amber-200">💳 Tagihan KK</p>
+          <p id="sum-credit" class="text-xs font-black mt-1 truncate text-amber-300">Rp 0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ FILTER TABS & SEARCH ═══════════ -->
+    <div class="space-y-2.5 fade-up s1">
+      <div class="flex items-center gap-2 overflow-x-auto no-scroll pb-0.5">
+        <button type="button" onclick="setRekFilter('all')" id="rtab-all" class="rek-tab-pill active">
+          <span>Semua</span>
+          <span id="rcount-all" class="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="setRekFilter('bank')" id="rtab-bank" class="rek-tab-pill">
+          <span>🏦 Bank</span>
+          <span id="rcount-bank" class="text-[10px] opacity-75">0</span>
+        </button>
+        <button type="button" onclick="setRekFilter('emoney')" id="rtab-emoney" class="rek-tab-pill">
+          <span>📱 E-Wallet</span>
+          <span id="rcount-emoney" class="text-[10px] opacity-75">0</span>
+        </button>
+        <button type="button" onclick="setRekFilter('kredit')" id="rtab-kredit" class="rek-tab-pill">
+          <span>💳 Kartu Kredit</span>
+          <span id="rcount-kredit" class="text-[10px] opacity-75">0</span>
+        </button>
+        <button type="button" onclick="setRekFilter('tunai')" id="rtab-tunai" class="rek-tab-pill">
+          <span>💵 Tunai</span>
+          <span id="rcount-tunai" class="text-[10px] opacity-75">0</span>
+        </button>
+      </div>
+
+      <div class="relative">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" id="rek-search-input" placeholder="Cari nama rekening, dompet digital, atau bank…" class="fi pl-10 py-2.5 bg-white text-xs" oninput="onRekSearch(this.value)">
+      </div>
+    </div>
+
+    <!-- ═══════════ DAFTAR KARTU REKENING ═══════════ -->
+    <div id="rekening-list-container" class="space-y-3.5 fade-up s2 pb-4"></div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 1: TAMBAH / EDIT REKENING, E-WALLET, ATAU KARTU KREDIT
+════════════════════════════════════════════════════════════════════ -->
+<div id="dompet-backdrop" class="modal-backdrop" onclick="if(event.target===this)closeModal('dompet-backdrop')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 id="dompet-modal-title" class="text-lg font-black text-slate-900">Tambah Rekening Baru</h2>
+        <p class="text-xs font-semibold text-slate-400">Pilih bank, e-wallet, kartu kredit, atau kas tunai</p>
+      </div>
+      <button type="button" onclick="closeModal('dompet-backdrop')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">✕</button>
+    </div>
+
+    <form id="dompet-form" class="space-y-3.5" onsubmit="handleDompetSubmit(event)">
+      <input type="hidden" id="dompet-id">
+
+      <!-- Pilih Jenis Rekening (4 Tipe) -->
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5">Jenis Rekening / Dompet</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="selectDompetTipe('bank')" id="dtipe-bank" class="py-2.5 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs font-black flex items-center justify-center gap-1.5">🏦 Rekening Bank</button>
+          <button type="button" onclick="selectDompetTipe('emoney')" id="dtipe-emoney" class="py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black flex items-center justify-center gap-1.5">📱 E-Wallet</button>
+          <button type="button" onclick="selectDompetTipe('kredit')" id="dtipe-kredit" class="py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black flex items-center justify-center gap-1.5">💳 Kartu Kredit</button>
+          <button type="button" onclick="selectDompetTipe('tunai')" id="dtipe-tunai" class="py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black flex items-center justify-center gap-1.5">💵 Uang Tunai</button>
+        </div>
+      </div>
+
+      <!-- Pilih Penyedia Bank / E-Wallet -->
+      <div id="dompet-provider-wrap">
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Pilih Penyedia / Bank</label>
+          <input type="text" id="prov-search-inp" placeholder="Filter penyedia…" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-[11px] font-bold w-36 outline-none" oninput="renderDompetProviders()">
+        </div>
+        <div id="dompet-provider-list" class="grid grid-cols-2 gap-2 max-h-44 overflow-y-auto pr-1 p-1 bg-slate-50/70 rounded-2xl border border-slate-100"></div>
+      </div>
+
+      <!-- Nama Rekening & Nomor Rekening / 4 Digit -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="col-span-2">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Nama Rekening / Dompet *</label>
+          <input type="text" id="dompet-nama" placeholder="Cth: BCA Utama / GoPay" class="fi" required>
+        </div>
+        <div>
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">4 Digit / No. Rek</label>
+          <input type="text" id="dompet-norek" placeholder="4821" maxlength="18" class="fi">
+        </div>
+      </div>
+
+      <!-- Saldo Awal / Saldo Saat Ini -->
+      <div>
+        <label id="dompet-saldo-label" class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Saldo Awal (Rp) *</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">Rp</span>
+          <input type="number" id="dompet-saldo" placeholder="0" class="fi pl-10" required>
+        </div>
+        <p id="dompet-saldo-hint" class="text-[10px] font-semibold text-slate-400 mt-1">Saldo aktif akan otomatis dihitung dari Saldo Awal + Pemasukan - Pengeluaran.</p>
+      </div>
+
+      <!-- Khusus Kartu Kredit: Limit & Tanggal Jatuh Tempo -->
+      <div id="kredit-extra-wrap" class="hidden space-y-3 p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80">
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-[10px] font-black text-amber-900 uppercase tracking-wider block mb-1">Limit Kartu (Rp)</label>
+            <input type="number" id="dompet-limit" placeholder="15000000" class="fi bg-white">
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-amber-900 uppercase tracking-wider block mb-1">Tgl Jatuh Tempo</label>
+            <input type="number" id="dompet-dueday" placeholder="Cth: 25" min="1" max="31" class="fi bg-white">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2.5 pt-2">
+        <button type="button" id="dompet-delete-btn" onclick="handleDeleteDompetFromModal()" class="hidden px-4 py-3.5 rounded-2xl bg-red-50 text-red-600 font-black text-xs active:scale-95 transition-transform">
+          Hapus
+        </button>
+        <button type="submit" id="dompet-save-btn" class="flex-1 py-3.5 rounded-2xl text-white font-black text-sm shadow-lg active:scale-98 transition-transform" style="background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 8px 22px rgba(16,185,129,0.28)">
+          Simpan Rekening
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 2: TRANSFER ANTAR REKENING / BAYAR TAGIHAN KARTU KREDIT
+════════════════════════════════════════════════════════════════════ -->
+<div id="transfer-backdrop" class="modal-backdrop" onclick="if(event.target===this)closeModal('transfer-backdrop')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 id="tf-modal-title" class="text-lg font-black text-slate-900">💸 Transfer Antar Rekening</h2>
+        <p class="text-xs font-semibold text-slate-400">Pindahkan dana antar bank, e-wallet, atau bayar kartu kredit</p>
+      </div>
+      <button type="button" onclick="closeModal('transfer-backdrop')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">✕</button>
+    </div>
+
+    <form id="transfer-form" class="space-y-3.5" onsubmit="handleTransferSubmit(event)">
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Dari Rekening Sumber</label>
+        <select id="tf-from" class="fi" required></select>
+      </div>
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Ke Rekening Tujuan</label>
+        <select id="tf-to" class="fi" required></select>
+      </div>
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Nominal Transfer (Rp) *</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">Rp</span>
+          <input type="number" id="tf-amount" placeholder="0" min="1" class="fi pl-10 text-base font-black" required>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Biaya Admin (Opsional)</label>
+          <input type="number" id="tf-fee" placeholder="0" value="0" min="0" class="fi">
+        </div>
+        <div>
+          <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Tanggal</label>
+          <input type="date" id="tf-date" class="fi" required>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Catatan Transfer</label>
+        <input type="text" id="tf-note" placeholder="Cth: Top up e-wallet / Bayar tagihan KK" class="fi">
+      </div>
+      <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-black text-sm shadow-lg active:scale-98 transition-transform" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);box-shadow:0 8px 22px rgba(139,92,246,0.28)">
+        Kirim Transfer Sekarang
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 3: PENYESUAIAN SALDO CEPAT (BALANCE OPNAME)
+════════════════════════════════════════════════════════════════════ -->
+<div id="adjust-backdrop" class="modal-backdrop" onclick="if(event.target===this)closeModal('adjust-backdrop')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-lg font-black text-slate-900">⚖️ Sesuaikan Saldo Rekening</h3>
+        <p id="adj-wallet-name" class="text-xs font-bold text-emerald-600">Rekening</p>
+      </div>
+      <button type="button" onclick="closeModal('adjust-backdrop')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">✕</button>
+    </div>
+
+    <form onsubmit="handleAdjustBalanceSubmit(event)" class="space-y-4">
+      <input type="hidden" id="adj-dompet-id">
+      <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-500">Saldo Tercatat Saat Ini</span>
+        <span id="adj-current-val" class="text-sm font-black text-slate-900">Rp 0</span>
+      </div>
+
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Saldo Asli / Sebenarnya (Rp) *</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">Rp</span>
+          <input type="number" id="adj-target-val" placeholder="Masukkan saldo asli saat ini…" class="fi pl-10 text-base font-black" required oninput="updateAdjustDiffPreview()">
+        </div>
+        <p id="adj-diff-preview" class="text-[11px] font-bold text-slate-400 mt-1.5">Selisih: Rp 0</p>
+      </div>
+
+      <div>
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5">Metode Penyesuaian</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="adj-mode-tx" onclick="setAdjustMode('tx')" class="py-2.5 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-[11px] font-black">Catat Selisih di Riwayat</button>
+          <button type="button" id="adj-mode-init" onclick="setAdjustMode('init')" class="py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-[11px] font-black">Ubah Saldo Awal Saja</button>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-98 transition-transform">
+        Terapkan Saldo Baru
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 4: RINCIAN & RIWAYAT TRANSAKSI REKENING (FULL SCREEN)
+════════════════════════════════════════════════════════════════════ -->
+<div id="dompet-detail-backdrop" class="modal-backdrop" style="align-items:stretch;justify-content:center;z-index:75">
+  <div id="dompet-detail-sheet" style="background:#F0F4F8;width:100%;max-width:480px;height:100vh;max-height:100vh;display:flex;flex-direction:column;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.15)">
+    <div id="dd-banner" style="position:relative;padding:28px 22px 26px;color:#fff;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#0C3C78,#061F42);background-size:cover;background-position:center">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.32) 100%);pointer-events:none"></div>
+      <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <button type="button" onclick="closeModal('dompet-detail-backdrop')" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.18);backdrop-filter:blur(6px);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff" class="active:scale-90 transition-transform" aria-label="Kembali">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <img id="dd-logo" src="" alt="" style="height:28px;max-width:110px;object-fit:contain;display:none" onerror="this.style.display='none'">
+          <span id="dd-tipe-badge" style="font-size:10px;font-weight:900;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,0.2);color:#fff">BANK</span>
+          <button type="button" id="dd-edit-btn" style="padding:6px 12px;border-radius:99px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:10px;font-weight:800;cursor:pointer">Edit Rekening</button>
+        </div>
+      </div>
+      <div style="position:relative;z-index:1">
+        <p id="dd-nama" style="font-size:14px;font-weight:800;color:rgba(255,255,255,0.88);margin-bottom:4px">Rekening</p>
+        <h2 id="dd-saldo" style="font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1.15">Rp 0</h2>
+        <p id="dd-meta" style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);margin-top:6px"></p>
+      </div>
+    </div>
+
+    <div style="padding:20px 18px 40px;flex:1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:#fff;border-radius:18px;padding:15px;box-shadow:0 2px 10px rgba(0,0,0,0.03);border:1px solid #F1F5F9">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">
+            <span style="color:#10B981;font-size:12px;font-weight:900">↑</span>
+            <span style="font-size:10px;font-weight:800;color:#94A3B8;letter-spacing:0.06em;text-transform:uppercase">TOTAL MASUK</span>
+          </div>
+          <p id="dd-in" style="font-size:16px;font-weight:900;color:#10B981">Rp 0</p>
+        </div>
+        <div style="background:#fff;border-radius:18px;padding:15px;box-shadow:0 2px 10px rgba(0,0,0,0.03);border:1px solid #F1F5F9">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">
+            <span style="color:#EF4444;font-size:12px;font-weight:900">↓</span>
+            <span style="font-size:10px;font-weight:800;color:#94A3B8;letter-spacing:0.06em;text-transform:uppercase">TOTAL KELUAR</span>
+          </div>
+          <p id="dd-out" style="font-size:16px;font-weight:900;color:#EF4444">Rp 0</p>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px">
+        <h3 style="font-size:15px;font-weight:900;color:#18181B">Riwayat Transaksi Rekening</h3>
+        <span id="dd-tx-count" style="font-size:12px;font-weight:700;color:#94A3B8">0 transaksi</span>
+      </div>
+      <div id="dd-tx-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR (Direct Links) ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[#F8FAFC] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <a href="https://keloladuit.my.id/home#tambah" target="_top" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;text-decoration:none">
+      <div class="ai-nav-orb">
+        <div class="orb-ping"></div>
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Tambah</span>
+    </a>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// KONFIGURASI SESI, DOMPET, BANK, E-WALLET, & KARTU KREDIT
+// ================================================================
+const GLOBAL_GS_URL    = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY     = 'keuangan_transactions_cache';
+const DOMPET_LIST_KEY  = 'keuangan_dompet_list';
+const DOMPET_META_KEY  = 'keuangan_dompet_meta_v1';
+
+const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+const today = () => new Date().toISOString().split('T')[0];
+
+const FALLBACK_BANKS = [
+  { nama: 'BCA',          gambar: '', background: 'linear-gradient(135deg,#003D79,#001E42)' },
+  { nama: 'Bank Mandiri', gambar: '', background: 'linear-gradient(135deg,#003D79,#0B5ED7)' },
+  { nama: 'BRI',          gambar: '', background: 'linear-gradient(135deg,#00529C,#002B5B)' },
+  { nama: 'BNI',          gambar: '', background: 'linear-gradient(135deg,#F15A23,#B83B0E)' },
+  { nama: 'BSI',          gambar: '', background: 'linear-gradient(135deg,#00A39D,#006B67)' },
+  { nama: 'SeaBank',      gambar: '', background: 'linear-gradient(135deg,#FF6600,#CC4400)' },
+  { nama: 'Bank Jago',    gambar: '', background: 'linear-gradient(135deg,#F59E0B,#B45309)' },
+  { nama: 'blu by BCA',   gambar: '', background: 'linear-gradient(135deg,#00A8B5,#006670)' },
+  { nama: 'CIMB Niaga',   gambar: '', background: 'linear-gradient(135deg,#B91C1C,#7F1D1D)' },
+  { nama: 'Permata Bank', gambar: '', background: 'linear-gradient(135deg,#15803D,#14532D)' },
+  { nama: 'Bank Danamon', gambar: '', background: 'linear-gradient(135deg,#EA580C,#9A3412)' },
+  { nama: 'Superbank',    gambar: '', background: 'linear-gradient(135deg,#6D28D9,#3B0764)' }
+];
+
+const FALLBACK_EMONEY = [
+  { nama: 'GoPay',        gambar: '', background: 'linear-gradient(135deg,#00AED6,#007896)' },
+  { nama: 'OVO',          gambar: '', background: 'linear-gradient(135deg,#4C3494,#2A1B54)' },
+  { nama: 'DANA',         gambar: '', background: 'linear-gradient(135deg,#118EEA,#0A5899)' },
+  { nama: 'ShopeePay',    gambar: '', background: 'linear-gradient(135deg,#EE4D2D,#B32D12)' },
+  { nama: 'LinkAja',      gambar: '', background: 'linear-gradient(135deg,#E11D48,#881337)' },
+  { nama: 'i.saku',       gambar: '', background: 'linear-gradient(135deg,#0284C7,#0369A1)' },
+  { nama: 'Flazz / E-Toll', gambar: '', background: 'linear-gradient(135deg,#1E3A8A,#0F172A)' }
+];
+
+const FALLBACK_CREDIT = [
+  { nama: 'Kartu Kredit BCA',      gambar: '', background: 'linear-gradient(135deg,#1E293B,#0F172A)' },
+  { nama: 'Kartu Kredit Mandiri',  gambar: '', background: 'linear-gradient(135deg,#312E81,#1E1B4B)' },
+  { nama: 'Kartu Kredit BNI',      gambar: '', background: 'linear-gradient(135deg,#7C2D12,#431407)' },
+  { nama: 'Kartu Kredit BRI',      gambar: '', background: 'linear-gradient(135deg,#1E3A8A,#172554)' },
+  { nama: 'Kartu Kredit CIMB',     gambar: '', background: 'linear-gradient(135deg,#7F1D1D,#450A0A)' },
+  { nama: 'SPayLater / Paylater',  gambar: '', background: 'linear-gradient(135deg,#9A3412,#431407)' },
+  { nama: 'GoPayLater',            gambar: '', background: 'linear-gradient(135deg,#0F766E,#134E4A)' },
+  { nama: 'Kredivo / Akulaku',     gambar: '', background: 'linear-gradient(135deg,#0369A1,#0C4A6E)' }
+];
+
+let GS_URL = '';
+let S = {
+  akun: null,
+  transactions: [],
+  hideBalance: localStorage.getItem('keuangan_hide_balance') === '1',
+  filterType: 'all',
+  searchQuery: '',
+  adjustMode: 'tx'
+};
+
+var dompetState = {
+  list: [],
+  metaMap: {},
+  globalBank: [],
+  globalEmoney: [],
+  globalLoaded: false,
+  selectedTipe: 'bank',
+  selectedProvider: null,
+  activeDetailId: null
+};
+
+// ── STORAGE HELPERS ──
+function storageGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v !== null) return v;
+  } catch(e) {}
+  try {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  } catch(e) { return null; }
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
+    return true;
+  }
+  return false;
+}
+
+function loadLocalCaches() {
+  try {
+    const txRaw = localStorage.getItem(TX_CACHE_KEY);
+    if (txRaw) S.transactions = JSON.parse(txRaw) || [];
+  } catch(e) {}
+  try {
+    const dRaw = localStorage.getItem(DOMPET_LIST_KEY);
+    if (dRaw) dompetState.list = JSON.parse(dRaw) || [];
+  } catch(e) {}
+  try {
+    const mRaw = localStorage.getItem(DOMPET_META_KEY);
+    if (mRaw) dompetState.metaMap = JSON.parse(mRaw) || {};
+  } catch(e) {}
+
+  // Terapkan metadata tambahan (noRek, limit, dueDay, tipe kredit) ke daftar dompet
+  dompetState.list.forEach(d => {
+    const m = dompetState.metaMap[d.id];
+    if (m) {
+      if (m.noRek)  d.noRek  = m.noRek;
+      if (m.limit)  d.limit  = m.limit;
+      if (m.dueDay) d.dueDay = m.dueDay;
+      if (m.tipe)   d.tipe   = m.tipe;
+    }
+  });
+}
+
+function saveDompetLocal() {
+  try {
+    localStorage.setItem(DOMPET_LIST_KEY, JSON.stringify(dompetState.list));
+    localStorage.setItem(DOMPET_META_KEY, JSON.stringify(dompetState.metaMap));
+  } catch(e) {}
+}
+
+function saveTransactionsCache() {
+  try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(e) {}
+}
+
+async function postData(action, data) {
+  if (!GS_URL) return null;
+  try {
+    const r = await fetch(GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, data })
+    });
+    const j = await r.json();
+    if (j && j.status === 'success') return j;
+    return null;
+  } catch(e) {
+    return null;
+  }
+}
+
+// ── PERHITUNGAN SALDO & ARUS KAS PER REKENING ──
+function hitungSaldoDompet(dompetId) {
+  const dompet = dompetState.list.find(d => String(d.id) === String(dompetId));
+  if (!dompet) return 0;
+  let saldo = Number(dompet.saldoAwal) || 0;
+  S.transactions.forEach(tx => {
+    if (String(tx.DompetId) !== String(dompetId)) return;
+    const v = Number(tx['Jumlah Uang']) || 0;
+    if (tx.Kategori === 'Uang Masuk')  saldo += v;
+    if (tx.Kategori === 'Uang Keluar') saldo -= v;
+  });
+  return saldo;
+}
+
+function hitungArusKasBulanIni(dompetId) {
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  let mIn = 0, mOut = 0, totalCount = 0;
+  S.transactions.forEach(tx => {
+    if (String(tx.DompetId) !== String(dompetId)) return;
+    totalCount++;
+    const dt = String(tx.Tanggal || '');
+    if (!dt.startsWith(ym)) return;
+    const v = Number(tx['Jumlah Uang']) || 0;
+    if (tx.Kategori === 'Uang Masuk')  mIn  += v;
+    if (tx.Kategori === 'Uang Keluar') mOut += v;
+  });
+  return { mIn, mOut, totalCount };
+}
+
+function getCardBackgroundStyle(d) {
+  if (d.background) {
+    if (d.background.indexOf('http') === 0 || d.background.indexOf('data:') === 0) {
+      return `background-image:url('${d.background}');background-size:cover;background-position:center`;
+    }
+    if (d.background.indexOf('linear-gradient') === 0 || d.background.indexOf('#') === 0) {
+      return `background:${d.background}`;
+    }
+  }
+  if (d.tipe === 'tunai')  return 'background:linear-gradient(135deg,#059669,#047857)';
+  if (d.tipe === 'emoney') return 'background:linear-gradient(135deg,#6D28D9,#4C1D95)';
+  if (d.tipe === 'kredit') return 'background:linear-gradient(135deg,#1E293B,#0F172A)';
+  return 'background:linear-gradient(135deg,#0C3C78,#061F42)';
+}
+
+function getTipeLabel(tipe) {
+  if (tipe === 'emoney') return 'E-WALLET';
+  if (tipe === 'kredit') return 'KARTU KREDIT';
+  if (tipe === 'tunai')  return 'TUNAI';
+  return 'REKENING BANK';
+}
+
+function getTipeEmoji(tipe) {
+  if (tipe === 'emoney') return '📱';
+  if (tipe === 'kredit') return '💳';
+  if (tipe === 'tunai')  return '💵';
+  return '🏦';
+}
+
+// ── RENDER HALAMAN UTAMA ──
+function renderAll() {
+  let sumBankCash = 0;
+  let sumEmoney   = 0;
+  let sumCredit   = 0;
+
+  let countBank = 0, countEmoney = 0, countKredit = 0, countTunai = 0;
+
+  dompetState.list.forEach(d => {
+    const s = hitungSaldoDompet(d.id);
+    const t = d.tipe || 'bank';
+    if (t === 'emoney') {
+      countEmoney++;
+      sumEmoney += s;
+    } else if (t === 'kredit') {
+      countKredit++;
+      // Untuk kartu kredit, jika saldo negatif berarti ada tagihan terpakai
+      const terpakai = s < 0 ? Math.abs(s) : 0;
+      sumCredit += terpakai;
+    } else if (t === 'tunai') {
+      countTunai++;
+      sumBankCash += s;
+    } else {
+      countBank++;
+      sumBankCash += s;
+    }
+  });
+
+  const netBalance = (sumBankCash + sumEmoney) - sumCredit;
+  const mask = 'Rp ••••••••';
+
+  document.getElementById('hero-net-balance').textContent = S.hideBalance ? mask : idr(netBalance);
+  document.getElementById('sum-bank-cash').textContent    = S.hideBalance ? '••••••' : idr(sumBankCash);
+  document.getElementById('sum-emoney').textContent       = S.hideBalance ? '••••••' : idr(sumEmoney);
+  document.getElementById('sum-credit').textContent       = S.hideBalance ? '••••••' : idr(sumCredit);
+
+  // Update tab counts
+  document.getElementById('rcount-all').textContent    = dompetState.list.length;
+  document.getElementById('rcount-bank').textContent   = countBank;
+  document.getElementById('rcount-emoney').textContent = countEmoney;
+  document.getElementById('rcount-kredit').textContent = countKredit;
+  document.getElementById('rcount-tunai').textContent  = countTunai;
+
+  const q = S.searchQuery.trim().toLowerCase();
+  const filtered = dompetState.list.filter(d => {
+    const t = d.tipe || 'bank';
+    if (S.filterType !== 'all' && t !== S.filterType) return false;
+    if (q) {
+      const n = String(d.nama || '').toLowerCase();
+      const p = String(d.provider || '').toLowerCase();
+      const nr = String(d.noRek || '').toLowerCase();
+      return n.indexOf(q) !== -1 || p.indexOf(q) !== -1 || nr.indexOf(q) !== -1;
+    }
+    return true;
+  });
+
+  const listEl = document.getElementById('rekening-list-container');
+  if (!filtered.length) {
+    listEl.innerHTML = `
+      <div class="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-xs">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-3">💳</div>
+        <h3 class="text-sm font-black text-slate-900">Belum Ada Rekening pada Kategori Ini</h3>
+        <p class="text-xs font-semibold text-slate-400 mt-1 mb-5 max-w-xs mx-auto leading-relaxed">
+          Hubungkan rekening bank, dompet digital (GoPay, OVO, DANA, ShopeePay), kartu kredit, atau uang tunai Anda agar saldo tercatat otomatis.
+        </p>
+        <button type="button" onclick="openDompetModal()" class="px-5 py-3 rounded-2xl text-white text-xs font-black shadow-md" style="background:linear-gradient(135deg,#10B981,#059669)">
+          + Tambah Rekening Pertama
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  listEl.innerHTML = filtered.map((d, idx) => {
+    const saldo = hitungSaldoDompet(d.id);
+    const { mIn, mOut, totalCount } = hitungArusKasBulanIni(d.id);
+    const bgStyle = getCardBackgroundStyle(d);
+    const tipe = d.tipe || 'bank';
+    const isKredit = tipe === 'kredit';
+    const noRekText = d.noRek ? `•••• ${String(d.noRek).slice(-4)}` : (d.provider || getTipeLabel(tipe));
+
+    const logoHtml = d.logo
+      ? `<img src="${d.logo}" alt="" style="height:26px;max-width:96px;object-fit:contain" onerror="this.style.display='none'">`
+      : `<span class="text-xs font-black tracking-wider uppercase px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-xs">${getTipeEmoji(tipe)} ${getTipeLabel(tipe)}</span>`;
+
+    // Khusus Kartu Kredit: tampilkan bar limit & pemakaian
+    let creditSectionHtml = '';
+    if (isKredit) {
+      const usedAmt = saldo < 0 ? Math.abs(saldo) : 0;
+      const limitAmt = Number(d.limit) || 0;
+      const remLimit = Math.max(0, limitAmt - usedAmt);
+      const usedPct = limitAmt > 0 ? Math.min(100, Math.round((usedAmt / limitAmt) * 100)) : 0;
+      creditSectionHtml = `
+        <div class="px-4 py-3 bg-amber-50/60 border-b border-slate-100">
+          <div class="flex items-center justify-between text-[11px] font-extrabold text-slate-600 mb-1.5">
+            <span>Tagihan Berjalan: <b class="text-red-600">${S.hideBalance ? '••••••' : idr(usedAmt)}</b></span>
+            ${limitAmt > 0 ? `<span>Sisa Limit: <b class="text-emerald-700">${S.hideBalance ? '••••••' : idr(remLimit)}</b></span>` : ''}
+          </div>
+          ${limitAmt > 0 ? `
+            <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+              <div class="h-full bg-amber-500 rounded-full" style="width:${usedPct}%"></div>
+            </div>
+          ` : ''}
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-[10px] font-bold text-slate-400">${d.dueDay ? `📅 Jatuh tempo setiap Tgl ${d.dueDay}` : 'Kartu Kredit / Paylater'}</span>
+            <button type="button" onclick="openPayCreditCardModal('${d.id}')" class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-[10px] font-black active:scale-95">💳 Bayar Tagihan</button>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="wallet-visual-card">
+        <!-- Top Visual Card Banner (Klik untuk Riwayat) -->
+        <div class="wallet-banner-top" style="${bgStyle}" onclick="openDompetDetail('${d.id}')">
+          <div class="relative z-10 flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/25 text-white/90 backdrop-blur-xs">
+                ${getTipeEmoji(tipe)} ${getTipeLabel(tipe)}
+              </span>
+              ${idx === 0 && S.filterType === 'all' ? '<span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-400/25 text-emerald-100 border border-emerald-300/30">Utama</span>' : ''}
+            </div>
+            ${logoHtml}
+          </div>
+
+          <div class="relative z-10 flex items-end justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-white/80 truncate">${d.nama || d.provider || 'Rekening'}</p>
+              <h3 class="text-2xl font-black tracking-tight text-white mt-0.5 truncate">
+                ${S.hideBalance ? 'Rp ••••••••' : idr(saldo)}
+              </h3>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <p class="text-[11px] font-extrabold text-white/80 font-mono">${noRekText}</p>
+              <p class="text-[10px] font-bold text-white/70 mt-0.5">${totalCount} transaksi →</p>
+            </div>
+          </div>
+        </div>
+
+        ${creditSectionHtml}
+
+        <!-- Bottom Action & Cashflow Footer -->
+        <div class="p-3.5 bg-white flex items-center justify-between gap-2">
+          <div class="flex items-center gap-3 min-w-0">
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 uppercase block">Masuk Bln Ini</span>
+              <span class="text-xs font-black text-emerald-600">+${S.hideBalance ? '••••' : idr(mIn)}</span>
+            </div>
+            <div class="w-px h-6 bg-slate-100"></div>
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 uppercase block">Keluar Bln Ini</span>
+              <span class="text-xs font-black text-red-500">-${S.hideBalance ? '••••' : idr(mOut)}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button type="button" onclick="openAdjustBalanceModal('${d.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-700 text-[10px] font-black active:scale-95" title="Sesuaikan Saldo (Opname)">
+              ⚖️ Opname
+            </button>
+            <button type="button" onclick="openDompetModal('${d.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-700 text-[10px] font-black active:scale-95">
+              Edit
+            </button>
+            <button type="button" onclick="openDompetDetail('${d.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black active:scale-95">
+              Riwayat
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.toggleHideBalance = function() {
+  S.hideBalance = !S.hideBalance;
+  try { localStorage.setItem('keuangan_hide_balance', S.hideBalance ? '1' : '0'); } catch(e) {}
+  renderAll();
+};
+
+window.setRekFilter = function(flt) {
+  S.filterType = flt;
+  ['all', 'bank', 'emoney', 'kredit', 'tunai'].forEach(k => {
+    const btn = document.getElementById('rtab-' + k);
+    if (btn) btn.classList.toggle('active', k === flt);
+  });
+  renderAll();
+};
+
+window.onRekSearch = function(val) {
+  S.searchQuery = val || '';
+  renderAll();
+};
+
+// ── FETCH GLOBAL BANK & E-MONEY DARI DATA MASTER ──
+async function fetchGlobalDompetData() {
+  if (dompetState.globalLoaded) return;
+  try {
+    const r = await fetch(GLOBAL_GS_URL);
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      dompetState.globalBank   = (d.data.rekeningBank && d.data.rekeningBank.length) ? d.data.rekeningBank : FALLBACK_BANKS;
+      dompetState.globalEmoney = (d.data.emoney && d.data.emoney.length) ? d.data.emoney : FALLBACK_EMONEY;
+      dompetState.globalLoaded = true;
+    }
+  } catch(e) {
+    if (!dompetState.globalBank.length)   dompetState.globalBank   = FALLBACK_BANKS;
+    if (!dompetState.globalEmoney.length) dompetState.globalEmoney = FALLBACK_EMONEY;
+  }
+}
+
+async function migrasikanLogoDompetLama() {
+  const perlu = dompetState.list.some(d => d.tipe !== 'tunai' && (!d.logo || !d.background));
+  if (!perlu) return;
+  await fetchGlobalDompetData();
+  const all = dompetState.globalBank.concat(dompetState.globalEmoney);
+  let changed = false;
+  dompetState.list.forEach(d => {
+    if (d.tipe === 'tunai' || (d.logo && d.background)) return;
+    const q = (d.provider || d.nama || '').toLowerCase().trim();
+    const m = all.find(p => p.nama.toLowerCase().trim() === q) || all.find(p => {
+      const pn = p.nama.toLowerCase().trim();
+      return q.indexOf(pn) >= 0 || pn.indexOf(q) >= 0;
+    });
+    if (m) {
+      if (!d.logo && m.gambar) { d.logo = m.gambar; changed = true; }
+      if (!d.background && m.background) { d.background = m.background; changed = true; }
+    }
+  });
+  if (changed) {
+    saveDompetLocal();
+    renderAll();
+  }
+}
+
+// ── MODAL TAMBAH / EDIT REKENING ──
+window.openDompetModal = async function(dompetId = null) {
+  const form = document.getElementById('dompet-form');
+  form.reset();
+  document.getElementById('dompet-id').value = '';
+  document.getElementById('prov-search-inp').value = '';
+  const delBtn = document.getElementById('dompet-delete-btn');
+  dompetState.selectedProvider = null;
+
+  if (!dompetState.globalBank.length)   dompetState.globalBank   = FALLBACK_BANKS;
+  if (!dompetState.globalEmoney.length) dompetState.globalEmoney = FALLBACK_EMONEY;
+  fetchGlobalDompetData().then(() => renderDompetProviders());
+
+  if (dompetId) {
+    const d = dompetState.list.find(x => String(x.id) === String(dompetId));
+    if (d) {
+      document.getElementById('dompet-modal-title').textContent = 'Edit Rekening';
+      document.getElementById('dompet-id').value = d.id;
+      document.getElementById('dompet-nama').value = d.nama || '';
+      document.getElementById('dompet-norek').value = d.noRek || '';
+      document.getElementById('dompet-saldo').value = Number(d.saldoAwal) || 0;
+      document.getElementById('dompet-limit').value = d.limit || '';
+      document.getElementById('dompet-dueday').value = d.dueDay || '';
+      selectDompetTipe(d.tipe || 'bank');
+      if (delBtn) delBtn.classList.remove('hidden');
+    }
+  } else {
+    document.getElementById('dompet-modal-title').textContent = 'Tambah Rekening Baru';
+    if (delBtn) delBtn.classList.add('hidden');
+    const defaultTipe = S.filterType !== 'all' ? S.filterType : 'bank';
+    selectDompetTipe(defaultTipe);
+  }
+  openModal('dompet-backdrop');
+};
+
+window.selectDompetTipe = function(tipe) {
+  dompetState.selectedTipe = tipe;
+  ['bank', 'emoney', 'kredit', 'tunai'].forEach(t => {
+    const btn = document.getElementById('dtipe-' + t);
+    if (!btn) return;
+    btn.className = t === tipe
+      ? 'py-2.5 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs font-black flex items-center justify-center gap-1.5'
+      : 'py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black flex items-center justify-center gap-1.5';
+  });
+
+  const wrap = document.getElementById('dompet-provider-wrap');
+  const kreditWrap = document.getElementById('kredit-extra-wrap');
+  const saldoLbl = document.getElementById('dompet-saldo-label');
+
+  if (kreditWrap) kreditWrap.classList.toggle('hidden', tipe !== 'kredit');
+  if (saldoLbl) {
+    saldoLbl.textContent = tipe === 'kredit'
+      ? 'Saldo Awal / Tagihan Awal (Isi 0 jika belum ada tagihan)'
+      : 'Saldo Awal (Rp) *';
+  }
+
+  if (tipe === 'tunai') {
+    if (wrap) wrap.classList.add('hidden');
+    const namaInp = document.getElementById('dompet-nama');
+    if (namaInp && !namaInp.value) namaInp.value = 'Uang Tunai';
+  } else {
+    if (wrap) wrap.classList.remove('hidden');
+    renderDompetProviders();
+  }
+};
+
+function getProviderSourceList() {
+  if (dompetState.selectedTipe === 'emoney') {
+    return dompetState.globalEmoney.length ? dompetState.globalEmoney : FALLBACK_EMONEY;
+  }
+  if (dompetState.selectedTipe === 'kredit') {
+    return FALLBACK_CREDIT.concat(dompetState.globalBank.length ? dompetState.globalBank : FALLBACK_BANKS);
+  }
+  return dompetState.globalBank.length ? dompetState.globalBank : FALLBACK_BANKS;
+}
+
+window.renderDompetProviders = function() {
+  const listEl = document.getElementById('dompet-provider-list');
+  if (!listEl) return;
+  const src = getProviderSourceList();
+  const q = (document.getElementById('prov-search-inp')?.value || '').trim().toLowerCase();
+
+  const filtered = src.map((p, idx) => ({ p, idx })).filter(item => {
+    if (!q) return true;
+    return String(item.p.nama || '').toLowerCase().indexOf(q) !== -1;
+  });
+
+  if (!filtered.length) {
+    listEl.innerHTML = '<p class="text-xs text-slate-400 col-span-2 py-2 text-center">Penyedia tidak ditemukan. Ketik nama manual di bawah.</p>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(({ p, idx }) => {
+    const isSel = dompetState.selectedProvider && dompetState.selectedProvider.nama === p.nama;
+    const pBg = p.background
+      ? (p.background.indexOf('http') === 0 ? `background-image:url('${p.background}');background-size:cover;background-position:center` : `background:${p.background}`)
+      : 'background:linear-gradient(135deg,#0C3C78,#061F42)';
+    const iconHtml = p.gambar
+      ? `<div style="width:36px;height:24px;border-radius:6px;${pBg};display:flex;align-items:center;justify-content:center;padding:3px;flex-shrink:0;overflow:hidden"><img src="${p.gambar}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"></div>`
+      : `<div style="width:34px;height:24px;border-radius:6px;${pBg};display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0">${getTipeEmoji(dompetState.selectedTipe)}</div>`;
+
+    return `<div onclick="pickDompetProvider(${idx})" class="prov-item ${isSel ? 'selected' : ''}">
+      ${iconHtml}
+      <span class="text-xs font-extrabold text-slate-800 truncate">${p.nama}</span>
+    </div>`;
+  }).join('');
+};
+
+window.pickDompetProvider = function(idx) {
+  const src = getProviderSourceList();
+  const p = src[idx];
+  if (!p) return;
+  dompetState.selectedProvider = p;
+  document.getElementById('dompet-nama').value = p.nama;
+  renderDompetProviders();
+};
+
+window.handleDompetSubmit = async function(e) {
+  e.preventDefault();
+  const id        = document.getElementById('dompet-id').value;
+  const nama      = document.getElementById('dompet-nama').value.trim();
+  const noRek     = document.getElementById('dompet-norek').value.trim();
+  const saldoAwal = Number(document.getElementById('dompet-saldo').value) || 0;
+  const limit     = Number(document.getElementById('dompet-limit').value) || 0;
+  const dueDay    = Number(document.getElementById('dompet-dueday').value) || 0;
+  const tipe      = dompetState.selectedTipe;
+  const prov      = dompetState.selectedProvider;
+
+  if (!nama) return;
+
+  if (id) {
+    const idx = dompetState.list.findIndex(d => String(d.id) === String(id));
+    if (idx > -1) {
+      dompetState.list[idx].nama      = nama;
+      dompetState.list[idx].tipe      = tipe;
+      dompetState.list[idx].saldoAwal = saldoAwal;
+      dompetState.list[idx].noRek     = noRek;
+      dompetState.list[idx].limit     = limit;
+      dompetState.list[idx].dueDay    = dueDay;
+      if (prov) {
+        dompetState.list[idx].provider   = prov.nama;
+        dompetState.list[idx].logo       = prov.gambar || dompetState.list[idx].logo;
+        dompetState.list[idx].background = prov.background || dompetState.list[idx].background;
+      }
+      dompetState.metaMap[id] = { noRek, limit, dueDay, tipe };
+      saveDompetLocal();
+
+      postData('editDompet', {
+        id: dompetState.list[idx].id,
+        nama,
+        tipe,
+        nominal: saldoAwal,
+        keterangan: dompetState.list[idx].provider || nama,
+        logo: dompetState.list[idx].logo || '',
+        background: dompetState.list[idx].background || ''
+      }).catch(() => {});
+    }
+  } else {
+    const tempId = 'dpt_' + Date.now();
+    const newDompet = {
+      id: tempId,
+      nama,
+      tipe,
+      provider: prov ? prov.nama : nama,
+      logo: prov ? (prov.gambar || null) : null,
+      background: prov ? (prov.background || null) : null,
+      saldoAwal,
+      noRek,
+      limit,
+      dueDay
+    };
+    dompetState.list.push(newDompet);
+    dompetState.metaMap[tempId] = { noRek, limit, dueDay, tipe };
+    saveDompetLocal();
+
+    postData('addDompet', {
+      id: newDompet.id,
+      nama: newDompet.nama,
+      tipe: newDompet.tipe,
+      nominal: newDompet.saldoAwal,
+      keterangan: newDompet.provider,
+      logo: newDompet.logo || '',
+      background: newDompet.background || ''
+    }).then(res => {
+      if (res && res.data && res.data.id) {
+        const srvId = res.data.id;
+        dompetState.metaMap[srvId] = dompetState.metaMap[tempId];
+        newDompet.id = srvId;
+        saveDompetLocal();
+        renderAll();
+      }
+    }).catch(() => {});
+  }
+
+  renderAll();
+  closeModal('dompet-backdrop');
+  showSuccess('Data rekening berhasil disimpan!');
+};
+
+window.handleDeleteDompetFromModal = function() {
+  const id = document.getElementById('dompet-id').value;
+  if (!id) return;
+  dompetState.list = dompetState.list.filter(d => String(d.id) !== String(id));
+  delete dompetState.metaMap[id];
+  saveDompetLocal();
+  postData('deleteDompet', { id }).catch(() => {});
+  renderAll();
+  closeModal('dompet-backdrop');
+  showSuccess('Rekening berhasil dihapus.');
+};
+
+// ── TRANSFER ANTAR REKENING & BAYAR TAGIHAN KARTU KREDIT ──
+function populateTransferSelects(fromDefaultId, toDefaultId) {
+  const fromSel = document.getElementById('tf-from');
+  const toSel   = document.getElementById('tf-to');
+  if (!fromSel || !toSel) return;
+
+  if (!dompetState.list.length) {
+    fromSel.innerHTML = '<option value="">Belum ada rekening</option>';
+    toSel.innerHTML   = '<option value="">Belum ada rekening</option>';
+    return;
+  }
+
+  const fId = fromDefaultId || dompetState.list[0].id;
+  const tId = toDefaultId   || (dompetState.list[1] ? dompetState.list[1].id : dompetState.list[0].id);
+
+  fromSel.innerHTML = dompetState.list.map(d =>
+    `<option value="${d.id}" ${String(d.id) === String(fId) ? 'selected' : ''}>${getTipeEmoji(d.tipe)} ${d.nama || d.provider} (${idr(hitungSaldoDompet(d.id))})</option>`
+  ).join('');
+
+  toSel.innerHTML = dompetState.list.map(d =>
+    `<option value="${d.id}" ${String(d.id) === String(tId) ? 'selected' : ''}>${getTipeEmoji(d.tipe)} ${d.nama || d.provider} (${idr(hitungSaldoDompet(d.id))})</option>`
+  ).join('');
+}
+
+window.openTransferModal = function() {
+  if (dompetState.list.length < 2) {
+    showSuccess('Tambahkan minimal 2 rekening untuk melakukan transfer.');
+    return;
+  }
+  document.getElementById('tf-modal-title').textContent = '💸 Transfer Antar Rekening';
+  populateTransferSelects();
+  document.getElementById('tf-amount').value = '';
+  document.getElementById('tf-fee').value = '0';
+  document.getElementById('tf-date').value = today();
+  document.getElementById('tf-note').value = '';
+  openModal('transfer-backdrop');
+};
+
+window.openPayCreditCardModal = function(creditDompetId) {
+  const cc = dompetState.list.find(d => String(d.id) === String(creditDompetId));
+  if (!cc) return;
+  const sourceWallet = dompetState.list.find(d => d.id !== cc.id && d.tipe !== 'kredit') || dompetState.list[0];
+  document.getElementById('tf-modal-title').textContent = `💳 Bayar Tagihan ${cc.nama}`;
+  populateTransferSelects(sourceWallet ? sourceWallet.id : '', cc.id);
+  const s = hitungSaldoDompet(cc.id);
+  document.getElementById('tf-amount').value = s < 0 ? Math.abs(s) : '';
+  document.getElementById('tf-fee').value = '0';
+  document.getElementById('tf-date').value = today();
+  document.getElementById('tf-note').value = `Pembayaran Tagihan ${cc.nama}`;
+  openModal('transfer-backdrop');
+};
+
+window.handleTransferSubmit = function(e) {
+  e.preventDefault();
+  const fromId = document.getElementById('tf-from').value;
+  const toId   = document.getElementById('tf-to').value;
+  const amt    = Number(document.getElementById('tf-amount').value) || 0;
+  const fee    = Number(document.getElementById('tf-fee').value) || 0;
+  const dt     = document.getElementById('tf-date').value || today();
+  const note   = document.getElementById('tf-note').value.trim();
+
+  if (!fromId || !toId || fromId === toId) {
+    showSuccess('Pilih rekening sumber dan tujuan yang berbeda.');
+    return;
+  }
+  if (amt <= 0) return;
+
+  const dFrom = dompetState.list.find(d => String(d.id) === String(fromId));
+  const dTo   = dompetState.list.find(d => String(d.id) === String(toId));
+
+  const txOut = {
+    id: 'tfout_' + Date.now(),
+    'Kategori': 'Uang Keluar',
+    'Kategori Uang Keluar': dTo && dTo.tipe === 'kredit' ? 'Cicilan & Utang' : 'Lainnya',
+    'Jumlah Uang': amt + fee,
+    'Tanggal': dt + 'T12:00:00',
+    'Deskripsi': `Transfer ke ${dTo ? dTo.nama : 'Rekening'}${note ? ' (' + note + ')' : ''}`,
+    'DompetId': fromId
+  };
+  const txIn = {
+    id: 'tfin_' + (Date.now() + 1),
+    'Kategori': 'Uang Masuk',
+    'Kategori Uang Keluar': null,
+    'Jumlah Uang': amt,
+    'Tanggal': dt + 'T12:00:00',
+    'Deskripsi': `Transfer dari ${dFrom ? dFrom.nama : 'Rekening'}${note ? ' (' + note + ')' : ''}`,
+    'DompetId': toId
+  };
+
+  S.transactions.unshift(txIn, txOut);
+  saveTransactionsCache();
+  renderAll();
+  closeModal('transfer-backdrop');
+  showSuccess('Transfer antar rekening berhasil dicatat!');
+
+  postData('addData', txOut).catch(() => {});
+  postData('addData', txIn).catch(() => {});
+};
+
+// ── PENYESUAIAN SALDO CEPAT (OPNAME) ──
+window.openAdjustBalanceModal = function(dompetId) {
+  const d = dompetState.list.find(x => String(x.id) === String(dompetId));
+  if (!d) return;
+  const cur = hitungSaldoDompet(d.id);
+  document.getElementById('adj-dompet-id').value = d.id;
+  document.getElementById('adj-wallet-name').textContent = `${d.nama || d.provider} (${getTipeLabel(d.tipe)})`;
+  document.getElementById('adj-current-val').textContent = idr(cur);
+  document.getElementById('adj-target-val').value = cur;
+  setAdjustMode('tx');
+  updateAdjustDiffPreview();
+  openModal('adjust-backdrop');
+};
+
+window.setAdjustMode = function(mode) {
+  S.adjustMode = mode;
+  const bTx   = document.getElementById('adj-mode-tx');
+  const bInit = document.getElementById('adj-mode-init');
+  if (bTx) {
+    bTx.className = mode === 'tx'
+      ? 'py-2.5 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-[11px] font-black'
+      : 'py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-[11px] font-black';
+  }
+  if (bInit) {
+    bInit.className = mode === 'init'
+      ? 'py-2.5 px-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-[11px] font-black'
+      : 'py-2.5 px-3 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-[11px] font-black';
+  }
+};
+
+window.updateAdjustDiffPreview = function() {
+  const id = document.getElementById('adj-dompet-id').value;
+  const cur = hitungSaldoDompet(id);
+  const target = Number(document.getElementById('adj-target-val').value) || 0;
+  const diff = target - cur;
+  const el = document.getElementById('adj-diff-preview');
+  if (!el) return;
+  if (diff === 0) {
+    el.textContent = 'Selisih: Rp 0 (Saldo sudah sesuai)';
+    el.className = 'text-[11px] font-bold text-slate-400 mt-1.5';
+  } else if (diff > 0) {
+    el.textContent = `Selisih: +${idr(diff)} (Akan ditambah ke rekening)`;
+    el.className = 'text-[11px] font-bold text-emerald-600 mt-1.5';
+  } else {
+    el.textContent = `Selisih: -${idr(Math.abs(diff))} (Akan dikurangi dari rekening)`;
+    el.className = 'text-[11px] font-bold text-red-500 mt-1.5';
+  }
+};
+
+window.handleAdjustBalanceSubmit = function(e) {
+  e.preventDefault();
+  const id = document.getElementById('adj-dompet-id').value;
+  const d = dompetState.list.find(x => String(x.id) === String(id));
+  if (!d) return;
+
+  const cur = hitungSaldoDompet(d.id);
+  const target = Number(document.getElementById('adj-target-val').value) || 0;
+  const diff = target - cur;
+
+  if (diff === 0) {
+    closeModal('adjust-backdrop');
+    return;
+  }
+
+  if (S.adjustMode === 'init') {
+    d.saldoAwal = (Number(d.saldoAwal) || 0) + diff;
+    saveDompetLocal();
+    postData('editDompet', {
+      id: d.id,
+      nama: d.nama,
+      tipe: d.tipe,
+      nominal: d.saldoAwal,
+      keterangan: d.provider || d.nama,
+      logo: d.logo || '',
+      background: d.background || ''
+    }).catch(() => {});
+  } else {
+    const isPlus = diff > 0;
+    const adjTx = {
+      id: 'adj_' + Date.now(),
+      'Kategori': isPlus ? 'Uang Masuk' : 'Uang Keluar',
+      'Kategori Uang Keluar': isPlus ? null : 'Lainnya',
+      'Jumlah Uang': Math.abs(diff),
+      'Tanggal': new Date().toISOString(),
+      'Deskripsi': `Penyesuaian Saldo (${d.nama || d.provider})`,
+      'DompetId': d.id
+    };
+    S.transactions.unshift(adjTx);
+    saveTransactionsCache();
+    postData('addData', adjTx).catch(() => {});
+  }
+
+  renderAll();
+  closeModal('adjust-backdrop');
+  showSuccess('Saldo rekening berhasil disesuaikan!');
+};
+
+// ── DETAIL & RIWAYAT TRANSAKSI REKENING ──
+const DD_MONTH_SHORT = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const DD_DAY_SHORT   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+window.openDompetDetail = function(dompetId) {
+  const d = dompetState.list.find(x => String(x.id) === String(dompetId));
+  if (!d) return;
+  dompetState.activeDetailId = d.id;
+
+  const banner = document.getElementById('dd-banner');
+  if (banner) {
+    banner.setAttribute('style', `position:relative;padding:28px 22px 26px;color:#fff;flex-shrink:0;overflow:hidden;${getCardBackgroundStyle(d)}`);
+  }
+
+  const logoEl  = document.getElementById('dd-logo');
+  const badgeEl = document.getElementById('dd-tipe-badge');
+  if (d.logo) {
+    logoEl.src = d.logo;
+    logoEl.style.display = 'block';
+  } else {
+    logoEl.style.display = 'none';
+  }
+  badgeEl.textContent = getTipeLabel(d.tipe);
+
+  const editBtn = document.getElementById('dd-edit-btn');
+  if (editBtn) {
+    editBtn.onclick = function() {
+      closeModal('dompet-detail-backdrop');
+      openDompetModal(d.id);
+    };
+  }
+
+  document.getElementById('dd-nama').textContent = d.nama || d.provider || 'Rekening';
+  const saldo = hitungSaldoDompet(d.id);
+  document.getElementById('dd-saldo').textContent = S.hideBalance ? 'Rp ••••••••' : idr(saldo);
+  document.getElementById('dd-meta').textContent = `Saldo Awal: ${idr(d.saldoAwal || 0)}${d.noRek ? ' · No: •••• ' + String(d.noRek).slice(-4) : ''}`;
+
+  let tIn = 0, tOut = 0;
+  const txs = S.transactions
+    .filter(t => String(t.DompetId) === String(d.id))
+    .sort((a, b) => String(b.Tanggal || '').localeCompare(String(a.Tanggal || '')));
+
+  txs.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk')  tIn  += v;
+    if (t.Kategori === 'Uang Keluar') tOut += v;
+  });
+
+  document.getElementById('dd-in').textContent  = idr(tIn);
+  document.getElementById('dd-out').textContent = idr(tOut);
+  document.getElementById('dd-tx-count').textContent = `${txs.length} transaksi`;
+
+  const txWrap = document.getElementById('dd-tx-list');
+  if (!txs.length) {
+    txWrap.innerHTML = '<div style="background:#fff;border-radius:18px;padding:36px 20px;text-align:center;border:1px solid #F1F5F9"><div style="font-size:32px;margin-bottom:8px">📭</div><p style="font-size:12px;font-weight:700;color:#94A3B8">Belum ada riwayat transaksi pada rekening ini.</p></div>';
+  } else {
+    const grouped = {};
+    txs.forEach(t => {
+      const dt = String(t.Tanggal || '').split('T')[0];
+      if (!dt) return;
+      if (!grouped[dt]) grouped[dt] = [];
+      grouped[dt].push(t);
+    });
+    const dates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+    let html = '<div style="display:flex;flex-direction:column;gap:16px">';
+    dates.forEach(dt => {
+      const dayTxs = grouped[dt];
+      const dayTotal = dayTxs.reduce((sum, t) => {
+        const v = Number(t['Jumlah Uang']) || 0;
+        return t.Kategori === 'Uang Keluar' ? sum - v : sum + v;
+      }, 0);
+      const dtObj = new Date(dt + 'T12:00:00');
+      const dayLbl = isNaN(dtObj.getTime())
+        ? dt
+        : `${DD_DAY_SHORT[dtObj.getDay()]}, ${dtObj.getDate()} ${DD_MONTH_SHORT[dtObj.getMonth()]} ${dtObj.getFullYear()}`;
+      const totClr = dayTotal < 0 ? '#EF4444' : '#10B981';
+      const totSign = dayTotal < 0 ? '-' : (dayTotal > 0 ? '+' : '');
+      html += `<div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px">
+          <span style="font-size:12px;font-weight:800;color:#71717A">${dayLbl}</span>
+          <span style="font-size:12px;font-weight:800;color:${totClr}">${totSign}${idr(Math.abs(dayTotal))}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">`;
+      dayTxs.forEach(t => {
+        const isI = t.Kategori === 'Uang Masuk';
+        const dotClr = isI ? '#10B981' : '#EF4444';
+        const amtClr = isI ? '#10B981' : '#EF4444';
+        const sgn = isI ? '+' : '-';
+        const sub = isI ? 'Pemasukan' : (t['Kategori Uang Keluar'] || 'Lainnya');
+        const safeDesc = String(t.Deskripsi || '—').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        html += `<div style="background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.03);border:1px solid #F1F5F9;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+          <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;flex:1">
+            <div style="width:8px;height:8px;border-radius:50%;background:${dotClr};margin-top:6px;flex-shrink:0"></div>
+            <div style="min-width:0;flex:1">
+              <p style="font-size:13px;font-weight:800;color:#18181B;line-height:1.35;word-break:break-word">${safeDesc}</p>
+              <p style="font-size:11px;font-weight:600;color:#94A3B8;margin-top:3px">${sub}</p>
+            </div>
+          </div>
+          <span style="font-size:13px;font-weight:900;color:${amtClr};white-space:nowrap;flex-shrink:0">${sgn}${idr(Number(t['Jumlah Uang']) || 0)}</span>
+        </div>`;
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+    txWrap.innerHTML = html;
+  }
+
+  const sheetEl = document.getElementById('dompet-detail-sheet');
+  if (sheetEl) sheetEl.scrollTop = 0;
+  openModal('dompet-detail-backdrop');
+};
+
+// ── MODAL HELPERS ──
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 300);
+};
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
+  setTimeout(() => el.classList.add('hidden'), 2000);
+}
+
+// ── SINKRONISASI DATA DARI CLOUD SPREADSHEET ──
+async function syncDataInBackground() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read&_t=' + Date.now());
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      if (Array.isArray(d.data.transactions)) {
+        S.transactions = d.data.transactions;
+        saveTransactionsCache();
+      }
+      if (Array.isArray(d.data.dompet)) {
+        const dariServer = d.data.dompet.map(w => {
+          const meta = dompetState.metaMap[w.id] || {};
+          return {
+            id: w.id,
+            nama: w.nama,
+            tipe: meta.tipe || w.tipe || 'bank',
+            provider: w.keterangan || w.nama,
+            logo: w.logo || null,
+            background: w.background || null,
+            saldoAwal: Number(w.nominal) || 0,
+            noRek: meta.noRek || '',
+            limit: meta.limit || 0,
+            dueDay: meta.dueDay || 0
+          };
+        });
+        const belum = dompetState.list.filter(x => typeof x.id === 'string' && x.id.indexOf('dpt_') === 0);
+        dompetState.list = dariServer.concat(belum);
+        saveDompetLocal();
+      }
+      renderAll();
+      migrasikanLogoDompetLama();
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch(e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+  loadLocalCaches();
+  renderAll();
+  fetchGlobalDompetData().then(() => migrasikanLogoDompetLama());
+  syncDataInBackground();
+});
+</script>
+</body>
+</html>
