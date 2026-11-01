@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kelola Kategori — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F4FAF8;
+  --primary: #10B981;
+  --orange: #F97316;
+  --ease: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(180deg, #FFF7ED 0%, #F8FAFC 260px, #F1F5F9 100%);
+  color: #0F172A;
+  margin: 0;
+  padding-bottom: 104px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes orbPing {
+  0% { opacity: 0.8; transform: scale(0.9); }
+  70% { opacity: 0; transform: scale(1.18); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+.fade-up { animation: fadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.s1 { animation-delay: 0.04s; }
+.s2 { animation-delay: 0.08s; }
+.s3 { animation-delay: 0.12s; }
+
+/* Hero Card */
+.cat-hero-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 20px;
+  background: linear-gradient(135deg, #EA580C 0%, #F97316 52%, #FB923C 100%);
+  color: #FFFFFF;
+  box-shadow: 0 14px 32px -8px rgba(234, 88, 12, 0.32), 0 2px 6px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+.cat-hero-card.mode-in {
+  background: linear-gradient(135deg, #059669 0%, #10B981 55%, #34D399 100%);
+  box-shadow: 0 14px 32px -8px rgba(16, 185, 129, 0.32), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.cat-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -45px;
+  right: -35px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.26) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Type Switcher */
+.type-tab-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: #FFFFFF;
+  padding: 6px;
+  border-radius: 20px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+  border: 1px solid #EEF2F6;
+}
+.type-tab-btn {
+  padding: 11px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748B;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+.type-tab-btn.active-out {
+  background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+  color: #C2410C;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.14);
+  border: 1px solid #FED7AA;
+}
+.type-tab-btn.active-in {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  color: #047857;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.14);
+  border: 1px solid #A7F3D0;
+}
+
+/* Category Card */
+.cat-item-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px;
+  border: 1.5px solid #F1F5F9;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.035);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.cat-item-card:hover {
+  border-color: #E2E8F0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+.cat-item-card.is-hidden {
+  opacity: 0.58;
+  background: #F8FAFC;
+  border-style: dashed;
+}
+
+.cat-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+/* Subcategory Chips */
+.subcat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.subcat-chip:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+.subcat-chip:active { transform: scale(0.95); }
+
+.subcat-add-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: #FFF7ED;
+  border: 1px dashed #FDBA74;
+  font-size: 11px;
+  font-weight: 800;
+  color: #EA580C;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.subcat-add-chip.mode-in {
+  background: #ECFDF5;
+  border-color: #6EE7B7;
+  color: #059669;
+}
+.subcat-add-chip:active { transform: scale(0.95); }
+
+/* Filter Pills */
+.filter-pill {
+  padding: 7px 13px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #64748B;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.filter-pill.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+/* Form Input */
+.fi {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.fi:focus {
+  border-color: #10B981;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+/* Modal Backdrop & Sheet */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 60;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.26s ease;
+}
+.modal-backdrop.show { opacity: 1; }
+.sheet {
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.34s cubic-bezier(0.32, 1.25, 0.64, 1);
+  box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.14);
+}
+.modal-backdrop.show .sheet { transform: translateY(0); }
+
+/* Emoji & Color Swatches */
+.emoji-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1.5px solid #F1F5F9;
+  background: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+.emoji-option.selected {
+  border-color: #10B981;
+  background: #ECFDF5;
+  transform: scale(1.08);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.18);
+}
+
+.color-swatch {
+  height: 36px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.15s ease;
+}
+.color-swatch.selected {
+  border-color: #0F172A;
+  transform: scale(1.04);
+}
+
+/* Bottom Nav */
+.nav-btn { color: #94A3B8; transition: color 0.2s, transform 0.15s; text-decoration: none; }
+.nav-btn.active { color: #10B981; }
+.nav-btn:active { transform: scale(0.92); }
+.ai-nav-orb {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10B981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.42);
+}
+.orb-ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(16, 185, 129, 0.35);
+  animation: orbPing 2.2s ease-out infinite;
+  pointer-events: none;
+}
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+.check-svg .check-path { stroke-dasharray: 28; stroke-dashoffset: 28; animation: checkDraw 0.38s ease 0.05s forwards; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 bg-black/25 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl p-6 text-center max-w-xs w-full shadow-2xl" style="animation:scaleIn .25s ease forwards">
+    <div class="w-14 h-14 bg-emerald-50 rounded-full mx-auto flex items-center justify-center mb-3">
+      <svg class="w-7 h-7 text-emerald-500 check-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <h3 class="text-base font-black text-slate-900 mb-0.5">Berhasil!</h3>
+    <p id="success-msg" class="text-xs text-slate-400 font-medium"></p>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN CONTAINER ═══════════ -->
+<div class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- TOP HEADER -->
+  <header class="px-5 pt-7 pb-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="https://keloladuit.my.id/account" target="_top" class="w-10 h-10 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-700 active:scale-90 transition-transform flex-shrink-0" aria-label="Kembali ke Akun">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="min-w-0">
+        <h1 class="text-lg font-black text-slate-900 tracking-tight leading-tight truncate">Kelola Kategori</h1>
+        <p class="text-[11px] font-semibold text-slate-400 truncate">Kategori &amp; Subkategori Transaksi</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button type="button" onclick="openResetCategoriesModal()" class="w-9 h-9 rounded-xl bg-white border border-slate-200/80 text-slate-500 flex items-center justify-center shadow-sm active:scale-95 transition-transform" title="Reset ke Kategori Bawaan">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+      <button type="button" onclick="openCategoryModal()" class="px-3.5 py-2.5 rounded-2xl text-white font-black text-xs shadow-md active:scale-95 transition-transform flex items-center gap-1.5" id="header-add-btn" style="background:linear-gradient(135deg,#F97316,#EA580C)">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        <span>Kategori</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="px-5 space-y-4 flex-1">
+
+    <!-- ═══════════ HERO SUMMARY CARD ═══════════ -->
+    <div id="cat-hero" class="cat-hero-card fade-up">
+      <div class="relative z-10 flex items-start justify-between gap-3">
+        <div>
+          <span id="hero-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider backdrop-blur-sm">
+            📂 Struktur Pengeluaran
+          </span>
+          <h2 id="hero-title" class="text-2xl font-black tracking-tight mt-2 leading-tight">15 Kategori Aktif</h2>
+          <p id="hero-subtitle" class="text-xs font-semibold text-white/85 mt-0.5">64 subkategori siap digunakan untuk transaksi</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner flex-shrink-0" id="hero-icon">
+          🗂️
+        </div>
+      </div>
+      <div class="relative z-10 grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/20">
+        <div class="bg-black/10 rounded-xl p-2.5 backdrop-blur-xs">
+          <p class="text-[9px] font-extrabold uppercase tracking-wider text-white/75">Kategori</p>
+          <p id="stat-cat-count" class="text-sm font-black mt-0.5">15</p>
+        </div>
+        <div class="bg-black/10 rounded-xl p-2.5 backdrop-blur-xs">
+          <p class="text-[9px] font-extrabold uppercase tracking-wider text-white/75">Subkategori</p>
+          <p id="stat-sub-count" class="text-sm font-black mt-0.5">64</p>
+        </div>
+        <div class="bg-black/10 rounded-xl p-2.5 backdrop-blur-xs">
+          <p class="text-[9px] font-extrabold uppercase tracking-wider text-white/75">Total Tercatat</p>
+          <p id="stat-tx-count" class="text-sm font-black mt-0.5 truncate">0 Tx</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB TIPE TRANSAKSI (PENGELUARAN VS PEMASUKAN) ═══════════ -->
+    <div class="type-tab-wrap fade-up s1">
+      <button type="button" id="tab-type-out" onclick="switchCategoryType('Uang Keluar')" class="type-tab-btn active-out">
+        <span>↓ Pengeluaran</span>
+        <span id="badge-count-out" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-orange-500/15 text-orange-700">15</span>
+      </button>
+      <button type="button" id="tab-type-in" onclick="switchCategoryType('Uang Masuk')" class="type-tab-btn">
+        <span>↑ Pemasukan</span>
+        <span id="badge-count-in" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-600">9</span>
+      </button>
+    </div>
+
+    <!-- ═══════════ PENCARIAN & FILTER PILLS ═══════════ -->
+    <div class="space-y-2.5 fade-up s2">
+      <div class="relative">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" id="cat-search-input" placeholder="Cari nama kategori atau subkategori…" class="fi pl-10 pr-9 py-2.5 bg-white text-xs" oninput="onSearchCategory(this.value)">
+        <button type="button" id="cat-search-clear" onclick="clearCategorySearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-black">✕</button>
+      </div>
+
+      <div class="flex items-center gap-2 overflow-x-auto no-scroll pb-0.5">
+        <button type="button" onclick="setCategoryFilter('all')" id="flt-all" class="filter-pill active">Semua</button>
+        <button type="button" onclick="setCategoryFilter('active')" id="flt-active" class="filter-pill">Aktif</button>
+        <button type="button" onclick="setCategoryFilter('custom')" id="flt-custom" class="filter-pill">✨ Buatan Saya</button>
+        <button type="button" onclick="setCategoryFilter('budget')" id="flt-budget" class="filter-pill">🎯 Ada Anggaran</button>
+        <button type="button" onclick="setCategoryFilter('hidden')" id="flt-hidden" class="filter-pill">Tersembunyi</button>
+      </div>
+    </div>
+
+    <!-- ═══════════ DAFTAR KATEGORI & SUBKATEGORI ═══════════ -->
+    <div id="category-list-container" class="space-y-3 fade-up s3 pb-4"></div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 1: TAMBAH / EDIT KATEGORI & SUBKATEGORI
+════════════════════════════════════════════════════════════════════ -->
+<div id="cat-modal-backdrop" class="modal-backdrop" onclick="if(event.target===this)closeModal('cat-modal-backdrop')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 id="cat-modal-title" class="text-lg font-black text-slate-900">Tambah Kategori Baru</h3>
+        <p id="cat-modal-sub" class="text-xs font-semibold text-slate-400">Sesuaikan ikon, warna, &amp; daftar subkategori</p>
+      </div>
+      <button type="button" onclick="closeModal('cat-modal-backdrop')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">✕</button>
+    </div>
+
+    <form id="cat-form" class="space-y-4" onsubmit="handleSaveCategory(event)">
+      <input type="hidden" id="form-cat-id">
+
+      <!-- Pratinjau Kartu Kategori -->
+      <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center justify-between">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="preview-icon-box" class="cat-icon-box" style="background:#FEE2E2">🍚</div>
+          <div class="min-w-0">
+            <span id="preview-type-badge" class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">Pengeluaran</span>
+            <p id="preview-cat-name" class="text-sm font-black text-slate-900 truncate mt-0.5">Nama Kategori</p>
+            <p id="preview-sub-count" class="text-[11px] font-semibold text-slate-400">0 subkategori</p>
+          </div>
+        </div>
+        <span id="preview-short-label" class="px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-[11px] font-extrabold text-slate-600">Label</span>
+      </div>
+
+      <!-- Jenis Transaksi -->
+      <div>
+        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Jenis Transaksi</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="f-type-out" onclick="setFormCatType('Uang Keluar')" class="py-2.5 rounded-xl border-2 border-orange-500 bg-orange-50 text-orange-700 text-xs font-black">↓ Pengeluaran (Keluar)</button>
+          <button type="button" id="f-type-in" onclick="setFormCatType('Uang Masuk')" class="py-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black">↑ Pemasukan (Masuk)</button>
+        </div>
+      </div>
+
+      <!-- Nama Kategori & Label Singkat -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="col-span-2">
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Nama Kategori *</label>
+          <input type="text" id="f-cat-name" placeholder="Cth: Makanan & Minuman" class="fi" required oninput="updateModalPreview()">
+        </div>
+        <div>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Label Pendek</label>
+          <input type="text" id="f-cat-short" placeholder="Makanan" maxlength="14" class="fi" oninput="updateModalPreview()">
+        </div>
+      </div>
+
+      <!-- Pilih Emoji / Ikon -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Pilih Ikon Emoji</label>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400">Ketik bebas:</span>
+            <input type="text" id="f-custom-emoji" maxlength="4" class="w-11 h-7 text-center rounded-lg border border-slate-200 bg-slate-50 text-sm font-bold" oninput="if(this.value.trim()){selectFormEmoji(this.value.trim())}">
+          </div>
+        </div>
+        <div id="emoji-picker-grid" class="grid grid-cols-8 gap-1.5 max-h-32 overflow-y-auto p-1 bg-slate-50/70 rounded-2xl border border-slate-100"></div>
+      </div>
+
+      <!-- Pilih Warna Latar Ikon -->
+      <div>
+        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Warna Tema Ikon</label>
+        <div id="color-picker-grid" class="grid grid-cols-4 gap-2"></div>
+      </div>
+
+      <!-- Target Anggaran Bulanan (Opsional, khusus Pengeluaran) -->
+      <div id="f-budget-wrap">
+        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Batas Anggaran Bulanan (Opsional)</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">Rp</span>
+          <input type="number" id="f-cat-budget" placeholder="0 (Kosongkan jika tanpa batas)" min="0" class="fi pl-10">
+        </div>
+      </div>
+
+      <!-- Daftar Subkategori -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Daftar Subkategori / Rincian</label>
+          <span id="f-sub-counter" class="text-[10px] font-extrabold text-emerald-600">0 item</span>
+        </div>
+        <div class="flex gap-2 mb-2.5">
+          <input type="text" id="f-new-sub-input" placeholder="Ketik subkategori baru (cth: Kopi & Jajan)…" class="fi py-2 text-xs flex-1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSubcategoryInForm();}">
+          <button type="button" onclick="addSubcategoryInForm()" class="px-3.5 py-2 rounded-xl bg-slate-900 text-white font-black text-xs active:scale-95 transition-transform flex-shrink-0">+ Tambah</button>
+        </div>
+        <div id="f-sub-chips-wrap" class="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 min-h-[52px]"></div>
+      </div>
+
+      <p id="cat-form-err" class="text-xs font-bold text-red-500 text-center hidden"></p>
+
+      <div class="flex gap-2.5 pt-2">
+        <button type="button" id="btn-delete-cat" onclick="confirmDeleteCategoryFromModal()" class="hidden px-4 py-3.5 rounded-2xl bg-red-50 text-red-600 font-black text-xs active:scale-95 transition-transform">
+          Hapus
+        </button>
+        <button type="submit" class="flex-1 py-3.5 rounded-2xl text-white font-black text-sm shadow-lg active:scale-98 transition-transform" style="background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 8px 22px rgba(16,185,129,0.28)">
+          Simpan Kategori
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 2: TAMBAH / KELOLA SUBKATEGORI CEPAT
+════════════════════════════════════════════════════════════════════ -->
+<div id="quick-sub-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('quick-sub-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div id="qs-cat-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-orange-100">🍚</div>
+        <div class="min-w-0">
+          <h3 id="qs-cat-title" class="text-base font-black text-slate-900 truncate">Subkategori</h3>
+          <p class="text-[11px] font-semibold text-slate-400">Tambah, ubah nama, atau hapus subkategori</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeModal('quick-sub-modal')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">✕</button>
+    </div>
+
+    <div class="flex gap-2 mt-3 mb-4">
+      <input type="text" id="qs-input" placeholder="Tambah subkategori baru…" class="fi py-2.5 text-xs flex-1" onkeydown="if(event.key==='Enter'){event.preventDefault();handleQuickAddSub();}">
+      <button type="button" onclick="handleQuickAddSub()" class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-black text-xs shadow-md shadow-emerald-600/20 active:scale-95 transition-transform">+ Tambah</button>
+    </div>
+
+    <div id="qs-list-wrap" class="space-y-2 max-h-[48vh] overflow-y-auto pr-0.5"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL 3: KONFIRMASI RESET KATEGORI BAWAAN
+════════════════════════════════════════════════════════════════════ -->
+<div id="reset-cat-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('reset-cat-modal')">
+  <div class="sheet p-6 pb-8 text-center">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl mx-auto flex items-center justify-center mb-3 text-2xl">🔄</div>
+    <h3 class="text-lg font-black text-slate-900 mb-1">Kembalikan Kategori Bawaan?</h3>
+    <p class="text-xs font-semibold text-slate-400 mb-6 max-w-xs mx-auto leading-relaxed">
+      Seluruh kategori bawaan beserta subkategorinya akan dipulihkan ke pengaturan awal. Data transaksi Anda di riwayat tetap aman dan tidak terhapus.
+    </p>
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('reset-cat-modal')" class="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-black text-xs active:scale-95 transition-transform">Batal</button>
+      <button type="button" onclick="executeResetDefaultCategories()" class="flex-1 py-3.5 rounded-2xl bg-amber-500 text-white font-black text-xs shadow-lg shadow-amber-500/25 active:scale-95 transition-transform">Ya, Pulihkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR (Direct Links) ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[#F1F5F9] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <a href="https://keloladuit.my.id/home#tambah" target="_top" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;text-decoration:none">
+      <div class="ai-nav-orb">
+        <div class="orb-ping"></div>
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Tambah</span>
+    </a>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// KONFIGURASI SESI, DATA BAWAAN, & SINKRONISASI KATEGORI
+// ================================================================
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY     = 'keuangan_transactions_cache';
+const CAT_STORAGE_KEY  = 'keuangan_categories_v1';
+
+const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+
+const EMOJI_OPTIONS = [
+  '🍚','🍜','☕','🍔','🛒','🚗','⛽','🛵','🏆','💡','📶','📱','🧴','👗','🎬','🎮',
+  '📚','🎓','💊','🏥','💳','🏦','🤝','🎁','🏋️','⚽','📋','🏛️','📈','🪙','🏠','🔧',
+  '✈️','🏖️','🐾','👶','💼','💰','💵','💎','🏆','✨','📦','✏️'
+];
+
+const COLOR_THEMES = [
+  { id: 'rose',    label: 'Merah Muda', bg: '#FEE2E2', border: '#FECACA', text: '#DC2626' },
+  { id: 'amber',   label: 'Kuning',     bg: '#FEF3C7', border: '#FDE68A', text: '#D97706' },
+  { id: 'emerald', label: 'Hijau',      bg: '#DCFCE7', border: '#BBF7D0', text: '#059669' },
+  { id: 'sky',     label: 'Biru Muda',  bg: '#DBEAFE', border: '#BFDBFE', text: '#2563EB' },
+  { id: 'violet',  label: 'Ungu',       bg: '#EDE9FE', border: '#DDD6FE', text: '#7C3AED' },
+  { id: 'fuchsia', label: 'Pink',       bg: '#FAE8FF', border: '#F5D0FE', text: '#C026D3' },
+  { id: 'teal',    label: 'Toska',      bg: '#CCFBF1', border: '#99F6E4', text: '#0D9488' },
+  { id: 'slate',   label: 'Abu Netral', bg: '#F1F5F9', border: '#E2E8F0', text: '#475569' }
+];
+
+function getDefaultCategories() {
+  return [
+    // ── KATEGORI PENGELUARAN (UANG KELUAR) ──
+    { id: 'out_makanan',     type: 'Uang Keluar', name: 'Makanan & Minuman',    shortLabel: 'Makanan',      icon: '🍚', bg: '#FEE2E2', isDefault: true, active: true, budget: 0, subcategories: ['Makan Harian', 'Kopi & Minuman', 'Jajanan & Camilan', 'Restoran & Kafe', 'Pesan Antar (GoFood/GrabFood)'] },
+    { id: 'out_transport',   type: 'Uang Keluar', name: 'Transportasi',         shortLabel: 'Transportasi', icon: '🚗', bg: '#FEE2E2', isDefault: true, active: true, budget: 0, subcategories: ['Bensin / BBM', 'Ojek & Taksi Online', 'Parkir & Tol', 'Transportasi Umum', 'Servis & Cuci Kendaraan'] },
+    { id: 'out_tagihan',     type: 'Uang Keluar', name: 'Tagihan Rutin',        shortLabel: 'Tagihan',      icon: '🏆', bg: '#FEF9C3', isDefault: true, active: true, budget: 0, subcategories: ['Listrik (PLN)', 'Air (PDAM)', 'Gas Rumah Tangga', 'Iuran Lingkungan / IPL', 'Sewa Tempat Tinggal'] },
+    { id: 'out_perawatan',   type: 'Uang Keluar', name: 'Perawatan Pribadi',    shortLabel: 'Perawatan',    icon: '🧴', bg: '#FEE2E2', isDefault: true, active: true, budget: 0, subcategories: ['Skincare & Kosmetik', 'Potong Rambut & Salon', 'Sabun & Toiletries', 'Pakaian & Laundry', 'Parfum'] },
+    { id: 'out_kebutuhan',   type: 'Uang Keluar', name: 'Kebutuhan',            shortLabel: 'Kebutuhan',    icon: '🛒', bg: '#F3E8FF', isDefault: true, active: true, budget: 0, subcategories: ['Belanja Bulanan / Supermarket', 'Bahan Masakan & Dapur', 'Perlengkapan Rumah', 'Alat Elektronik Kecil'] },
+    { id: 'out_hiburan',     type: 'Uang Keluar', name: 'Hiburan & Langganan',  shortLabel: 'Hiburan',      icon: '🎬', bg: '#EDE9FE', isDefault: true, active: true, budget: 0, subcategories: ['Netflix / Streaming', 'Spotify / Musik', 'Bioskop & Konser', 'Game & Top Up', 'Liburan & Rekreasi'] },
+    { id: 'out_internet',    type: 'Uang Keluar', name: 'Internet',             shortLabel: 'Internet',     icon: '📶', bg: '#DBEAFE', isDefault: true, active: true, budget: 0, subcategories: ['Paket Data Seluler', 'WiFi Rumah / Fiber', 'Pulsa Telepon', 'Cloud Storage & Domain'] },
+    { id: 'out_pendidikan',  type: 'Uang Keluar', name: 'Pendidikan',           shortLabel: 'Pendidikan',   icon: '📚', bg: '#DCFCE7', isDefault: true, active: true, budget: 0, subcategories: ['SPP / Biaya Kuliah', 'Buku & Alat Tulis', 'Kursus & Sertifikasi', 'Seminar & Workshop'] },
+    { id: 'out_kesehatan',   type: 'Uang Keluar', name: 'Kesehatan',            shortLabel: 'Kesehatan',    icon: '💊', bg: '#DCFCE7', isDefault: true, active: true, budget: 0, subcategories: ['Obat & Vitamin', 'Dokter & Rumah Sakit', 'BPJS & Asuransi Kesehatan', 'Cek Laboratorium'] },
+    { id: 'out_cicilan',     type: 'Uang Keluar', name: 'Cicilan & Utang',      shortLabel: 'Cicilan',      icon: '💳', bg: '#FEE2E2', isDefault: true, active: true, budget: 0, subcategories: ['Tagihan Kartu Kredit', 'Paylater', 'Cicilan Kendaraan / KPR', 'Bayar Pinjaman Teman'] },
+    { id: 'out_sosial',      type: 'Uang Keluar', name: 'Sosial & Donasi',      shortLabel: 'Sosial',       icon: '🤝', bg: '#FEF3C7', isDefault: true, active: true, budget: 0, subcategories: ['Sedekah & Zakat', 'Persembahan / Donasi', 'Kado & Hadiah', 'Kondangan / Acara Sosial'] },
+    { id: 'out_olahraga',    type: 'Uang Keluar', name: 'Olahraga & Kebugaran', shortLabel: 'Olahraga',     icon: '🏋️', bg: '#DCFCE7', isDefault: true, active: true, budget: 0, subcategories: ['Membership Gym', 'Sewa Lapangan (Futsal/Badminton)', 'Suplemen & Nutrisi', 'Perlengkapan Olahraga'] },
+    { id: 'out_pajak',       type: 'Uang Keluar', name: 'Pajak & Administrasi', shortLabel: 'Pajak',        icon: '📋', bg: '#F3F4F6', isDefault: true, active: true, budget: 0, subcategories: ['Pajak Kendaraan (STNK)', 'PBB & Pajak Daerah', 'Biaya Admin Bank / Transfer', 'Materai & Legalisir'] },
+    { id: 'out_investasi',   type: 'Uang Keluar', name: 'Investasi',            shortLabel: 'Investasi',    icon: '📈', bg: '#DCFCE7', isDefault: true, active: true, budget: 0, subcategories: ['Reksadana', 'Saham', 'Emas / Logam Mulia', 'Deposito Berjangka', 'Aset Kripto'] },
+    { id: 'out_lainnya',     type: 'Uang Keluar', name: 'Lainnya',              shortLabel: 'Lainnya',      icon: '✏️', bg: '#F3F4F6', isDefault: true, active: true, budget: 0, subcategories: ['Pengeluaran Tak Terduga', 'Biaya Lain-lain'] },
+
+    // ── KATEGORI PEMASUKAN (UANG MASUK) ──
+    { id: 'in_gaji',         type: 'Uang Masuk',  name: 'Gaji & Upah',          shortLabel: 'Gaji',         icon: '💼', bg: '#DCFCE7', isDefault: true, active: true, budget: 0, subcategories: ['Gaji Pokok Bulanan', 'Tunjangan Kerja', 'Upah Lembur', 'Insentif Kinerja'] },
+    { id: 'in_bonus',        type: 'Uang Masuk',  name: 'Bonus & THR',          shortLabel: 'Bonus',        icon: '🎁', bg: '#FEF3C7', isDefault: true, active: true, budget: 0, subcategories: ['THR Keagamaan', 'Bonus Akhir Tahun', 'Bonus Proyek', 'Apresiasi'] },
+    { id: 'in_usaha',        type: 'Uang Masuk',  name: 'Hasil Usaha / Bisnis', shortLabel: 'Bisnis',       icon: '🏪', bg: '#DBEAFE', isDefault: true, active: true, budget: 0, subcategories: ['Omzet Penjualan', 'Bagi Hasil Usaha', 'Komisi Penjualan', 'Laba Bersih'] },
+    { id: 'in_freelance',    type: 'Uang Masuk',  name: 'Freelance & Proyek',   shortLabel: 'Freelance',    icon: '💻', bg: '#EDE9FE', isDefault: true, active: true, budget: 0, subcategories: ['Jasa Desain / Kreatif', 'Jasa Pemrograman / IT', 'Honor Narasumber', 'Proyek Sampingan'] },
+    { id: 'in_investasi',    type: 'Uang Masuk',  name: 'Dividen & Investasi',  shortLabel: 'Imbal Hasil',  icon: '📈', bg: '#CCFBF1', isDefault: true, active: true, budget: 0, subcategories: ['Bunga Deposito / Tabungan', 'Dividen Saham', 'Kupon Obligasi / SBN', 'Capital Gain'] },
+    { id: 'in_cashback',     type: 'Uang Masuk',  name: 'Refund & Cashback',    shortLabel: 'Cashback',     icon: '🪙', bg: '#FAE8FF', isDefault: true, active: true, budget: 0, subcategories: ['Cashback Promo', 'Refund Pembelian', 'Reimbursement Kantor'] },
+    { id: 'in_hadiah',       type: 'Uang Masuk',  name: 'Hadiah & Pemberian',   shortLabel: 'Hadiah',       icon: '🧧', bg: '#FEE2E2', isDefault: true, active: true, budget: 0, subcategories: ['Uang Saku / Kiriman Keluarga', 'Angpao / Hadiah Tunai'] },
+    { id: 'in_penjualan',    type: 'Uang Masuk',  name: 'Penjualan Barang',     shortLabel: 'Jual Barang',  icon: '📦', bg: '#FEF3C7', isDefault: true, active: true, budget: 0, subcategories: ['Jual Barang Preloved', 'Jual Kendaraan / Gadget'] },
+    { id: 'in_lainnya',      type: 'Uang Masuk',  name: 'Pemasukan Lainnya',    shortLabel: 'Lainnya',      icon: '💰', bg: '#F1F5F9', isDefault: true, active: true, budget: 0, subcategories: ['Pemasukan Umum', 'Dana Masuk Lain-lain'] }
+  ];
+}
+
+let GS_URL = '';
+let S = {
+  akun: null,
+  transactions: [],
+  settings: {},
+  categories: [],
+  activeType: 'Uang Keluar',
+  activeFilter: 'all',
+  searchQuery: '',
+  formType: 'Uang Keluar',
+  formEmoji: '🍚',
+  formBg: '#FEE2E2',
+  formSubs: [],
+  quickSubCatId: null
+};
+
+// ── STORAGE HELPERS ──
+function storageGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v !== null) return v;
+  } catch(e) {}
+  try {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  } catch(e) { return null; }
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
+    return true;
+  }
+  return false;
+}
+
+function getScopedCatKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? `${CAT_STORAGE_KEY}_${uname}` : CAT_STORAGE_KEY;
+}
+
+function loadCategoriesAndData() {
+  try {
+    const txRaw = localStorage.getItem(TX_CACHE_KEY);
+    if (txRaw) S.transactions = JSON.parse(txRaw) || [];
+  } catch(e) {}
+
+  try {
+    const stRaw = localStorage.getItem('keuangan_settings_cache');
+    if (stRaw) S.settings = JSON.parse(stRaw) || {};
+  } catch(e) {}
+
+  let loaded = null;
+  try {
+    const rawScoped = localStorage.getItem(getScopedCatKey()) || localStorage.getItem(CAT_STORAGE_KEY);
+    if (rawScoped) loaded = JSON.parse(rawScoped);
+  } catch(e) {}
+
+  if (Array.isArray(loaded) && loaded.length > 0) {
+    S.categories = loaded;
+  } else {
+    S.categories = getDefaultCategories();
+  }
+
+  // Pastikan subkategori yang pernah dipakai di transaksi historis ikut terdaftar otomatis
+  const outCats = S.categories.filter(c => c.type === 'Uang Keluar');
+  S.transactions.forEach(tx => {
+    if (tx.Kategori === 'Uang Keluar' && tx['Kategori Uang Keluar']) {
+      const subName = String(tx['Kategori Uang Keluar']).trim();
+      if (!subName) return;
+      const existsAsCat = outCats.some(c => c.name.toLowerCase() === subName.toLowerCase());
+      const existsAsSub = outCats.some(c => (c.subcategories || []).some(s => s.toLowerCase() === subName.toLowerCase()));
+      if (!existsAsCat && !existsAsSub) {
+        S.categories.push({
+          id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          type: 'Uang Keluar',
+          name: subName,
+          shortLabel: subName.slice(0, 12),
+          icon: '🏷️',
+          bg: '#EDE9FE',
+          isDefault: false,
+          active: true,
+          budget: 0,
+          subcategories: ['Umum']
+        });
+      }
+    }
+  });
+
+  saveCategoriesLocal();
+}
+
+function saveCategoriesLocal() {
+  try {
+    const jsonStr = JSON.stringify(S.categories);
+    localStorage.setItem(CAT_STORAGE_KEY, jsonStr);
+    localStorage.setItem(getScopedCatKey(), jsonStr);
+
+    // Simpan juga daftar nama kategori pengeluaran aktif agar kompatibel dengan komponen lain
+    const activeOutNames = S.categories
+      .filter(c => c.type === 'Uang Keluar' && c.active !== false)
+      .map(c => c.name);
+    localStorage.setItem('keuangan_active_out_categories', JSON.stringify(activeOutNames));
+  } catch(e) {}
+}
+
+// ── STATISTIK TRANSAKSI PER KATEGORI ──
+function computeCategoryStats() {
+  const stats = {};
+  let totalOutAmt = 0;
+  let totalInAmt  = 0;
+  let totalOutTx  = 0;
+  let totalInTx   = 0;
+
+  S.categories.forEach(c => {
+    stats[c.id] = { count: 0, amount: 0, monthAmount: 0 };
+  });
+
+  const now = new Date();
+  const thisYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  S.transactions.forEach(tx => {
+    const amt = Number(tx['Jumlah Uang']) || 0;
+    const isMonth = String(tx.Tanggal || '').startsWith(thisYM);
+
+    if (tx.Kategori === 'Uang Keluar') {
+      totalOutAmt += amt;
+      totalOutTx++;
+      const rawSub = String(tx['Kategori Uang Keluar'] || 'Lainnya').trim();
+      const matched = S.categories.find(c =>
+        c.type === 'Uang Keluar' &&
+        (c.name.toLowerCase() === rawSub.toLowerCase() ||
+         (c.subcategories || []).some(s => s.toLowerCase() === rawSub.toLowerCase()))
+      ) || S.categories.find(c => c.id === 'out_lainnya');
+
+      if (matched && stats[matched.id]) {
+        stats[matched.id].count++;
+        stats[matched.id].amount += amt;
+        if (isMonth) stats[matched.id].monthAmount += amt;
+      }
+    } else if (tx.Kategori === 'Uang Masuk') {
+      totalInAmt += amt;
+      totalInTx++;
+      const descLower = String(tx.Deskripsi || '').toLowerCase();
+      const rawSub = String(tx['Kategori Uang Keluar'] || '').trim().toLowerCase();
+      const matched = S.categories.find(c => {
+        if (c.type !== 'Uang Masuk') return false;
+        if (rawSub && c.name.toLowerCase() === rawSub) return true;
+        if (descLower.indexOf(c.shortLabel.toLowerCase()) !== -1) return true;
+        return (c.subcategories || []).some(s => descLower.indexOf(s.toLowerCase()) !== -1);
+      }) || S.categories.find(c => c.id === 'in_lainnya');
+
+      if (matched && stats[matched.id]) {
+        stats[matched.id].count++;
+        stats[matched.id].amount += amt;
+        if (isMonth) stats[matched.id].monthAmount += amt;
+      }
+    }
+  });
+
+  return { stats, totalOutAmt, totalInAmt, totalOutTx, totalInTx };
+}
+
+// ── RENDER UTAMA ──
+function renderPage() {
+  const { stats, totalOutAmt, totalInAmt, totalOutTx, totalInTx } = computeCategoryStats();
+  const isOut = S.activeType === 'Uang Keluar';
+
+  const outCats = S.categories.filter(c => c.type === 'Uang Keluar');
+  const inCats  = S.categories.filter(c => c.type === 'Uang Masuk');
+  const currentTypeCats = isOut ? outCats : inCats;
+  const activeCount = currentTypeCats.filter(c => c.active !== false).length;
+  const subCount = currentTypeCats.reduce((sum, c) => sum + ((c.subcategories && c.subcategories.length) || 0), 0);
+
+  // Update Hero & Header Button
+  const heroEl = document.getElementById('cat-hero');
+  const addBtn = document.getElementById('header-add-btn');
+  if (heroEl) heroEl.classList.toggle('mode-in', !isOut);
+  if (addBtn) {
+    addBtn.style.background = isOut
+      ? 'linear-gradient(135deg,#F97316,#EA580C)'
+      : 'linear-gradient(135deg,#10B981,#059669)';
+  }
+
+  document.getElementById('hero-badge').textContent = isOut ? '📂 Struktur Pengeluaran' : '💰 Struktur Pemasukan';
+  document.getElementById('hero-title').textContent = `${activeCount} Kategori Aktif`;
+  document.getElementById('hero-subtitle').textContent = `${subCount} subkategori tersedia untuk pencatatan ${isOut ? 'pengeluaran' : 'pemasukan'}`;
+  document.getElementById('hero-icon').textContent = isOut ? '🗂️' : '📈';
+
+  document.getElementById('stat-cat-count').textContent = `${activeCount}/${currentTypeCats.length}`;
+  document.getElementById('stat-sub-count').textContent = String(subCount);
+  document.getElementById('stat-tx-count').textContent = `${isOut ? totalOutTx : totalInTx} Transaksi`;
+
+  // Update Type Tabs
+  const tabOut = document.getElementById('tab-type-out');
+  const tabIn  = document.getElementById('tab-type-in');
+  if (tabOut) tabOut.className = 'type-tab-btn ' + (isOut ? 'active-out' : '');
+  if (tabIn)  tabIn.className  = 'type-tab-btn ' + (!isOut ? 'active-in' : '');
+  document.getElementById('badge-count-out').textContent = outCats.filter(c => c.active !== false).length;
+  document.getElementById('badge-count-in').textContent  = inCats.filter(c => c.active !== false).length;
+
+  // Filter & Search
+  const q = S.searchQuery.trim().toLowerCase();
+  const filtered = currentTypeCats.filter(c => {
+    if (S.activeFilter === 'active' && c.active === false) return false;
+    if (S.activeFilter === 'custom' && c.isDefault) return false;
+    if (S.activeFilter === 'budget' && !(Number(c.budget) > 0)) return false;
+    if (S.activeFilter === 'hidden' && c.active !== false) return false;
+
+    if (q) {
+      const matchName = c.name.toLowerCase().indexOf(q) !== -1 || (c.shortLabel || '').toLowerCase().indexOf(q) !== -1;
+      const matchSub  = (c.subcategories || []).some(s => s.toLowerCase().indexOf(q) !== -1);
+      return matchName || matchSub;
+    }
+    return true;
+  });
+
+  const listEl = document.getElementById('category-list-container');
+  if (!filtered.length) {
+    listEl.innerHTML = `
+      <div class="bg-white rounded-3xl p-8 text-center border border-slate-100 shadow-xs">
+        <div class="text-4xl mb-2">🔍</div>
+        <p class="text-sm font-black text-slate-800">Tidak ada kategori yang cocok</p>
+        <p class="text-xs font-semibold text-slate-400 mt-1 mb-4">Coba kata kunci lain atau buat kategori baru sesuai kebutuhan Anda.</p>
+        <button type="button" onclick="openCategoryModal()" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-black">+ Buat Kategori Baru</button>
+      </div>
+    `;
+    return;
+  }
+
+  const totalTypeAmt = isOut ? totalOutAmt : totalInAmt;
+
+  listEl.innerHTML = filtered.map((c, idx) => {
+    const st = stats[c.id] || { count: 0, amount: 0, monthAmount: 0 };
+    const sharePct = totalTypeAmt > 0 ? Math.min(100, Math.round((st.amount / totalTypeAmt) * 100)) : 0;
+    const subs = Array.isArray(c.subcategories) ? c.subcategories : [];
+    const isHidden = c.active === false;
+    const budgetAmt = Number(c.budget) || 0;
+    const budgetPct = budgetAmt > 0 ? Math.min(100, Math.round((st.monthAmount / budgetAmt) * 100)) : 0;
+    const budgetColor = budgetPct >= 90 ? '#EF4444' : budgetPct >= 75 ? '#F59E0B' : '#10B981';
+
+    const subChipsHtml = subs.map(s => {
+      const safeS = String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `<button type="button" onclick="openQuickSubModal('${c.id}')" class="subcat-chip" title="Kelola subkategori ${safeS}">
+        <span>${safeS}</span>
+      </button>`;
+    }).join('');
+
+    const budgetBarHtml = (isOut && budgetAmt > 0) ? `
+      <div class="mt-3 pt-2.5 border-t border-slate-100">
+        <div class="flex items-center justify-between text-[10px] font-extrabold mb-1">
+          <span class="text-slate-400">🎯 Anggaran Bulan Ini: <b class="text-slate-700">${idr(st.monthAmount)}</b> / ${idr(budgetAmt)}</span>
+          <span style="color:${budgetColor}">${budgetPct}%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all" style="width:${budgetPct}%;background:${budgetColor}"></div>
+        </div>
+      </div>
+    ` : '';
+
+    return `
+      <div class="cat-item-card ${isHidden ? 'is-hidden' : ''}">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="cat-icon-box" style="background:${c.bg || '#F1F5F9'}">${c.icon || '🏷️'}</div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h3 class="text-sm font-black text-slate-900 truncate">${c.name}</h3>
+                ${c.isDefault
+                  ? '<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500">Bawaan</span>'
+                  : '<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60">✨ Kustom</span>'}
+                ${isHidden ? '<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-red-50 text-red-600">Nonaktif</span>' : ''}
+              </div>
+              <p class="text-[11px] font-bold text-slate-400 mt-0.5">
+                ${st.count} transaksi · <span class="text-slate-600 font-extrabold">${idr(st.amount)}</span>
+                ${sharePct > 0 ? `<span class="text-[10px] text-slate-400">(${sharePct}%)</span>` : ''}
+              </p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" onclick="moveCategoryOrder('${c.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black active:scale-90" title="Geser ke Atas">↑</button>
+            <button type="button" onclick="moveCategoryOrder('${c.id}', 1)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black active:scale-90" title="Geser ke Bawah">↓</button>
+            <button type="button" onclick="toggleCategoryActive('${c.id}')" class="w-7 h-7 rounded-lg ${isHidden ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'} flex items-center justify-center text-xs font-black active:scale-90" title="${isHidden ? 'Tampilkan Kategori' : 'Sembunyikan Kategori'}">
+              ${isHidden ? '👁️' : '🙈'}
+            </button>
+            <button type="button" onclick="openCategoryModal('${c.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-black active:scale-95 transition-transform">
+              Edit
+            </button>
+          </div>
+        </div>
+
+        <!-- Subcategories Strip -->
+        <div class="mt-3 pt-2.5 border-t border-slate-100/90">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Subkategori (${subs.length})</span>
+            <button type="button" onclick="openQuickSubModal('${c.id}')" class="text-[10px] font-extrabold text-emerald-600 hover:underline">Kelola Rincian →</button>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            ${subChipsHtml}
+            <button type="button" onclick="openQuickSubModal('${c.id}')" class="subcat-add-chip ${!isOut ? 'mode-in' : ''}">
+              <span>+ Subkategori</span>
+            </button>
+          </div>
+        </div>
+
+        ${budgetBarHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+// ── INTERAKSI TAB, FILTER, SEARCH, & URUTAN ──
+window.switchCategoryType = function(type) {
+  S.activeType = type;
+  renderPage();
+};
+
+window.setCategoryFilter = function(flt) {
+  S.activeFilter = flt;
+  ['all', 'active', 'custom', 'budget', 'hidden'].forEach(k => {
+    const el = document.getElementById('flt-' + k);
+    if (el) el.classList.toggle('active', k === flt);
+  });
+  renderPage();
+};
+
+window.onSearchCategory = function(val) {
+  S.searchQuery = val || '';
+  const clr = document.getElementById('cat-search-clear');
+  if (clr) clr.classList.toggle('hidden', !S.searchQuery);
+  renderPage();
+};
+
+window.clearCategorySearch = function() {
+  const inp = document.getElementById('cat-search-input');
+  if (inp) inp.value = '';
+  onSearchCategory('');
+};
+
+window.toggleCategoryActive = function(catId) {
+  const c = S.categories.find(x => x.id === catId);
+  if (!c) return;
+  c.active = c.active === false ? true : false;
+  saveCategoriesLocal();
+  renderPage();
+  showSuccess(c.active ? `Kategori "${c.name}" diaktifkan.` : `Kategori "${c.name}" disembunyikan.`);
+};
+
+window.moveCategoryOrder = function(catId, dir) {
+  const sameType = S.categories.filter(c => c.type === S.activeType);
+  const pos = sameType.findIndex(c => c.id === catId);
+  if (pos === -1) return;
+  const targetPos = pos + dir;
+  if (targetPos < 0 || targetPos >= sameType.length) return;
+
+  const itemA = sameType[pos];
+  const itemB = sameType[targetPos];
+  const idxA = S.categories.indexOf(itemA);
+  const idxB = S.categories.indexOf(itemB);
+  S.categories[idxA] = itemB;
+  S.categories[idxB] = itemA;
+
+  saveCategoriesLocal();
+  renderPage();
+};
+
+// ── MODAL TAMBAH / EDIT KATEGORI ──
+function renderPickerGrids() {
+  const emojiGrid = document.getElementById('emoji-picker-grid');
+  if (emojiGrid) {
+    emojiGrid.innerHTML = EMOJI_OPTIONS.map(em => `
+      <button type="button" onclick="selectFormEmoji('${em}')" class="emoji-option ${S.formEmoji === em ? 'selected' : ''}">${em}</button>
+    `).join('');
+  }
+
+  const colorGrid = document.getElementById('color-picker-grid');
+  if (colorGrid) {
+    colorGrid.innerHTML = COLOR_THEMES.map(ct => `
+      <button type="button" onclick="selectFormColor('${ct.bg}')" class="color-swatch ${S.formBg === ct.bg ? 'selected' : ''}" style="background:${ct.bg};color:${ct.text}">
+        ${ct.label}
+      </button>
+    `).join('');
+  }
+}
+
+window.selectFormEmoji = function(em) {
+  S.formEmoji = em;
+  renderPickerGrids();
+  updateModalPreview();
+};
+
+window.selectFormColor = function(bg) {
+  S.formBg = bg;
+  renderPickerGrids();
+  updateModalPreview();
+};
+
+window.setFormCatType = function(type) {
+  S.formType = type;
+  const isOut = type === 'Uang Keluar';
+  const bOut = document.getElementById('f-type-out');
+  const bIn  = document.getElementById('f-type-in');
+  if (bOut) {
+    bOut.className = isOut
+      ? 'py-2.5 rounded-xl border-2 border-orange-500 bg-orange-50 text-orange-700 text-xs font-black'
+      : 'py-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black';
+  }
+  if (bIn) {
+    bIn.className = !isOut
+      ? 'py-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs font-black'
+      : 'py-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-600 text-xs font-black';
+  }
+  document.getElementById('f-budget-wrap')?.classList.toggle('hidden', !isOut);
+  updateModalPreview();
+};
+
+window.updateModalPreview = function() {
+  const nameVal  = document.getElementById('f-cat-name')?.value.trim() || 'Nama Kategori';
+  const shortVal = document.getElementById('f-cat-short')?.value.trim() || nameVal.split(' ')[0] || 'Label';
+  const isOut    = S.formType === 'Uang Keluar';
+
+  const iconBox = document.getElementById('preview-icon-box');
+  if (iconBox) {
+    iconBox.style.background = S.formBg;
+    iconBox.textContent = S.formEmoji;
+  }
+  const badge = document.getElementById('preview-type-badge');
+  if (badge) {
+    badge.textContent = isOut ? 'Pengeluaran' : 'Pemasukan';
+    badge.className = isOut
+      ? 'text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-700'
+      : 'text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+  }
+  document.getElementById('preview-cat-name').textContent = nameVal;
+  document.getElementById('preview-short-label').textContent = shortVal;
+  document.getElementById('preview-sub-count').textContent = `${S.formSubs.length} subkategori`;
+  document.getElementById('f-sub-counter').textContent = `${S.formSubs.length} item`;
+};
+
+function renderFormSubChips() {
+  const wrap = document.getElementById('f-sub-chips-wrap');
+  if (!wrap) return;
+  if (!S.formSubs.length) {
+    wrap.innerHTML = '<span class="text-xs font-semibold text-slate-400 m-auto">Belum ada subkategori. Tambahkan di atas.</span>';
+  } else {
+    wrap.innerHTML = S.formSubs.map((s, idx) => {
+      const safe = String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-2xs">
+        <span>${safe}</span>
+        <button type="button" onclick="removeSubcategoryInForm(${idx})" class="text-slate-400 hover:text-red-500 font-black">✕</button>
+      </span>`;
+    }).join('');
+  }
+  updateModalPreview();
+}
+
+window.addSubcategoryInForm = function() {
+  const inp = document.getElementById('f-new-sub-input');
+  const val = (inp?.value || '').trim();
+  if (!val) return;
+  if (!S.formSubs.some(s => s.toLowerCase() === val.toLowerCase())) {
+    S.formSubs.push(val);
+  }
+  inp.value = '';
+  renderFormSubChips();
+};
+
+window.removeSubcategoryInForm = function(idx) {
+  S.formSubs.splice(idx, 1);
+  renderFormSubChips();
+};
+
+window.openCategoryModal = function(catId = null) {
+  const errEl = document.getElementById('cat-form-err');
+  if (errEl) errEl.classList.add('hidden');
+  document.getElementById('f-new-sub-input').value = '';
+  document.getElementById('f-custom-emoji').value = '';
+
+  const delBtn = document.getElementById('btn-delete-cat');
+
+  if (catId) {
+    const c = S.categories.find(x => x.id === catId);
+    if (!c) return;
+    document.getElementById('cat-modal-title').textContent = 'Edit Kategori';
+    document.getElementById('form-cat-id').value = c.id;
+    document.getElementById('f-cat-name').value  = c.name;
+    document.getElementById('f-cat-short').value = c.shortLabel || '';
+    document.getElementById('f-cat-budget').value = c.budget > 0 ? c.budget : '';
+    S.formEmoji = c.icon || '🏷️';
+    S.formBg    = c.bg || '#FEE2E2';
+    S.formSubs  = Array.isArray(c.subcategories) ? [...c.subcategories] : [];
+    setFormCatType(c.type || 'Uang Keluar');
+    if (delBtn) delBtn.classList.toggle('hidden', Boolean(c.isDefault));
+  } else {
+    document.getElementById('cat-modal-title').textContent = 'Tambah Kategori Baru';
+    document.getElementById('form-cat-id').value = '';
+    document.getElementById('f-cat-name').value  = '';
+    document.getElementById('f-cat-short').value = '';
+    document.getElementById('f-cat-budget').value = '';
+    S.formEmoji = S.activeType === 'Uang Keluar' ? '🛍️' : '💰';
+    S.formBg    = S.activeType === 'Uang Keluar' ? '#FEE2E2' : '#DCFCE7';
+    S.formSubs  = ['Umum'];
+    setFormCatType(S.activeType);
+    if (delBtn) delBtn.classList.add('hidden');
+  }
+
+  renderPickerGrids();
+  renderFormSubChips();
+  openModal('cat-modal-backdrop');
+};
+
+window.handleSaveCategory = function(e) {
+  e.preventDefault();
+  const id       = document.getElementById('form-cat-id').value;
+  const name     = document.getElementById('f-cat-name').value.trim();
+  const shortLbl = document.getElementById('f-cat-short').value.trim() || name.split(' ')[0];
+  const budget   = Number(document.getElementById('f-cat-budget').value) || 0;
+  const errEl    = document.getElementById('cat-form-err');
+
+  if (!name) return;
+
+  const duplicate = S.categories.find(c =>
+    c.type === S.formType &&
+    c.name.toLowerCase() === name.toLowerCase() &&
+    c.id !== id
+  );
+  if (duplicate) {
+    if (errEl) {
+      errEl.textContent = `Kategori "${name}" sudah ada pada jenis ${S.formType}.`;
+      errEl.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (id) {
+    const idx = S.categories.findIndex(c => c.id === id);
+    if (idx > -1) {
+      const oldName = S.categories[idx].name;
+      S.categories[idx].name          = name;
+      S.categories[idx].shortLabel    = shortLbl;
+      S.categories[idx].type          = S.formType;
+      S.categories[idx].icon          = S.formEmoji;
+      S.categories[idx].bg            = S.formBg;
+      S.categories[idx].budget        = S.formType === 'Uang Keluar' ? budget : 0;
+      S.categories[idx].subcategories = S.formSubs;
+
+      // Jika nama kategori berubah, migrasikan transaksi di cache lokal
+      if (oldName && oldName !== name) {
+        let migratedCount = 0;
+        S.transactions.forEach(tx => {
+          if (tx['Kategori Uang Keluar'] === oldName) {
+            tx['Kategori Uang Keluar'] = name;
+            migratedCount++;
+          }
+        });
+        if (migratedCount > 0) {
+          try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(err) {}
+        }
+      }
+    }
+  } else {
+    S.categories.push({
+      id: 'custom_' + Date.now(),
+      type: S.formType,
+      name: name,
+      shortLabel: shortLbl,
+      icon: S.formEmoji,
+      bg: S.formBg,
+      isDefault: false,
+      active: true,
+      budget: S.formType === 'Uang Keluar' ? budget : 0,
+      subcategories: S.formSubs.length ? S.formSubs : ['Umum']
+    });
+    S.activeType = S.formType;
+  }
+
+  saveCategoriesLocal();
+  renderPage();
+  closeModal('cat-modal-backdrop');
+  showSuccess('Kategori berhasil disimpan!');
+};
+
+window.confirmDeleteCategoryFromModal = function() {
+  const id = document.getElementById('form-cat-id').value;
+  if (!id) return;
+  const c = S.categories.find(x => x.id === id);
+  if (!c || c.isDefault) return;
+
+  S.categories = S.categories.filter(x => x.id !== id);
+  saveCategoriesLocal();
+  renderPage();
+  closeModal('cat-modal-backdrop');
+  showSuccess(`Kategori "${c.name}" berhasil dihapus.`);
+};
+
+// ── MODAL KELOLA SUBKATEGORI CEPAT ──
+window.openQuickSubModal = function(catId) {
+  const c = S.categories.find(x => x.id === catId);
+  if (!c) return;
+  S.quickSubCatId = catId;
+
+  const iconEl = document.getElementById('qs-cat-icon');
+  if (iconEl) {
+    iconEl.style.background = c.bg || '#FEE2E2';
+    iconEl.textContent = c.icon || '🏷️';
+  }
+  document.getElementById('qs-cat-title').textContent = c.name;
+  document.getElementById('qs-input').value = '';
+
+  renderQuickSubList();
+  openModal('quick-sub-modal');
+};
+
+function renderQuickSubList() {
+  const c = S.categories.find(x => x.id === S.quickSubCatId);
+  const wrap = document.getElementById('qs-list-wrap');
+  if (!c || !wrap) return;
+  const subs = Array.isArray(c.subcategories) ? c.subcategories : [];
+
+  if (!subs.length) {
+    wrap.innerHTML = '<p class="text-xs font-semibold text-slate-400 text-center py-6">Belum ada subkategori di kategori ini.</p>';
+    return;
+  }
+
+  wrap.innerHTML = subs.map((s, idx) => {
+    const safe = String(s).replace(/"/g, '&quot;');
+    return `
+      <div class="flex items-center gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+        <span class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-[11px] font-black text-slate-500 flex items-center justify-center flex-shrink-0">${idx + 1}</span>
+        <input type="text" value="${safe}" onchange="renameQuickSub(${idx}, this.value)" class="fi py-1.5 px-2.5 text-xs bg-white flex-1">
+        <button type="button" onclick="deleteQuickSub(${idx})" class="w-8 h-8 rounded-xl bg-red-50 text-red-500 font-black text-xs flex items-center justify-center flex-shrink-0 active:scale-90">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+window.handleQuickAddSub = function() {
+  const c = S.categories.find(x => x.id === S.quickSubCatId);
+  const inp = document.getElementById('qs-input');
+  const val = (inp?.value || '').trim();
+  if (!c || !val) return;
+
+  if (!Array.isArray(c.subcategories)) c.subcategories = [];
+  if (!c.subcategories.some(s => s.toLowerCase() === val.toLowerCase())) {
+    c.subcategories.push(val);
+    saveCategoriesLocal();
+    renderQuickSubList();
+    renderPage();
+  }
+  inp.value = '';
+};
+
+window.renameQuickSub = function(idx, newVal) {
+  const c = S.categories.find(x => x.id === S.quickSubCatId);
+  const trimmed = String(newVal || '').trim();
+  if (!c || !trimmed || !c.subcategories[idx]) return;
+  c.subcategories[idx] = trimmed;
+  saveCategoriesLocal();
+  renderPage();
+};
+
+window.deleteQuickSub = function(idx) {
+  const c = S.categories.find(x => x.id === S.quickSubCatId);
+  if (!c || !Array.isArray(c.subcategories)) return;
+  c.subcategories.splice(idx, 1);
+  saveCategoriesLocal();
+  renderQuickSubList();
+  renderPage();
+};
+
+// ── RESET KATEGORI BAWAAN ──
+window.openResetCategoriesModal = function() {
+  openModal('reset-cat-modal');
+};
+
+window.executeResetDefaultCategories = function() {
+  const customOnly = S.categories.filter(c => !c.isDefault);
+  S.categories = getDefaultCategories().concat(customOnly);
+  saveCategoriesLocal();
+  renderPage();
+  closeModal('reset-cat-modal');
+  showSuccess('Kategori bawaan berhasil dipulihkan!');
+};
+
+// ── MODAL HELPERS ──
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 300);
+};
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
+  setTimeout(() => el.classList.add('hidden'), 2000);
+}
+
+// ── SINKRONISASI LATAR BELAKANG ──
+async function syncTransactionsInBackground() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read&_t=' + Date.now());
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data && Array.isArray(d.data.transactions)) {
+      S.transactions = d.data.transactions;
+      try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(e) {}
+      renderPage();
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch(e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+  loadCategoriesAndData();
+  renderPage();
+  syncTransactionsInBackground();
+});
+</script>
+</body>
+</html>
