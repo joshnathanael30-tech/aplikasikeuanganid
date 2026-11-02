@@ -1,3 +1,23 @@
+Kode HTML Halaman Beranda / Home (keloladuit.my.id/home) — Tombol Chat & Request Friend + Badge Notifikasi Real-Time
+
+Pembaruan pada halaman https://keloladuit.my.id/home:
+
+Hapus Widget Kilas Bisnis (Berita): Seluruh tampilan dan pengambilan API berita dihapus dari Beranda.
+
+Hapus Sekilas Riwayat Transaksi: Bagian Transaksi Terbaru dihapus dari Beranda agar tampilan lebih bersih dan fokus.
+
+Integrasi "Dompet Saya" ke Kotak Hero Saldo Utama (Vertical Paper-Stack Swipe):
+
+Jika Dompet Tunggal (1 Dompet): Kotak utama langsung menampilkan kartu dompet tersebut secara penuh (lengkap dengan background & logo bank/e-wallet, sisa saldo, pemasukan & pengeluaran bulan ini, tombol mata sembunyikan saldo, tombol Kelola, serta jika kartu ditekan langsung membuka Riwayat Transaksi Dompet tersebut).
+
+Jika Dompet Banyak (> 1 Dompet): Tampil sebagai Tumpukan Kartu (Paper Stack) dengan Total Saldo Aktif sebagai kartu terdepan, diikuti kartu masing-masing dompet di belakangnya.
+
+Swipe ke Atas (Animasi Kertas Dipindah): Geser (swipe) kartu ke atas untuk memindahkan lembar kartu terdepan ke urutan belakang dan menampilkan kartu dompet berikutnya satu per satu. Setiap kartu dompet bisa ditekan (tap) untuk membuka detail & riwayat transaksinya.
+
+Pure Visual Peek/Tease Animation (Tanpa Teks): Kartu utama memiliki animasi peek bounce halus yang terangkat sedikit ke atas secara berkala untuk memperlihatkan kartu dompet di bawahnya (memberi isyarat visual swipe up murni tanpa tulisan).
+
+Klik tombol Copy / Salin di pojok kanan atas blok kode di bawah ini:
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -396,11 +416,23 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="openAIChat()" class="w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center active:scale-90 transition-transform shadow-sm" title="AI Assistant">
+          <!-- Tombol Chat (Menggantikan Logo AI) -->
+          <a href="https://keloladuit.my.id/chats" target="_top" onclick="goToChatsPage(event, 'chats')" class="relative w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Chat Sesama User">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
             </svg>
-          </button>
+            <span id="home-chat-unread-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#F0F4F8] shadow-sm leading-none">0</span>
+          </a>
+
+          <!-- Tombol Request Friend (Sebelah Tombol Chat) -->
+          <a href="https://keloladuit.my.id/chats?tab=requests" target="_top" onclick="goToChatsPage(event, 'requests')" class="relative w-9 h-9 rounded-xl bg-white border border-zinc-200 text-zinc-700 flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Permintaan Pertemanan">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+            <span id="home-friend-req-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#F0F4F8] shadow-sm leading-none animate-bounce">0</span>
+          </a>
+
+          <!-- Tombol Pengaturan Akun -->
           <a href="https://keloladuit.my.id/account" target="_top" onclick="goToAccountPage(event)" class="w-9 h-9 rounded-xl bg-white border border-zinc-200 text-zinc-600 flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Akun & Pengaturan">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -408,6 +440,18 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             </svg>
           </a>
         </div>
+      </div>
+
+      <!-- Notifikasi Permintaan Pertemanan Baru -->
+      <div id="home-friend-req-alert" onclick="goToChatsPage(event, 'requests')" class="hidden mt-2.5 px-3.5 py-2 rounded-2xl cursor-pointer flex items-center justify-between gap-2.5 shadow-sm active:scale-[0.99] transition-all" style="background:linear-gradient(135deg,#FFF1F2 0%,#FFE4E6 100%);border:1.5px solid #FECDD3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="w-7 h-7 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs font-black flex-shrink-0 shadow-sm">🔔</span>
+          <div class="min-w-0">
+            <p class="text-xs font-black text-rose-700 leading-tight">Permintaan Pertemanan baru!</p>
+            <p id="home-friend-req-subtext" class="text-[10px] font-bold text-rose-500 truncate mt-0.5">Ketuk untuk melihat dan menerima teman</p>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-xl bg-rose-500 text-white text-[10px] font-black flex-shrink-0 shadow-xs">Lihat →</span>
       </div>
     </header>
 
@@ -1874,6 +1918,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (S.transactions.length === 0) isFetchingBg = true;
   refreshAll();
+  loadHomeChatBadgesFromCache();
+  syncHomeChatAndFriendNotifications();
+  setInterval(syncHomeChatAndFriendNotifications, 8000);
   initWeather();
   startCryptoPolling();
   checkHashAction();
@@ -2114,6 +2161,110 @@ window.goToBudgetPage = function(e) {
     window.location.href = 'https://keloladuit.my.id/home/Budget';
   }
 };
+
+window.goToChatsPage = function(e, targetTab) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    if (targetTab) {
+      localStorage.setItem('keuangan_chats_initial_tab', targetTab);
+    }
+  } catch(err) {}
+  var destUrl = 'https://keloladuit.my.id/chats' + (targetTab === 'requests' ? '?tab=requests' : '');
+  try {
+    window.top.location.href = destUrl;
+  } catch(err) {
+    window.location.href = destUrl;
+  }
+};
+
+function renderHomeChatAndFriendBadges(friendsList, incomingList) {
+  var friends = Array.isArray(friendsList) ? friendsList : [];
+  var incoming = Array.isArray(incomingList) ? incomingList : [];
+
+  var totalUnreadChat = 0;
+  friends.forEach(function(f) {
+    totalUnreadChat += (Number(f && f.unreadCount) || 0);
+  });
+  var totalReqCount = incoming.length;
+
+  var chatBadge = document.getElementById('home-chat-unread-badge');
+  if (chatBadge) {
+    if (totalUnreadChat > 0) {
+      chatBadge.textContent = totalUnreadChat > 99 ? '99+' : String(totalUnreadChat);
+      chatBadge.classList.remove('hidden');
+    } else {
+      chatBadge.classList.add('hidden');
+    }
+  }
+
+  var reqBadge = document.getElementById('home-friend-req-badge');
+  if (reqBadge) {
+    if (totalReqCount > 0) {
+      reqBadge.textContent = totalReqCount > 99 ? '99+' : String(totalReqCount);
+      reqBadge.classList.remove('hidden');
+    } else {
+      reqBadge.classList.add('hidden');
+    }
+  }
+
+  var reqAlert = document.getElementById('home-friend-req-alert');
+  var reqSub = document.getElementById('home-friend-req-subtext');
+  if (reqAlert) {
+    if (totalReqCount > 0) {
+      reqAlert.classList.remove('hidden');
+      if (reqSub) {
+        var firstSender = incoming[0] && (incoming[0].friendNamaLengkap || ('@' + incoming[0].friendUsername));
+        reqSub.textContent = totalReqCount === 1
+          ? ('Dari ' + firstSender + ' — Ketuk untuk konfirmasi')
+          : (totalReqCount + ' pengguna ingin berteman dengan Anda');
+      }
+    } else {
+      reqAlert.classList.add('hidden');
+    }
+  }
+}
+
+function loadHomeChatBadgesFromCache() {
+  if (!S.akun || !S.akun.username) return;
+  try {
+    var key = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+    var raw = localStorage.getItem(key);
+    if (!raw) return;
+    var parsed = JSON.parse(raw);
+    if (parsed) {
+      renderHomeChatAndFriendBadges(parsed.friends || [], parsed.incomingRequests || []);
+    }
+  } catch(e) {}
+}
+
+async function syncHomeChatAndFriendNotifications() {
+  if (!S.akun || !S.akun.username) return;
+  try {
+    var uname = encodeURIComponent(S.akun.username);
+    var url = GLOBAL_GS_URL + '?action=getFriendsAndInbox&username=' + uname + '&_t=' + Date.now();
+    var res = await fetch(url);
+    var json = await res.json();
+    if (json && json.status === 'success' && json.data) {
+      var friends = Array.isArray(json.data.friends) ? json.data.friends : [];
+      var incoming = Array.isArray(json.data.incomingRequests) ? json.data.incomingRequests : [];
+      var outgoing = Array.isArray(json.data.outgoingRequests) ? json.data.outgoingRequests : [];
+      renderHomeChatAndFriendBadges(friends, incoming);
+      try {
+        var key = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+        localStorage.setItem(key, JSON.stringify({
+          friends: friends,
+          incomingRequests: incoming,
+          outgoingRequests: outgoing
+        }));
+      } catch(e) {}
+    }
+  } catch(e) {}
+}
 
 var featureBannerState = {
   idx: 0,
