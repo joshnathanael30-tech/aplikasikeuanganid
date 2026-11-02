@@ -323,6 +323,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .sch-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(238,242,255,0.92) 55%, rgba(224,242,254,0.90) 100%); border: 1.5px solid rgba(99,102,241,0.22); box-shadow: 0 6px 22px rgba(99,102,241,0.09), 0 1px 4px rgba(0,0,0,0.03); }
 .sch-home-empty:hover { box-shadow: 0 10px 28px rgba(99,102,241,0.15); }
 .sch-home-empty:active { transform: scale(.98); }
+.bgt-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(254,243,199,0.90) 55%, rgba(254,215,170,0.88) 100%); border: 1.5px solid rgba(245,158,11,0.26); box-shadow: 0 6px 22px rgba(245,158,11,0.09), 0 1px 4px rgba(0,0,0,0.03); }
+.bgt-home-empty:hover { box-shadow: 0 10px 28px rgba(245,158,11,0.16); }
+.bgt-home-empty:active { transform: scale(.98); }
 .qa-item-pill { flex-shrink: 0; width: 148px; background: #fff; border: 1.5px solid #E4E4E7; border-radius: 16px; padding: 10px 12px; cursor: pointer; text-align: left; position: relative; overflow: hidden; transition: transform .15s, border-color .15s, box-shadow .15s, background .15s; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 .qa-item-pill:hover { border-color: #10B981; background: #F0FDF4; box-shadow: 0 4px 14px rgba(16,185,129,0.12); transform: translateY(-1px); }
 .qa-item-pill:active { transform: scale(.93); }
@@ -330,12 +333,13 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .feature-orbit-shell { position: relative; border-radius: 23px; padding: 2px; }
 .orbit-svg-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; overflow: visible; }
 .feature-banner-viewport { position: relative; overflow: hidden; border-radius: 21px; width: 100%; transition: height 0.36s cubic-bezier(0.22, 1, 0.36, 1); }
-.feature-banner-track { display: flex; width: 200%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
-.feature-slide-pane { width: 50%; flex-shrink: 0; box-sizing: border-box; }
+.feature-banner-track { display: flex; width: 300%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
+.feature-slide-pane { width: 33.333333%; flex-shrink: 0; box-sizing: border-box; }
 .feature-slider-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; }
 .feature-dot { height: 6px; width: 6px; border-radius: 99px; background: #CBD5E1; border: none; padding: 0; cursor: pointer; transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .feature-dot.active-qa { width: 22px; background: linear-gradient(90deg, #10B981, #059669); box-shadow: 0 2px 8px rgba(16,185,129,0.35); }
 .feature-dot.active-sch { width: 22px; background: linear-gradient(90deg, #6366F1, #0EA5E9); box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+.feature-dot.active-bgt { width: 22px; background: linear-gradient(90deg, #F59E0B, #EA580C); box-shadow: 0 2px 8px rgba(245,158,11,0.35); }
 @keyframes schClockTick { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .sch-clock-hand { transform-origin: 12px 12px; animation: schClockTick 14s linear infinite; }
 .prov-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; border:1.5px solid #F4F4F5; background:#fff; cursor:pointer; transition:all .15s; }
@@ -436,10 +440,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff">💸</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Transfer</span>
           </button>
-          <button onclick="openDepositoModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff">🏦</div>
-            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Deposito</span>
-          </button>
+          <!-- DIRECT LINK KE KELOLADUIT.MY.ID/HOME/BUDGET -->
+          <a href="https://keloladuit.my.id/home/Budget" target="_top" onclick="goToBudgetPage(event)" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform" style="text-decoration:none">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff">🎯</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Kelola<br>Budget</span>
+          </a>
           <button onclick="openCicilanModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff">💳</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Cicilan</span>
@@ -453,20 +458,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EC4899,#BE185D);color:#fff">🤝</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Utang/<br>Piutang</span>
           </a>
-          <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+          <button onclick="openInvestasiModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Investasi</span>
           </button>
         </div>
-      </div>
-
-      <!-- ── DEPOSITO ── -->
-      <div id="deposito-section" class="fade-up s3">
-        <div class="flex items-center justify-between mb-2.5">
-          <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Deposito</p>
-          <button onclick="openDepositoModal()" class="text-[11px] font-black text-blue-600 active:scale-95 transition-transform">+ Buka Baru</button>
-        </div>
-        <div id="deposito-list-wrap" class="space-y-2.5"></div>
       </div>
 
       <!-- ── CICILAN / KREDIT ── -->
@@ -607,23 +603,19 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           <select id="tx-dompet-id" onchange="onTxDompetChange(this.value)" class="fi" style="width:100%;font-weight:800"></select>
         </div>
         <div id="subcat-section" class="hidden">
-          <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-3">Kategori Pengeluaran</p>
-          <div id="subcat-btns" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin:0 -20px;padding-left:20px;padding-right:20px;scrollbar-width:none;-ms-overflow-style:none">
-            <button type="button" data-sub="Makanan &amp; Minuman" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">🍚</div><span class="subcat-icon-label">Makanan</span></button>
-            <button type="button" data-sub="Transportasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">🚗</div><span class="subcat-icon-label">Transportasi</span></button>
-            <button type="button" data-sub="Tagihan Rutin" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEF9C3">🏆</div><span class="subcat-icon-label">Tagihan</span></button>
-            <button type="button" data-sub="Perawatan Pribadi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">🧴</div><span class="subcat-icon-label">Perawatan</span></button>
-            <button type="button" data-sub="Kebutuhan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#F3E8FF">🛒</div><span class="subcat-icon-label">Kebutuhan</span></button>
-            <button type="button" data-sub="Hiburan &amp; Langganan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#EDE9FE">🎬</div><span class="subcat-icon-label">Hiburan</span></button>
-            <button type="button" data-sub="Internet" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DBEAFE">📶</div><span class="subcat-icon-label">Internet</span></button>
-            <button type="button" data-sub="Pendidikan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">📚</div><span class="subcat-icon-label">Pendidikan</span></button>
-            <button type="button" data-sub="Kesehatan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">💊</div><span class="subcat-icon-label">Kesehatan</span></button>
-            <button type="button" data-sub="Cicilan &amp; Utang" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">💳</div><span class="subcat-icon-label">Cicilan</span></button>
-            <button type="button" data-sub="Sosial &amp; Donasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEF3C7">🤝</div><span class="subcat-icon-label">Sosial</span></button>
-            <button type="button" data-sub="Olahraga &amp; Kebugaran" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">🏋️</div><span class="subcat-icon-label">Olahraga</span></button>
-            <button type="button" data-sub="Pajak &amp; Administrasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#F3F4F6">📋</div><span class="subcat-icon-label">Pajak</span></button>
-            <button type="button" data-sub="Investasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">📈</div><span class="subcat-icon-label">Investasi</span></button>
-            <button type="button" data-sub="Lainnya" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#F3F4F6">✏️</div><span class="subcat-icon-label">Lainnya</span></button>
+          <div class="flex items-center justify-between mb-2.5">
+            <p id="subcat-section-title" class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Kategori Pengeluaran</p>
+            <a href="https://keloladuit.my.id/kelola-kategori" target="_top" class="text-[10px] font-extrabold text-emerald-600 hover:underline flex items-center gap-1">
+              <span>⚙️ Kelola Kategori</span>
+            </a>
+          </div>
+          <div id="subcat-btns" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin:0 -20px;padding-left:20px;padding-right:20px;scrollbar-width:none;-ms-overflow-style:none"></div>
+          <div id="tx-subdetail-wrap" class="hidden mt-2 pt-2.5 border-t border-zinc-100">
+            <div class="flex items-center justify-between mb-1.5">
+              <span id="tx-subdetail-label" class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Pilih Subkategori (Opsional)</span>
+              <a href="https://keloladuit.my.id/kelola-kategori" target="_top" class="text-[10px] font-bold text-zinc-400 hover:text-zinc-600">+ Edit Subkategori</a>
+            </div>
+            <div id="tx-subdetail-chips" class="flex flex-wrap gap-1.5"></div>
           </div>
         </div>
         <div id="ctx-quick-wrap" class="ctx-quick-wrap">
@@ -824,6 +816,47 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         </div>
         <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-black text-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">Kirim Transfer</button>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ INVESTASI MODAL (BERISI SELURUH FITUR & DAFTAR DEPOSITO) ═══════════ -->
+<div id="investasi-backdrop" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'investasi-backdrop')">
+  <div class="sheet pb-8">
+    <div class="p-6">
+      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
+          <div>
+            <h2 class="text-lg font-black text-zinc-900 leading-tight">Portofolio Investasi</h2>
+            <p class="text-[11px] font-semibold text-zinc-400">Kelola deposito berjangka &amp; estimasi imbal hasil</p>
+          </div>
+        </div>
+        <button onclick="closeModal('investasi-backdrop')" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500">✕</button>
+      </div>
+
+      <!-- Ringkasan Total Deposito Aktif -->
+      <div class="rounded-2xl p-4 mb-4 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#0F766E 0%,#0D9488 55%,#14B8A6 100%)">
+        <div style="position:absolute;top:-30px;right:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.22) 0%,transparent 70%);pointer-events:none"></div>
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-teal-100">Total Dana Deposito Aktif</span>
+          <span id="inv-dep-count" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 text-white">0 Produk</span>
+        </div>
+        <p id="inv-dep-total-pokok" class="text-2xl font-black tracking-tight">Rp 0</p>
+        <p class="text-[11px] font-bold text-teal-100 mt-1">Estimasi Bunga Bersih: <span id="inv-dep-total-bunga" class="text-white font-black">+Rp 0</span></p>
+      </div>
+
+      <div class="flex items-center justify-between mb-2.5">
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Daftar Deposito Saya</p>
+        <button type="button" onclick="closeModal('investasi-backdrop');openDepositoModal()" class="text-[11px] font-black text-teal-600 active:scale-95 transition-transform">+ Buka Deposito Baru</button>
+      </div>
+
+      <div id="deposito-list-wrap" class="space-y-2.5 max-h-[42vh] overflow-y-auto pr-0.5 mb-4"></div>
+
+      <button type="button" onclick="closeModal('investasi-backdrop');openDepositoModal()" class="w-full py-3.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-98 transition-transform" style="background:linear-gradient(135deg,#14B8A6,#0F766E)">
+        <span>🏦 + Buka Deposito Baru</span>
+      </button>
     </div>
   </div>
 </div>
@@ -1869,6 +1902,10 @@ async function syncDataInBackground() {
       if (Array.isArray(d.data.subscriptions)) { S.subscriptions = d.data.subscriptions; saveSubLocal(); }
       saveTransactionsCache();
       try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(e) {}
+      try {
+        syncCategoriesFromServerSettings(S.settings);
+        if (S.txCat) renderDynamicCategoryButtons(S.txCat);
+      } catch(e) {}
 
       if (Array.isArray(d.data.dompet)) {
         var dariServer = d.data.dompet.map(w => ({
@@ -2062,6 +2099,20 @@ window.goToScheduledPage = function() {
     saveScheduledLocalHome();
   }
   window.top.location.href = 'https://keloladuit.my.id/transaksiterjadwal';
+};
+
+window.goToBudgetPage = function(e) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/home/Budget';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/home/Budget';
+  }
 };
 
 var featureBannerState = {
@@ -2272,14 +2323,39 @@ function buildOrbitRoundedPath(w, h) {
   };
 }
 
+function buildBudgetSlideHtml() {
+  return `
+    <div onclick="goToBudgetPage(event)" class="qa-home-card bgt-home-empty p-4 flex items-center justify-between gap-3">
+      <div style="position:absolute;top:-26px;right:-20px;width:104px;height:104px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.20) 0%,rgba(234,88,12,0.08) 45%,transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-28px;left:18%;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.16) 0%,transparent 70%);pointer-events:none"></div>
+      <div class="flex items-center gap-3.5 min-w-0 relative z-10">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#F59E0B 0%,#EA580C 100%);box-shadow:0 6px 16px rgba(245,158,11,0.28)">
+          <span class="text-xl">🎯</span>
+        </div>
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-black text-zinc-900 leading-snug tracking-tight">Punya batas anggaran agar tetap on track?</h3>
+          <p class="text-xs font-extrabold text-amber-700 mt-0.5 leading-snug truncate">Kelola budgetmu sekarang!</p>
+        </div>
+      </div>
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 relative z-10" style="background:rgba(245,158,11,0.14);color:#D97706">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
 function syncFeatureBannerGeometry(forceUpdatePath) {
   const shell = document.getElementById('feature-orbit-shell');
   const viewport = document.getElementById('feature-banner-viewport');
   const slide0 = document.getElementById('feature-slide-qa');
   const slide1 = document.getElementById('feature-slide-sch');
-  if (!shell || !viewport || !slide0 || !slide1) return;
+  const slide2 = document.getElementById('feature-slide-bgt');
+  if (!shell || !viewport || !slide0 || !slide1 || !slide2) return;
 
-  const activeSlide = featureBannerState.idx === 0 ? slide0 : slide1;
+  const slides = [slide0, slide1, slide2];
+  const activeSlide = slides[featureBannerState.idx] || slide0;
   const targetH = activeSlide.offsetHeight;
   if (targetH > 0) {
     viewport.style.height = targetH + 'px';
@@ -2299,30 +2375,34 @@ function syncFeatureBannerGeometry(forceUpdatePath) {
 }
 
 function applyFeatureSlideTheme() {
-  const isQa = featureBannerState.idx === 0;
-  const gradUrl = isQa ? 'url(#orbit-grad-qa)' : 'url(#orbit-grad-sch)';
+  const idx = featureBannerState.idx;
+  const gradUrl = idx === 0 ? 'url(#orbit-grad-qa)' : idx === 1 ? 'url(#orbit-grad-sch)' : 'url(#orbit-grad-bgt)';
+  const strokeClr = idx === 0 ? 'rgba(16,185,129,0.16)' : idx === 1 ? 'rgba(99,102,241,0.18)' : 'rgba(245,158,11,0.20)';
   const baseTrack = document.getElementById('orbit-base-track');
   const halo = document.getElementById('orbit-glow-halo');
   const beam = document.getElementById('orbit-light-beam');
 
-  if (baseTrack) baseTrack.setAttribute('stroke', isQa ? 'rgba(16,185,129,0.16)' : 'rgba(99,102,241,0.18)');
+  if (baseTrack) baseTrack.setAttribute('stroke', strokeClr);
   if (halo) halo.setAttribute('stroke', gradUrl);
   if (beam) beam.setAttribute('stroke', gradUrl);
 
   const dot0 = document.getElementById('fdot-0');
   const dot1 = document.getElementById('fdot-1');
-  if (dot0) dot0.className = 'feature-dot ' + (isQa ? 'active-qa' : '');
-  if (dot1) dot1.className = 'feature-dot ' + (!isQa ? 'active-sch' : '');
+  const dot2 = document.getElementById('fdot-2');
+  if (dot0) dot0.className = 'feature-dot ' + (idx === 0 ? 'active-qa' : '');
+  if (dot1) dot1.className = 'feature-dot ' + (idx === 1 ? 'active-sch' : '');
+  if (dot2) dot2.className = 'feature-dot ' + (idx === 2 ? 'active-bgt' : '');
 }
 
 window.goToFeatureSlide = function(idx) {
-  featureBannerState.idx = idx === 1 ? 1 : 0;
+  const totalSlides = 3;
+  featureBannerState.idx = ((idx % totalSlides) + totalSlides) % totalSlides;
   featureBannerState.elapsed = 0;
   featureBannerState.lastTs = performance.now();
 
   const track = document.getElementById('feature-banner-track');
   if (track) {
-    track.style.transform = `translateX(-${featureBannerState.idx * 50}%)`;
+    track.style.transform = `translateX(-${(featureBannerState.idx * (100 / totalSlides)).toFixed(4)}%)`;
   }
   applyFeatureSlideTheme();
   syncFeatureBannerGeometry(true);
@@ -2348,7 +2428,7 @@ function startFeatureOrbitLoop() {
       if (beam) beam.setAttribute('stroke-dashoffset', (155 - pos).toFixed(2));
 
       if (progress >= 1) {
-        goToFeatureSlide((featureBannerState.idx + 1) % 2, true);
+        goToFeatureSlide((featureBannerState.idx + 1) % 3, true);
       }
     }
     featureBannerState.rafId = requestAnimationFrame(step);
@@ -2371,10 +2451,10 @@ window.onFeatureBannerTouchMove = function(e) {
 window.onFeatureBannerTouchEnd = function() {
   featureBannerState.paused = false;
   if (Math.abs(featureBannerState.touchDeltaX) > 42) {
-    if (featureBannerState.touchDeltaX < 0 && featureBannerState.idx === 0) {
-      goToFeatureSlide(1, false);
-    } else if (featureBannerState.touchDeltaX > 0 && featureBannerState.idx === 1) {
-      goToFeatureSlide(0, false);
+    if (featureBannerState.touchDeltaX < 0) {
+      goToFeatureSlide((featureBannerState.idx + 1) % 3, false);
+    } else if (featureBannerState.touchDeltaX > 0) {
+      goToFeatureSlide((featureBannerState.idx + 2) % 3, false);
     }
   }
   featureBannerState.touchDeltaX = 0;
@@ -2386,10 +2466,12 @@ function renderQuickAddHomeSection() {
 
   const existingShell = document.getElementById('feature-orbit-shell');
   if (existingShell) {
-    const slideQa = document.getElementById('feature-slide-qa');
+    const slideQa  = document.getElementById('feature-slide-qa');
     const slideSch = document.getElementById('feature-slide-sch');
-    if (slideQa) slideQa.innerHTML = buildQuickAddSlideHtml();
+    const slideBgt = document.getElementById('feature-slide-bgt');
+    if (slideQa)  slideQa.innerHTML  = buildQuickAddSlideHtml();
     if (slideSch) slideSch.innerHTML = buildScheduledSlideHtml();
+    if (slideBgt) slideBgt.innerHTML = buildBudgetSlideHtml();
     requestAnimationFrame(() => syncFeatureBannerGeometry(true));
     return;
   }
@@ -2412,6 +2494,11 @@ function renderQuickAddHomeSection() {
             <stop offset="55%" stop-color="#38BDF8"/>
             <stop offset="100%" stop-color="#C4B5FD"/>
           </linearGradient>
+          <linearGradient id="orbit-grad-bgt" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F59E0B"/>
+            <stop offset="55%" stop-color="#FB923C"/>
+            <stop offset="100%" stop-color="#FDE68A"/>
+          </linearGradient>
           <filter id="orbit-glow-filter" x="-25%" y="-25%" width="150%" height="150%">
             <feGaussianBlur stdDeviation="3.2" result="blur"/>
             <feMerge>
@@ -2433,13 +2520,17 @@ function renderQuickAddHomeSection() {
           <div id="feature-slide-sch" class="feature-slide-pane">
             ${buildScheduledSlideHtml()}
           </div>
+          <div id="feature-slide-bgt" class="feature-slide-pane">
+            ${buildBudgetSlideHtml()}
+          </div>
         </div>
       </div>
     </div>
 
     <div id="feature-banner-dots" class="feature-slider-dots">
-      <button type="button" id="fdot-0" onclick="goToFeatureSlide(0, false)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
-      <button type="button" id="fdot-1" onclick="goToFeatureSlide(1, false)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
+      <button type="button" id="fdot-0" onclick="goToFeatureSlide(0)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
+      <button type="button" id="fdot-1" onclick="goToFeatureSlide(1)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
+      <button type="button" id="fdot-2" onclick="goToFeatureSlide(2)" class="feature-dot" aria-label="Slide Kelola Budget" title="Kelola Budget"></button>
     </div>
   `;
 
@@ -3281,28 +3372,43 @@ window.handleDeleteDompet = function() {
 // ================================================================
 // DEPOSITO & CICILAN LOGIC
 // ================================================================
+window.openInvestasiModal = function() {
+  renderDepositoSection();
+  openModal('investasi-backdrop');
+};
+
 function renderDepositoSection() {
   const wrap = document.getElementById('deposito-list-wrap');
+  const totalPokokEl = document.getElementById('inv-dep-total-pokok');
+  const totalBungaEl = document.getElementById('inv-dep-total-bunga');
+  const countEl      = document.getElementById('inv-dep-count');
+
+  const totalPokok = depositoList.reduce((s, d) => s + (Number(d.pokok) || 0), 0);
+  const totalBunga = depositoList.reduce((s, d) => s + (Number(d.netBunga) || 0), 0);
+  if (totalPokokEl) totalPokokEl.textContent = idr(totalPokok);
+  if (totalBungaEl) totalBungaEl.textContent = '+' + idr(totalBunga);
+  if (countEl)      countEl.textContent      = `${depositoList.length} Produk`;
+
   if (!wrap) return;
   if (!depositoList.length) {
-    wrap.innerHTML = `<div onclick="openDepositoModal()" class="glass rounded-2xl p-3.5 flex items-center justify-between cursor-pointer">
+    wrap.innerHTML = `<div onclick="closeModal('investasi-backdrop');openDepositoModal()" class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between cursor-pointer">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base">🏦</div>
+        <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-base">🏦</div>
         <div>
           <p class="text-xs font-black text-zinc-800">Belum ada deposito aktif</p>
           <p class="text-[10px] font-semibold text-zinc-400">Simpan dana berjangka &amp; pantau estimasi bunga</p>
         </div>
       </div>
-      <span class="text-[11px] font-black text-blue-600">+ Buka</span>
+      <span class="text-[11px] font-black text-teal-600">+ Buka</span>
     </div>`;
     return;
   }
   wrap.innerHTML = depositoList.map(dep => `
-    <div class="glass rounded-2xl p-4 flex items-center justify-between">
+    <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between">
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-black text-zinc-900">${dep.nama}</span>
-          <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">${dep.bunga}% p.a · ${dep.tenor} bln</span>
+          <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-teal-50 text-teal-700">${dep.bunga}% p.a · ${dep.tenor} bln</span>
         </div>
         <p class="text-sm font-black text-zinc-900 mt-1">${idr(dep.pokok)} <span class="text-[11px] font-extrabold text-emerald-600">(+${idr(dep.netBunga)})</span></p>
         <p class="text-[10px] font-semibold text-zinc-400 mt-0.5">Jatuh tempo: ${dep.jatuhTempo || '-'} · ${dep.aro || 'Non-ARO'}</p>
@@ -3521,7 +3627,7 @@ window.addBulkRow = function() {
       <input type="number" placeholder="Nominal (Rp)" class="b-amt fi py-2 text-xs" style="background:#fff">
     </div>
     <select class="b-sub fi py-2 text-xs" style="background:#fff">
-      ${AI_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
+      ${getAllUserCategories().filter(c => c.type === 'Uang Keluar').map(c => `<option value="${c.name}">${c.icon || ''} ${c.name}</option>`).join('')}
       <option value="Lainnya">Lainnya</option>
     </select>
   `;
@@ -3776,22 +3882,215 @@ window.handleAddSub = function(e) {
 };
 
 // ================================================================
+// DYNAMIC CATEGORIES & SUBCATEGORIES (TERHUBUNG KE /kelola-kategori)
+// ================================================================
+const CAT_STORAGE_KEY  = 'keuangan_categories_v1';
+const CLOUD_CAT_PREFIX = 'CATS_V1:';
+
+function getDefaultAppCategories() {
+  return [
+    { id: 'out_makanan',     type: 'Uang Keluar', name: 'Makanan & Minuman',    shortLabel: 'Makanan',      icon: '🍚', bg: '#FEE2E2', subcategories: ['Makan Harian', 'Kopi & Minuman', 'Jajanan & Camilan', 'Restoran & Kafe', 'Pesan Antar'] },
+    { id: 'out_transport',   type: 'Uang Keluar', name: 'Transportasi',         shortLabel: 'Transportasi', icon: '🚗', bg: '#FEE2E2', subcategories: ['Bensin / BBM', 'Ojek & Taksi Online', 'Parkir & Tol', 'Transportasi Umum', 'Servis Kendaraan'] },
+    { id: 'out_tagihan',     type: 'Uang Keluar', name: 'Tagihan Rutin',        shortLabel: 'Tagihan',      icon: '🏆', bg: '#FEF9C3', subcategories: ['Listrik (PLN)', 'Air (PDAM)', 'Gas Rumah Tangga', 'Iuran IPL', 'Sewa / Kos'] },
+    { id: 'out_perawatan',   type: 'Uang Keluar', name: 'Perawatan Pribadi',    shortLabel: 'Perawatan',    icon: '🧴', bg: '#FEE2E2', subcategories: ['Skincare & Kosmetik', 'Potong Rambut & Salon', 'Sabun & Toiletries', 'Pakaian & Laundry'] },
+    { id: 'out_kebutuhan',   type: 'Uang Keluar', name: 'Kebutuhan',            shortLabel: 'Kebutuhan',    icon: '🛒', bg: '#F3E8FF', subcategories: ['Belanja Bulanan', 'Bahan Masakan & Dapur', 'Perlengkapan Rumah', 'Alat Rumah Tangga'] },
+    { id: 'out_hiburan',     type: 'Uang Keluar', name: 'Hiburan & Langganan',  shortLabel: 'Hiburan',      icon: '🎬', bg: '#EDE9FE', subcategories: ['Netflix / Streaming', 'Spotify / Musik', 'Bioskop', 'Game & Top Up', 'Liburan'] },
+    { id: 'out_internet',    type: 'Uang Keluar', name: 'Internet',             shortLabel: 'Internet',     icon: '📶', bg: '#DBEAFE', subcategories: ['Paket Data Seluler', 'WiFi Rumah', 'Pulsa Telepon'] },
+    { id: 'out_pendidikan',  type: 'Uang Keluar', name: 'Pendidikan',           shortLabel: 'Pendidikan',   icon: '📚', bg: '#DCFCE7', subcategories: ['SPP / Biaya Sekolah', 'Buku & Alat Tulis', 'Kursus & Pelatihan'] },
+    { id: 'out_kesehatan',   type: 'Uang Keluar', name: 'Kesehatan',            shortLabel: 'Kesehatan',    icon: '💊', bg: '#DCFCE7', subcategories: ['Obat & Vitamin', 'Dokter & RS', 'BPJS / Asuransi'] },
+    { id: 'out_cicilan',     type: 'Uang Keluar', name: 'Cicilan & Utang',      shortLabel: 'Cicilan',      icon: '💳', bg: '#FEE2E2', subcategories: ['Tagihan Kartu Kredit', 'Paylater', 'Cicilan Kendaraan / KPR', 'Bayar Pinjaman'] },
+    { id: 'out_sosial',      type: 'Uang Keluar', name: 'Sosial & Donasi',      shortLabel: 'Sosial',       icon: '🤝', bg: '#FEF3C7', subcategories: ['Sedekah & Zakat', 'Donasi / Persembahan', 'Kado & Kondangan'] },
+    { id: 'out_olahraga',    type: 'Uang Keluar', name: 'Olahraga & Kebugaran', shortLabel: 'Olahraga',     icon: '🏋️', bg: '#DCFCE7', subcategories: ['Membership Gym', 'Sewa Lapangan', 'Suplemen & Alat Olahraga'] },
+    { id: 'out_pajak',       type: 'Uang Keluar', name: 'Pajak & Administrasi', shortLabel: 'Pajak',        icon: '📋', bg: '#F3F4F6', subcategories: ['Pajak Kendaraan (STNK)', 'Pajak Bumi & Bangunan', 'Biaya Admin Bank'] },
+    { id: 'out_investasi',   type: 'Uang Keluar', name: 'Investasi',            shortLabel: 'Investasi',    icon: '📈', bg: '#DCFCE7', subcategories: ['Reksadana', 'Saham', 'Emas', 'Deposito', 'Kripto'] },
+    { id: 'out_lainnya',     type: 'Uang Keluar', name: 'Lainnya',              shortLabel: 'Lainnya',      icon: '✏️', bg: '#F3F4F6', subcategories: ['Pengeluaran Tak Terduga', 'Lain-lain'] },
+
+    { id: 'in_gaji',         type: 'Uang Masuk',  name: 'Gaji & Upah',          shortLabel: 'Gaji',         icon: '💼', bg: '#DCFCE7', subcategories: ['Gaji Pokok Bulanan', 'Tunjangan Kerja', 'Upah Lembur', 'Insentif'] },
+    { id: 'in_bonus',        type: 'Uang Masuk',  name: 'Bonus & THR',          shortLabel: 'Bonus',        icon: '🎁', bg: '#FEF3C7', subcategories: ['THR', 'Bonus Akhir Tahun', 'Bonus Kinerja'] },
+    { id: 'in_usaha',        type: 'Uang Masuk',  name: 'Hasil Usaha / Bisnis', shortLabel: 'Bisnis',       icon: '🏪', bg: '#DBEAFE', subcategories: ['Omzet Penjualan', 'Laba Usaha', 'Komisi Penjualan'] },
+    { id: 'in_freelance',    type: 'Uang Masuk',  name: 'Freelance & Proyek',   shortLabel: 'Freelance',    icon: '💻', bg: '#EDE9FE', subcategories: ['Proyek Desain / IT', 'Honor Jasa', 'Pekerjaan Sampingan'] },
+    { id: 'in_investasi',    type: 'Uang Masuk',  name: 'Hasil Investasi',      shortLabel: 'Investasi',    icon: '📈', bg: '#CCFBF1', subcategories: ['Bunga Tabungan / Deposito', 'Dividen Saham', 'Keuntungan Jual Aset'] },
+    { id: 'in_cashback',     type: 'Uang Masuk',  name: 'Refund & Cashback',    shortLabel: 'Cashback',     icon: '🪙', bg: '#FAE8FF', subcategories: ['Cashback Promo', 'Refund Belanja', 'Reimbursement Kantor'] },
+    { id: 'in_hadiah',       type: 'Uang Masuk',  name: 'Hadiah & Kiriman',     shortLabel: 'Hadiah',       icon: '🧧', bg: '#FEE2E2', subcategories: ['Kiriman Keluarga', 'Angpao / Hadiah Tunai'] },
+    { id: 'in_penjualan',    type: 'Uang Masuk',  name: 'Penjualan Barang',     shortLabel: 'Jual Barang',  icon: '📦', bg: '#FEF3C7', subcategories: ['Jual Barang Bekas', 'Jual Gadget / Kendaraan'] },
+    { id: 'in_lainnya',      type: 'Uang Masuk',  name: 'Pemasukan Lainnya',    shortLabel: 'Lainnya',      icon: '💰', bg: '#F3F4F6', subcategories: ['Pemasukan Umum', 'Lain-lain'] }
+  ];
+}
+
+function getScopedCatStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? `${CAT_STORAGE_KEY}_${uname}` : CAT_STORAGE_KEY;
+}
+
+function getAllUserCategories() {
+  // 1. Cek dari localStorage / cookie
+  let list = null;
+  try {
+    const raw = storageGet(getScopedCatStorageKey()) || storageGet(CAT_STORAGE_KEY);
+    if (raw) list = JSON.parse(raw);
+  } catch(e) {}
+
+  // 2. Fallback cek dari S.settings.backupPassword (Cloud Spreadsheet sync)
+  if ((!Array.isArray(list) || !list.length) && S.settings && S.settings.backupPassword) {
+    const bp = String(S.settings.backupPassword);
+    if (bp.indexOf(CLOUD_CAT_PREFIX) === 0) {
+      try {
+        list = JSON.parse(bp.slice(CLOUD_CAT_PREFIX.length));
+        if (Array.isArray(list) && list.length > 0) {
+          storageSet(CAT_STORAGE_KEY, JSON.stringify(list));
+          storageSet(getScopedCatStorageKey(), JSON.stringify(list));
+        }
+      } catch(e) {}
+    }
+  }
+
+  if (!Array.isArray(list) || !list.length) {
+    list = getDefaultAppCategories();
+  }
+
+  // Update SUBCAT_EMOJI_MAP agar ikon di seluruh kartu beranda ikut menyesuaikan
+  list.forEach(c => {
+    if (c && c.name && c.icon) {
+      SUBCAT_EMOJI_MAP[c.name] = c.icon;
+      if (Array.isArray(c.subcategories)) {
+        c.subcategories.forEach(sub => {
+          SUBCAT_EMOJI_MAP[`${c.name} · ${sub}`] = c.icon;
+        });
+      }
+    }
+  });
+
+  return list.filter(c => c && c.name && c.active !== false);
+}
+
+function syncCategoriesFromServerSettings(settingsObj) {
+  if (!settingsObj || !settingsObj.backupPassword) return;
+  const bp = String(settingsObj.backupPassword);
+  if (bp.indexOf(CLOUD_CAT_PREFIX) === 0) {
+    try {
+      const parsed = JSON.parse(bp.slice(CLOUD_CAT_PREFIX.length));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const jsonStr = JSON.stringify(parsed);
+        storageSet(CAT_STORAGE_KEY, jsonStr);
+        storageSet(getScopedCatStorageKey(), jsonStr);
+        getAllUserCategories();
+      }
+    } catch(e) {}
+  }
+}
+
+function renderDynamicCategoryButtons(catType) {
+  const allCats = getAllUserCategories();
+  const typeCats = allCats.filter(c => c.type === catType);
+  const titleEl = document.getElementById('subcat-section-title');
+  if (titleEl) {
+    titleEl.textContent = catType === 'Uang Masuk' ? 'Kategori Pemasukan' : 'Kategori Pengeluaran';
+  }
+
+  const wrap = document.getElementById('subcat-btns');
+  if (!wrap) return;
+
+  wrap.innerHTML = typeCats.map(c => {
+    const safeName = String(c.name).replace(/"/g, '&quot;');
+    const shortLbl = c.shortLabel || c.name.split(' ')[0];
+    const isAct = S.txSub === c.name ? 'active' : '';
+    return `<button type="button" data-sub="${safeName}" onclick="selectTxCategoryItem('${safeName.replace(/'/g, "\'")}')" class="subcat-icon-btn ${isAct}">
+      <div class="subcat-icon-circle" style="background:${c.bg || '#F3F4F6'}">${c.icon || '🏷️'}</div>
+      <span class="subcat-icon-label">${shortLbl}</span>
+    </button>`;
+  }).join('');
+
+  // Sembunyikan subkategori detail sampai salah satu kategori diklik
+  if (!S.txSub) {
+    document.getElementById('tx-subdetail-wrap')?.classList.add('hidden');
+  } else {
+    renderTxSubcategoryChips(catType, S.txSub);
+  }
+}
+
+window.selectTxCategoryItem = function(catName, preselectedSubDetail = '') {
+  S.txSub = catName;
+  S.txSubDetail = preselectedSubDetail || '';
+
+  document.querySelectorAll('#subcat-btns .subcat-icon-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sub === catName);
+  });
+
+  renderTxSubcategoryChips(S.txCat || 'Uang Keluar', catName);
+
+  const qLabel = document.getElementById('ctx-quick-label');
+  if (qLabel) qLabel.textContent = `— teratas untuk ${catName}`;
+  renderCtxQuickAdd(S.txCat || 'Uang Keluar', catName, 'ctx-quick-list');
+  document.getElementById('ctx-quick-wrap')?.classList.add('open');
+  triggerAiValidateIfReady();
+};
+
+function renderTxSubcategoryChips(catType, catName) {
+  const subWrap = document.getElementById('tx-subdetail-wrap');
+  const chipsEl = document.getElementById('tx-subdetail-chips');
+  const lblEl   = document.getElementById('tx-subdetail-label');
+  if (!subWrap || !chipsEl) return;
+
+  const allCats = getAllUserCategories();
+  const found = allCats.find(c => c.type === catType && c.name === catName);
+  const subs = (found && Array.isArray(found.subcategories)) ? found.subcategories : [];
+
+  if (!subs.length) {
+    subWrap.classList.add('hidden');
+    return;
+  }
+
+  subWrap.classList.remove('hidden');
+  if (lblEl) lblEl.textContent = `Subkategori ${catName}:`;
+  const isIn = catType === 'Uang Masuk';
+
+  const allChipActive = !S.txSubDetail;
+  const activeStyle = isIn
+    ? 'background:#10B981;color:#FFFFFF;border-color:#10B981'
+    : 'background:#EF4444;color:#FFFFFF;border-color:#EF4444';
+  const idleStyle = 'background:#F8FAFC;color:#475569;border-color:#E2E8F0';
+
+  let html = `<button type="button" onclick="selectTxSubDetail('')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold border transition-all" style="${allChipActive ? activeStyle : idleStyle}">
+    Umum / Semua
+  </button>`;
+
+  html += subs.map(s => {
+    const isSel = S.txSubDetail === s;
+    const safeS = String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const jsSafe = String(s).replace(/'/g, "\'");
+    return `<button type="button" onclick="selectTxSubDetail('${jsSafe}')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold border transition-all" style="${isSel ? activeStyle : idleStyle}">
+      ${safeS}
+    </button>`;
+  }).join('');
+
+  chipsEl.innerHTML = html;
+}
+
+window.selectTxSubDetail = function(subDetailName) {
+  S.txSubDetail = subDetailName || '';
+  renderTxSubcategoryChips(S.txCat || 'Uang Keluar', S.txSub);
+};
+
+// ================================================================
 // TX MODAL & FORM LOGIC
 // ================================================================
 function initTxModalListeners() {
   document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', handleCatClick));
-  document.querySelectorAll('.subcat-btn,.subcat-icon-btn').forEach(btn => btn.addEventListener('click', handleSubCatClick));
   document.getElementById('tx-form').addEventListener('submit', handleTxSubmit);
 }
 function handleCatClick() {
   const cat = this.dataset.cat;
-  S.txCat = cat; S.txSub = null;
+  S.txCat = cat; S.txSub = null; S.txSubDetail = '';
   document.querySelectorAll('.cat-btn').forEach(b => b.className = 'cat-btn');
   const activeClass = cat === 'Uang Masuk' ? 'active-in' : cat === 'Uang Keluar' ? 'active-out' : 'active-svc';
   this.classList.add('cat-btn', activeClass);
-  document.getElementById('subcat-section').classList.toggle('hidden', cat !== 'Uang Keluar');
+
+  // Tampilkan deretan Kategori & Subkategori baik untuk Uang Keluar maupun Uang Masuk
+  const subSection = document.getElementById('subcat-section');
+  if (subSection) subSection.classList.remove('hidden');
+  renderDynamicCategoryButtons(cat);
+
   document.getElementById('ctx-quick-wrap')?.classList.remove('open');
-  document.querySelectorAll('.subcat-btn,.subcat-icon-btn').forEach(b => b.classList.remove('active'));
   const iqw = document.getElementById('income-quick-wrap');
   if (cat === 'Uang Masuk') {
     renderCtxQuickAdd('Uang Masuk', null, 'income-quick-list');
@@ -3803,13 +4102,7 @@ function handleCatClick() {
 }
 function handleSubCatClick() {
   const sub = this.dataset.sub;
-  S.txSub = sub;
-  document.querySelectorAll('.subcat-btn,.subcat-icon-btn').forEach(b => b.classList.remove('active'));
-  this.classList.add('active');
-  document.getElementById('ctx-quick-label').textContent = `— teratas untuk ${sub}`;
-  renderCtxQuickAdd('Uang Keluar', sub, 'ctx-quick-list');
-  document.getElementById('ctx-quick-wrap')?.classList.add('open');
-  triggerAiValidateIfReady();
+  selectTxCategoryItem(sub);
 }
 function renderCtxQuickAdd(cat, sub, containerId) {
   const items = getFrequent(cat, sub, 8);
@@ -3823,7 +4116,7 @@ function renderCtxQuickAdd(cat, sub, containerId) {
   const colorAmt = cat === 'Uang Masuk' ? '#10B981' : '#EF4444';
   const sign = cat === 'Uang Masuk' ? '+' : '-';
   container.innerHTML = items.map((tx, i) => {
-    const sid = String(tx.id).replace(/'/g,"\\'");
+    const sid = String(tx.id).replace(/'/g,"\'");
     return `<button type="button" onclick="applyQuickAdd('${sid}')" class="quick-chip" style="animation-delay:${i*0.04}s">
       <span class="q-desc">${tx.Deskripsi}</span>
       <span class="q-amt" style="color:${colorAmt}">${sign}${idr(tx['Jumlah Uang'])}</span>
@@ -3835,7 +4128,8 @@ function getFrequent(cat, sub, limit) {
   const groups = {};
   S.transactions.forEach(tx => {
     if (tx.Kategori !== cat) return;
-    if (sub && tx['Kategori Uang Keluar'] !== sub) return;
+    const rawTxSub = String(tx['Kategori Uang Keluar'] || '');
+    if (sub && rawTxSub !== sub && rawTxSub.indexOf(sub + ' · ') !== 0) return;
     const norm = (tx.Deskripsi||'').toLowerCase().trim();
     const skip = new Set(['di','ke','dari','dan','atau','untuk','yang','dengan']);
     const words = norm.split(' ').filter(w => w.length > 1 && !skip.has(w)).slice(0,2).join(' ');
@@ -3851,8 +4145,9 @@ window.applyQuickAdd = function(txId) {
   const tx = S.transactions.find(t => String(t.id) === String(txId));
   if (!tx) return;
   document.querySelector(`.cat-btn[data-cat="${tx.Kategori}"]`)?.click();
-  if (tx.Kategori === 'Uang Keluar' && tx['Kategori Uang Keluar']) {
-    document.querySelector(`.subcat-icon-btn[data-sub="${tx['Kategori Uang Keluar']}"]`)?.click();
+  if (tx['Kategori Uang Keluar']) {
+    const parts = String(tx['Kategori Uang Keluar']).split('·').map(s => s.trim());
+    selectTxCategoryItem(parts[0], parts[1] || '');
   }
   document.getElementById('tx-amount').value = tx['Jumlah Uang'];
   document.getElementById('tx-desc').value = tx.Deskripsi;
@@ -3905,22 +4200,26 @@ window.openTransactionModal = function(id=null) {
   document.getElementById('tx-id').value = '';
   document.getElementById('tx-form-msg').textContent = '';
   document.getElementById('subcat-section').classList.add('hidden');
+  document.getElementById('tx-subdetail-wrap')?.classList.add('hidden');
   populateDompetSelect('tx-dompet-id');
   document.getElementById('ctx-quick-wrap')?.classList.remove('open');
   document.getElementById('income-quick-wrap')?.classList.remove('open');
   document.getElementById('tx-balance-row').style.display = 'none';
   document.querySelectorAll('.cat-btn').forEach(b => b.className = 'cat-btn');
-  document.querySelectorAll('.subcat-icon-btn').forEach(b => b.classList.remove('active'));
-  S.txCat = null; S.txSub = null;
+  S.txCat = null; S.txSub = null; S.txSubDetail = '';
+
+  // Pastikan daftar kategori terbaru dari Kelola Kategori termuat
+  getAllUserCategories();
+
   if (id) {
     const tx = S.transactions.find(t => String(t.id) === String(id));
     if (tx) {
       document.getElementById('tx-modal-title').textContent = 'Edit Transaksi';
       document.getElementById('tx-id').value = tx.id;
       document.querySelector(`.cat-btn[data-cat="${tx.Kategori}"]`)?.click();
-      if (tx.Kategori === 'Uang Keluar' && tx['Kategori Uang Keluar']) {
-        const sb = document.querySelector(`.subcat-icon-btn[data-sub="${tx['Kategori Uang Keluar']}"]`);
-        if (sb) sb.click(); else S.txSub = tx['Kategori Uang Keluar'];
+      if (tx['Kategori Uang Keluar']) {
+        const parts = String(tx['Kategori Uang Keluar']).split('·').map(s => s.trim());
+        selectTxCategoryItem(parts[0], parts[1] || '');
       }
       document.getElementById('tx-amount').value = tx['Jumlah Uang'];
       document.getElementById('tx-date').value = String(tx.Tanggal).split('T')[0];
@@ -3930,6 +4229,8 @@ window.openTransactionModal = function(id=null) {
   } else {
     document.getElementById('tx-modal-title').textContent = 'Transaksi Baru';
     document.getElementById('tx-date').value = today();
+    // Otomatis buka tab KELUAR agar deretan kategori langsung terlihat
+    document.getElementById('cat-btn-keluar')?.click();
   }
   openModal('tx-backdrop');
 };
@@ -3956,11 +4257,12 @@ function setSaveBtnState(state) {
 
 async function handleTxSubmit(e) {
   e.preventDefault();
-  let sub = S.txCat === 'Uang Keluar' ? (S.txSub || 'Lainnya') : null;
+  const baseSub = S.txSub || (S.txCat === 'Uang Masuk' ? 'Pemasukan Lainnya' : 'Lainnya');
+  const sub = S.txSubDetail ? `${baseSub} · ${S.txSubDetail}` : baseSub;
   const rawDate = document.getElementById('tx-date').value;
   const payload = {
     id: document.getElementById('tx-id').value || ('tx_' + Date.now()),
-    'Kategori': S.txCat,
+    'Kategori': S.txCat || 'Uang Keluar',
     'Kategori Uang Keluar': sub,
     'Jumlah Uang': Number(document.getElementById('tx-amount').value),
     'Tanggal': rawDate ? rawDate + 'T12:00:00' : new Date().toISOString(),
@@ -4029,7 +4331,7 @@ async function validateAiCategory(chosenCat, desc) {
 }
 window.applyAiCategory = function(cat) {
   if (S.txCat === 'Uang Keluar') {
-    document.querySelectorAll('.subcat-icon-btn').forEach(b => { if (b.dataset.sub === cat) b.click(); });
+    selectTxCategoryItem(cat);
   }
   const row = document.getElementById('ai-cat-row');
   if (row) row.innerHTML = `<span class="ai-cat-badge" style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0);color:#065F46">✅ Kategori sesuai</span>`;
@@ -4322,3 +4624,4 @@ function startCryptoPolling() {
 </script>
 </body>
 </html>
+
