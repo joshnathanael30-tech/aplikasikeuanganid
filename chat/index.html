@@ -1,0 +1,1280 @@
+Kode HTML Halaman Chat & Pertemanan (keloladuit.my.id/chats)
+
+Halaman https://keloladuit.my.id/chats dirancang khusus untuk fitur Add Friend menggunakan Username dan Chat Teks Dua Arah yang terhubung langsung dengan tab Friends dan Chats pada Google Sheet DATA MASTER:
+
+Alur 1 — Add Friend Menggunakan Username:
+
+Pengguna menekan tombol + Add Friend di kanan atas, lalu mengetik username tujuan (dilengkapi fitur live search yang mencari kecocokan username di INFORMASI AKUN).
+
+Permintaan pertemanan masuk ke tab  🔔 Request. Penerima dapat menekan Terima atau Tolak (atau jika kedua pihak saling meng-add, sistem otomatis menyetujui pertemanan).
+
+Alur 2 — Ruang Chat Teks Dua Arah (Pengirim & Penerima):
+
+Hanya pengguna yang sudah berstatus ACCEPTED (Berteman) yang dapat saling mengirim dan menerima pesan teks.
+
+Menggunakan Optimistic UI (0ms): pesan langsung muncul di layar saat dikirim dengan indikator ⏳ → ✓ (Terkirim) → ✓✓ (Dibaca oleh teman).
+
+Dilengkapi polling otomatis setiap 3 detik saat ruang obrolan terbuka dan setiap 6 detik saat berada di daftar Inbox sehingga kedua pihak langsung menerima pesan masuk secara real-time.
+
+Klik tombol Copy / Salin di pojok kanan atas blok kode di bawah ini:
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pesan &amp; Teman — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+:root {
+  --bg: #F2F5FA;
+  --neu-card: #F8FAFC;
+  --primary: #10B981;
+  --primary-dark: #059669;
+  --text-main: #1E293B;
+  --text-sub: #64748B;
+  --text-muted: #94A3B8;
+  --neu-shadow: 6px 6px 16px rgba(163, 177, 198, 0.25), -6px -6px 16px rgba(255, 255, 255, 0.9);
+  --neu-inset: inset 3px 3px 7px rgba(163, 177, 198, 0.25), inset -3px -3px 7px rgba(255, 255, 255, 0.9);
+}
+
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 45% at 15% 0%, rgba(167, 243, 208, 0.30) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 45% at 85% 100%, rgba(221, 214, 254, 0.28) 0%, transparent 65%),
+    linear-gradient(180deg, #EEF2F8 0%, #F4F7FB 100%);
+}
+
+.neu-card {
+  background: var(--neu-card);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: var(--neu-shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.neu-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: #EAF0F7;
+  border: 1.5px solid transparent;
+  box-shadow: var(--neu-inset);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.neu-input:focus {
+  background: #FFFFFF;
+  border-color: #34D399;
+}
+
+/* Tab Switcher (8pt Grid) */
+.chat-tab-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 6px;
+  border-radius: 16px;
+  background: #E8EEF6;
+  box-shadow: var(--neu-inset);
+}
+.chat-tab-btn {
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-sub);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+.chat-tab-btn.active {
+  background: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
+}
+
+/* Chat Item Card */
+.chat-room-row {
+  background: var(--neu-card);
+  border-radius: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: var(--neu-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.chat-room-row:active {
+  transform: scale(0.985);
+}
+
+/* Avatar Circle */
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+/* Fullscreen Active Chat View */
+#active-chat-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #EEF2F8;
+  display: none;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  box-shadow: 0 0 40px rgba(15, 23, 42, 0.12);
+}
+#active-chat-screen.open {
+  display: flex;
+  animation: slideInRight 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Chat Bubbles */
+.msg-bubble-in {
+  max-width: 78%;
+  align-self: flex-start;
+  background: #FFFFFF;
+  color: #1E293B;
+  border-radius: 18px 18px 18px 4px;
+  padding: 10px 14px;
+  box-shadow: 2px 4px 12px rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  word-break: break-word;
+}
+.msg-bubble-out {
+  max-width: 78%;
+  align-self: flex-end;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  border-radius: 18px 18px 4px 18px;
+  padding: 10px 14px;
+  box-shadow: 2px 6px 16px rgba(16, 185, 129, 0.25);
+  word-break: break-word;
+}
+
+/* Modal / Bottom Sheet */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(15, 23, 42, 0.38);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+.modal-backdrop.show { opacity: 1; }
+.sheet-panel {
+  width: 100%;
+  max-width: 480px;
+  background: #F4F7FB;
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 -12px 36px rgba(15, 23, 42, 0.16);
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-backdrop.show .sheet-panel { transform: translateY(0); }
+
+@media (min-width: 640px) {
+  .modal-backdrop { align-items: center; padding: 24px; }
+  .sheet-panel {
+    max-width: 440px;
+    border-radius: 24px;
+    transform: scale(0.95) translateY(12px);
+  }
+  .modal-backdrop.show .sheet-panel { transform: scale(1) translateY(0); }
+}
+
+/* Bottom Nav */
+.nav-btn { transition: color 0.2s, transform 0.15s; color: #94A3B8; text-decoration: none; }
+.nav-btn.active { color: #10B981; }
+.nav-btn:active { transform: scale(0.9); }
+.ai-nav-orb {
+  width: 48px; height: 48px; border-radius: 16px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOAST FEEDBACK ═══════════ -->
+<div id="toast-box" class="fixed top-5 left-1/2 -translate-x-1/2 z-[95] hidden px-4 py-3 rounded-2xl bg-slate-900/90 text-white text-xs font-extrabold shadow-xl backdrop-blur-md flex items-center gap-2 max-w-xs text-center">
+  <span id="toast-icon">✨</span>
+  <span id="toast-text">Berhasil</span>
+</div>
+
+<!-- ═══════════ LAYAR UTAMA: DAFTAR CHAT & PERTEMANAN (INBOX) ═══════════ -->
+<div id="inbox-screen" class="max-w-md mx-auto min-h-screen flex flex-col pb-24">
+
+  <!-- HEADER -->
+  <header class="pt-8 pb-4 px-6 sticky top-0 z-20 backdrop-blur-md bg-[#F2F5FA]/88">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="https://keloladuit.my.id/home" target="_top" class="w-10 h-10 neu-card !p-0 !rounded-xl flex items-center justify-center text-slate-600 active:scale-95 transition-transform flex-shrink-0" aria-label="Kembali ke Beranda">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <div class="min-w-0">
+          <h1 class="text-lg font-black text-slate-800 tracking-tight truncate">Chat &amp; Teman</h1>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <p id="my-username-badge" class="text-[11px] font-bold text-slate-400 truncate">@pengguna</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol + Tambah Teman -->
+      <button type="button" onclick="openAddFriendModal()" class="px-4 py-2.5 rounded-2xl text-white text-xs font-black shadow-md active:scale-95 transition-transform flex items-center gap-1.5 flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669)">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+        </svg>
+        <span>Add Friend</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="px-6 space-y-4 flex-1">
+
+    <!-- SEARCH BAR -->
+    <div class="relative">
+      <svg class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input type="text" id="chat-search-input" placeholder="Cari teman atau percakapan…" class="neu-input pl-11 !min-h-[44px]" oninput="onSearchInbox(this.value)">
+    </div>
+
+    <!-- 3 TAB NAVIGASI: OBROLAN | PERMINTAAN | TEMAN -->
+    <div class="chat-tab-bar">
+      <button type="button" id="tab-btn-chats" onclick="switchInboxTab('chats')" class="chat-tab-btn active">
+        <span>💬 Obrolan</span>
+        <span id="badge-unread-total" class="hidden px-1.5 py-0.2 rounded-full bg-emerald-500 text-white text-[10px] font-black">0</span>
+      </button>
+      <button type="button" id="tab-btn-requests" onclick="switchInboxTab('requests')" class="chat-tab-btn">
+        <span>🔔 Request</span>
+        <span id="badge-req-total" class="hidden px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-black">0</span>
+      </button>
+      <button type="button" id="tab-btn-friends" onclick="switchInboxTab('friends')" class="chat-tab-btn">
+        <span>👥 Teman</span>
+        <span id="badge-friends-total" class="text-[10px] font-extrabold text-slate-400">0</span>
+      </button>
+    </div>
+
+    <!-- CONTAINER DAFTAR ITEM SESUAI TAB AKTIF -->
+    <div id="inbox-list-container" class="space-y-3 pt-1"></div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LAYAR RUANG OBROLAN AKTIF (FULL-SCREEN CHAT ROOM)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="active-chat-screen">
+
+  <!-- HEADER RUANG OBROLAN -->
+  <header class="px-4 pt-7 pb-3 bg-white/95 backdrop-blur-md border-b border-slate-200/70 flex items-center justify-between gap-3 flex-shrink-0">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" onclick="closeChatRoom()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 active:scale-90 transition-transform flex-shrink-0" aria-label="Kembali ke Daftar Chat">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div id="room-friend-avatar" class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0" style="background:linear-gradient(135deg,#10B981,#059669)">
+        U
+      </div>
+      <div class="min-w-0">
+        <h2 id="room-friend-name" class="text-sm font-black text-slate-900 truncate leading-tight">Nama Teman</h2>
+        <p id="room-friend-username" class="text-[11px] font-bold text-emerald-600 truncate">@username</p>
+      </div>
+    </div>
+
+    <button type="button" onclick="pollActiveRoomMessages(true)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center active:scale-90 transition-transform flex-shrink-0" title="Segarkan Pesan">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- STREAM PESAN DUA ARAH -->
+  <div id="chat-messages-stream" class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2.5"></div>
+
+  <!-- COMPOSER INPUT PESAN TEKS -->
+  <form id="chat-composer-form" onsubmit="handleSendMessage(event)" class="p-3 bg-white border-t border-slate-200/80 flex items-end gap-2 flex-shrink-0">
+    <textarea
+      id="chat-message-input"
+      rows="1"
+      placeholder="Tulis pesan teks…"
+      class="neu-input !min-h-[44px] max-h-28 py-2.5 px-4 resize-none flex-1 !rounded-2xl"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,112)+'px'"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleSendMessage(event);}"
+    ></textarea>
+    <button
+      type="submit"
+      id="chat-send-btn"
+      class="w-11 h-11 rounded-2xl text-white flex items-center justify-center flex-shrink-0 shadow-md active:scale-90 transition-transform"
+      style="background:linear-gradient(135deg,#10B981,#059669)"
+      aria-label="Kirim Pesan"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+      </svg>
+    </button>
+  </form>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL / BOTTOM SHEET: ADD FRIEND MENGGUNAKAN USERNAME
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="add-friend-backdrop" class="modal-backdrop" onclick="if(event.target===this)closeAddFriendModal()">
+  <div class="sheet-panel">
+    <div class="w-10 h-1.5 bg-slate-300 rounded-full mx-auto mb-4 sm:hidden"></div>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div>
+        <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 mb-1">
+          Pertemanan Baru
+        </span>
+        <h3 class="text-lg font-black text-slate-800">Tambah Teman</h3>
+        <p class="text-xs font-semibold text-slate-400">Masukkan username pengguna Keloladuit.id untuk mulai chat</p>
+      </div>
+      <button type="button" onclick="closeAddFriendModal()" class="w-8 h-8 rounded-lg bg-slate-200/70 text-slate-500 flex items-center justify-center font-bold">✕</button>
+    </div>
+
+    <form id="add-friend-form" onsubmit="handleAddFriendSubmit(event)" class="space-y-4">
+      <div>
+        <label for="af-username-input" class="block text-xs font-extrabold text-slate-500 mb-2">Username Tujuan</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-400">@</span>
+          <input
+            type="text"
+            id="af-username-input"
+            placeholder="ketik_username_teman"
+            autocomplete="off"
+            class="neu-input pl-9"
+            required
+            oninput="onAddFriendInput(this.value)"
+          >
+        </div>
+      </div>
+
+      <!-- Hasil Pencarian Cepat Username (Opsional) -->
+      <div id="af-search-preview" class="hidden space-y-2"></div>
+
+      <!-- Pesan Error / Sukses di Modal -->
+      <div id="af-feedback-box" class="hidden p-3.5 rounded-2xl text-xs font-extrabold"></div>
+
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="closeAddFriendModal()" class="px-4 py-3 rounded-2xl text-xs font-extrabold text-slate-500 hover:bg-slate-200/60">
+          Batal
+        </button>
+        <button type="submit" id="af-submit-btn" class="flex-1 min-h-[48px] rounded-2xl text-white text-xs font-black shadow-md active:scale-98 transition-transform" style="background:linear-gradient(135deg,#10B981,#059669)">
+          <span id="af-submit-label">+ Kirim Permintaan Teman</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-30 max-w-md mx-auto">
+  <div class="h-4 bg-gradient-to-t from-[var(--bg)] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white/95 backdrop-blur-md border-t border-slate-200/60 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(15,23,42,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <a href="https://keloladuit.my.id/home#tambah" target="_top" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;text-decoration:none">
+      <div class="ai-nav-orb">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#059669">Tambah</span>
+    </a>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// ================================================================
+// KONFIGURASI ENDPOINT DATA MASTER, SESI AKUN, & STATE CHAT
+// ================================================================
+const GLOBAL_GS_URL    = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+
+const AVATAR_COLORS = [
+  'linear-gradient(135deg,#10B981,#059669)',
+  'linear-gradient(135deg,#3B82F6,#2563EB)',
+  'linear-gradient(135deg,#8B5CF6,#6D28D9)',
+  'linear-gradient(135deg,#F59E0B,#D97706)',
+  'linear-gradient(135deg,#EC4899,#DB2777)',
+  'linear-gradient(135deg,#14B8A6,#0D9488)'
+];
+
+let S = {
+  akun: null,
+  activeTab: 'chats',
+  searchQuery: '',
+  friends: [],
+  incomingRequests: [],
+  outgoingRequests: [],
+  activeRoom: null,       // { roomId, friendUsername, friendNamaLengkap }
+  roomMessages: {},       // { [roomId]: [ { id, senderUsername, receiverUsername, message, createdAt, isRead, _sending } ] }
+  inboxTimer: null,
+  roomTimer: null,
+  searchTimer: null
+};
+
+// ── STORAGE HELPERS ──
+function storageGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v !== null) return v;
+  } catch(e) {}
+  try {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  } catch(e) { return null; }
+}
+
+function getAkunSession() {
+  try {
+    const raw = storageGet(AUTH_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username) {
+    S.akun = session;
+    return true;
+  }
+  return false;
+}
+
+function buildCanonicalRoomId(u1, u2) {
+  const a = String(u1 || '').trim().toLowerCase();
+  const b = String(u2 || '').trim().toLowerCase();
+  return [a, b].sort().join('__');
+}
+
+function getAvatarColorForUsername(uname) {
+  const s = String(uname || 'user').toLowerCase();
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) hash = s.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function formatRelativeTime(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return '';
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) {
+    return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  }
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return 'Kemarin';
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+}
+
+function formatBubbleTime(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+function showToast(msg, icon = '✨') {
+  const box = document.getElementById('toast-box');
+  const txt = document.getElementById('toast-text');
+  const ic  = document.getElementById('toast-icon');
+  if (!box || !txt) return;
+  if (ic) ic.textContent = icon;
+  txt.textContent = msg;
+  box.classList.remove('hidden');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => box.classList.add('hidden'), 2400);
+}
+
+// ── CACHE LOKAL INBOX & RUANG CHAT ──
+function getInboxCacheKey() {
+  return 'keuangan_chat_inbox_' + String(S.akun.username).toLowerCase();
+}
+function getRoomCacheKey(roomId) {
+  return 'keuangan_chat_room_' + roomId;
+}
+
+function loadInboxCache() {
+  try {
+    const raw = localStorage.getItem(getInboxCacheKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed) {
+        S.friends          = Array.isArray(parsed.friends) ? parsed.friends : [];
+        S.incomingRequests = Array.isArray(parsed.incomingRequests) ? parsed.incomingRequests : [];
+        S.outgoingRequests = Array.isArray(parsed.outgoingRequests) ? parsed.outgoingRequests : [];
+      }
+    }
+  } catch(e) {}
+}
+
+function saveInboxCache() {
+  try {
+    localStorage.setItem(getInboxCacheKey(), JSON.stringify({
+      friends: S.friends,
+      incomingRequests: S.incomingRequests,
+      outgoingRequests: S.outgoingRequests
+    }));
+  } catch(e) {}
+}
+
+function loadRoomCache(roomId) {
+  if (S.roomMessages[roomId]) return S.roomMessages[roomId];
+  try {
+    const raw = localStorage.getItem(getRoomCacheKey(roomId));
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        S.roomMessages[roomId] = arr;
+        return arr;
+      }
+    }
+  } catch(e) {}
+  S.roomMessages[roomId] = [];
+  return S.roomMessages[roomId];
+}
+
+function saveRoomCache(roomId) {
+  try {
+    const list = S.roomMessages[roomId] || [];
+    localStorage.setItem(getRoomCacheKey(roomId), JSON.stringify(list.slice(-150)));
+  } catch(e) {}
+}
+
+// ── API CALLER KE DATA MASTER (POST DENGAN FALLBACK GET ANTI-GAGAL) ──
+async function callMasterApi(action, data = {}) {
+  try {
+    const r = await fetch(GLOBAL_GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, data })
+    });
+    const j = await r.json();
+    if (j && j.status) return j;
+  } catch(e) {}
+
+  try {
+    const q = `${GLOBAL_GS_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(data))}&_t=${Date.now()}`;
+    const r2 = await fetch(q);
+    return await r2.json();
+  } catch(err) {
+    return { status: 'error', message: 'Gagal terhubung ke server. Periksa koneksi internet Anda.' };
+  }
+}
+
+// ================================================================
+// INBOX RENDERING (OBROLAN, PERMINTAAN PERTEMANAN, DAFTAR TEMAN)
+// ================================================================
+window.switchInboxTab = function(tab) {
+  S.activeTab = tab;
+  ['chats', 'requests', 'friends'].forEach(t => {
+    const btn = document.getElementById('tab-btn-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  renderInboxView();
+};
+
+window.onSearchInbox = function(val) {
+  S.searchQuery = String(val || '').trim().toLowerCase();
+  renderInboxView();
+};
+
+function renderInboxView() {
+  // Update Badge Unread & Request
+  const totalUnread = S.friends.reduce((sum, f) => sum + (Number(f.unreadCount) || 0), 0);
+  const unreadBadge = document.getElementById('badge-unread-total');
+  if (unreadBadge) {
+    unreadBadge.textContent = totalUnread;
+    unreadBadge.classList.toggle('hidden', totalUnread <= 0);
+  }
+
+  const reqCount = S.incomingRequests.length;
+  const reqBadge = document.getElementById('badge-req-total');
+  if (reqBadge) {
+    reqBadge.textContent = reqCount;
+    reqBadge.classList.toggle('hidden', reqCount <= 0);
+  }
+
+  const fBadge = document.getElementById('badge-friends-total');
+  if (fBadge) fBadge.textContent = S.friends.length;
+
+  const container = document.getElementById('inbox-list-container');
+  if (!container) return;
+
+  const q = S.searchQuery;
+
+  // TAB 1: OBROLAN AKTIF
+  if (S.activeTab === 'chats') {
+    const filtered = S.friends.filter(f => {
+      if (!q) return true;
+      return f.friendUsername.toLowerCase().indexOf(q) !== -1 ||
+             (f.friendNamaLengkap || '').toLowerCase().indexOf(q) !== -1 ||
+             (f.lastMessage || '').toLowerCase().indexOf(q) !== -1;
+    });
+
+    if (!filtered.length) {
+      container.innerHTML = `
+        <div class="neu-card text-center py-10 px-6">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto mb-3">💬</div>
+          <h3 class="text-sm font-black text-slate-800">Belum Ada Percakapan</h3>
+          <p class="text-xs font-semibold text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+            Tambahkan teman menggunakan <b>username</b> terlebih dahulu. Setelah pertemanan diterima, Anda bisa langsung saling berkirim pesan teks.
+          </p>
+          <button type="button" onclick="openAddFriendModal()" class="mt-4 px-5 py-2.5 rounded-2xl text-white text-xs font-black shadow-md" style="background:linear-gradient(135deg,#10B981,#059669)">
+            + Add Friend Sekarang
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    const myUname = String(S.akun.username || '').toLowerCase();
+    container.innerHTML = filtered.map(f => {
+      const initial = ((f.friendNamaLengkap || f.friendUsername || 'U').trim()[0] || 'U').toUpperCase();
+      const bgGrad  = getAvatarColorForUsername(f.friendUsername);
+      const unread  = Number(f.unreadCount) || 0;
+      const isMeLast = String(f.lastSender || '').toLowerCase() === myUname;
+      const preview = f.lastMessage
+        ? `${isMeLast ? 'Anda: ' : ''}${escapeHtml(f.lastMessage)}`
+        : 'Ketuk untuk mulai mengirim pesan 👋';
+      const timeLbl = formatRelativeTime(f.lastMessageAt || f.updatedAt);
+      const safeU   = escapeHtml(f.friendUsername).replace(/'/g, "\\'");
+      const safeN   = escapeHtml(f.friendNamaLengkap || f.friendUsername).replace(/'/g, "\\'");
+
+      return `
+        <div onclick="openChatRoom('${f.roomId}', '${safeU}', '${safeN}')" class="chat-room-row">
+          <div class="flex items-center gap-3.5 min-w-0 flex-1">
+            <div class="avatar-circle" style="background:${bgGrad}">${initial}</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-2">
+                <h4 class="text-sm font-black text-slate-800 truncate">${escapeHtml(f.friendNamaLengkap || f.friendUsername)}</h4>
+                <span class="text-[10px] font-bold ${unread > 0 ? 'text-emerald-600 font-extrabold' : 'text-slate-400'} flex-shrink-0">${timeLbl}</span>
+              </div>
+              <p class="text-[11px] font-bold text-emerald-600 truncate">@${escapeHtml(f.friendUsername)}</p>
+              <div class="flex items-center justify-between gap-2 mt-0.5">
+                <p class="text-xs ${unread > 0 ? 'font-extrabold text-slate-800' : 'font-semibold text-slate-400'} truncate">${preview}</p>
+                ${unread > 0 ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex-shrink-0">${unread}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return;
+  }
+
+  // TAB 2: PERMINTAAN PERTEMANAN (MASUK & TERKIRIM)
+  if (S.activeTab === 'requests') {
+    if (!S.incomingRequests.length && !S.outgoingRequests.length) {
+      container.innerHTML = `
+        <div class="neu-card text-center py-10 px-6">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-2xl mx-auto mb-3">🔔</div>
+          <h3 class="text-sm font-black text-slate-800">Tidak Ada Permintaan Pertemanan</h3>
+          <p class="text-xs font-semibold text-slate-400 mt-1">Permintaan pertemanan yang masuk atau menunggu konfirmasi akan muncul di sini.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    if (S.incomingRequests.length > 0) {
+      html += `<p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 px-1">Permintaan Masuk (${S.incomingRequests.length})</p>`;
+      html += S.incomingRequests.map(req => {
+        const initial = ((req.friendNamaLengkap || req.friendUsername || 'U')[0] || 'U').toUpperCase();
+        const bgGrad  = getAvatarColorForUsername(req.friendUsername);
+        return `
+          <div class="neu-card flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="avatar-circle !w-11 !h-11 !text-base" style="background:${bgGrad}">${initial}</div>
+              <div class="min-w-0">
+                <h4 class="text-xs font-black text-slate-800 truncate">${escapeHtml(req.friendNamaLengkap)}</h4>
+                <p class="text-[11px] font-bold text-emerald-600 truncate">@${escapeHtml(req.friendUsername)}</p>
+                <p class="text-[10px] font-semibold text-slate-400 mt-0.5">Ingin berteman dengan Anda</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="handleRespondRequest('${req.roomId}', 'decline')" class="px-3 py-2 rounded-xl bg-rose-50 text-rose-600 text-xs font-black active:scale-95">
+                Tolak
+              </button>
+              <button type="button" onclick="handleRespondRequest('${req.roomId}', 'accept')" class="px-3.5 py-2 rounded-xl bg-emerald-500 text-white text-xs font-black shadow-sm active:scale-95">
+                Terima
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    if (S.outgoingRequests.length > 0) {
+      html += `<p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 px-1 pt-2">Menunggu Konfirmasi (${S.outgoingRequests.length})</p>`;
+      html += S.outgoingRequests.map(req => {
+        const initial = ((req.friendNamaLengkap || req.friendUsername || 'U')[0] || 'U').toUpperCase();
+        const bgGrad  = getAvatarColorForUsername(req.friendUsername);
+        return `
+          <div class="neu-card flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="avatar-circle !w-11 !h-11 !text-base" style="background:${bgGrad}">${initial}</div>
+              <div class="min-w-0">
+                <h4 class="text-xs font-black text-slate-800 truncate">${escapeHtml(req.friendNamaLengkap)}</h4>
+                <p class="text-[11px] font-bold text-slate-400 truncate">@${escapeHtml(req.friendUsername)}</p>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[9px] font-extrabold">⏳ Menunggu Diterima</span>
+              </div>
+            </div>
+            <button type="button" onclick="handleRespondRequest('${req.roomId}', 'decline')" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-extrabold active:scale-95">
+              Batalkan
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    container.innerHTML = html;
+    return;
+  }
+
+  // TAB 3: DAFTAR TEMAN
+  if (S.activeTab === 'friends') {
+    const filtered = S.friends.filter(f => {
+      if (!q) return true;
+      return f.friendUsername.toLowerCase().indexOf(q) !== -1 ||
+             (f.friendNamaLengkap || '').toLowerCase().indexOf(q) !== -1;
+    });
+
+    if (!filtered.length) {
+      container.innerHTML = `
+        <div class="neu-card text-center py-10 px-6">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-2xl mx-auto mb-3">👥</div>
+          <h3 class="text-sm font-black text-slate-800">Daftar Teman Masih Kosong</h3>
+          <p class="text-xs font-semibold text-slate-400 mt-1">Klik tombol <b>Add Friend</b> di kanan atas untuk menambahkan teman menggunakan username.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(f => {
+      const initial = ((f.friendNamaLengkap || f.friendUsername || 'U')[0] || 'U').toUpperCase();
+      const bgGrad  = getAvatarColorForUsername(f.friendUsername);
+      const safeU   = escapeHtml(f.friendUsername).replace(/'/g, "\\'");
+      const safeN   = escapeHtml(f.friendNamaLengkap || f.friendUsername).replace(/'/g, "\\'");
+      return `
+        <div class="neu-card flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="avatar-circle !w-11 !h-11 !text-base" style="background:${bgGrad}">${initial}</div>
+            <div class="min-w-0">
+              <h4 class="text-xs font-black text-slate-800 truncate">${escapeHtml(f.friendNamaLengkap)}</h4>
+              <p class="text-[11px] font-bold text-emerald-600 truncate">@${escapeHtml(f.friendUsername)}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <button type="button" onclick="openChatRoom('${f.roomId}', '${safeU}', '${safeN}')" class="px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-black active:scale-95">
+              💬 Chat
+            </button>
+            <button type="button" onclick="handleRemoveFriend('${f.roomId}', '${safeU}')" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 text-xs font-black flex items-center justify-center active:scale-95" title="Hapus Teman">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+// ================================================================
+// SINKRONISASI DAFTAR TEMAN & INBOX
+// ================================================================
+async function syncInboxFromServer(silent = true) {
+  if (!S.akun || !S.akun.username) return;
+  const dot = document.getElementById('sync-dot');
+  if (!silent && dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+
+  const res = await callMasterApi('getFriendsAndInbox', { username: S.akun.username });
+  if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+
+  if (res && res.status === 'success' && res.data) {
+    S.friends          = Array.isArray(res.data.friends) ? res.data.friends : [];
+    S.incomingRequests = Array.isArray(res.data.incomingRequests) ? res.data.incomingRequests : [];
+    S.outgoingRequests = Array.isArray(res.data.outgoingRequests) ? res.data.outgoingRequests : [];
+    saveInboxCache();
+    renderInboxView();
+  }
+}
+
+// ================================================================
+// ADD FRIEND, TERIMA / TOLAK REQUEST, & HAPUS TEMAN
+// ================================================================
+window.openAddFriendModal = function() {
+  const backdrop = document.getElementById('add-friend-backdrop');
+  const inp = document.getElementById('af-username-input');
+  const fb  = document.getElementById('af-feedback-box');
+  const prv = document.getElementById('af-search-preview');
+  if (inp) inp.value = '';
+  if (fb)  fb.classList.add('hidden');
+  if (prv) { prv.innerHTML = ''; prv.classList.add('hidden'); }
+  backdrop.style.display = 'flex';
+  requestAnimationFrame(() => {
+    backdrop.classList.add('show');
+    setTimeout(() => inp?.focus(), 100);
+  });
+};
+
+window.closeAddFriendModal = function() {
+  const backdrop = document.getElementById('add-friend-backdrop');
+  if (!backdrop) return;
+  backdrop.classList.remove('show');
+  setTimeout(() => { backdrop.style.display = 'none'; }, 250);
+};
+
+window.onAddFriendInput = function(val) {
+  document.getElementById('af-feedback-box')?.classList.add('hidden');
+  clearTimeout(S.searchTimer);
+  const clean = String(val || '').trim().replace(/^@/, '');
+  const prv = document.getElementById('af-search-preview');
+  if (clean.length < 2) {
+    if (prv) { prv.innerHTML = ''; prv.classList.add('hidden'); }
+    return;
+  }
+  S.searchTimer = setTimeout(async () => {
+    const res = await callMasterApi('searchUserByUsername', {
+      username: S.akun.username,
+      targetUsername: clean
+    });
+    if (!prv) return;
+    if (res && res.status === 'success' && res.data && Array.isArray(res.data.results) && res.data.results.length > 0) {
+      prv.classList.remove('hidden');
+      prv.innerHTML = res.data.results.slice(0, 4).map(u => {
+        const safeU = escapeHtml(u.username).replace(/'/g, "\\'");
+        return `
+          <div onclick="document.getElementById('af-username-input').value='${safeU}'" class="p-2.5 rounded-xl bg-white border border-slate-200/80 flex items-center justify-between cursor-pointer hover:border-emerald-400">
+            <div>
+              <p class="text-xs font-black text-slate-800">${escapeHtml(u.namaLengkap || u.username)}</p>
+              <p class="text-[11px] font-bold text-emerald-600">@${escapeHtml(u.username)}</p>
+            </div>
+            <span class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">Pilih</span>
+          </div>
+        `;
+      }).join('');
+    } else {
+      prv.innerHTML = '';
+      prv.classList.add('hidden');
+    }
+  }, 320);
+};
+
+window.handleAddFriendSubmit = async function(e) {
+  e.preventDefault();
+  const inp = document.getElementById('af-username-input');
+  const btn = document.getElementById('af-submit-btn');
+  const lbl = document.getElementById('af-submit-label');
+  const fb  = document.getElementById('af-feedback-box');
+
+  const targetUsername = String(inp?.value || '').trim().replace(/^@/, '');
+  if (!targetUsername) return;
+
+  btn.disabled = true;
+  if (lbl) lbl.textContent = 'Memproses…';
+  if (fb)  fb.classList.add('hidden');
+
+  const res = await callMasterApi('addFriend', {
+    requesterUsername: S.akun.username,
+    targetUsername: targetUsername
+  });
+
+  btn.disabled = false;
+  if (lbl) lbl.textContent = '+ Kirim Permintaan Teman';
+
+  if (res && res.status === 'success') {
+    await syncInboxFromServer(true);
+    closeAddFriendModal();
+    showToast(res.message || 'Permintaan pertemanan dikirim!', '🤝');
+    if (res.autoAccepted && res.data && res.data.friend) {
+      switchInboxTab('chats');
+    } else {
+      switchInboxTab('requests');
+    }
+  } else {
+    if (fb) {
+      fb.textContent = (res && res.message) || 'Gagal mengirim permintaan pertemanan.';
+      fb.className = 'p-3.5 rounded-2xl text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200';
+      fb.classList.remove('hidden');
+    }
+  }
+};
+
+window.handleRespondRequest = async function(roomId, decision) {
+  const res = await callMasterApi('respondFriendRequest', {
+    username: S.akun.username,
+    roomId: roomId,
+    decision: decision
+  });
+  if (res && res.status === 'success') {
+    showToast(res.message || 'Berhasil diperbarui.', decision === 'accept' ? '✅' : '🗑️');
+    await syncInboxFromServer(true);
+    if (decision === 'accept') {
+      switchInboxTab('chats');
+    }
+  } else {
+    showToast((res && res.message) || 'Gagal memproses permintaan.', '⚠️');
+  }
+};
+
+window.handleRemoveFriend = async function(roomId, friendUname) {
+  if (!confirm(`Hapus @${friendUname} dari daftar teman?`)) return;
+  await handleRespondRequest(roomId, 'decline');
+};
+
+// ================================================================
+// RUANG OBROLAN AKTIF: KIRIM & TERIMA PESAN DUA ARAH
+// ================================================================
+window.openChatRoom = function(roomId, friendUsername, friendNamaLengkap) {
+  S.activeRoom = {
+    roomId: roomId || buildCanonicalRoomId(S.akun.username, friendUsername),
+    friendUsername: friendUsername,
+    friendNamaLengkap: friendNamaLengkap || friendUsername
+  };
+
+  // Reset unread badge lokal
+  const fItem = S.friends.find(f => f.roomId === S.activeRoom.roomId);
+  if (fItem) {
+    fItem.unreadCount = 0;
+    saveInboxCache();
+    renderInboxView();
+  }
+
+  // Set UI Header Room
+  const avEl = document.getElementById('room-friend-avatar');
+  if (avEl) {
+    avEl.style.background = getAvatarColorForUsername(friendUsername);
+    avEl.textContent = ((friendNamaLengkap || friendUsername || 'U')[0] || 'U').toUpperCase();
+  }
+  document.getElementById('room-friend-name').textContent = friendNamaLengkap || friendUsername;
+  document.getElementById('room-friend-username').textContent = '@' + friendUsername;
+
+  // Muat dari cache lokal secara instan (0ms)
+  loadRoomCache(S.activeRoom.roomId);
+  renderActiveRoomMessages(true);
+
+  const screen = document.getElementById('active-chat-screen');
+  screen.classList.add('open');
+
+  // Mulai polling dua arah setiap 3 detik selama room terbuka
+  if (S.roomTimer) clearInterval(S.roomTimer);
+  pollActiveRoomMessages(false);
+  S.roomTimer = setInterval(() => pollActiveRoomMessages(false), 3000);
+};
+
+window.closeChatRoom = function() {
+  if (S.roomTimer) {
+    clearInterval(S.roomTimer);
+    S.roomTimer = null;
+  }
+  S.activeRoom = null;
+  document.getElementById('active-chat-screen')?.classList.remove('open');
+  syncInboxFromServer(true);
+};
+
+function renderActiveRoomMessages(scrollToBottom = false) {
+  if (!S.activeRoom) return;
+  const stream = document.getElementById('chat-messages-stream');
+  if (!stream) return;
+
+  const list = S.roomMessages[S.activeRoom.roomId] || [];
+  if (!list.length) {
+    stream.innerHTML = `
+      <div class="my-auto text-center py-12 px-6">
+        <div class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl mx-auto mb-3">👋</div>
+        <p class="text-xs font-black text-slate-700">Mulai Percakapan dengan @${escapeHtml(S.activeRoom.friendUsername)}</p>
+        <p class="text-[11px] font-semibold text-slate-400 mt-1">Kirim pesan teks pertama Anda di bawah ini.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const myLow = String(S.akun.username || '').toLowerCase();
+  let lastDateKey = '';
+  let html = '';
+
+  list.forEach(msg => {
+    const dt = msg.createdAt ? String(msg.createdAt).split('T')[0] : '';
+    if (dt && dt !== lastDateKey) {
+      lastDateKey = dt;
+      const dObj = new Date(dt + 'T12:00:00');
+      const dLbl = isNaN(dObj.getTime()) ? dt : dObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      html += `<div class="self-center my-2 px-3 py-1 rounded-full bg-slate-200/75 text-[10px] font-extrabold text-slate-500">${dLbl}</div>`;
+    }
+
+    const isMine = String(msg.senderUsername || '').toLowerCase() === myLow;
+    const timeStr = formatBubbleTime(msg.createdAt);
+    const safeText = escapeHtml(msg.message).replace(/\n/g, '<br>');
+
+    if (isMine) {
+      const statusIcon = msg._sending ? '⏳' : (msg.isRead ? '✓✓' : '✓');
+      html += `
+        <div class="msg-bubble-out">
+          <p class="text-xs font-semibold leading-relaxed">${safeText}</p>
+          <div class="flex items-center justify-end gap-1 mt-1 text-[10px] font-bold text-emerald-100/90">
+            <span>${timeStr}</span>
+            <span>${statusIcon}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="msg-bubble-in">
+          <p class="text-xs font-semibold leading-relaxed">${safeText}</p>
+          <div class="flex items-center justify-end mt-1 text-[10px] font-bold text-slate-400">
+            <span>${timeStr}</span>
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  const wasNearBottom = (stream.scrollHeight - stream.scrollTop - stream.clientHeight) < 120;
+  stream.innerHTML = html;
+  if (scrollToBottom || wasNearBottom) {
+    stream.scrollTop = stream.scrollHeight;
+  }
+}
+
+window.handleSendMessage = async function(e) {
+  if (e) e.preventDefault();
+  if (!S.activeRoom || !S.akun) return;
+
+  const inp = document.getElementById('chat-message-input');
+  const text = String(inp?.value || '').trim();
+  if (!text) return;
+
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  const roomId = S.activeRoom.roomId;
+  const tempId = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  const nowIso = new Date().toISOString();
+
+  // Optimistic UI: langsung tampilkan gelembung pesan di layar (0ms)
+  const optimisticMsg = {
+    id: tempId,
+    roomId: roomId,
+    senderUsername: S.akun.username,
+    receiverUsername: S.activeRoom.friendUsername,
+    message: text,
+    createdAt: nowIso,
+    isRead: false,
+    _sending: true
+  };
+
+  if (!S.roomMessages[roomId]) S.roomMessages[roomId] = [];
+  S.roomMessages[roomId].push(optimisticMsg);
+  saveRoomCache(roomId);
+  renderActiveRoomMessages(true);
+
+  // Perbarui preview di daftar teman
+  const fItem = S.friends.find(f => f.roomId === roomId);
+  if (fItem) {
+    fItem.lastMessage   = text;
+    fItem.lastMessageAt = nowIso;
+    fItem.lastSender    = S.akun.username;
+    saveInboxCache();
+  }
+
+  // Kirim ke server DATA MASTER
+  const res = await callMasterApi('sendChatMessage', {
+    clientMsgId: tempId,
+    senderUsername: S.akun.username,
+    receiverUsername: S.activeRoom.friendUsername,
+    message: text
+  });
+
+  if (res && res.status === 'success' && res.data) {
+    const list = S.roomMessages[roomId] || [];
+    const idx = list.findIndex(m => m.id === tempId);
+    if (idx !== -1) {
+      list[idx] = { ...res.data, _sending: false };
+      saveRoomCache(roomId);
+      renderActiveRoomMessages(false);
+    }
+  } else {
+    showToast((res && res.message) || 'Gagal mengirim pesan.', '⚠️');
+  }
+};
+
+window.pollActiveRoomMessages = async function(forceFull = false) {
+  if (!S.activeRoom || !S.akun) return;
+  const roomId = S.activeRoom.roomId;
+  const currentList = S.roomMessages[roomId] || [];
+
+  // Gunakan full fetch agar status isRead pada pesan lama juga ter-update akurat
+  const res = await callMasterApi('getChatMessages', {
+    username: S.akun.username,
+    friendUsername: S.activeRoom.friendUsername,
+    roomId: roomId,
+    afterTimestamp: ''
+  });
+
+  if (!S.activeRoom || S.activeRoom.roomId !== roomId) return;
+
+  if (res && res.status === 'success' && res.data && Array.isArray(res.data.messages)) {
+    const serverMsgs = res.data.messages;
+    const serverIds  = new Set(serverMsgs.map(m => String(m.id)));
+    // Pertahankan pesan optimistic yang sedang dikirim dan belum masuk di respons server
+    const pendingOptimistic = currentList.filter(m => m._sending && !serverIds.has(String(m.id)));
+
+    const merged = serverMsgs.concat(pendingOptimistic);
+    const hadNew = merged.length !== currentList.length;
+
+    S.roomMessages[roomId] = merged;
+    saveRoomCache(roomId);
+    renderActiveRoomMessages(hadNew || forceFull);
+  }
+};
+
+// ================================================================
+// INIT APLIKASI CHAT
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch(e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+
+  const badgeEl = document.getElementById('my-username-badge');
+  if (badgeEl) badgeEl.textContent = `Login sebagai @${S.akun.username}`;
+
+  loadInboxCache();
+  renderInboxView();
+  syncInboxFromServer(false);
+
+  // Polling ringan di daftar teman setiap 6 detik untuk mendeteksi pesan / request masuk
+  S.inboxTimer = setInterval(() => {
+    if (!S.activeRoom) {
+      syncInboxFromServer(true);
+    }
+  }, 6000);
+});
+</script>
+</body>
+</html>
