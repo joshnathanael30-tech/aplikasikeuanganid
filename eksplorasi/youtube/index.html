@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube In-Browser Player</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+  <!-- Header / Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-20 px-4 py-3 sm:px-6">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-600/30">
+          <svg class="w-5 h-5 text-white fill-current" viewBox="0 0 24 24">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base font-semibold text-white tracking-tight">In-Browser YouTube Viewer</h1>
+          <p class="text-xs text-slate-400">Putar video langsung di dalam halaman web tanpa redirect</p>
+        </div>
+      </div>
+      <div class="text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/50">
+        Embed Mode: <span class="text-emerald-400 font-medium">youtube.com/embed</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:px-6 flex flex-col gap-6">
+    <!-- Input Section -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+      <label for="url-input" class="block text-sm font-medium text-slate-200 mb-2">
+        Masukkan URL atau Video ID YouTube:
+      </label>
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <div class="relative flex-1">
+          <input 
+            type="text" 
+            id="url-input" 
+            value="https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
+            placeholder="Contoh: https://www.youtube.com/watch?v=... atau https://youtu.be/..." 
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+          >
+        </div>
+        <button 
+          id="load-btn" 
+          type="button" 
+          class="bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-red-600/25 transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+            <path d="M4 4l12 6-12 6z"/>
+          </svg>
+          Buka Video
+        </button>
+      </div>
+
+      <!-- Quick Preset Chips -->
+      <div class="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
+        <span class="text-xs text-slate-400">Contoh Cepat:</span>
+        <button type="button" class="preset-btn text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg transition" data-url="https://www.youtube.com/watch?v=jfKfPfyJRdk">
+          Lofi Beats ☕
+        </button>
+        <button type="button" class="preset-btn text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg transition" data-url="https://www.youtube.com/watch?v=M7lc1UVf-VE">
+          YouTube Developers 💻
+        </button>
+        <button type="button" class="preset-btn text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg transition" data-url="dQw4w9WgXcQ">
+          Rick Astley 🎵
+        </button>
+      </div>
+      <p id="feedback-msg" class="text-xs text-amber-400 mt-2 hidden"></p>
+    </section>
+
+    <!-- Player Container -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-900/60">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+          <span id="player-status" class="text-xs text-slate-400 ml-2 font-mono">Memuat pemutar...</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="toggle-aspect" type="button" class="text-xs text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition">
+            16:9 Rasio
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Aspect Ratio Frame -->
+      <div id="video-frame-container" class="relative w-full aspect-video bg-black flex items-center justify-center">
+        <iframe 
+          id="yt-iframe" 
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&rel=0&enablejsapi=1" 
+          title="YouTube Video Player" 
+          class="absolute inset-0 w-full h-full border-0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <!-- Player Controls & Info -->
+      <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-400 bg-slate-900/90">
+        <div>
+          <span class="text-slate-300 font-medium">Embed URL saat ini:</span>
+          <span id="current-embed-url" class="font-mono text-slate-400 block sm:inline sm:ml-1 break-all">https://www.youtube.com/embed/dQw4w9WgXcQ</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="copy-embed-btn" type="button" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+            Salin Link Embed
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Note Card -->
+    <section class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 text-xs text-slate-400 leading-relaxed">
+      <h2 class="text-slate-200 font-medium mb-1 text-sm">💡 Mengapa menggunakan format <code>/embed/ID</code>?</h2>
+      <p>
+        URL standar YouTube seperti <code>https://www.youtube.com/watch?v=...</code> atau <code>https://youtu.be/...</code> diproteksi oleh YouTube dengan header <code>X-Frame-Options: SAMEORIGIN</code>. Jika dibuka langsung di dalam tag <code>&lt;iframe&gt;</code>, browser akan memblokirnya demi keamanan. 
+        Oleh karena itu, tautan secara otomatis dikonversi ke format <code>https://www.youtube.com/embed/VIDEO_ID</code> sehingga video dapat diputar langsung di dalam halaman browser tanpa perlu dialihkan (redirect) ke situs YouTube.
+      </p>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-800/80 py-4 px-4 text-center text-xs text-slate-500">
+    In-Browser YouTube Embed Viewer • Dibuat menggunakan HTML5 & Tailwind CSS
+  </footer>
+
+  <script>
+    const urlInput = document.getElementById('url-input');
+    const loadBtn = document.getElementById('load-btn');
+    const ytIframe = document.getElementById('yt-iframe');
+    const playerStatus = document.getElementById('player-status');
+    const currentEmbedUrl = document.getElementById('current-embed-url');
+    const feedbackMsg = document.getElementById('feedback-msg');
+    const copyEmbedBtn = document.getElementById('copy-embed-btn');
+    const toggleAspect = document.getElementById('toggle-aspect');
+    const videoFrameContainer = document.getElementById('video-frame-container');
+    const presetButtons = document.querySelectorAll('.preset-btn');
+
+    function extractYouTubeId(urlOrId) {
+      if (!urlOrId) return null;
+      const clean = urlOrId.trim();
+      // If user input is directly an 11-char ID
+      if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) {
+        return clean;
+      }
+      // Regex for various YouTube URL forms
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = clean.match(regExp);
+      if (match && match[2].length === 11) {
+        return match[2];
+      }
+      return null;
+    }
+
+    function loadVideo(target) {
+      const videoId = extractYouTubeId(target);
+      if (videoId) {
+        const embedUrl = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0&enablejsapi=1';
+        ytIframe.src = embedUrl;
+        currentEmbedUrl.textContent = 'https://www.youtube.com/embed/' + videoId;
+        playerStatus.textContent = 'Memutar Video ID: ' + videoId;
+        feedbackMsg.classList.add('hidden');
+        feedbackMsg.textContent = '';
+      } else {
+        feedbackMsg.textContent = 'URL tidak valid. Masukkan URL YouTube (misal: https://www.youtube.com/watch?v=...) atau 11 karakter ID video.';
+        feedbackMsg.classList.remove('hidden');
+      }
+    }
+
+    loadBtn.addEventListener('click', function() {
+      loadVideo(urlInput.value);
+    });
+
+    urlInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        loadVideo(urlInput.value);
+      }
+    });
+
+    presetButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const targetUrl = btn.getAttribute('data-url');
+        urlInput.value = targetUrl;
+        loadVideo(targetUrl);
+      });
+    });
+
+    copyEmbedBtn.addEventListener('click', function() {
+      const textToCopy = currentEmbedUrl.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(function() {
+          showCopySuccess();
+        }).catch(function() {
+          fallbackCopy(textToCopy);
+        });
+      } else {
+        fallbackCopy(textToCopy);
+      }
+    });
+
+    function fallbackCopy(text) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopySuccess();
+      } catch (err) {
+        feedbackMsg.textContent = 'Gagal menyalin link.';
+        feedbackMsg.classList.remove('hidden');
+      }
+    }
+
+    function showCopySuccess() {
+      const originalText = copyEmbedBtn.textContent;
+      copyEmbedBtn.textContent = 'Tersalin! ✓';
+      copyEmbedBtn.classList.add('bg-emerald-700', 'text-white');
+      setTimeout(function() {
+        copyEmbedBtn.textContent = originalText;
+        copyEmbedBtn.classList.remove('bg-emerald-700', 'text-white');
+      }, 2000);
+    }
+
+    let isExpanded = false;
+    toggleAspect.addEventListener('click', function() {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        videoFrameContainer.classList.remove('aspect-video');
+        videoFrameContainer.style.height = '600px';
+        toggleAspect.textContent = 'Tinggi 600px';
+      } else {
+        videoFrameContainer.removeAttribute('style');
+        videoFrameContainer.classList.add('aspect-video');
+        toggleAspect.textContent = '16:9 Rasio';
+      }
+    });
+
+    // Initial status
+    playerStatus.textContent = 'Video ID: dQw4w9WgXcQ (Siap)';
+  </script>
+</body>
+</html>
