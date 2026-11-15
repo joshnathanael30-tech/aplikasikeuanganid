@@ -115,10 +115,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .quick-chip .q-desc { font-size:11px; font-weight:800; color:#18181B; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
 .quick-chip .q-amt { font-size:10px; font-weight:700; margin-top:3px; display:block; }
 .quick-chip .q-sub { font-size:9px; font-weight:700; color:#A1A1AA; margin-top:2px; display:block; }
-.tx-item { overflow-x:hidden; overflow-y:visible; position:relative; }
-.tx-slider { display:flex; transition:transform 0.32s cubic-bezier(0.22,1,0.36,1); width:100%; }
-.tx-item.slid .tx-slider { transform:translateX(-165px); }
-.tx-actions { width:165px; flex-shrink:0; display:flex; border-radius:0 14px 14px 0; overflow:hidden; }
 .success-card { animation: scaleIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
 .check-path { stroke-dasharray:100; stroke-dashoffset:100; animation: checkDraw 0.6s cubic-bezier(0.65,0,0.45,1) 0.15s forwards; }
 .spin-sm { width:16px; height:16px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
@@ -182,8 +178,143 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 #lockscreen button[type="submit"] { width: 100%; background: #18181B; color: #fff; font-weight: 700; padding: 16px; border-radius: 16px; border: none; cursor: pointer; font-size: 15px; font-family: inherit; transition: transform .1s; }
 #lockscreen button[type="submit"]:active { transform: scale(.95); }
 #lockscreen-msg { color: #EF4444; font-size: 12px; font-weight: 700; margin-top: 12px; min-height: 16px; }
-.dompet-card { flex-shrink:0; width:175px; height:106px; border-radius:20px; padding:14px; position:relative; overflow:hidden; cursor:pointer; transition:transform .18s, box-shadow .18s; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 6px 20px rgba(0,0,0,.08); }
-.dompet-card:active { transform:scale(.95); }
+
+/* ═══════════ HERO BALANCE & WALLET PAPER-STACK SWIPE ═══════════ */
+.hero-stack-stage {
+  position: relative;
+  height: 186px;
+  perspective: 1200px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-x;
+}
+.hero-stack-stage.has-multi {
+  height: 204px;
+}
+.hero-stack-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 186px;
+  border-radius: 26px;
+  padding: 20px 22px;
+  color: #fff;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  will-change: transform, opacity;
+  transform-origin: center bottom;
+  border: 1px solid rgba(255,255,255,0.16);
+  transition: transform 0.52s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.42s ease, box-shadow 0.42s ease;
+}
+.hero-stack-card.pos-0 {
+  z-index: 30;
+  transform: translate3d(0, 0, 0) scale(1);
+  opacity: 1;
+  box-shadow: 0 16px 34px -8px rgba(15, 23, 42, 0.34), 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+.hero-stack-card.pos-1 {
+  z-index: 20;
+  transform: translate3d(0, 11px, 0) scale(0.955);
+  opacity: 0.92;
+  box-shadow: 0 10px 24px -6px rgba(15, 23, 42, 0.22);
+  pointer-events: none;
+}
+.hero-stack-card.pos-2 {
+  z-index: 10;
+  transform: translate3d(0, 20px, 0) scale(0.91);
+  opacity: 0.68;
+  box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.14);
+  pointer-events: none;
+}
+.hero-stack-card.pos-hidden {
+  z-index: 1;
+  transform: translate3d(0, 24px, 0) scale(0.87);
+  opacity: 0;
+  pointer-events: none;
+}
+.hero-stack-card.fly-up {
+  z-index: 40 !important;
+  transition: transform 0.44s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.38s ease !important;
+  transform: translate3d(0, -135%, 0) rotate(-4deg) scale(0.95) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.hero-stack-card.fly-down-in {
+  z-index: 40 !important;
+  animation: paperSlideInFromTop 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+@keyframes paperSlideInFromTop {
+  0% { transform: translate3d(0, -125%, 0) rotate(-3deg) scale(0.95); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+}
+@keyframes heroPaperTease {
+  0%, 62%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  72% { transform: translate3d(0, -15px, 0) rotate(-0.8deg) scale(1.006); }
+  80% { transform: translate3d(0, -4px, 0) rotate(0deg) scale(1); }
+  88% { transform: translate3d(0, -10px, 0) rotate(0.5deg) scale(1.003); }
+  95% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes heroBackCardTease {
+  0%, 62%, 100% { transform: translate3d(0, 11px, 0) scale(0.955); }
+  72% { transform: translate3d(0, 17px, 0) scale(0.972); }
+  80% { transform: translate3d(0, 12px, 0) scale(0.958); }
+  88% { transform: translate3d(0, 15px, 0) scale(0.966); }
+  95% { transform: translate3d(0, 11px, 0) scale(0.955); }
+}
+.hero-stack-card.pos-0.tease-active {
+  animation: heroPaperTease 4.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.hero-stack-card.pos-1.tease-back-active {
+  animation: heroBackCardTease 4.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.hero-grip-pill {
+  width: 34px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.28);
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+.hero-grip-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
+  animation: gripShimmer 2.8s infinite;
+}
+@keyframes gripShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.hero-stack-dots {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 35;
+  pointer-events: none;
+}
+.hero-sdot {
+  width: 4px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.35);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hero-sdot.active {
+  height: 14px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.8);
+}
+
 .qa-home-card { border-radius: 21px; position: relative; overflow: hidden; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s; }
 .qa-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(236,253,245,0.90) 100%); border: 1.5px solid rgba(16,185,129,0.22); box-shadow: 0 6px 22px rgba(16,185,129,0.08), 0 1px 4px rgba(0,0,0,0.03); }
 .qa-home-empty:hover { box-shadow: 0 10px 28px rgba(16,185,129,0.14); }
@@ -191,6 +322,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .sch-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(238,242,255,0.92) 55%, rgba(224,242,254,0.90) 100%); border: 1.5px solid rgba(99,102,241,0.22); box-shadow: 0 6px 22px rgba(99,102,241,0.09), 0 1px 4px rgba(0,0,0,0.03); }
 .sch-home-empty:hover { box-shadow: 0 10px 28px rgba(99,102,241,0.15); }
 .sch-home-empty:active { transform: scale(.98); }
+.bgt-home-empty { cursor: pointer; background: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(254,243,199,0.90) 55%, rgba(254,215,170,0.88) 100%); border: 1.5px solid rgba(245,158,11,0.26); box-shadow: 0 6px 22px rgba(245,158,11,0.09), 0 1px 4px rgba(0,0,0,0.03); }
+.bgt-home-empty:hover { box-shadow: 0 10px 28px rgba(245,158,11,0.16); }
+.bgt-home-empty:active { transform: scale(.98); }
 .qa-item-pill { flex-shrink: 0; width: 148px; background: #fff; border: 1.5px solid #E4E4E7; border-radius: 16px; padding: 10px 12px; cursor: pointer; text-align: left; position: relative; overflow: hidden; transition: transform .15s, border-color .15s, box-shadow .15s, background .15s; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 .qa-item-pill:hover { border-color: #10B981; background: #F0FDF4; box-shadow: 0 4px 14px rgba(16,185,129,0.12); transform: translateY(-1px); }
 .qa-item-pill:active { transform: scale(.93); }
@@ -198,16 +332,61 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .feature-orbit-shell { position: relative; border-radius: 23px; padding: 2px; }
 .orbit-svg-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; overflow: visible; }
 .feature-banner-viewport { position: relative; overflow: hidden; border-radius: 21px; width: 100%; transition: height 0.36s cubic-bezier(0.22, 1, 0.36, 1); }
-.feature-banner-track { display: flex; width: 200%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
-.feature-slide-pane { width: 50%; flex-shrink: 0; box-sizing: border-box; }
+.feature-banner-track { display: flex; width: 400%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
+.feature-slide-pane { width: 25%; flex-shrink: 0; box-sizing: border-box; }
 .feature-slider-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; }
 .feature-dot { height: 6px; width: 6px; border-radius: 99px; background: #CBD5E1; border: none; padding: 0; cursor: pointer; transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.feature-dot.active-qa { width: 22px; background: linear-gradient(90deg, #10B981, #059669); box-shadow: 0 2px 8px rgba(16,185,129,0.35); }
-.feature-dot.active-sch { width: 22px; background: linear-gradient(90deg, #6366F1, #0EA5E9); box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+.feature-dot.active-qa { width: 22px; background: #10B981; box-shadow: 0 2px 8px rgba(16,185,129,0.35); }
+.feature-dot.active-sch { width: 22px; background: #6366F1; box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+.feature-dot.active-bgt { width: 22px; background: #F59E0B; box-shadow: 0 2px 8px rgba(245,158,11,0.35); }
+.feature-dot.active-sb { width: 22px; background: #EC4899; box-shadow: 0 2px 8px rgba(236,72,153,0.35); }
 @keyframes schClockTick { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .sch-clock-hand { transform-origin: 12px 12px; animation: schClockTick 14s linear infinite; }
+@keyframes sbIconFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-5deg); }
+}
+@keyframes sbStatusPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.sb-float-icon { animation: sbIconFloat 2.8s ease-in-out infinite; }
+.sb-status-pulse { animation: sbStatusPulse 2s ease-in-out infinite; }
+.sb-home-empty {
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 2px solid #FBCFE8;
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.08);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, box-shadow 0.2s;
+}
+.sb-home-empty:hover {
+  border-color: #EC4899;
+  box-shadow: 0 10px 26px rgba(236, 72, 153, 0.14);
+  transform: translateY(-1px);
+}
+.sb-home-empty:active { transform: scale(0.98); }
+.sb-home-active-shell {
+  background: #FFFFFF;
+  border: 2px solid #E0E7FF;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.07);
+}
+.sb-pill-card {
+  flex-shrink: 0;
+  width: 172px;
+  border-radius: 16px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s;
+}
+.sb-pill-card:hover { transform: translateY(-2px); }
+.sb-pill-card:active { transform: scale(0.95); }
 .prov-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; border:1.5px solid #F4F4F5; background:#fff; cursor:pointer; transition:all .15s; }
 .prov-item.selected { border-color:#10B981; background:#F0FDF4; }
+.sb-tab-btn { flex:1; padding:9px 12px; border-radius:12px; font-size:11px; font-weight:800; transition:all .2s; text-align:center; cursor:pointer; border:none; }
+.sb-tab-btn.active { background:#18181B; color:#FFFFFF; box-shadow:0 4px 12px rgba(24,24,27,0.18); }
+.sb-tab-btn:not(.active) { background:transparent; color:#71717A; }
 </style>
 </head>
 <body>
@@ -260,11 +439,23 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="openAIChat()" class="w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center active:scale-90 transition-transform shadow-sm" title="AI Assistant">
+          <!-- Tombol Chat (Menggantikan Logo AI) -->
+          <a href="https://keloladuit.my.id/chat" target="_top" onclick="goTochatPage(event, 'chat')" class="relative w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Chat Sesama User">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
             </svg>
-          </button>
+            <span id="home-chat-unread-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#F0F4F8] shadow-sm leading-none">0</span>
+          </a>
+
+          <!-- Tombol Request Friend (Sebelah Tombol Chat) -->
+          <a href="https://keloladuit.my.id/chat?tab=requests" target="_top" onclick="goTochatPage(event, 'requests')" class="relative w-9 h-9 rounded-xl bg-white border border-zinc-200 text-zinc-700 flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Permintaan Pertemanan">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+            <span id="home-friend-req-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#F0F4F8] shadow-sm leading-none animate-bounce">0</span>
+          </a>
+
+          <!-- Tombol Pengaturan Akun -->
           <a href="https://keloladuit.my.id/account" target="_top" onclick="goToAccountPage(event)" class="w-9 h-9 rounded-xl bg-white border border-zinc-200 text-zinc-600 flex items-center justify-center active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Akun & Pengaturan">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -273,45 +464,29 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           </a>
         </div>
       </div>
+
+      <!-- Notifikasi Permintaan Pertemanan Baru -->
+      <div id="home-friend-req-alert" onclick="goTochatPage(event, 'requests')" class="hidden mt-2.5 px-3.5 py-2 rounded-2xl cursor-pointer flex items-center justify-between gap-2.5 shadow-sm active:scale-[0.99] transition-all" style="background:linear-gradient(135deg,#FFF1F2 0%,#FFE4E6 100%);border:1.5px solid #FECDD3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="w-7 h-7 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs font-black flex-shrink-0 shadow-sm">🔔</span>
+          <div class="min-w-0">
+            <p class="text-xs font-black text-rose-700 leading-tight">Permintaan Pertemanan baru!</p>
+            <p id="home-friend-req-subtext" class="text-[10px] font-bold text-rose-500 truncate mt-0.5">Ketuk untuk melihat dan menerima teman</p>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-xl bg-rose-500 text-white text-[10px] font-black flex-shrink-0 shadow-xs">Lihat →</span>
+      </div>
+
+
     </header>
 
     <main class="px-5 pt-2 pb-28 space-y-5">
       <!-- Subscription Alert Container -->
       <div id="sub-alert-container" class="space-y-2 hidden"></div>
 
-      <!-- ── HERO BALANCE CARD ── -->
-      <div class="fade-up s1 rounded-[26px] p-6 text-white relative overflow-hidden shadow-xl" style="background:linear-gradient(135deg,#0F172A 0%,#18181B 55%,#064E3B 100%)">
-        <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.28) 0%,transparent 70%);pointer-events:none"></div>
-        <div class="flex items-center justify-between mb-1.5 relative z-10">
-          <span class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-widest">Total Saldo Aktif</span>
-          <button onclick="toggleBalanceHide()" class="text-zinc-400 hover:text-white transition p-1" title="Sembunyikan/Tampilkan Saldo">
-            <svg id="eye-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-          </button>
-        </div>
-        <h2 id="main-balance" class="text-3xl font-black tracking-tight text-white mb-5 relative z-10">Rp 0</h2>
-        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 relative z-10">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
-            </div>
-            <div class="min-w-0">
-              <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">↑ PEMASUKAN BLN</p>
-              <p id="income-month" class="text-xs font-black text-emerald-400 truncate">Rp 0</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
-            </div>
-            <div class="min-w-0">
-              <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">↓ PENGELUARAN BLN</p>
-              <p id="expense-month" class="text-xs font-black text-red-400 truncate">Rp 0</p>
-            </div>
-          </div>
-        </div>
+      <!-- ── HERO BALANCE & DOMPET PAPER-STACK CARD (SWIPE UP) ── -->
+      <div class="fade-up s1">
+        <div id="hero-wallet-stack" class="hero-stack-stage"></div>
       </div>
 
       <!-- ── QUICK ADD CONTAINER (CURVED RECTANGLE PERSIS DI BAWAH SALDO) ── -->
@@ -319,8 +494,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         <div id="quick-add-home-box"></div>
       </div>
 
-      <!-- ── AKSI CEPAT (8 MENU GRID 4x2 — COMPACT) ── -->
-      <div id="quick-action-section" class="fade-up s2">
+      <!-- ── AKSI CEPAT (MENU CEPAT TERMASUK SPLIT BILL ANTAR TEMAN) ── -->
+      <div id="quick-action-section" class="fade-up s2 space-y-2">
         <div class="grid grid-cols-4 gap-2">
           <button onclick="openBulkModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff">📋</div>
@@ -334,10 +509,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff">💸</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Transfer</span>
           </button>
-          <button onclick="openDepositoModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff">🏦</div>
-            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Deposito</span>
-          </button>
+          <!-- DIRECT LINK KE KELOLADUIT.MY.ID/HOME/BUDGET -->
+          <a href="https://keloladuit.my.id/home/Budget" target="_top" onclick="goToBudgetPage(event)" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform" style="text-decoration:none">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff">🎯</div>
+            <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Kelola<br>Budget</span>
+          </a>
           <button onclick="openCicilanModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff">💳</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Cicilan</span>
@@ -346,33 +522,18 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black shadow-sm" style="background:linear-gradient(135deg,#0EA5E9,#0369A1);color:#fff">$€</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Transaksi<br>Valas</span>
           </button>
-          <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+          <!-- DIRECT LINK KE KELOLADUIT.MY.ID/UTANGPIUTANG -->
+          <a href="https://keloladuit.my.id/utangpiutang" target="_top" onclick="goToUtangPiutangPage(event)" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform" style="text-decoration:none">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#EC4899,#BE185D);color:#fff">🤝</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Utang/<br>Piutang</span>
-          </button>
-          <button onclick="openModal('dev-modal')" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
+          </a>
+          <button onclick="openInvestasiModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Investasi</span>
           </button>
         </div>
-      </div>
 
-      <!-- ── DOMPET SAYA ── -->
-      <div id="dompet-section" class="fade-up s2">
-        <div class="flex items-center justify-between mb-2.5">
-          <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Dompet Saya</p>
-          <button onclick="openKelolaDompetModal()" class="text-[11px] font-black text-emerald-600 active:scale-95 transition-transform">Kelola Dompet</button>
-        </div>
-        <div id="dompet-list-wrap" class="flex gap-3 overflow-x-auto no-scroll pb-1"></div>
-      </div>
 
-      <!-- ── DEPOSITO ── -->
-      <div id="deposito-section" class="fade-up s3">
-        <div class="flex items-center justify-between mb-2.5">
-          <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Deposito</p>
-          <button onclick="openDepositoModal()" class="text-[11px] font-black text-blue-600 active:scale-95 transition-transform">+ Buka Baru</button>
-        </div>
-        <div id="deposito-list-wrap" class="space-y-2.5"></div>
       </div>
 
       <!-- ── CICILAN / KREDIT ── -->
@@ -433,26 +594,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           </div>
           <div id="crypto-dots" class="market-dots" style="display:flex;justify-content:center;gap:5px;margin-top:8px"></div>
         </div>
-      </div>
-
-      <!-- ── TRANSAKSI TERBARU ── -->
-      <div class="fade-up s4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Transaksi Terbaru</p>
-          <a href="https://keloladuit.my.id/histori" target="_top" class="text-[11px] font-black text-emerald-600 flex items-center gap-0.5" style="text-decoration:none">
-            Lihat Semua →
-          </a>
-        </div>
-        <div id="recent-list" class="space-y-2.5"></div>
-      </div>
-
-      <!-- ── KILAS BISNIS ── -->
-      <div class="fade-up s4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Kilas Bisnis</p>
-          <p id="news-date-label" class="text-[10px] font-bold text-zinc-400"></p>
-        </div>
-        <div id="news-container" class="space-y-3"></div>
       </div>
     </main>
   </div>
@@ -533,23 +674,19 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           <select id="tx-dompet-id" onchange="onTxDompetChange(this.value)" class="fi" style="width:100%;font-weight:800"></select>
         </div>
         <div id="subcat-section" class="hidden">
-          <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-3">Kategori Pengeluaran</p>
-          <div id="subcat-btns" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin:0 -20px;padding-left:20px;padding-right:20px;scrollbar-width:none;-ms-overflow-style:none">
-            <button type="button" data-sub="Makanan &amp; Minuman" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">🍚</div><span class="subcat-icon-label">Makanan</span></button>
-            <button type="button" data-sub="Transportasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">🚗</div><span class="subcat-icon-label">Transportasi</span></button>
-            <button type="button" data-sub="Tagihan Rutin" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEF9C3">🏆</div><span class="subcat-icon-label">Tagihan</span></button>
-            <button type="button" data-sub="Perawatan Pribadi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">🧴</div><span class="subcat-icon-label">Perawatan</span></button>
-            <button type="button" data-sub="Kebutuhan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#F3E8FF">🛒</div><span class="subcat-icon-label">Kebutuhan</span></button>
-            <button type="button" data-sub="Hiburan &amp; Langganan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#EDE9FE">🎬</div><span class="subcat-icon-label">Hiburan</span></button>
-            <button type="button" data-sub="Internet" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DBEAFE">📶</div><span class="subcat-icon-label">Internet</span></button>
-            <button type="button" data-sub="Pendidikan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">📚</div><span class="subcat-icon-label">Pendidikan</span></button>
-            <button type="button" data-sub="Kesehatan" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">💊</div><span class="subcat-icon-label">Kesehatan</span></button>
-            <button type="button" data-sub="Cicilan &amp; Utang" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEE2E2">💳</div><span class="subcat-icon-label">Cicilan</span></button>
-            <button type="button" data-sub="Sosial &amp; Donasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#FEF3C7">🤝</div><span class="subcat-icon-label">Sosial</span></button>
-            <button type="button" data-sub="Olahraga &amp; Kebugaran" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">🏋️</div><span class="subcat-icon-label">Olahraga</span></button>
-            <button type="button" data-sub="Pajak &amp; Administrasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#F3F4F6">📋</div><span class="subcat-icon-label">Pajak</span></button>
-            <button type="button" data-sub="Investasi" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#DCFCE7">📈</div><span class="subcat-icon-label">Investasi</span></button>
-            <button type="button" data-sub="Lainnya" class="subcat-icon-btn"><div class="subcat-icon-circle" style="background:#F3F4F6">✏️</div><span class="subcat-icon-label">Lainnya</span></button>
+          <div class="flex items-center justify-between mb-2.5">
+            <p id="subcat-section-title" class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Kategori Pengeluaran</p>
+            <a href="https://keloladuit.my.id/kelola-kategori" target="_top" class="text-[10px] font-extrabold text-emerald-600 hover:underline flex items-center gap-1">
+              <span>⚙️ Kelola Kategori</span>
+            </a>
+          </div>
+          <div id="subcat-btns" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin:0 -20px;padding-left:20px;padding-right:20px;scrollbar-width:none;-ms-overflow-style:none"></div>
+          <div id="tx-subdetail-wrap" class="hidden mt-2 pt-2.5 border-t border-zinc-100">
+            <div class="flex items-center justify-between mb-1.5">
+              <span id="tx-subdetail-label" class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Pilih Subkategori (Opsional)</span>
+              <a href="https://keloladuit.my.id/kelola-kategori" target="_top" class="text-[10px] font-bold text-zinc-400 hover:text-zinc-600">+ Edit Subkategori</a>
+            </div>
+            <div id="tx-subdetail-chips" class="flex flex-wrap gap-1.5"></div>
           </div>
         </div>
         <div id="ctx-quick-wrap" class="ctx-quick-wrap">
@@ -675,9 +812,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         <button type="button" onclick="closeModal('dompet-detail-backdrop')" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;transition:transform .15s" class="active:scale-90 transition-transform" aria-label="Kembali">
           <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <div id="dd-logo-wrap" style="display:flex;align-items:center;justify-content:flex-end">
+        <div id="dd-logo-wrap" style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
           <img id="dd-logo" src="" alt="" style="height:30px;max-width:115px;object-fit:contain;display:none" onerror="this.style.display='none'">
           <span id="dd-tipe-badge" style="display:none;font-size:10px;font-weight:900;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,0.2);color:#fff">BANK</span>
+          <button type="button" onclick="closeModal('dompet-detail-backdrop');openKelolaDompetModal()" style="padding:6px 11px;border-radius:99px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:10px;font-weight:800;cursor:pointer">Kelola</button>
         </div>
       </div>
       <div style="position:relative;z-index:1">
@@ -749,6 +887,47 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         </div>
         <button type="submit" class="w-full py-3.5 rounded-2xl text-white font-black text-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">Kirim Transfer</button>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ INVESTASI MODAL (BERISI SELURUH FITUR & DAFTAR DEPOSITO) ═══════════ -->
+<div id="investasi-backdrop" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'investasi-backdrop')">
+  <div class="sheet pb-8">
+    <div class="p-6">
+      <div class="w-10 h-1.5 bg-zinc-200 rounded-full mx-auto mb-5"></div>
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg shadow-sm" style="background:linear-gradient(135deg,#14B8A6,#0F766E);color:#fff">📈</div>
+          <div>
+            <h2 class="text-lg font-black text-zinc-900 leading-tight">Portofolio Investasi</h2>
+            <p class="text-[11px] font-semibold text-zinc-400">Kelola deposito berjangka &amp; estimasi imbal hasil</p>
+          </div>
+        </div>
+        <button onclick="closeModal('investasi-backdrop')" class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500">✕</button>
+      </div>
+
+      <!-- Ringkasan Total Deposito Aktif -->
+      <div class="rounded-2xl p-4 mb-4 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#0F766E 0%,#0D9488 55%,#14B8A6 100%)">
+        <div style="position:absolute;top:-30px;right:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.22) 0%,transparent 70%);pointer-events:none"></div>
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-teal-100">Total Dana Deposito Aktif</span>
+          <span id="inv-dep-count" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/20 text-white">0 Produk</span>
+        </div>
+        <p id="inv-dep-total-pokok" class="text-2xl font-black tracking-tight">Rp 0</p>
+        <p class="text-[11px] font-bold text-teal-100 mt-1">Estimasi Bunga Bersih: <span id="inv-dep-total-bunga" class="text-white font-black">+Rp 0</span></p>
+      </div>
+
+      <div class="flex items-center justify-between mb-2.5">
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Daftar Deposito Saya</p>
+        <button type="button" onclick="closeModal('investasi-backdrop');openDepositoModal()" class="text-[11px] font-black text-teal-600 active:scale-95 transition-transform">+ Buka Deposito Baru</button>
+      </div>
+
+      <div id="deposito-list-wrap" class="space-y-2.5 max-h-[42vh] overflow-y-auto pr-0.5 mb-4"></div>
+
+      <button type="button" onclick="closeModal('investasi-backdrop');openDepositoModal()" class="w-full py-3.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-98 transition-transform" style="background:linear-gradient(135deg,#14B8A6,#0F766E)">
+        <span>🏦 + Buka Deposito Baru</span>
+      </button>
     </div>
   </div>
 </div>
@@ -1237,7 +1416,6 @@ let GS_URL = '';
 var GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
 const AUTH_SESSION_KEY = 'keuangan_akun_session';
 const TX_CACHE_KEY = 'keuangan_transactions_cache';
-const NEWS_KEY = 'pub_27e83856472840ff8701c619e2fcf7be';
 const FOREX_KEY = 'c2beacc9074f8e33b3d4ac5d';
 
 let S = {
@@ -1262,6 +1440,28 @@ var dompetState = {
   selectedTipe: 'bank',
   selectedProvider: null,
   activeDetailId: null
+};
+
+var heroStackState = {
+  idx: 0,
+  animating: false,
+  hasSwiped: false,
+  touchStartY: 0,
+  touchStartX: 0,
+  touchDeltaY: 0,
+  touchDeltaX: 0,
+  isDragging: false
+};
+
+// State Pertemanan & Split Bill
+var splitBillState = {
+  friends: [],            // Daftar teman ACCEPTED dari DATA MASTER
+  incomingRequests: [],   // Permintaan pertemanan masuk
+  allBills: [],           // Semua Split Bill yang melibatkan kita
+  incomingBills: [],      // Split Bill masuk yang masih PENDING menunggu konfirmasi kita
+  selectedFriends: {},    // { usernameLower: { username, namaLengkap, amount } }
+  activeTab: 'create',    // 'create' | 'list'
+  activeDetailBillId: null
 };
 
 var depositoList = [];
@@ -1365,7 +1565,7 @@ function checkAkunSession() {
   return false;
 }
 
-// ── REDIRECT KE HALAMAN ACCOUNT (keloladuit.my.id/account) ──
+// ── REDIRECT KE HALAMAN ACCOUNT (keloladuit.my.id/account) & UTANG/PIUTANG (keloladuit.my.id/utangpiutang) ──
 window.goToAccountPage = function(e) {
   if (e) e.preventDefault();
   if (S.akun && S.akun.gsUrl) {
@@ -1379,6 +1579,20 @@ window.goToAccountPage = function(e) {
 };
 window.openSettingsModal = function() {
   window.goToAccountPage();
+};
+
+window.goToUtangPiutangPage = function(e) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/utangpiutang';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/utangpiutang';
+  }
 };
 
 function getQuickAddStorageKey() {
@@ -1726,6 +1940,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAllLocalCaches();
   try { initTxModalListeners(); } catch(e) {}
   try { initRippleEffects(); } catch(e) {}
+  try { initHeroStackEvents(); } catch(e) {}
   try {
     document.getElementById('lockscreen-form')?.addEventListener('submit', handleLockscreen);
   } catch(e) {}
@@ -1741,9 +1956,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (S.transactions.length === 0) isFetchingBg = true;
   refreshAll();
+  loadHomeChatBadgesFromCache();
+  syncHomeChatAndFriendNotifications();
+  setInterval(syncHomeChatAndFriendNotifications, 8000);
   initWeather();
   startCryptoPolling();
-  fetchHomeNews();
   checkHashAction();
   syncDataInBackground();
 });
@@ -1770,6 +1987,10 @@ async function syncDataInBackground() {
       if (Array.isArray(d.data.subscriptions)) { S.subscriptions = d.data.subscriptions; saveSubLocal(); }
       saveTransactionsCache();
       try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(e) {}
+      try {
+        syncCategoriesFromServerSettings(S.settings);
+        if (S.txCat) renderDynamicCategoryButtons(S.txCat);
+      } catch(e) {}
 
       if (Array.isArray(d.data.dompet)) {
         var dariServer = d.data.dompet.map(w => ({
@@ -1921,16 +2142,14 @@ function refreshAll() {
   saveTransactionsCache();
   renderHomeHeader();
   renderSubAlerts();
-  renderHomeSummary();
+  renderHeroWalletStack();
   renderQuickAddHomeSection();
-  renderHomeDompetList();
   renderDepositoSection();
   renderCicilanSection();
-  renderHomeRecentTransactions();
 }
 
 // ================================================================
-// QUICK ADD (CONTAINER CURVED & 1-CLICK TRANSACTION DARI SHEET "KHUSUS")
+// QUICK ADD, CHAT, REQUEST FRIEND, & SPLIT BILL ANTAR TEMAN
 // ================================================================
 var SUBCAT_EMOJI_MAP = {
   'Makanan & Minuman': '🍚',
@@ -1965,6 +2184,771 @@ window.goToScheduledPage = function() {
     saveScheduledLocalHome();
   }
   window.top.location.href = 'https://keloladuit.my.id/transaksiterjadwal';
+};
+
+window.goToBudgetPage = function(e) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/home/Budget';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/home/Budget';
+  }
+};
+
+window.goToSplitBillPage = function(e, billId) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    if (billId) {
+      localStorage.setItem('keuangan_splitbill_open_id', String(billId));
+    } else {
+      localStorage.removeItem('keuangan_splitbill_open_id');
+    }
+  } catch(err) {}
+  var destUrl = 'https://keloladuit.my.id/home/splitbill' + (billId ? ('?id=' + encodeURIComponent(billId)) : '');
+  try {
+    window.top.location.href = destUrl;
+  } catch(err) {
+    window.location.href = destUrl;
+  }
+};
+
+window.goTochatPage = function(e, targetTab) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    if (targetTab) {
+      localStorage.setItem('keuangan_chat_initial_tab', targetTab);
+    }
+  } catch(err) {}
+  var destUrl = 'https://keloladuit.my.id/chat' + (targetTab === 'requests' ? '?tab=requests' : '');
+  try {
+    window.top.location.href = destUrl;
+  } catch(err) {
+    window.location.href = destUrl;
+  }
+};
+
+function renderHomeChatAndFriendBadges(friendsList, incomingList, allSplitBills, incomingSplitBills) {
+  var friends = Array.isArray(friendsList) ? friendsList : [];
+  var incoming = Array.isArray(incomingList) ? incomingList : [];
+  var sBillsAll = Array.isArray(allSplitBills) ? allSplitBills : splitBillState.allBills;
+  var sBillsIn  = Array.isArray(incomingSplitBills) ? incomingSplitBills : splitBillState.incomingBills;
+
+  splitBillState.friends          = friends;
+  splitBillState.incomingRequests = incoming;
+  splitBillState.allBills         = sBillsAll;
+  splitBillState.incomingBills    = sBillsIn;
+
+  var totalUnreadChat = 0;
+  friends.forEach(function(f) {
+    totalUnreadChat += (Number(f && f.unreadCount) || 0);
+  });
+  var totalReqCount = incoming.length;
+
+  var chatBadge = document.getElementById('home-chat-unread-badge');
+  if (chatBadge) {
+    if (totalUnreadChat > 0) {
+      chatBadge.textContent = totalUnreadChat > 99 ? '99+' : String(totalUnreadChat);
+      chatBadge.classList.remove('hidden');
+    } else {
+      chatBadge.classList.add('hidden');
+    }
+  }
+
+  var reqBadge = document.getElementById('home-friend-req-badge');
+  if (reqBadge) {
+    if (totalReqCount > 0) {
+      reqBadge.textContent = totalReqCount > 99 ? '99+' : String(totalReqCount);
+      reqBadge.classList.remove('hidden');
+    } else {
+      reqBadge.classList.add('hidden');
+    }
+  }
+
+  var reqAlert = document.getElementById('home-friend-req-alert');
+  var reqSub = document.getElementById('home-friend-req-subtext');
+  if (reqAlert) {
+    if (totalReqCount > 0) {
+      reqAlert.classList.remove('hidden');
+      if (reqSub) {
+        var firstSender = incoming[0] && (incoming[0].friendNamaLengkap || ('@' + incoming[0].friendUsername));
+        reqSub.textContent = totalReqCount === 1
+          ? ('Dari ' + firstSender + ' — Ketuk untuk konfirmasi')
+          : (totalReqCount + ' pengguna ingin berteman dengan Anda');
+      }
+    } else {
+      reqAlert.classList.add('hidden');
+    }
+  }
+
+  // Render Banner Notifikasi Split Bill Masuk & Badge Tombol
+  renderHomeSplitBillAlerts();
+}
+
+function renderHomeSplitBillAlerts() {
+  var slideSb = document.getElementById('feature-slide-sb');
+  if (slideSb) {
+    slideSb.innerHTML = buildSplitBillSlideHtml();
+    requestAnimationFrame(function() { syncFeatureBannerGeometry(true); });
+  }
+}
+
+function loadHomeChatBadgesFromCache() {
+  if (!S.akun || !S.akun.username) return;
+  try {
+    var key = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+    var raw = localStorage.getItem(key);
+    if (!raw) return;
+    var parsed = JSON.parse(raw);
+    if (parsed) {
+      renderHomeChatAndFriendBadges(
+        parsed.friends || [],
+        parsed.incomingRequests || [],
+        parsed.splitBills || [],
+        parsed.incomingSplitBills || []
+      );
+    }
+  } catch(e) {}
+}
+
+async function syncHomeChatAndFriendNotifications() {
+  if (!S.akun || !S.akun.username) return;
+  try {
+    var uname = encodeURIComponent(S.akun.username);
+    var url = GLOBAL_GS_URL + '?action=getFriendsAndInbox&username=' + uname + '&_t=' + Date.now();
+    var res = await fetch(url);
+    var json = await res.json();
+    if (json && json.status === 'success' && json.data) {
+      var friends  = Array.isArray(json.data.friends) ? json.data.friends : [];
+      var incoming = Array.isArray(json.data.incomingRequests) ? json.data.incomingRequests : [];
+      var outgoing = Array.isArray(json.data.outgoingRequests) ? json.data.outgoingRequests : [];
+      var sBillsAll = Array.isArray(json.data.splitBills) ? json.data.splitBills : splitBillState.allBills;
+      var sBillsIn  = Array.isArray(json.data.incomingSplitBills) ? json.data.incomingSplitBills : splitBillState.incomingBills;
+
+      // Jika endpoint lama belum menyertakan splitBills di getFriendsAndInbox, panggil getSplitBills
+      if (!Array.isArray(json.data.splitBills)) {
+        try {
+          var sbRes = await fetch(GLOBAL_GS_URL + '?action=getSplitBills&username=' + uname + '&_t=' + Date.now());
+          var sbJson = await sbRes.json();
+          if (sbJson && sbJson.status === 'success' && sbJson.data) {
+            sBillsAll = Array.isArray(sbJson.data.splitBills) ? sbJson.data.splitBills : [];
+            sBillsIn  = Array.isArray(sbJson.data.incomingSplitBills) ? sbJson.data.incomingSplitBills : [];
+          }
+        } catch(errSb) {}
+      }
+
+      renderHomeChatAndFriendBadges(friends, incoming, sBillsAll, sBillsIn);
+
+      try {
+        var key = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+        localStorage.setItem(key, JSON.stringify({
+          friends: friends,
+          incomingRequests: incoming,
+          outgoingRequests: outgoing,
+          splitBills: sBillsAll,
+          incomingSplitBills: sBillsIn
+        }));
+      } catch(e) {}
+
+      // Jika modal Split Bill sedang terbuka, perbarui daftar teman & daftar tagihan
+      var sbBackdrop = document.getElementById('splitbill-backdrop');
+      if (sbBackdrop && sbBackdrop.classList.contains('show')) {
+        renderSplitBillFriendsPicker();
+        if (splitBillState.activeTab === 'list') renderSplitBillHistoryList();
+      }
+    }
+  } catch(e) {}
+}
+
+// ================================================================
+// LOGIKA LENGKAP SPLIT BILL ANTAR TEMAN
+// ================================================================
+
+async function callMasterSplitBillApi(action, payloadObj) {
+  try {
+    const postRes = await fetch(GLOBAL_GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, data: payloadObj })
+    });
+    const postJson = await postRes.json();
+    if (postJson) return postJson;
+  } catch (err) {}
+
+  try {
+    const qs = `?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payloadObj))}&_t=${Date.now()}`;
+    const getRes = await fetch(GLOBAL_GS_URL + qs);
+    return await getRes.json();
+  } catch (err2) {
+    return { status: 'error', message: 'Gagal terhubung ke server DATA MASTER.' };
+  }
+}
+
+window.openSplitBillModal = function(initialTab) {
+  populateDompetSelect('sb-dompet');
+  const catSel = document.getElementById('sb-category');
+  if (catSel) {
+    const outCats = getAllUserCategories().filter(c => c.type === 'Uang Keluar');
+    catSel.innerHTML = outCats.map(c => `<option value="${c.name}">${c.icon || '🏷️'} ${c.name}</option>`).join('');
+  }
+
+  document.getElementById('splitbill-form')?.reset();
+  document.getElementById('sb-error-msg')?.classList.add('hidden');
+  splitBillState.selectedFriends = {};
+
+  renderSplitBillFriendsPicker();
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+
+  const targetTab = initialTab || (splitBillState.incomingBills.length > 0 ? 'list' : 'create');
+  switchSplitBillTab(targetTab);
+  openModal('splitbill-backdrop');
+  syncHomeChatAndFriendNotifications();
+};
+
+window.switchSplitBillTab = function(tabName) {
+  splitBillState.activeTab = tabName === 'list' ? 'list' : 'create';
+  const btnCreate  = document.getElementById('sb-tab-create');
+  const btnList    = document.getElementById('sb-tab-list');
+  const paneCreate = document.getElementById('sb-pane-create');
+  const paneList   = document.getElementById('sb-pane-list');
+
+  if (btnCreate)  btnCreate.classList.toggle('active', splitBillState.activeTab === 'create');
+  if (btnList)    btnList.classList.toggle('active', splitBillState.activeTab === 'list');
+  if (paneCreate) paneCreate.classList.toggle('hidden', splitBillState.activeTab !== 'create');
+  if (paneList)   paneList.classList.toggle('hidden', splitBillState.activeTab !== 'list');
+
+  if (splitBillState.activeTab === 'list') {
+    renderSplitBillHistoryList();
+  }
+};
+
+function renderSplitBillFriendsPicker() {
+  const pickerEl = document.getElementById('sb-friends-picker');
+  if (!pickerEl) return;
+
+  const friends = splitBillState.friends || [];
+  if (!friends.length) {
+    pickerEl.innerHTML = `
+      <div class="w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-800 flex items-center justify-between gap-2">
+        <span>⚠️ Hanya teman yang bisa ditagih Split Bill. Kamu belum memiliki teman berstatus aktif.</span>
+        <a href="https://keloladuit.my.id/chat" target="_top" onclick="goTochatPage(event,'chat')" class="px-2.5 py-1 rounded-lg bg-amber-600 text-white text-[10px] font-black flex-shrink-0" style="text-decoration:none">+ Add Friend</a>
+      </div>
+    `;
+    return;
+  }
+
+  pickerEl.innerHTML = friends.map(f => {
+    const uLow = String(f.friendUsername || '').toLowerCase();
+    const isSelected = Boolean(splitBillState.selectedFriends[uLow]);
+    const safeU = String(f.friendUsername || '').replace(/'/g, "\\'");
+    const safeName = String(f.friendNamaLengkap || f.friendUsername || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <button type="button" onclick="toggleSelectSplitBillFriend('${safeU}')"
+        class="px-3 py-1.5 rounded-full text-xs font-extrabold border transition-all flex items-center gap-1.5 ${isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-zinc-700 border-zinc-200 hover:border-indigo-300'}">
+        <span>${isSelected ? '✓' : '+'}</span>
+        <span>${safeName}</span>
+        <span class="text-[10px] ${isSelected ? 'text-indigo-200' : 'text-zinc-400'}">@${f.friendUsername}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+window.toggleSelectSplitBillFriend = function(friendUsername) {
+  const uLow = String(friendUsername || '').toLowerCase();
+  if (!uLow) return;
+
+  if (splitBillState.selectedFriends[uLow]) {
+    delete splitBillState.selectedFriends[uLow];
+  } else {
+    const fObj = (splitBillState.friends || []).find(f => String(f.friendUsername || '').toLowerCase() === uLow);
+    if (!fObj) return;
+    splitBillState.selectedFriends[uLow] = {
+      username: fObj.friendUsername,
+      namaLengkap: fObj.friendNamaLengkap || fObj.friendUsername,
+      amount: 0
+    };
+  }
+
+  renderSplitBillFriendsPicker();
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+};
+
+function renderSplitBillSelectedRows() {
+  const rowsWrap = document.getElementById('sb-selected-friends-rows');
+  if (!rowsWrap) return;
+
+  const keys = Object.keys(splitBillState.selectedFriends);
+  if (!keys.length) {
+    rowsWrap.innerHTML = '<p class="text-[11px] font-semibold text-zinc-400 text-center py-2">Ketuk nama teman di atas untuk memasukkan ke daftar tagihan Split Bill.</p>';
+    return;
+  }
+
+  rowsWrap.innerHTML = keys.map(uLow => {
+    const item = splitBillState.selectedFriends[uLow];
+    const safeName = String(item.namaLengkap || item.username).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeU = String(item.username).replace(/'/g, "\\'");
+    const val = Number(item.amount) > 0 ? Number(item.amount) : '';
+    return `
+      <div class="p-2.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 flex items-center justify-between gap-2">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-black text-zinc-900 truncate">${safeName}</p>
+          <p class="text-[10px] font-bold text-indigo-600 truncate">@${item.username}</p>
+        </div>
+        <div class="relative w-36 flex-shrink-0">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-black text-zinc-400">Rp</span>
+          <input type="number" min="1" placeholder="Bagian teman" value="${val}"
+            oninput="onSplitBillFriendAmountInput('${safeU}', this.value)"
+            class="fi py-2 pl-8 pr-2.5 text-xs font-black text-right" style="background:#fff;border-color:#C7D2FE">
+        </div>
+        <button type="button" onclick="toggleSelectSplitBillFriend('${safeU}')" class="w-7 h-7 rounded-xl bg-white text-zinc-400 hover:text-rose-500 flex items-center justify-center text-xs font-black border border-zinc-200 flex-shrink-0">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+window.onSplitBillFriendAmountInput = function(username, valStr) {
+  const uLow = String(username || '').toLowerCase();
+  if (!splitBillState.selectedFriends[uLow]) return;
+  splitBillState.selectedFriends[uLow].amount = Math.max(0, Math.round(Number(valStr) || 0));
+  recalcSplitBillSummary();
+};
+
+window.onSplitBillTotalOrOwnChange = function(changedField) {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(splitBillState.selectedFriends);
+
+  // Jika hanya memilih 1 teman dan mengisi Total + Bagian Kita, otomatis isikan sisa ke teman tersebut
+  if (keys.length === 1 && total > 0 && own <= total && changedField === 'own') {
+    splitBillState.selectedFriends[keys[0]].amount = Math.max(0, total - own);
+    renderSplitBillSelectedRows();
+  }
+  recalcSplitBillSummary();
+};
+
+window.splitBillDivideEqually = function() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const keys = Object.keys(splitBillState.selectedFriends);
+  const countPeople = 1 + keys.length; // Kita + semua teman terpilih
+  if (total <= 0 || keys.length === 0) return;
+
+  const perPerson = Math.floor(total / countPeople);
+  const remainder = total - (perPerson * countPeople);
+
+  const ownInput = document.getElementById('sb-own-amount');
+  if (ownInput) ownInput.value = String(perPerson + remainder);
+
+  keys.forEach(k => {
+    splitBillState.selectedFriends[k].amount = perPerson;
+  });
+
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+};
+
+window.splitBillDivideRemainderToFriends = function() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(splitBillState.selectedFriends);
+  if (total <= 0 || keys.length === 0) return;
+
+  const rem = Math.max(0, total - own);
+  const each = Math.floor(rem / keys.length);
+  const leftover = rem - (each * keys.length);
+
+  keys.forEach((k, idx) => {
+    splitBillState.selectedFriends[k].amount = each + (idx === 0 ? leftover : 0);
+  });
+
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+};
+
+function recalcSplitBillSummary() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(splitBillState.selectedFriends);
+
+  let sumFriends = 0;
+  keys.forEach(k => {
+    sumFriends += (Number(splitBillState.selectedFriends[k].amount) || 0);
+  });
+
+  const sumAll = own + sumFriends;
+  const diff   = total - sumAll;
+
+  document.getElementById('sb-sum-total').textContent   = idr(total);
+  document.getElementById('sb-sum-own').textContent     = idr(own);
+  document.getElementById('sb-sum-friends').textContent = idr(sumFriends);
+
+  const statusEl = document.getElementById('sb-sum-status');
+  if (!statusEl) return;
+
+  if (total <= 0) {
+    statusEl.textContent = 'Masukkan jumlah total';
+    statusEl.className = 'font-black text-zinc-400';
+  } else if (keys.length === 0) {
+    statusEl.textContent = 'Pilih minimal 1 teman';
+    statusEl.className = 'font-black text-amber-600';
+  } else if (diff === 0) {
+    statusEl.textContent = '✅ Pas! Sesuai Jumlah Total';
+    statusEl.className = 'font-black text-emerald-600';
+  } else if (diff > 0) {
+    statusEl.textContent = `Kurang ${idr(diff)} dari Total`;
+    statusEl.className = 'font-black text-amber-600';
+  } else {
+    statusEl.textContent = `Lebih ${idr(Math.abs(diff))} dari Total`;
+    statusEl.className = 'font-black text-rose-600';
+  }
+}
+
+window.handleCreateSplitBill = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('sb-error-msg');
+  if (errEl) errEl.classList.add('hidden');
+
+  const title    = String(document.getElementById('sb-title')?.value || '').trim();
+  const category = String(document.getElementById('sb-category')?.value || 'Makanan & Minuman').trim();
+  const dompetId = String(document.getElementById('sb-dompet')?.value || '').trim();
+  const total    = Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0);
+  const own      = Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0);
+
+  const keys = Object.keys(splitBillState.selectedFriends);
+  if (!keys.length) {
+    if (errEl) { errEl.textContent = 'Pilih minimal 1 teman untuk ditagih Split Bill.'; errEl.classList.remove('hidden'); }
+    return;
+  }
+
+  const participants = [];
+  let sumFriends = 0;
+  for (let i = 0; i < keys.length; i++) {
+    const p = splitBillState.selectedFriends[keys[i]];
+    const amt = Math.round(Number(p.amount) || 0);
+    if (amt <= 0) {
+      if (errEl) { errEl.textContent = `Nominal bagian untuk @${p.username} harus lebih dari Rp 0.`; errEl.classList.remove('hidden'); }
+      return;
+    }
+    sumFriends += amt;
+    participants.push({
+      username: p.username,
+      namaLengkap: p.namaLengkap,
+      amount: amt
+    });
+  }
+
+  if (total <= 0 || Math.abs((own + sumFriends) - total) > 1) {
+    if (errEl) {
+      errEl.textContent = `Bagian kita (${idr(own)}) + bagian teman (${idr(sumFriends)}) harus sama dengan Jumlah Total (${idr(total)}).`;
+      errEl.classList.remove('hidden');
+    }
+    return;
+  }
+
+  // Cek saldo dompet pembuat mencukupi untuk memotong Jumlah Total terlebih dahulu
+  const chosenDompet = dompetState.list.find(d => String(d.id) === String(dompetId)) || dompetState.list[0] || null;
+  const availableSaldo = chosenDompet ? hitungSaldoDompet(chosenDompet.id) : calcTotalSaldoGlobal();
+  if (total > availableSaldo) {
+    if (errEl) {
+      errEl.textContent = `Saldo dompet tidak cukup untuk menalangi total tagihan (${idr(total)}). Saldo tersedia: ${idr(availableSaldo)}.`;
+      errEl.classList.remove('hidden');
+    }
+    return;
+  }
+
+  const btn = document.getElementById('sb-submit-btn');
+  const origText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Mengirim Split Bill & Memotong Saldo…';
+  }
+
+  const creatorTxId = 'sb_init_' + Date.now();
+  const friendNamesStr = participants.map(p => '@' + p.username).join(', ');
+
+  // 1. Potong saldo pembuat terlebih dahulu sebesar Jumlah Total Tagihan
+  const creatorOutTx = {
+    id: creatorTxId,
+    'Kategori': 'Uang Keluar',
+    'Kategori Uang Keluar': category,
+    'Jumlah Uang': total,
+    'Tanggal': new Date().toISOString(),
+    'Deskripsi': `Split Bill: ${title} (Bagian sendiri ${idr(own)}, patungan ${friendNamesStr})`,
+    'DompetId': chosenDompet ? chosenDompet.id : null
+  };
+
+  S.transactions.unshift(creatorOutTx);
+  refreshAll();
+  postData('addData', creatorOutTx).catch(() => {});
+
+  // 2. Kirim data Split Bill ke tab SplitBills di DATA MASTER agar semua teman yang ditagih menerima notifikasi & rincian
+  const res = await callMasterSplitBillApi('createSplitBill', {
+    title: title,
+    category: category,
+    creatorUsername: S.akun.username,
+    creatorNamaLengkap: S.settings.username || S.akun.namaLengkap || S.akun.username,
+    creatorDompetId: chosenDompet ? chosenDompet.id : '',
+    creatorDompetNama: chosenDompet ? (chosenDompet.nama || chosenDompet.provider) : 'Dompet Utama',
+    totalAmount: total,
+    creatorShareAmount: own,
+    participants: participants,
+    creatorTxId: creatorTxId
+  });
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  }
+
+  if (res && res.status === 'success') {
+    if (res.data) {
+      splitBillState.allBills.unshift(res.data);
+    }
+    closeModal('splitbill-backdrop');
+    showSuccess(`🍕 Split Bill "${title}" terkirim! Saldo Anda terpotong ${idr(total)}.`);
+    syncHomeChatAndFriendNotifications();
+  } else {
+    if (errEl) {
+      errEl.textContent = (res && res.message) || 'Gagal mengirim Split Bill.';
+      errEl.classList.remove('hidden');
+    }
+  }
+};
+
+function renderSplitBillHistoryList() {
+  const pane = document.getElementById('sb-pane-list');
+  if (!pane) return;
+
+  const bills = splitBillState.allBills || [];
+  if (!bills.length) {
+    pane.innerHTML = `
+      <div class="p-8 rounded-2xl bg-zinc-50 border border-zinc-200/70 text-center">
+        <div class="text-3xl mb-2">🍕</div>
+        <p class="text-xs font-black text-zinc-800">Belum Ada Tagihan Split Bill</p>
+        <p class="text-[11px] font-semibold text-zinc-400 mt-1">Tagihan Split Bill yang kamu buat atau yang ditagihkan teman kepadamu akan muncul di sini.</p>
+      </div>
+    `;
+    return;
+  }
+
+  pane.innerHTML = bills.map(bill => {
+    const isCreator = Boolean(bill.isCreator || (S.akun && String(bill.creatorUsername || '').toLowerCase() === String(S.akun.username || '').toLowerCase()));
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const paidCount = parts.filter(p => String(p.status || '').toUpperCase() === 'PAID').length;
+    const myPart = bill.myParticipant || parts.find(p => S.akun && String(p.username || '').toLowerCase() === String(S.akun.username || '').toLowerCase());
+    const needMyConfirm = !isCreator && myPart && String(myPart.status || 'PENDING').toUpperCase() === 'PENDING';
+
+    const statusBadge = needMyConfirm
+      ? `<span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black">Menunggu Konfirmasimu</span>`
+      : (paidCount === parts.length
+          ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black">Lunas (${paidCount}/${parts.length})</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[9px] font-black">${paidCount}/${parts.length} Teman Bayar</span>`);
+
+    const safeTitle = String(bill.title || 'Split Bill').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeId = String(bill.id).replace(/'/g, "\\'");
+    const roleText = isCreator
+      ? `Kamu menagih ${parts.length} teman · Bagianmu ${idr(bill.creatorShareAmount)}`
+      : `Ditagih oleh @${bill.creatorUsername} · Bagianmu ${idr(myPart ? myPart.amount : 0)}`;
+
+    return `
+      <div onclick="openSplitBillDetailModal('${safeId}')" class="p-3.5 rounded-2xl border cursor-pointer transition-all active:scale-[0.99] ${needMyConfirm ? 'bg-indigo-50/70 border-indigo-200' : 'bg-white border-zinc-200/80'}">
+        <div class="flex items-start justify-between gap-2 mb-1.5">
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safeTitle}</p>
+            <p class="text-[10px] font-bold text-zinc-500 truncate mt-0.5">${roleText}</p>
+          </div>
+          ${statusBadge}
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-zinc-100 text-[11px]">
+          <span class="font-bold text-zinc-400">Total Bill: <b class="text-zinc-800">${idr(bill.totalAmount)}</b></span>
+          <span class="font-black text-indigo-600">${needMyConfirm ? 'Konfirmasi Sekarang →' : 'Lihat Rincian Semua Orang →'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openSplitBillDetailModal = function(billId) {
+  const bill = (splitBillState.allBills || []).find(b => String(b.id) === String(billId))
+            || (splitBillState.incomingBills || []).find(b => String(b.id) === String(billId));
+  if (!bill) return;
+
+  splitBillState.activeDetailBillId = bill.id;
+  const uLow = S.akun ? String(S.akun.username || '').toLowerCase() : '';
+  const isCreator = String(bill.creatorUsername || '').toLowerCase() === uLow;
+
+  document.getElementById('sbd-title').textContent    = bill.title || 'Split Bill';
+  document.getElementById('sbd-category').textContent = bill.category || 'Makanan & Minuman';
+  document.getElementById('sbd-total').textContent    = idr(bill.totalAmount);
+
+  const dateStr = bill.createdAt
+    ? new Date(bill.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : '';
+  document.getElementById('sbd-meta').textContent = `Dibuat oleh ${bill.creatorNamaLengkap || ('@' + bill.creatorUsername)} (@${bill.creatorUsername})${dateStr ? ' · ' + dateStr : ''}`;
+  document.getElementById('sbd-creator-note').textContent = isCreator
+    ? `Saldo dompetmu telah terpotong ${idr(bill.totalAmount)} di awal`
+    : `Ditalangi awal oleh @${bill.creatorUsername} sebesar ${idr(bill.totalAmount)}`;
+
+  const roleBadge = document.getElementById('sbd-badge-role');
+  if (roleBadge) {
+    roleBadge.textContent = isCreator ? 'Split Bill Buatanku' : 'Tagihan Split Bill Masuk';
+    roleBadge.className = isCreator
+      ? 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 mb-1'
+      : 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-700 mb-1';
+  }
+
+  // Render rincian semua orang: Pembuat + Seluruh Teman yang Ditagih
+  const listEl = document.getElementById('sbd-participants-list');
+  const parts = Array.isArray(bill.participants) ? bill.participants : [];
+
+  let rowsHtml = `
+    <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0">👑</div>
+        <div class="min-w-0">
+          <p class="text-xs font-black text-zinc-900 truncate">${bill.creatorNamaLengkap || bill.creatorUsername} ${isCreator ? '(Kamu)' : ''}</p>
+          <p class="text-[10px] font-bold text-emerald-700">@${bill.creatorUsername} · Pembuat Bill</p>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <p class="text-xs font-black text-zinc-900">${idr(bill.creatorShareAmount)}</p>
+        <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black">Sudah Terpotong</span>
+      </div>
+    </div>
+  `;
+
+  rowsHtml += parts.map(p => {
+    const isMe = String(p.username || '').toLowerCase() === uLow;
+    const st = String(p.status || 'PENDING').toUpperCase();
+    const stBadge = st === 'PAID'
+      ? `<span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black">✅ Sudah Konfirmasi</span>`
+      : st === 'REJECTED'
+        ? `<span class="inline-block px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-black">✕ Ditolak</span>`
+        : `<span class="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[9px] font-black">⏳ Menunggu Konfirmasi</span>`;
+
+    const safePName = String(p.namaLengkap || p.username).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <div class="p-3 rounded-2xl ${isMe ? 'bg-indigo-50/80 border-indigo-200' : 'bg-zinc-50 border-zinc-200/70'} border flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-xl ${isMe ? 'bg-indigo-600 text-white' : 'bg-zinc-200 text-zinc-700'} flex items-center justify-center text-xs font-black flex-shrink-0">
+            ${(safePName[0] || 'U').toUpperCase()}
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safePName} ${isMe ? '(Kamu)' : ''}</p>
+            <p class="text-[10px] font-bold text-zinc-500">@${p.username}</p>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="text-xs font-black text-zinc-900">${idr(p.amount)}</p>
+          ${stBadge}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (listEl) listEl.innerHTML = rowsHtml;
+
+  // Tampilkan kotak konfirmasi jika user adalah peserta yang ditagih dan statusnya masih PENDING
+  const myPart = parts.find(p => String(p.username || '').toLowerCase() === uLow);
+  const confirmBox = document.getElementById('sbd-confirm-box');
+  if (confirmBox) {
+    if (!isCreator && myPart && String(myPart.status || 'PENDING').toUpperCase() === 'PENDING') {
+      confirmBox.classList.remove('hidden');
+      document.getElementById('sbd-my-share').textContent = idr(myPart.amount);
+      populateDompetSelect('sbd-pay-dompet');
+    } else {
+      confirmBox.classList.add('hidden');
+    }
+  }
+
+  openModal('splitbill-detail-backdrop');
+};
+
+window.submitRespondSplitBill = async function(decision) {
+  const billId = splitBillState.activeDetailBillId;
+  if (!billId || !S.akun) return;
+
+  const bill = (splitBillState.allBills || []).find(b => String(b.id) === String(billId))
+            || (splitBillState.incomingBills || []).find(b => String(b.id) === String(billId));
+  if (!bill) return;
+
+  const uLow = String(S.akun.username || '').toLowerCase();
+  const myPart = (bill.participants || []).find(p => String(p.username || '').toLowerCase() === uLow);
+  if (!myPart) return;
+
+  const shareAmount = Number(myPart.amount) || 0;
+  const payDompetId = document.getElementById('sbd-pay-dompet')?.value || (dompetState.list[0] ? dompetState.list[0].id : '');
+
+  if (decision === 'confirm') {
+    const avail = payDompetId ? hitungSaldoDompet(payDompetId) : calcTotalSaldoGlobal();
+    if (shareAmount > avail) {
+      showSuccess(`⚠️ Saldo dompet tidak cukup (${idr(avail)}) untuk membayar ${idr(shareAmount)}.`);
+      return;
+    }
+  }
+
+  const confirmBtn = document.getElementById('sbd-confirm-btn');
+  const rejectBtn  = document.getElementById('sbd-reject-btn');
+  if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = '⏳ Memproses…'; }
+  if (rejectBtn)  rejectBtn.disabled = true;
+
+  const res = await callMasterSplitBillApi('respondSplitBill', {
+    splitBillId: bill.id,
+    username: S.akun.username,
+    decision: decision,
+    dompetId: payDompetId
+  });
+
+  if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = '✅ Konfirmasi & Potong Saldo'; }
+  if (rejectBtn)  rejectBtn.disabled = false;
+
+  if (res && res.status === 'success') {
+    if (decision === 'confirm') {
+      // Catat pemotongan saldo lokal agar UI Beranda teman langsung ter-update
+      const newLocalTx = (res.data && res.data.payerTransaction) ? res.data.payerTransaction : {
+        id: 'sb_pay_' + bill.id + '_' + uLow,
+        'Kategori': 'Uang Keluar',
+        'Kategori Uang Keluar': bill.category || 'Makanan & Minuman',
+        'Jumlah Uang': shareAmount,
+        'Tanggal': new Date().toISOString(),
+        'Deskripsi': `Bayar Split Bill: ${bill.title} (ke @${bill.creatorUsername})`,
+        'DompetId': payDompetId || null
+      };
+      if (!S.transactions.some(t => String(t.id) === String(newLocalTx.id))) {
+        S.transactions.unshift(newLocalTx);
+      }
+      myPart.status = 'PAID';
+    } else {
+      myPart.status = 'REJECTED';
+    }
+
+    splitBillState.incomingBills = (splitBillState.incomingBills || []).filter(b => String(b.id) !== String(bill.id));
+    refreshAll();
+    renderHomeSplitBillAlerts();
+    closeModal('splitbill-detail-backdrop');
+    showSuccess(decision === 'confirm'
+      ? `✅ Berhasil dikonfirmasi! Saldo dipotong ${idr(shareAmount)}.`
+      : 'Tagihan Split Bill ditolak.');
+    syncHomeChatAndFriendNotifications();
+    syncDataInBackground();
+  } else {
+    showSuccess((res && res.message) || 'Gagal memproses konfirmasi Split Bill.');
+  }
 };
 
 var featureBannerState = {
@@ -2175,14 +3159,232 @@ function buildOrbitRoundedPath(w, h) {
   };
 }
 
+function buildBudgetSlideHtml() {
+  return `
+    <div onclick="goToBudgetPage(event)" class="qa-home-card bgt-home-empty p-4 flex items-center justify-between gap-3">
+      <div style="position:absolute;top:-26px;right:-20px;width:104px;height:104px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.20) 0%,rgba(234,88,12,0.08) 45%,transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-28px;left:18%;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.16) 0%,transparent 70%);pointer-events:none"></div>
+      <div class="flex items-center gap-3.5 min-w-0 relative z-10">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-sm flex-shrink-0" style="background:linear-gradient(135deg,#F59E0B 0%,#EA580C 100%);box-shadow:0 6px 16px rgba(245,158,11,0.28)">
+          <span class="text-xl">🎯</span>
+        </div>
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-black text-zinc-900 leading-snug tracking-tight">Punya batas anggaran agar tetap on track?</h3>
+          <p class="text-xs font-extrabold text-amber-700 mt-0.5 leading-snug truncate">Kelola budgetmu sekarang!</p>
+        </div>
+      </div>
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 relative z-10" style="background:rgba(245,158,11,0.14);color:#D97706">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+// ── SLIDE 4: SPLIT BILL (COLORFUL FLAT TANPA GRADIEN, ANIMASI HALUS, MENAMPILKAN YANG BERJALAN & STATUS PENOLAKAN) ──
+function getRunningOrActionableSplitBills() {
+  const all = Array.isArray(splitBillState.allBills) ? splitBillState.allBills : [];
+  const uLow = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase() : '';
+
+  return all.filter(bill => {
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const isCreator = Boolean(bill.isCreator || String(bill.creatorUsername || '').toLowerCase() === uLow);
+    const myPart = bill.myParticipant || parts.find(p => String(p.username || '').toLowerCase() === uLow);
+
+    if (!isCreator && myPart) {
+      const mySt = String(myPart.status || 'PENDING').toUpperCase();
+      // Tampilkan jika masih PENDING (berjalan), REJECT_PENDING (menunggu konfirmasi pengirim), atau REJECTED_APPROVED
+      return mySt === 'PENDING' || mySt === 'REJECT_PENDING' || mySt === 'REJECTED_APPROVED';
+    }
+    if (isCreator) {
+      // Tampilkan jika masih ada peserta yang PENDING atau REJECT_PENDING (menolak)
+      const hasUnfinished = parts.some(p => {
+        const st = String(p.status || 'PENDING').toUpperCase();
+        return st === 'PENDING' || st === 'REJECT_PENDING';
+      });
+      return hasUnfinished || String(bill.status || 'ACTIVE').toUpperCase() === 'ACTIVE';
+    }
+    return false;
+  });
+}
+
+function buildSplitBillSlideHtml() {
+  const runningBills = getRunningOrActionableSplitBills();
+  const uLow = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase() : '';
+
+  // JIKA TIDAK ADA SPLIT BILL YANG BERJALAN -> TAMPILKAN IKLAN TEKS (CLEAN COLORFUL FLAT TANPA GRADIEN)
+  if (!runningBills.length) {
+    return `
+      <div onclick="goToSplitBillPage(event)" class="qa-home-card sb-home-empty p-4 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3.5 min-w-0 relative z-10">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white flex-shrink-0 sb-float-icon" style="background:#EC4899;box-shadow:0 6px 14px rgba(236,72,153,0.24)">
+            <span class="text-xl">🍕</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-sm sm:text-base font-black text-zinc-900 leading-tight tracking-tight">Split Bill Bareng Teman</h3>
+              <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:#FCE7F3;color:#BE185D">Patungan</span>
+            </div>
+            <p class="text-xs font-bold text-pink-600 mt-0.5 leading-snug truncate">Habis makan atau nongkrong? Bagi tagihan otomatis!</p>
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 relative z-10" style="background:#FCE7F3;color:#DB2777">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  // JIKA ADA SPLIT BILL YANG BERJALAN / MENOLAK -> TAMPILKAN DAFTAR KARTU COLORFUL SOLID + STATUS PENOLAKAN
+  const cardsHtml = runningBills.slice(0, 10).map(bill => {
+    const isCreator = Boolean(bill.isCreator || String(bill.creatorUsername || '').toLowerCase() === uLow);
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const myPart = bill.myParticipant || parts.find(p => String(p.username || '').toLowerCase() === uLow);
+    const safeTitle = String(bill.title || 'Split Bill').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeId = String(bill.id || '').replace(/'/g, "\\'");
+    const emoji = SUBCAT_EMOJI_MAP[bill.category] || '🍕';
+
+    const rejectedParts = parts.filter(p => {
+      const s = String(p.status || '').toUpperCase();
+      return s === 'REJECT_PENDING' || s === 'REJECTED_APPROVED';
+    });
+    const paidCount = parts.filter(p => {
+      const s = String(p.status || '').toUpperCase();
+      return s === 'PAID' || s === 'AUTO_PAID_14D';
+    }).length;
+
+    // Palet warna solid (colorful flat, zero gradient) berdasarkan status
+    let cardBg = '#EEF2FF';       // Indigo soft
+    let cardBorder = '#C7D2FE';
+    let badgeBg = '#4F46E5';
+    let badgeText = '#FFFFFF';
+    let badgeLabel = 'Berjalan';
+    let accentColor = '#4338CA';
+    let statusLine = '';
+    let pulseClass = '';
+
+    if (!isCreator && myPart) {
+      const mySt = String(myPart.status || 'PENDING').toUpperCase();
+      const myAmt = Number(myPart.amount) || 0;
+      if (mySt === 'REJECT_PENDING') {
+        cardBg = '#FFF1F2';       // Rose soft (Menolak - Menunggu Konfirmasi Pengirim)
+        cardBorder = '#FECDD3';
+        badgeBg = '#E11D48';
+        badgeLabel = 'Menolak · Tunggu';
+        accentColor = '#BE123C';
+        pulseClass = 'sb-status-pulse';
+        const rsn = myPart.rejectReason ? String(myPart.rejectReason).replace(/</g, '&lt;') : 'Menunggu pengirim';
+        statusLine = `⚠️ Ditolak: "${rsn}"`;
+      } else if (mySt === 'REJECTED_APPROVED') {
+        cardBg = '#F4F4F5';
+        cardBorder = '#E4E4E7';
+        badgeBg = '#52525B';
+        badgeLabel = 'Penolakan Disetujui';
+        accentColor = '#3F3F46';
+        statusLine = `✓ Dibebaskan oleh @${bill.creatorUsername}`;
+      } else {
+        cardBg = '#FEF3C7';       // Amber soft (Perlu Konfirmasi Terima/Tolak)
+        cardBorder = '#FDE68A';
+        badgeBg = '#D97706';
+        badgeLabel = 'Konfirmasi';
+        accentColor = '#B45309';
+        pulseClass = 'sb-status-pulse';
+        statusLine = `Dari @${bill.creatorUsername} · Klik Terima/Tolak`;
+      }
+      return `
+        <button type="button" onclick="goToSplitBillPage(event, '${safeId}')" class="sb-pill-card"
+          style="background:${cardBg};border:2px solid ${cardBorder}">
+          <div class="flex items-center justify-between gap-1.5 mb-1.5">
+            <span class="w-6 h-6 rounded-lg bg-white flex items-center justify-center text-xs shadow-xs">${emoji}</span>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${pulseClass}" style="background:${badgeBg};color:${badgeText}">${badgeLabel}</span>
+          </div>
+          <p class="text-xs font-black text-zinc-900 truncate leading-snug">${safeTitle}</p>
+          <p class="text-[11px] font-black mt-0.5 truncate" style="color:${accentColor}">Bagianmu ${idr(myAmt)}</p>
+          <p class="text-[9px] font-extrabold truncate mt-0.5" style="color:${accentColor}">${statusLine}</p>
+        </button>
+      `;
+    } else {
+      // Kita adalah Pembuat Split Bill
+      if (rejectedParts.length > 0) {
+        const firstRej = rejectedParts[0];
+        const rejStatus = String(firstRej.status || '').toUpperCase();
+        cardBg = '#FFF1F2';       // Rose soft untuk menonjolkan teman yang menolak
+        cardBorder = '#FECDD3';
+        badgeBg = '#E11D48';
+        badgeLabel = rejStatus === 'REJECT_PENDING' ? `${rejectedParts.length} Menolak!` : 'Ditolak';
+        accentColor = '#BE123C';
+        pulseClass = 'sb-status-pulse';
+        const rsn = firstRej.rejectReason ? (`: "${String(firstRej.rejectReason).replace(/</g, '&lt;')}"`) : '';
+        statusLine = `⚠️ @${firstRej.username} menolak${rsn}`;
+      } else {
+        cardBg = '#ECFDF5';       // Emerald/Teal soft untuk tagihan berjalan normal
+        cardBorder = '#A7F3D0';
+        badgeBg = '#059669';
+        badgeLabel = `${paidCount}/${parts.length} Bayar`;
+        accentColor = '#047857';
+        statusLine = `Menunggu ${parts.length - paidCount} teman konfirmasi`;
+      }
+      return `
+        <button type="button" onclick="goToSplitBillPage(event, '${safeId}')" class="sb-pill-card"
+          style="background:${cardBg};border:2px solid ${cardBorder}">
+          <div class="flex items-center justify-between gap-1.5 mb-1.5">
+            <span class="w-6 h-6 rounded-lg bg-white flex items-center justify-center text-xs shadow-xs">${emoji}</span>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${pulseClass}" style="background:${badgeBg};color:${badgeText}">${badgeLabel}</span>
+          </div>
+          <p class="text-xs font-black text-zinc-900 truncate leading-snug">${safeTitle}</p>
+          <p class="text-[11px] font-black mt-0.5 truncate" style="color:${accentColor}">Total ${idr(bill.totalAmount)}</p>
+          <p class="text-[9px] font-extrabold truncate mt-0.5" style="color:${accentColor}">${statusLine}</p>
+        </button>
+      `;
+    }
+  }).join('');
+
+  const hasAnyRejection = runningBills.some(b => (b.participants || []).some(p => String(p.status || '').toUpperCase() === 'REJECT_PENDING'));
+  const headerBadgeBg = hasAnyRejection ? '#FFE4E6' : '#FCE7F3';
+  const headerBadgeClr = hasAnyRejection ? '#E11D48' : '#BE185D';
+  const headerBadgeTxt = hasAnyRejection ? 'Ada Penolakan!' : `${runningBills.length} Berjalan`;
+
+  return `
+    <div class="qa-home-card sb-home-active-shell p-3.5" style="border:2px solid #FBCFE8;background:#FFFFFF">
+      <div class="flex items-center justify-between mb-2.5 px-0.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs flex-shrink-0 sb-float-icon" style="background:#EC4899;color:#FFFFFF">🍕</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-xs font-black text-zinc-900 leading-none">Split Bill Aktif</h3>
+              <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full" style="background:${headerBadgeBg};color:${headerBadgeClr}">${headerBadgeTxt}</span>
+            </div>
+            <p class="text-[10px] font-semibold text-zinc-400 mt-0.5 leading-none">Ketuk kartu untuk cek rincian &amp; status konfirmasi</p>
+          </div>
+        </div>
+        <button type="button" onclick="goToSplitBillPage(event)" class="text-[10px] font-black px-2.5 py-1.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1 flex-shrink-0" style="background:#FCE7F3;color:#BE185D">
+          <span>Buka Split Bill</span>
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="flex gap-2.5 overflow-x-auto no-scroll pb-0.5"
+        ontouchstart="event.stopPropagation();featureBannerState.paused=true"
+        ontouchend="event.stopPropagation();featureBannerState.paused=false">
+        ${cardsHtml}
+      </div>
+    </div>
+  `;
+}
+
 function syncFeatureBannerGeometry(forceUpdatePath) {
   const shell = document.getElementById('feature-orbit-shell');
   const viewport = document.getElementById('feature-banner-viewport');
   const slide0 = document.getElementById('feature-slide-qa');
   const slide1 = document.getElementById('feature-slide-sch');
-  if (!shell || !viewport || !slide0 || !slide1) return;
+  const slide2 = document.getElementById('feature-slide-bgt');
+  const slide3 = document.getElementById('feature-slide-sb');
+  if (!shell || !viewport || !slide0 || !slide1 || !slide2 || !slide3) return;
 
-  const activeSlide = featureBannerState.idx === 0 ? slide0 : slide1;
+  const slides = [slide0, slide1, slide2, slide3];
+  const activeSlide = slides[featureBannerState.idx] || slide0;
   const targetH = activeSlide.offsetHeight;
   if (targetH > 0) {
     viewport.style.height = targetH + 'px';
@@ -2202,30 +3404,36 @@ function syncFeatureBannerGeometry(forceUpdatePath) {
 }
 
 function applyFeatureSlideTheme() {
-  const isQa = featureBannerState.idx === 0;
-  const gradUrl = isQa ? 'url(#orbit-grad-qa)' : 'url(#orbit-grad-sch)';
+  const idx = featureBannerState.idx;
+  const gradUrl = idx === 0 ? 'url(#orbit-grad-qa)' : idx === 1 ? 'url(#orbit-grad-sch)' : idx === 2 ? 'url(#orbit-grad-bgt)' : 'url(#orbit-grad-sb)';
+  const strokeClr = idx === 0 ? 'rgba(16,185,129,0.16)' : idx === 1 ? 'rgba(99,102,241,0.18)' : idx === 2 ? 'rgba(245,158,11,0.20)' : 'rgba(236,72,153,0.22)';
   const baseTrack = document.getElementById('orbit-base-track');
   const halo = document.getElementById('orbit-glow-halo');
   const beam = document.getElementById('orbit-light-beam');
 
-  if (baseTrack) baseTrack.setAttribute('stroke', isQa ? 'rgba(16,185,129,0.16)' : 'rgba(99,102,241,0.18)');
+  if (baseTrack) baseTrack.setAttribute('stroke', strokeClr);
   if (halo) halo.setAttribute('stroke', gradUrl);
   if (beam) beam.setAttribute('stroke', gradUrl);
 
   const dot0 = document.getElementById('fdot-0');
   const dot1 = document.getElementById('fdot-1');
-  if (dot0) dot0.className = 'feature-dot ' + (isQa ? 'active-qa' : '');
-  if (dot1) dot1.className = 'feature-dot ' + (!isQa ? 'active-sch' : '');
+  const dot2 = document.getElementById('fdot-2');
+  const dot3 = document.getElementById('fdot-3');
+  if (dot0) dot0.className = 'feature-dot ' + (idx === 0 ? 'active-qa' : '');
+  if (dot1) dot1.className = 'feature-dot ' + (idx === 1 ? 'active-sch' : '');
+  if (dot2) dot2.className = 'feature-dot ' + (idx === 2 ? 'active-bgt' : '');
+  if (dot3) dot3.className = 'feature-dot ' + (idx === 3 ? 'active-sb' : '');
 }
 
 window.goToFeatureSlide = function(idx) {
-  featureBannerState.idx = idx === 1 ? 1 : 0;
+  const totalSlides = 4;
+  featureBannerState.idx = ((idx % totalSlides) + totalSlides) % totalSlides;
   featureBannerState.elapsed = 0;
   featureBannerState.lastTs = performance.now();
 
   const track = document.getElementById('feature-banner-track');
   if (track) {
-    track.style.transform = `translateX(-${featureBannerState.idx * 50}%)`;
+    track.style.transform = `translateX(-${(featureBannerState.idx * (100 / totalSlides)).toFixed(4)}%)`;
   }
   applyFeatureSlideTheme();
   syncFeatureBannerGeometry(true);
@@ -2251,7 +3459,7 @@ function startFeatureOrbitLoop() {
       if (beam) beam.setAttribute('stroke-dashoffset', (155 - pos).toFixed(2));
 
       if (progress >= 1) {
-        goToFeatureSlide((featureBannerState.idx + 1) % 2, true);
+        goToFeatureSlide((featureBannerState.idx + 1) % 4, true);
       }
     }
     featureBannerState.rafId = requestAnimationFrame(step);
@@ -2274,10 +3482,10 @@ window.onFeatureBannerTouchMove = function(e) {
 window.onFeatureBannerTouchEnd = function() {
   featureBannerState.paused = false;
   if (Math.abs(featureBannerState.touchDeltaX) > 42) {
-    if (featureBannerState.touchDeltaX < 0 && featureBannerState.idx === 0) {
-      goToFeatureSlide(1, false);
-    } else if (featureBannerState.touchDeltaX > 0 && featureBannerState.idx === 1) {
-      goToFeatureSlide(0, false);
+    if (featureBannerState.touchDeltaX < 0) {
+      goToFeatureSlide((featureBannerState.idx + 1) % 4, false);
+    } else if (featureBannerState.touchDeltaX > 0) {
+      goToFeatureSlide((featureBannerState.idx + 3) % 4, false);
     }
   }
   featureBannerState.touchDeltaX = 0;
@@ -2289,10 +3497,14 @@ function renderQuickAddHomeSection() {
 
   const existingShell = document.getElementById('feature-orbit-shell');
   if (existingShell) {
-    const slideQa = document.getElementById('feature-slide-qa');
+    const slideQa  = document.getElementById('feature-slide-qa');
     const slideSch = document.getElementById('feature-slide-sch');
-    if (slideQa) slideQa.innerHTML = buildQuickAddSlideHtml();
+    const slideBgt = document.getElementById('feature-slide-bgt');
+    const slideSb  = document.getElementById('feature-slide-sb');
+    if (slideQa)  slideQa.innerHTML  = buildQuickAddSlideHtml();
     if (slideSch) slideSch.innerHTML = buildScheduledSlideHtml();
+    if (slideBgt) slideBgt.innerHTML = buildBudgetSlideHtml();
+    if (slideSb)  slideSb.innerHTML  = buildSplitBillSlideHtml();
     requestAnimationFrame(() => syncFeatureBannerGeometry(true));
     return;
   }
@@ -2307,13 +3519,19 @@ function renderQuickAddHomeSection() {
         <defs>
           <linearGradient id="orbit-grad-qa" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#10B981"/>
-            <stop offset="55%" stop-color="#34D399"/>
-            <stop offset="100%" stop-color="#A7F3D0"/>
+            <stop offset="100%" stop-color="#10B981"/>
           </linearGradient>
           <linearGradient id="orbit-grad-sch" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#6366F1"/>
-            <stop offset="55%" stop-color="#38BDF8"/>
-            <stop offset="100%" stop-color="#C4B5FD"/>
+            <stop offset="100%" stop-color="#6366F1"/>
+          </linearGradient>
+          <linearGradient id="orbit-grad-bgt" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F59E0B"/>
+            <stop offset="100%" stop-color="#F59E0B"/>
+          </linearGradient>
+          <linearGradient id="orbit-grad-sb" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#EC4899"/>
+            <stop offset="100%" stop-color="#EC4899"/>
           </linearGradient>
           <filter id="orbit-glow-filter" x="-25%" y="-25%" width="150%" height="150%">
             <feGaussianBlur stdDeviation="3.2" result="blur"/>
@@ -2336,13 +3554,21 @@ function renderQuickAddHomeSection() {
           <div id="feature-slide-sch" class="feature-slide-pane">
             ${buildScheduledSlideHtml()}
           </div>
+          <div id="feature-slide-bgt" class="feature-slide-pane">
+            ${buildBudgetSlideHtml()}
+          </div>
+          <div id="feature-slide-sb" class="feature-slide-pane">
+            ${buildSplitBillSlideHtml()}
+          </div>
         </div>
       </div>
     </div>
 
     <div id="feature-banner-dots" class="feature-slider-dots">
-      <button type="button" id="fdot-0" onclick="goToFeatureSlide(0, false)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
-      <button type="button" id="fdot-1" onclick="goToFeatureSlide(1, false)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
+      <button type="button" id="fdot-0" onclick="goToFeatureSlide(0)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
+      <button type="button" id="fdot-1" onclick="goToFeatureSlide(1)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
+      <button type="button" id="fdot-2" onclick="goToFeatureSlide(2)" class="feature-dot" aria-label="Slide Kelola Budget" title="Kelola Budget"></button>
+      <button type="button" id="fdot-3" onclick="goToFeatureSlide(3)" class="feature-dot" aria-label="Slide Split Bill" title="Split Bill"></button>
     </div>
   `;
 
@@ -2430,7 +3656,7 @@ window.submitVariableQuickAdd = function(e) {
 };
 
 // ================================================================
-// HOME RENDERERS
+// HOME RENDERERS & HERO STACK (TOTAL SALDO + DOMPET PAPER SWIPE UP)
 // ================================================================
 var AVATAR_GRADIENTS = [
   { id: 'emerald', css: 'linear-gradient(135deg,#34D399,#0D9488)' },
@@ -2503,73 +3729,341 @@ function renderSubAlerts() {
   }).join('');
 }
 
-window.toggleBalanceHide = function() {
+window.toggleBalanceHide = function(e) {
+  if (e) e.stopPropagation();
   S.hideBalance = !S.hideBalance;
-  try { localStorage.setItem('keuangan_hide_balance', S.hideBalance ? '1' : '0'); } catch(e) {}
-  renderHomeSummary();
-  renderHomeDompetList();
+  try { localStorage.setItem('keuangan_hide_balance', S.hideBalance ? '1' : '0'); } catch(err) {}
+  renderHeroWalletStack();
 };
 
-function renderHomeSummary() {
-  const totalBal = calcTotalSaldoGlobal();
+function calcMonthlyInOut(dompetId) {
   const nowYM = new Date().toISOString().slice(0, 7);
   let mIn = 0, mOut = 0;
   S.transactions.forEach(t => {
     if (!t.Tanggal || !String(t.Tanggal).startsWith(nowYM)) return;
+    if (dompetId && String(t.DompetId) !== String(dompetId)) return;
     const v = Number(t['Jumlah Uang']) || 0;
     if (t.Kategori === 'Uang Masuk') mIn += v;
     else if (t.Kategori === 'Uang Keluar') mOut += v;
   });
-  const balEl = document.getElementById('main-balance');
-  const inEl  = document.getElementById('income-month');
-  const outEl = document.getElementById('expense-month');
-  if (balEl) balEl.textContent = S.hideBalance ? 'Rp ••••••••' : idr(totalBal);
-  if (inEl)  inEl.textContent  = S.hideBalance ? 'Rp ••••••' : idr(mIn);
-  if (outEl) outEl.textContent = S.hideBalance ? 'Rp ••••••' : idr(mOut);
+  return { mIn, mOut };
 }
 
-function renderHomeDompetList() {
-  const wrap = document.getElementById('dompet-list-wrap');
-  if (!wrap) return;
-  if (!dompetState.list.length) {
-    wrap.innerHTML = `<div onclick="openDompetModal()" class="glass rounded-2xl p-4 w-full flex items-center justify-between cursor-pointer">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">👛</div>
-        <div>
-          <p class="text-xs font-black text-zinc-800">Belum ada dompet</p>
-          <p class="text-[10px] font-semibold text-zinc-400">Tap untuk menambahkan rekening / e-money / tunai</p>
+function getEyeButtonHtml() {
+  const iconPath = S.hideBalance
+    ? `<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`
+    : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+  return `<button type="button" onclick="toggleBalanceHide(event)" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition" title="Sembunyikan/Tampilkan Saldo">
+    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">${iconPath}</svg>
+  </button>`;
+}
+
+function getKelolaDompetPillHtml() {
+  return `<button type="button" onclick="event.stopPropagation();openKelolaDompetModal()" class="px-2.5 py-1 rounded-lg bg-white/12 hover:bg-white/22 border border-white/15 text-[10px] font-extrabold text-white/95 flex items-center gap-1 active:scale-95 transition">
+    <span>👛</span><span>Kelola</span>
+  </button>`;
+}
+
+function getDompetHeroBgStyle(d) {
+  if (d && d.background) {
+    return `background-image:url('${d.background}');background-size:cover;background-position:center`;
+  }
+  if (d && d.tipe === 'tunai') {
+    return 'background:linear-gradient(135deg,#059669 0%,#047857 55%,#064E3B 100%)';
+  }
+  if (d && d.tipe === 'emoney') {
+    return 'background:linear-gradient(135deg,#6D28D9 0%,#4C1D95 55%,#2E1065 100%)';
+  }
+  return 'background:linear-gradient(135deg,#0C3C78 0%,#0A2A56 55%,#061F42 100%)';
+}
+
+function buildHeroMainTotalCardHtml(posClass, teaseClass, showGrip) {
+  const totalBal = calcTotalSaldoGlobal();
+  const { mIn, mOut } = calcMonthlyInOut(null);
+  const balStr = S.hideBalance ? 'Rp ••••••••' : idr(totalBal);
+  const inStr  = S.hideBalance ? 'Rp ••••••' : idr(mIn);
+  const outStr = S.hideBalance ? 'Rp ••••••' : idr(mOut);
+
+  return `
+    <div class="hero-stack-card ${posClass} ${teaseClass}" data-card-type="main"
+      style="background:linear-gradient(135deg,#0F172A 0%,#18181B 55%,#064E3B 100%)">
+      <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.28) 0%,transparent 70%);pointer-events:none"></div>
+      <div class="relative z-10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-extrabold text-zinc-300 uppercase tracking-widest">Total Saldo Aktif</span>
+          ${dompetState.list.length > 1 ? `<span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/25">${dompetState.list.length} Dompet</span>` : ''}
+        </div>
+        <div class="flex items-center gap-1.5">
+          ${getKelolaDompetPillHtml()}
+          ${getEyeButtonHtml()}
         </div>
       </div>
-      <span class="text-xs font-black text-emerald-600">+ Buat</span>
-    </div>`;
+
+      <div class="relative z-10 my-auto py-1">
+        <h2 class="text-3xl font-black tracking-tight text-white leading-tight truncate">${balStr}</h2>
+      </div>
+
+      <div class="relative z-10">
+        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/12">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[8px] font-bold text-zinc-400 uppercase tracking-wider">↑ PEMASUKAN BLN</p>
+              <p class="text-xs font-black text-emerald-400 truncate">${inStr}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[8px] font-bold text-zinc-400 uppercase tracking-wider">↓ PENGELUARAN BLN</p>
+              <p class="text-xs font-black text-red-400 truncate">${outStr}</p>
+            </div>
+          </div>
+        </div>
+        ${showGrip ? `<div class="mt-2"><div class="hero-grip-pill"></div></div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function buildHeroDompetCardHtml(d, posClass, teaseClass, isSingleMode) {
+  const saldo = hitungSaldoDompet(d.id);
+  const { mIn, mOut } = calcMonthlyInOut(d.id);
+  const balStr = S.hideBalance ? 'Rp ••••••••' : idr(saldo);
+  const inStr  = S.hideBalance ? 'Rp ••••••' : idr(mIn);
+  const outStr = S.hideBalance ? 'Rp ••••••' : idr(mOut);
+  const bgStyle = getDompetHeroBgStyle(d);
+  const badge = d.tipe === 'tunai' ? 'TUNAI' : d.tipe === 'emoney' ? 'E-MONEY' : 'BANK';
+  const logoHtml = d.logo
+    ? `<div class="px-2 py-1 rounded-xl bg-white/90 shadow-sm flex items-center justify-center"><img src="${d.logo}" style="height:18px;max-width:68px;object-fit:contain;display:block" onerror="this.parentNode.style.display='none'"></div>`
+    : `<span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-white/20 text-white">${badge}</span>`;
+  const safeId = String(d.id).replace(/'/g, "\\'");
+  const safeNama = String(d.nama || d.provider || 'Dompet').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  return `
+    <div class="hero-stack-card ${posClass} ${teaseClass} cursor-pointer" data-card-type="dompet" data-dompet-id="${safeId}"
+      onclick="handleHeroCardClick('${safeId}')"
+      style="${bgStyle}">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.16) 0%,rgba(0,0,0,0.46) 100%);pointer-events:none"></div>
+      <div class="relative z-10 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          ${logoHtml}
+          <div class="min-w-0">
+            <p class="text-[9px] font-extrabold text-white/75 uppercase tracking-wider leading-none">${isSingleMode ? 'SALDO DOMPET AKTIF' : 'DOMPET SAYA'}</p>
+            <p class="text-xs font-black text-white truncate mt-0.5">${safeNama}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          ${getKelolaDompetPillHtml()}
+          ${getEyeButtonHtml()}
+        </div>
+      </div>
+
+      <div class="relative z-10 my-auto py-1 flex items-baseline justify-between gap-2">
+        <h2 class="text-3xl font-black tracking-tight text-white leading-tight truncate">${balStr}</h2>
+        <span class="text-[10px] font-extrabold text-white/80 bg-black/25 px-2.5 py-1 rounded-full flex-shrink-0">Riwayat →</span>
+      </div>
+
+      <div class="relative z-10">
+        <div class="grid grid-cols-2 gap-3 pt-2.5 border-t border-white/20">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-lg bg-emerald-400/25 flex items-center justify-center text-emerald-300 flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[8px] font-bold text-white/75 uppercase tracking-wider">↑ MASUK BLN INI</p>
+              <p class="text-xs font-black text-emerald-300 truncate">${inStr}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-lg bg-red-400/25 flex items-center justify-center text-red-200 flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[8px] font-bold text-white/75 uppercase tracking-wider">↓ KELUAR BLN INI</p>
+              <p class="text-xs font-black text-red-200 truncate">${outStr}</p>
+            </div>
+          </div>
+        </div>
+        ${!isSingleMode ? `<div class="mt-2"><div class="hero-grip-pill"></div></div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function getHeroDeckList() {
+  const wallets = dompetState.list || [];
+  if (wallets.length === 1) {
+    return [{ type: 'single_wallet', dompet: wallets[0] }];
+  }
+  if (wallets.length > 1) {
+    const cards = [{ type: 'main_total' }];
+    wallets.forEach(w => cards.push({ type: 'wallet', dompet: w }));
+    return cards;
+  }
+  return [{ type: 'main_total' }];
+}
+
+function renderHeroWalletStack() {
+  const stage = document.getElementById('hero-wallet-stack');
+  if (!stage) return;
+
+  const deck = getHeroDeckList();
+  const totalCards = deck.length;
+  if (heroStackState.idx >= totalCards) heroStackState.idx = 0;
+
+  stage.classList.toggle('has-multi', totalCards > 1);
+
+  if (totalCards === 1) {
+    const only = deck[0];
+    if (only.type === 'single_wallet') {
+      stage.innerHTML = buildHeroDompetCardHtml(only.dompet, 'pos-0', '', true);
+    } else {
+      stage.innerHTML = buildHeroMainTotalCardHtml('pos-0', '', false);
+    }
     return;
   }
-  wrap.innerHTML = dompetState.list.map(d => {
-    const saldo = hitungSaldoDompet(d.id);
-    const saldoStr = S.hideBalance ? 'Rp ••••••' : idr(saldo);
-    const bgStyle = d.background
-      ? `background-image:url('${d.background}');background-size:cover;background-position:center;color:#fff`
-      : d.tipe === 'tunai'
-        ? 'background:linear-gradient(135deg,#059669,#047857);color:#fff'
-        : d.tipe === 'emoney'
-          ? 'background:linear-gradient(135deg,#7C3AED,#4C1D95);color:#fff'
-          : 'background:linear-gradient(135deg,#0C3C78,#061F42);color:#fff';
-    const badge = d.tipe === 'tunai' ? 'TUNAI' : d.tipe === 'emoney' ? 'E-MONEY' : 'BANK';
-    const logoHtml = d.logo
-      ? `<img src="${d.logo}" style="height:22px;max-width:68px;object-fit:contain;flex-shrink:0;display:block" onerror="this.style.display='none'">`
-      : `<span style="font-size:9px;font-weight:900;background:rgba(255,255,255,.2);padding:2px 7px;border-radius:99px">${badge}</span>`;
-    return `<div class="dompet-card" style="${bgStyle}" onclick="openDompetDetail('${d.id}')">
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.22) 100%);pointer-events:none"></div>
-      <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:6px">
-        <span style="font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nama || d.provider}</span>
-        ${logoHtml}
-      </div>
-      <div style="position:relative;z-index:1">
-        <p style="font-size:9px;font-weight:800;color:rgba(255,255,255,.72);text-transform:uppercase;letter-spacing:.05em">SALDO</p>
-        <p style="font-size:15px;font-weight:900;color:#fff;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${saldoStr}</p>
-      </div>
-    </div>`;
-  }).join('');
+
+  let html = '';
+  for (let i = 0; i < totalCards; i++) {
+    const rel = (i - heroStackState.idx + totalCards) % totalCards;
+    const posClass = rel === 0 ? 'pos-0' : rel === 1 ? 'pos-1' : rel === 2 ? 'pos-2' : 'pos-hidden';
+    const teaseFront = (rel === 0 && !heroStackState.hasSwiped) ? 'tease-active' : '';
+    const teaseBack  = (rel === 1 && !heroStackState.hasSwiped) ? 'tease-back-active' : '';
+    const item = deck[i];
+    if (item.type === 'main_total') {
+      html += buildHeroMainTotalCardHtml(posClass, teaseFront || teaseBack, true);
+    } else {
+      html += buildHeroDompetCardHtml(item.dompet, posClass, teaseFront || teaseBack, false);
+    }
+  }
+
+  html += `<div class="hero-stack-dots">` +
+    deck.map((_, i) => `<div class="hero-sdot ${i === heroStackState.idx ? 'active' : ''}"></div>`).join('') +
+  `</div>`;
+
+  stage.innerHTML = html;
+}
+
+window.handleHeroCardClick = function(dompetId) {
+  if (heroStackState.animating || Math.abs(heroStackState.touchDeltaY) > 10) return;
+  if (dompetId) openDompetDetail(dompetId);
+};
+
+function cycleHeroStack(direction) {
+  const stage = document.getElementById('hero-wallet-stack');
+  if (!stage || heroStackState.animating) return;
+  const deck = getHeroDeckList();
+  if (deck.length <= 1) return;
+
+  heroStackState.animating = true;
+  heroStackState.hasSwiped = true;
+
+  const frontCard = stage.querySelector('.hero-stack-card.pos-0');
+  const nextCard  = stage.querySelector('.hero-stack-card.pos-1');
+  const thirdCard = stage.querySelector('.hero-stack-card.pos-2');
+
+  if (direction === 'up') {
+    if (frontCard) {
+      frontCard.classList.remove('tease-active');
+      frontCard.classList.add('fly-up');
+    }
+    if (nextCard) {
+      nextCard.classList.remove('pos-1', 'tease-back-active');
+      nextCard.classList.add('pos-0');
+    }
+    if (thirdCard) {
+      thirdCard.classList.remove('pos-2');
+      thirdCard.classList.add('pos-1');
+    }
+    setTimeout(() => {
+      heroStackState.idx = (heroStackState.idx + 1) % deck.length;
+      heroStackState.animating = false;
+      renderHeroWalletStack();
+    }, 430);
+  } else {
+    heroStackState.idx = (heroStackState.idx - 1 + deck.length) % deck.length;
+    renderHeroWalletStack();
+    const newFront = stage.querySelector('.hero-stack-card.pos-0');
+    if (newFront) {
+      newFront.classList.add('fly-down-in');
+    }
+    setTimeout(() => {
+      heroStackState.animating = false;
+      renderHeroWalletStack();
+    }, 430);
+  }
+}
+
+function initHeroStackEvents() {
+  const stage = document.getElementById('hero-wallet-stack');
+  if (!stage) return;
+
+  stage.addEventListener('touchstart', function(e) {
+    if (!e.touches || !e.touches.length || heroStackState.animating) return;
+    const deck = getHeroDeckList();
+    if (deck.length <= 1) return;
+    heroStackState.touchStartY = e.touches[0].clientY;
+    heroStackState.touchStartX = e.touches[0].clientX;
+    heroStackState.touchDeltaY = 0;
+    heroStackState.touchDeltaX = 0;
+    heroStackState.isDragging = true;
+
+    const frontCard = stage.querySelector('.hero-stack-card.pos-0');
+    if (frontCard) {
+      frontCard.classList.remove('tease-active');
+      frontCard.style.transition = 'none';
+    }
+  }, { passive: true });
+
+  stage.addEventListener('touchmove', function(e) {
+    if (!heroStackState.isDragging || !e.touches || !e.touches.length) return;
+    const dy = e.touches[0].clientY - heroStackState.touchStartY;
+    const dx = e.touches[0].clientX - heroStackState.touchStartX;
+    heroStackState.touchDeltaY = dy;
+    heroStackState.touchDeltaX = dx;
+
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
+      if (e.cancelable) e.preventDefault();
+      const frontCard = stage.querySelector('.hero-stack-card.pos-0');
+      if (frontCard && dy < 0) {
+        const clampedY = Math.max(-140, dy * 0.85);
+        const rot = (clampedY / 140) * 3;
+        frontCard.style.transform = `translate3d(0, ${clampedY}px, 0) rotate(${rot}deg) scale(1)`;
+      } else if (frontCard && dy > 0) {
+        const clampedY = Math.min(45, dy * 0.4);
+        frontCard.style.transform = `translate3d(0, ${clampedY}px, 0) scale(0.99)`;
+      }
+    }
+  }, { passive: false });
+
+  stage.addEventListener('touchend', function() {
+    if (!heroStackState.isDragging) return;
+    heroStackState.isDragging = false;
+    const dy = heroStackState.touchDeltaY;
+    const dx = heroStackState.touchDeltaX;
+    const frontCard = stage.querySelector('.hero-stack-card.pos-0');
+    if (frontCard) {
+      frontCard.style.transition = '';
+      frontCard.style.transform = '';
+    }
+
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 34) {
+      if (dy < -34) {
+        cycleHeroStack('up');
+      } else if (dy > 42) {
+        cycleHeroStack('down');
+      }
+    }
+    setTimeout(() => {
+      heroStackState.touchDeltaY = 0;
+      heroStackState.touchDeltaX = 0;
+    }, 50);
+  }, { passive: true });
 }
 
 // ================================================================
@@ -2916,28 +4410,43 @@ window.handleDeleteDompet = function() {
 // ================================================================
 // DEPOSITO & CICILAN LOGIC
 // ================================================================
+window.openInvestasiModal = function() {
+  renderDepositoSection();
+  openModal('investasi-backdrop');
+};
+
 function renderDepositoSection() {
   const wrap = document.getElementById('deposito-list-wrap');
+  const totalPokokEl = document.getElementById('inv-dep-total-pokok');
+  const totalBungaEl = document.getElementById('inv-dep-total-bunga');
+  const countEl      = document.getElementById('inv-dep-count');
+
+  const totalPokok = depositoList.reduce((s, d) => s + (Number(d.pokok) || 0), 0);
+  const totalBunga = depositoList.reduce((s, d) => s + (Number(d.netBunga) || 0), 0);
+  if (totalPokokEl) totalPokokEl.textContent = idr(totalPokok);
+  if (totalBungaEl) totalBungaEl.textContent = '+' + idr(totalBunga);
+  if (countEl)      countEl.textContent      = `${depositoList.length} Produk`;
+
   if (!wrap) return;
   if (!depositoList.length) {
-    wrap.innerHTML = `<div onclick="openDepositoModal()" class="glass rounded-2xl p-3.5 flex items-center justify-between cursor-pointer">
+    wrap.innerHTML = `<div onclick="closeModal('investasi-backdrop');openDepositoModal()" class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between cursor-pointer">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base">🏦</div>
+        <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-base">🏦</div>
         <div>
           <p class="text-xs font-black text-zinc-800">Belum ada deposito aktif</p>
           <p class="text-[10px] font-semibold text-zinc-400">Simpan dana berjangka &amp; pantau estimasi bunga</p>
         </div>
       </div>
-      <span class="text-[11px] font-black text-blue-600">+ Buka</span>
+      <span class="text-[11px] font-black text-teal-600">+ Buka</span>
     </div>`;
     return;
   }
   wrap.innerHTML = depositoList.map(dep => `
-    <div class="glass rounded-2xl p-4 flex items-center justify-between">
+    <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between">
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-black text-zinc-900">${dep.nama}</span>
-          <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">${dep.bunga}% p.a · ${dep.tenor} bln</span>
+          <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-teal-50 text-teal-700">${dep.bunga}% p.a · ${dep.tenor} bln</span>
         </div>
         <p class="text-sm font-black text-zinc-900 mt-1">${idr(dep.pokok)} <span class="text-[11px] font-extrabold text-emerald-600">(+${idr(dep.netBunga)})</span></p>
         <p class="text-[10px] font-semibold text-zinc-400 mt-0.5">Jatuh tempo: ${dep.jatuhTempo || '-'} · ${dep.aro || 'Non-ARO'}</p>
@@ -3156,7 +4665,7 @@ window.addBulkRow = function() {
       <input type="number" placeholder="Nominal (Rp)" class="b-amt fi py-2 text-xs" style="background:#fff">
     </div>
     <select class="b-sub fi py-2 text-xs" style="background:#fff">
-      ${AI_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
+      ${getAllUserCategories().filter(c => c.type === 'Uang Keluar').map(c => `<option value="${c.name}">${c.icon || ''} ${c.name}</option>`).join('')}
       <option value="Lainnya">Lainnya</option>
     </select>
   `;
@@ -3411,186 +4920,210 @@ window.handleAddSub = function(e) {
 };
 
 // ================================================================
-// RECENT TRANSACTIONS, PRINT RECEIPT & TX MODAL
+// DYNAMIC CATEGORIES & SUBCATEGORIES (TERHUBUNG KE /kelola-kategori)
 // ================================================================
-var VALAS_SYM_MAP = {
-  USD:'$', EUR:'€', GBP:'£', JPY:'¥', SGD:'S$', AUD:'A$',
-  MYR:'RM', CNY:'¥', KRW:'₩', HKD:'HK$', CHF:'Fr', THB:'฿',
-  CAD:'C$', NZD:'NZ$'
-};
-function parseValasDesc(desc) {
-  var m = (desc||'').match(/\(([\d,.]+)\s+([A-Z]{3})\s*@\s*([\d,.]+)\)/);
-  if (!m) return null;
-  var amount  = parseFloat(m[1].replace(/,/g, ''));
-  var sym     = m[2];
-  var rateRaw = m[3].replace(/\./g, '').replace(/,/g, '.');
-  var rate    = parseFloat(rateRaw);
-  if (isNaN(amount) || isNaN(rate)) return null;
-  return { amount: amount, sym: sym, rate: rate };
+const CAT_STORAGE_KEY  = 'keuangan_categories_v1';
+const CLOUD_CAT_PREFIX = 'CATS_V1:';
+
+function getDefaultAppCategories() {
+  return [
+    { id: 'out_makanan',     type: 'Uang Keluar', name: 'Makanan & Minuman',    shortLabel: 'Makanan',      icon: '🍚', bg: '#FEE2E2', subcategories: ['Makan Harian', 'Kopi & Minuman', 'Jajanan & Camilan', 'Restoran & Kafe', 'Pesan Antar'] },
+    { id: 'out_transport',   type: 'Uang Keluar', name: 'Transportasi',         shortLabel: 'Transportasi', icon: '🚗', bg: '#FEE2E2', subcategories: ['Bensin / BBM', 'Ojek & Taksi Online', 'Parkir & Tol', 'Transportasi Umum', 'Servis Kendaraan'] },
+    { id: 'out_tagihan',     type: 'Uang Keluar', name: 'Tagihan Rutin',        shortLabel: 'Tagihan',      icon: '🏆', bg: '#FEF9C3', subcategories: ['Listrik (PLN)', 'Air (PDAM)', 'Gas Rumah Tangga', 'Iuran IPL', 'Sewa / Kos'] },
+    { id: 'out_perawatan',   type: 'Uang Keluar', name: 'Perawatan Pribadi',    shortLabel: 'Perawatan',    icon: '🧴', bg: '#FEE2E2', subcategories: ['Skincare & Kosmetik', 'Potong Rambut & Salon', 'Sabun & Toiletries', 'Pakaian & Laundry'] },
+    { id: 'out_kebutuhan',   type: 'Uang Keluar', name: 'Kebutuhan',            shortLabel: 'Kebutuhan',    icon: '🛒', bg: '#F3E8FF', subcategories: ['Belanja Bulanan', 'Bahan Masakan & Dapur', 'Perlengkapan Rumah', 'Alat Rumah Tangga'] },
+    { id: 'out_hiburan',     type: 'Uang Keluar', name: 'Hiburan & Langganan',  shortLabel: 'Hiburan',      icon: '🎬', bg: '#EDE9FE', subcategories: ['Netflix / Streaming', 'Spotify / Musik', 'Bioskop', 'Game & Top Up', 'Liburan'] },
+    { id: 'out_internet',    type: 'Uang Keluar', name: 'Internet',             shortLabel: 'Internet',     icon: '📶', bg: '#DBEAFE', subcategories: ['Paket Data Seluler', 'WiFi Rumah', 'Pulsa Telepon'] },
+    { id: 'out_pendidikan',  type: 'Uang Keluar', name: 'Pendidikan',           shortLabel: 'Pendidikan',   icon: '📚', bg: '#DCFCE7', subcategories: ['SPP / Biaya Sekolah', 'Buku & Alat Tulis', 'Kursus & Pelatihan'] },
+    { id: 'out_kesehatan',   type: 'Uang Keluar', name: 'Kesehatan',            shortLabel: 'Kesehatan',    icon: '💊', bg: '#DCFCE7', subcategories: ['Obat & Vitamin', 'Dokter & RS', 'BPJS / Asuransi'] },
+    { id: 'out_cicilan',     type: 'Uang Keluar', name: 'Cicilan & Utang',      shortLabel: 'Cicilan',      icon: '💳', bg: '#FEE2E2', subcategories: ['Tagihan Kartu Kredit', 'Paylater', 'Cicilan Kendaraan / KPR', 'Bayar Pinjaman'] },
+    { id: 'out_sosial',      type: 'Uang Keluar', name: 'Sosial & Donasi',      shortLabel: 'Sosial',       icon: '🤝', bg: '#FEF3C7', subcategories: ['Sedekah & Zakat', 'Donasi / Persembahan', 'Kado & Kondangan'] },
+    { id: 'out_olahraga',    type: 'Uang Keluar', name: 'Olahraga & Kebugaran', shortLabel: 'Olahraga',     icon: '🏋️', bg: '#DCFCE7', subcategories: ['Membership Gym', 'Sewa Lapangan', 'Suplemen & Alat Olahraga'] },
+    { id: 'out_pajak',       type: 'Uang Keluar', name: 'Pajak & Administrasi', shortLabel: 'Pajak',        icon: '📋', bg: '#F3F4F6', subcategories: ['Pajak Kendaraan (STNK)', 'Pajak Bumi & Bangunan', 'Biaya Admin Bank'] },
+    { id: 'out_investasi',   type: 'Uang Keluar', name: 'Investasi',            shortLabel: 'Investasi',    icon: '📈', bg: '#DCFCE7', subcategories: ['Reksadana', 'Saham', 'Emas', 'Deposito', 'Kripto'] },
+    { id: 'out_lainnya',     type: 'Uang Keluar', name: 'Lainnya',              shortLabel: 'Lainnya',      icon: '✏️', bg: '#F3F4F6', subcategories: ['Pengeluaran Tak Terduga', 'Lain-lain'] },
+
+    { id: 'in_gaji',         type: 'Uang Masuk',  name: 'Gaji & Upah',          shortLabel: 'Gaji',         icon: '💼', bg: '#DCFCE7', subcategories: ['Gaji Pokok Bulanan', 'Tunjangan Kerja', 'Upah Lembur', 'Insentif'] },
+    { id: 'in_bonus',        type: 'Uang Masuk',  name: 'Bonus & THR',          shortLabel: 'Bonus',        icon: '🎁', bg: '#FEF3C7', subcategories: ['THR', 'Bonus Akhir Tahun', 'Bonus Kinerja'] },
+    { id: 'in_usaha',        type: 'Uang Masuk',  name: 'Hasil Usaha / Bisnis', shortLabel: 'Bisnis',       icon: '🏪', bg: '#DBEAFE', subcategories: ['Omzet Penjualan', 'Laba Usaha', 'Komisi Penjualan'] },
+    { id: 'in_freelance',    type: 'Uang Masuk',  name: 'Freelance & Proyek',   shortLabel: 'Freelance',    icon: '💻', bg: '#EDE9FE', subcategories: ['Proyek Desain / IT', 'Honor Jasa', 'Pekerjaan Sampingan'] },
+    { id: 'in_investasi',    type: 'Uang Masuk',  name: 'Hasil Investasi',      shortLabel: 'Investasi',    icon: '📈', bg: '#CCFBF1', subcategories: ['Bunga Tabungan / Deposito', 'Dividen Saham', 'Keuntungan Jual Aset'] },
+    { id: 'in_cashback',     type: 'Uang Masuk',  name: 'Refund & Cashback',    shortLabel: 'Cashback',     icon: '🪙', bg: '#FAE8FF', subcategories: ['Cashback Promo', 'Refund Belanja', 'Reimbursement Kantor'] },
+    { id: 'in_hadiah',       type: 'Uang Masuk',  name: 'Hadiah & Kiriman',     shortLabel: 'Hadiah',       icon: '🧧', bg: '#FEE2E2', subcategories: ['Kiriman Keluarga', 'Angpao / Hadiah Tunai'] },
+    { id: 'in_penjualan',    type: 'Uang Masuk',  name: 'Penjualan Barang',     shortLabel: 'Jual Barang',  icon: '📦', bg: '#FEF3C7', subcategories: ['Jual Barang Bekas', 'Jual Gadget / Kendaraan'] },
+    { id: 'in_lainnya',      type: 'Uang Masuk',  name: 'Pemasukan Lainnya',    shortLabel: 'Lainnya',      icon: '💰', bg: '#F3F4F6', subcategories: ['Pemasukan Umum', 'Lain-lain'] }
+  ];
 }
 
-function renderHomeRecentTransactions() {
-  const container = document.getElementById('recent-list');
-  if (!container) return;
-  if (!S.transactions.length) {
-    if (isFetchingBg) {
-      container.innerHTML = [1,2,3,4].map(i =>
-        `<div style="height:60px;background:#fff;border-radius:16px;border:1.5px solid #F4F4F5;animation:shimmer 1.4s infinite;animation-delay:${i*0.08}s"></div>`
-      ).join('');
-      return;
+function getScopedCatStorageKey() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  return uname ? `${CAT_STORAGE_KEY}_${uname}` : CAT_STORAGE_KEY;
+}
+
+function getAllUserCategories() {
+  let list = null;
+  try {
+    const raw = storageGet(getScopedCatStorageKey()) || storageGet(CAT_STORAGE_KEY);
+    if (raw) list = JSON.parse(raw);
+  } catch(e) {}
+
+  if ((!Array.isArray(list) || !list.length) && S.settings && S.settings.backupPassword) {
+    const bp = String(S.settings.backupPassword);
+    if (bp.indexOf(CLOUD_CAT_PREFIX) === 0) {
+      try {
+        list = JSON.parse(bp.slice(CLOUD_CAT_PREFIX.length));
+        if (Array.isArray(list) && list.length > 0) {
+          storageSet(CAT_STORAGE_KEY, JSON.stringify(list));
+          storageSet(getScopedCatStorageKey(), JSON.stringify(list));
+        }
+      } catch(e) {}
     }
-    container.innerHTML = `<div class="glass rounded-2xl p-6 text-center">
-      <div class="text-3xl mb-2">📭</div>
-      <p class="text-xs font-bold text-zinc-400">Belum ada transaksi tercatat.</p>
-    </div>`;
+  }
+
+  if (!Array.isArray(list) || !list.length) {
+    list = getDefaultAppCategories();
+  }
+
+  list.forEach(c => {
+    if (c && c.name && c.icon) {
+      SUBCAT_EMOJI_MAP[c.name] = c.icon;
+      if (Array.isArray(c.subcategories)) {
+        c.subcategories.forEach(sub => {
+          SUBCAT_EMOJI_MAP[`${c.name} · ${sub}`] = c.icon;
+        });
+      }
+    }
+  });
+
+  return list.filter(c => c && c.name && c.active !== false);
+}
+
+function syncCategoriesFromServerSettings(settingsObj) {
+  if (!settingsObj || !settingsObj.backupPassword) return;
+  const bp = String(settingsObj.backupPassword);
+  if (bp.indexOf(CLOUD_CAT_PREFIX) === 0) {
+    try {
+      const parsed = JSON.parse(bp.slice(CLOUD_CAT_PREFIX.length));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const jsonStr = JSON.stringify(parsed);
+        storageSet(CAT_STORAGE_KEY, jsonStr);
+        storageSet(getScopedCatStorageKey(), jsonStr);
+        getAllUserCategories();
+      }
+    } catch(e) {}
+  }
+}
+
+function renderDynamicCategoryButtons(catType) {
+  const allCats = getAllUserCategories();
+  const typeCats = allCats.filter(c => c.type === catType);
+  const titleEl = document.getElementById('subcat-section-title');
+  if (titleEl) {
+    titleEl.textContent = catType === 'Uang Masuk' ? 'Kategori Pemasukan' : 'Kategori Pengeluaran';
+  }
+
+  const wrap = document.getElementById('subcat-btns');
+  if (!wrap) return;
+
+  wrap.innerHTML = typeCats.map(c => {
+    const safeName = String(c.name).replace(/"/g, '&quot;');
+    const shortLbl = c.shortLabel || c.name.split(' ')[0];
+    const isAct = S.txSub === c.name ? 'active' : '';
+    return `<button type="button" data-sub="${safeName}" onclick="selectTxCategoryItem('${safeName.replace(/'/g, "\\'")}')" class="subcat-icon-btn ${isAct}">
+      <div class="subcat-icon-circle" style="background:${c.bg || '#F3F4F6'}">${c.icon || '🏷️'}</div>
+      <span class="subcat-icon-label">${shortLbl}</span>
+    </button>`;
+  }).join('');
+
+  if (!S.txSub) {
+    document.getElementById('tx-subdetail-wrap')?.classList.add('hidden');
+  } else {
+    renderTxSubcategoryChips(catType, S.txSub);
+  }
+}
+
+window.selectTxCategoryItem = function(catName, preselectedSubDetail = '') {
+  S.txSub = catName;
+  S.txSubDetail = preselectedSubDetail || '';
+
+  document.querySelectorAll('#subcat-btns .subcat-icon-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sub === catName);
+  });
+
+  renderTxSubcategoryChips(S.txCat || 'Uang Keluar', catName);
+
+  const qLabel = document.getElementById('ctx-quick-label');
+  if (qLabel) qLabel.textContent = `— teratas untuk ${catName}`;
+  renderCtxQuickAdd(S.txCat || 'Uang Keluar', catName, 'ctx-quick-list');
+  document.getElementById('ctx-quick-wrap')?.classList.add('open');
+  triggerAiValidateIfReady();
+};
+
+function renderTxSubcategoryChips(catType, catName) {
+  const subWrap = document.getElementById('tx-subdetail-wrap');
+  const chipsEl = document.getElementById('tx-subdetail-chips');
+  const lblEl   = document.getElementById('tx-subdetail-label');
+  if (!subWrap || !chipsEl) return;
+
+  const allCats = getAllUserCategories();
+  const found = allCats.find(c => c.type === catType && c.name === catName);
+  const subs = (found && Array.isArray(found.subcategories)) ? found.subcategories : [];
+
+  if (!subs.length) {
+    subWrap.classList.add('hidden');
     return;
   }
-  const recent = [...S.transactions]
-    .sort((a, b) => String(b.Tanggal || '').localeCompare(String(a.Tanggal || '')))
-    .slice(0, 7);
-  container.innerHTML = recent.map(tx => {
-    var isIn   = tx.Kategori === 'Uang Masuk';
-    var isOut  = tx.Kategori === 'Uang Keluar';
-    var dotClr = isIn ? '#10B981' : isOut ? '#EF4444' : '#8B5CF6';
-    var amtClr = isIn ? '#10B981' : isOut ? '#EF4444' : '#8B5CF6';
-    var sign   = isIn ? '+' : isOut ? '-' : '';
-    var sub    = isOut ? (tx['Kategori Uang Keluar'] || '') : (isIn ? 'Uang Masuk' : '');
-    var txId   = tx.id || tx.ID || '';
-    var dtStr  = '';
-    try {
-      dtStr = new Date(String(tx.Tanggal).split('T')[0] + 'T12:00:00').toLocaleDateString('id-ID', { day:'numeric', month:'short' });
-    } catch(e) {}
-    var valas = parseValasDesc(tx.Deskripsi);
-    var sym   = valas ? valas.sym : null;
-    var vsym  = sym ? (VALAS_SYM_MAP[sym] || sym) : null;
-    var dompetTx = tx.DompetId
-      ? dompetState.list.find(dd => dd.id === tx.DompetId)
-      : dompetState.list.find(dd => dd.tipe === 'tunai');
-    var iconHtml;
-    if (valas) {
-      iconHtml = '<div style="width:28px;height:28px;border-radius:50%;background:' + (isIn ? '#ECFDF5' : '#FEF2F2') + ';border:2px solid ' + (isIn ? '#10B981' : '#EF4444') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:900;color:' + (isIn ? '#065F46' : '#991B1B') + '">' + vsym + '</div>';
-    } else if (dompetTx && dompetTx.logo) {
-      var iconBg = dompetTx.background
-        ? 'background-image:url(\'' + dompetTx.background + '\');background-size:cover;background-position:center'
-        : 'background:linear-gradient(135deg,#0C3C78,#061F42)';
-      iconHtml = '<div style="width:28px;height:28px;border-radius:8px;' + iconBg + ';border:1.5px solid #F4F4F5;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center">' +
-        (dompetTx.background ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,.15)"></div>' : '') +
-        '<img src="' + dompetTx.logo + '" style="width:100%;height:100%;object-fit:contain;padding:3px;position:relative;z-index:1" onerror="this.style.display=\'none\'">' +
-      '</div>';
-    } else if (dompetTx && dompetTx.tipe === 'tunai') {
-      iconHtml = '<div style="width:28px;height:28px;border-radius:8px;background:#ECFDF5;border:1.5px solid #BBF7D0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px">💵</div>';
-    } else {
-      iconHtml = '<div style="width:8px;height:8px;border-radius:50%;background:' + dotClr + ';flex-shrink:0;margin-top:6px"></div>';
-    }
-    var displayDesc = valas
-      ? (tx.Deskripsi||'').replace(/\s*\([^)]+\)\s*$/, '').trim() || (sym + ' Transaction')
-      : (tx.Deskripsi || '—');
-    return '<div class="tx-item" id="ti-' + txId + '" style="border-radius:16px">' +
-      '<div class="tx-slider">' +
-        '<div onclick="toggleTxSlide(\'' + txId + '\')" style="background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 1px 6px rgba(0,0,0,.05);border:1.5px solid #F4F4F5;display:flex;align-items:flex-start;gap:10px;width:100%;box-sizing:border-box;flex-shrink:0;cursor:pointer">' +
-          iconHtml +
-          '<div style="flex:1;min-width:0">' +
-            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">' +
-              '<p style="font-size:13px;font-weight:800;color:#18181B;word-break:break-word;line-height:1.4;flex:1;min-width:0">' + displayDesc + '</p>' +
-              '<p style="font-size:13px;font-weight:900;color:' + amtClr + ';white-space:nowrap;flex-shrink:0;padding-left:6px">' + sign + idr(Number(tx['Jumlah Uang'])||0) + '</p>' +
-            '</div>' +
-            '<p style="font-size:10px;font-weight:700;color:#A1A1AA;margin-top:2px">' + (sub || 'Transaksi') + (dtStr ? ' · ' + dtStr : '') + '</p>' +
-          '</div>' +
-        '</div>' +
-        '<div class="tx-actions">' +
-          '<button onclick="event.stopPropagation();printReceipt(\'' + txId + '\')" style="flex:1;background:#3B82F6;color:#fff;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer">' +
-            '<span style="font-size:9px;font-weight:800">Print</span>' +
-          '</button>' +
-          '<button onclick="event.stopPropagation();openTransactionModal(\'' + txId + '\')" style="flex:1;background:#F59E0B;color:#fff;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer">' +
-            '<span style="font-size:9px;font-weight:800">Edit</span>' +
-          '</button>' +
-          '<button onclick="event.stopPropagation();confirmDelete(\'' + txId + '\')" style="flex:1;background:#EF4444;color:#fff;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer">' +
-            '<span style="font-size:9px;font-weight:800">Hapus</span>' +
-          '</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
+
+  subWrap.classList.remove('hidden');
+  if (lblEl) lblEl.textContent = `Subkategori ${catName}:`;
+  const isIn = catType === 'Uang Masuk';
+
+  const allChipActive = !S.txSubDetail;
+  const activeStyle = isIn
+    ? 'background:#10B981;color:#FFFFFF;border-color:#10B981'
+    : 'background:#EF4444;color:#FFFFFF;border-color:#EF4444';
+  const idleStyle = 'background:#F8FAFC;color:#475569;border-color:#E2E8F0';
+
+  let html = `<button type="button" onclick="selectTxSubDetail('')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold border transition-all" style="${allChipActive ? activeStyle : idleStyle}">
+    Umum / Semua
+  </button>`;
+
+  html += subs.map(s => {
+    const isSel = S.txSubDetail === s;
+    const safeS = String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const jsSafe = String(s).replace(/'/g, "\\'");
+    return `<button type="button" onclick="selectTxSubDetail('${jsSafe}')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold border transition-all" style="${isSel ? activeStyle : idleStyle}">
+      ${safeS}
+    </button>`;
   }).join('');
+
+  chipsEl.innerHTML = html;
 }
 
-window.toggleTxSlide = function(txId) {
-  const el = document.getElementById('ti-' + txId);
-  if (!el) return;
-  document.querySelectorAll('.tx-item.slid').forEach(i => { if (i !== el) i.classList.remove('slid'); });
-  el.classList.toggle('slid');
+window.selectTxSubDetail = function(subDetailName) {
+  S.txSubDetail = subDetailName || '';
+  renderTxSubcategoryChips(S.txCat || 'Uang Keluar', S.txSub);
 };
 
-window.confirmDelete = function(id) {
-  openModal('confirm-backdrop');
-  document.getElementById('confirm-ok').onclick = async () => {
-    S.transactions = S.transactions.filter(t => String(t.id) !== String(id));
-    refreshAll();
-    closeModal('confirm-backdrop');
-    showSuccess('Transaksi dihapus.');
-    postData('deleteData', { id }).catch(() => {});
-  };
-};
-
-window.printReceipt = function(txId) {
-  const tx = S.transactions.find(t => String(t.id) === String(txId));
-  if (!tx) return;
-  const isI = tx.Kategori === 'Uang Masuk', isE = tx.Kategori === 'Uang Keluar';
-  const sgn = isI ? '+' : isE ? '-' : '';
-  const clr = isI ? '#10B981' : isE ? '#EF4444' : '#8B5CF6';
-  const bg  = isI ? '#F0FDF4' : isE ? '#FEF2F2' : '#F5F3FF';
-  const catLbl = tx['Kategori Uang Keluar'] ? tx['Kategori Uang Keluar'] : tx.Kategori;
-  const dompetTx = tx.DompetId ? dompetState.list.find(d => d.id === tx.DompetId) : null;
-  const sumberDana = dompetTx ? (dompetTx.nama || dompetTx.provider || 'Tunai') : 'Tunai';
-  const dt = new Date(tx.Tanggal).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const printedAt = new Date().toLocaleString('id-ID',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const un = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
-  const html = `\x3c!DOCTYPE html>\x3chtml lang="id">\x3chead><meta charset="UTF-8"><title>Bukti Transaksi</title>
-\x3cstyle>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;background:#F8F8F8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.r{background:white;max-width:360px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.1)}
-.h{padding:28px 28px 24px;background:${bg};border-bottom:2px dashed ${clr}40;text-align:center}
-.app{font-size:11px;font-weight:900;color:${clr};text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
-.amt{font-size:38px;font-weight:900;color:${clr};letter-spacing:-1px}
-.lbl{font-size:14px;font-weight:700;color:#52525B;margin-top:6px}
-.b{padding:22px 28px}
-.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F4F4F5;align-items:flex-start}
-.row:last-child{border:none}
-.rl{font-size:10px;font-weight:800;color:#A1A1AA;text-transform:uppercase;letter-spacing:.05em;min-width:90px}
-.rv{font-size:13px;font-weight:700;color:#18181B;text-align:right;max-width:55%}
-.bdg{display:inline-block;padding:2px 10px;border-radius:9999px;font-size:10px;font-weight:900;background:${bg};color:${clr}}
-.f{padding:14px 28px 18px;border-top:2px dashed #E4E4E7;text-align:center}
-.fn{font-size:13px;font-weight:800;color:#3F3F46}.ft{font-size:10px;color:#A1A1AA;margin-top:3px}
-.fw{font-size:9px;color:#D4D4D8;margin-top:12px;text-transform:uppercase;letter-spacing:.06em}
-@media print{body{background:white;padding:0}.r{box-shadow:none;border-radius:0}}\x3c/style>\x3c/head>
-\x3cbody><div class="r"><div class="h"><div class="app">💰 KELOLADUIT.ID</div><div class="amt">${sgn}${idr(tx['Jumlah Uang'])}</div><div class="lbl">${tx.Deskripsi}</div></div>
-<div class="b">
-<div class="row"><span class="rl">ID</span><span class="rv" style="font-size:10px;color:#A1A1AA;font-family:monospace">#${tx.id||'N/A'}</span></div>
-<div class="row"><span class="rl">Tanggal</span><span class="rv">${dt}</span></div>
-<div class="row"><span class="rl">Jenis</span><span class="rv"><span class="bdg">${tx.Kategori}</span></span></div>
-<div class="row"><span class="rl">Kategori</span><span class="rv">${catLbl}</span></div>
-<div class="row"><span class="rl">Sumber Dana</span><span class="rv">${sumberDana}</span></div>
-<div class="row"><span class="rl">Catatan</span><span class="rv">${tx.Deskripsi}</span></div>
-</div>
-<div class="f"><div class="fn">${un}</div><div class="ft">Dicetak: ${printedAt}</div><div class="fw">Dokumen otomatis · Keloladuit.id</div></div>
-</div><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),300));<\/script>\x3c/body>\x3c/html>`;
-  const w = window.open('','_blank','width=460,height=680');
-  if (w) { w.document.open(); w.document.write(html); w.document.close(); }
-  else showSuccess('Izinkan popup untuk mencetak.');
-};
-
+// ================================================================
+// TX MODAL & FORM LOGIC
+// ================================================================
 function initTxModalListeners() {
   document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', handleCatClick));
-  document.querySelectorAll('.subcat-btn,.subcat-icon-btn').forEach(btn => btn.addEventListener('click', handleSubCatClick));
   document.getElementById('tx-form').addEventListener('submit', handleTxSubmit);
 }
 function handleCatClick() {
   const cat = this.dataset.cat;
-  S.txCat = cat; S.txSub = null;
+  S.txCat = cat; S.txSub = null; S.txSubDetail = '';
   document.querySelectorAll('.cat-btn').forEach(b => b.className = 'cat-btn');
   const activeClass = cat === 'Uang Masuk' ? 'active-in' : cat === 'Uang Keluar' ? 'active-out' : 'active-svc';
   this.classList.add('cat-btn', activeClass);
-  document.getElementById('subcat-section').classList.toggle('hidden', cat !== 'Uang Keluar');
+
+  const subSection = document.getElementById('subcat-section');
+  if (subSection) subSection.classList.remove('hidden');
+  renderDynamicCategoryButtons(cat);
+
   document.getElementById('ctx-quick-wrap')?.classList.remove('open');
-  document.querySelectorAll('.subcat-btn,.subcat-icon-btn').forEach(b => b.classList.remove('active'));
   const iqw = document.getElementById('income-quick-wrap');
   if (cat === 'Uang Masuk') {
     renderCtxQuickAdd('Uang Masuk', null, 'income-quick-list');
@@ -3602,13 +5135,7 @@ function handleCatClick() {
 }
 function handleSubCatClick() {
   const sub = this.dataset.sub;
-  S.txSub = sub;
-  document.querySelectorAll('.subcat-btn,.subcat-icon-btn').forEach(b => b.classList.remove('active'));
-  this.classList.add('active');
-  document.getElementById('ctx-quick-label').textContent = `— teratas untuk ${sub}`;
-  renderCtxQuickAdd('Uang Keluar', sub, 'ctx-quick-list');
-  document.getElementById('ctx-quick-wrap')?.classList.add('open');
-  triggerAiValidateIfReady();
+  selectTxCategoryItem(sub);
 }
 function renderCtxQuickAdd(cat, sub, containerId) {
   const items = getFrequent(cat, sub, 8);
@@ -3634,7 +5161,8 @@ function getFrequent(cat, sub, limit) {
   const groups = {};
   S.transactions.forEach(tx => {
     if (tx.Kategori !== cat) return;
-    if (sub && tx['Kategori Uang Keluar'] !== sub) return;
+    const rawTxSub = String(tx['Kategori Uang Keluar'] || '');
+    if (sub && rawTxSub !== sub && rawTxSub.indexOf(sub + ' · ') !== 0) return;
     const norm = (tx.Deskripsi||'').toLowerCase().trim();
     const skip = new Set(['di','ke','dari','dan','atau','untuk','yang','dengan']);
     const words = norm.split(' ').filter(w => w.length > 1 && !skip.has(w)).slice(0,2).join(' ');
@@ -3650,8 +5178,9 @@ window.applyQuickAdd = function(txId) {
   const tx = S.transactions.find(t => String(t.id) === String(txId));
   if (!tx) return;
   document.querySelector(`.cat-btn[data-cat="${tx.Kategori}"]`)?.click();
-  if (tx.Kategori === 'Uang Keluar' && tx['Kategori Uang Keluar']) {
-    document.querySelector(`.subcat-icon-btn[data-sub="${tx['Kategori Uang Keluar']}"]`)?.click();
+  if (tx['Kategori Uang Keluar']) {
+    const parts = String(tx['Kategori Uang Keluar']).split('·').map(s => s.trim());
+    selectTxCategoryItem(parts[0], parts[1] || '');
   }
   document.getElementById('tx-amount').value = tx['Jumlah Uang'];
   document.getElementById('tx-desc').value = tx.Deskripsi;
@@ -3704,22 +5233,25 @@ window.openTransactionModal = function(id=null) {
   document.getElementById('tx-id').value = '';
   document.getElementById('tx-form-msg').textContent = '';
   document.getElementById('subcat-section').classList.add('hidden');
+  document.getElementById('tx-subdetail-wrap')?.classList.add('hidden');
   populateDompetSelect('tx-dompet-id');
   document.getElementById('ctx-quick-wrap')?.classList.remove('open');
   document.getElementById('income-quick-wrap')?.classList.remove('open');
   document.getElementById('tx-balance-row').style.display = 'none';
   document.querySelectorAll('.cat-btn').forEach(b => b.className = 'cat-btn');
-  document.querySelectorAll('.subcat-icon-btn').forEach(b => b.classList.remove('active'));
-  S.txCat = null; S.txSub = null;
+  S.txCat = null; S.txSub = null; S.txSubDetail = '';
+
+  getAllUserCategories();
+
   if (id) {
     const tx = S.transactions.find(t => String(t.id) === String(id));
     if (tx) {
       document.getElementById('tx-modal-title').textContent = 'Edit Transaksi';
       document.getElementById('tx-id').value = tx.id;
       document.querySelector(`.cat-btn[data-cat="${tx.Kategori}"]`)?.click();
-      if (tx.Kategori === 'Uang Keluar' && tx['Kategori Uang Keluar']) {
-        const sb = document.querySelector(`.subcat-icon-btn[data-sub="${tx['Kategori Uang Keluar']}"]`);
-        if (sb) sb.click(); else S.txSub = tx['Kategori Uang Keluar'];
+      if (tx['Kategori Uang Keluar']) {
+        const parts = String(tx['Kategori Uang Keluar']).split('·').map(s => s.trim());
+        selectTxCategoryItem(parts[0], parts[1] || '');
       }
       document.getElementById('tx-amount').value = tx['Jumlah Uang'];
       document.getElementById('tx-date').value = String(tx.Tanggal).split('T')[0];
@@ -3729,6 +5261,7 @@ window.openTransactionModal = function(id=null) {
   } else {
     document.getElementById('tx-modal-title').textContent = 'Transaksi Baru';
     document.getElementById('tx-date').value = today();
+    document.getElementById('cat-btn-keluar')?.click();
   }
   openModal('tx-backdrop');
 };
@@ -3755,11 +5288,12 @@ function setSaveBtnState(state) {
 
 async function handleTxSubmit(e) {
   e.preventDefault();
-  let sub = S.txCat === 'Uang Keluar' ? (S.txSub || 'Lainnya') : null;
+  const baseSub = S.txSub || (S.txCat === 'Uang Masuk' ? 'Pemasukan Lainnya' : 'Lainnya');
+  const sub = S.txSubDetail ? `${baseSub} · ${S.txSubDetail}` : baseSub;
   const rawDate = document.getElementById('tx-date').value;
   const payload = {
     id: document.getElementById('tx-id').value || ('tx_' + Date.now()),
-    'Kategori': S.txCat,
+    'Kategori': S.txCat || 'Uang Keluar',
     'Kategori Uang Keluar': sub,
     'Jumlah Uang': Number(document.getElementById('tx-amount').value),
     'Tanggal': rawDate ? rawDate + 'T12:00:00' : new Date().toISOString(),
@@ -3780,7 +5314,7 @@ async function handleTxSubmit(e) {
 }
 
 // ================================================================
-// AI AUTO-CATEGORIZE, OCR, WEATHER, LIVE CRYPTO, NEWS & AI CHAT
+// AI AUTO-CATEGORIZE, OCR, WEATHER, LIVE CRYPTO & AI CHAT
 // ================================================================
 function debouncedAiCategory(desc) {
   clearTimeout(aiCatTimer);
@@ -3828,7 +5362,7 @@ async function validateAiCategory(chosenCat, desc) {
 }
 window.applyAiCategory = function(cat) {
   if (S.txCat === 'Uang Keluar') {
-    document.querySelectorAll('.subcat-icon-btn').forEach(b => { if (b.dataset.sub === cat) b.click(); });
+    selectTxCategoryItem(cat);
   }
   const row = document.getElementById('ai-cat-row');
   if (row) row.innerHTML = `<span class="ai-cat-badge" style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0);color:#065F46">✅ Kategori sesuai</span>`;
@@ -4037,32 +5571,6 @@ function renderCryptoDetailList() {
 function startCryptoPolling() {
   fetchCryptoLive();
   setInterval(fetchCryptoLive, 45000);
-}
-
-// ── KILAS BISNIS (NEWS) ──
-async function fetchHomeNews() {
-  const wrap = document.getElementById('news-container');
-  const dtLbl = document.getElementById('news-date-label');
-  if (dtLbl) dtLbl.textContent = new Date().toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
-  if (!wrap) return;
-  wrap.innerHTML = [1,2].map(() => `<div style="height:84px;background:#fff;border-radius:16px;animation:shimmer 1.4s infinite"></div>`).join('');
-  try {
-    const r = await fetch(`https://newsdata.io/api/1/news?apikey=${NEWS_KEY}&country=id&category=business`);
-    const d = await r.json();
-    if (d.results && d.results.length) {
-      wrap.innerHTML = d.results.slice(0, 5).map(item => `
-        <a href="${item.link||'#'}" target="_blank" rel="noopener" class="glass rounded-2xl p-3.5 flex gap-3 items-center" style="text-decoration:none">
-          ${item.image_url ? `<img src="${item.image_url}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" onerror="this.style.display='none'">` : ''}
-          <div class="min-w-0 flex-1">
-            <span class="text-[9px] font-black uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">${(item.source_id||'BISNIS').toUpperCase()}</span>
-            <h4 class="text-xs font-black text-zinc-900 mt-1 line-clamp-2 leading-snug">${item.title||''}</h4>
-          </div>
-        </a>
-      `).join('');
-      return;
-    }
-  } catch(e) {}
-  wrap.innerHTML = '<p class="text-xs text-zinc-400 text-center py-4">Berita bisnis siap dimuat.</p>';
 }
 
 // ── AI CHAT v4 ──
