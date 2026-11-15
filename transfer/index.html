@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Transfer Dana — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count_tf';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #F4F6FA;
+  color: #18181B;
+  margin: 0;
+  padding-bottom: 56px;
+  overflow-x: hidden;
+}
+.tf-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E4E4E7;
+  border-radius: 22px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+.tf-input {
+  background: #F4F4F5;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  padding: 12px 14px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 700;
+  color: #18181B;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.18s;
+}
+.tf-input:focus {
+  background: #FFFFFF;
+  border-color: #18181B;
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
+}
+.tf-input::placeholder {
+  color: #A1A1AA;
+  font-weight: 500;
+}
+
+.mode-tab-bar {
+  display: flex;
+  background: #E4E4E7;
+  padding: 4px;
+  border-radius: 16px;
+  gap: 4px;
+}
+.mode-tab-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.mode-tab-btn.active {
+  background: #18181B;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(24, 24, 27, 0.18);
+}
+.mode-tab-btn:not(.active) {
+  background: transparent;
+  color: #52525B;
+}
+
+.friend-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1.5px solid #E4E4E7;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.16s;
+  flex-shrink: 0;
+}
+.friend-chip:hover { border-color: #18181B; }
+.friend-chip.selected {
+  background: #18181B;
+  color: #FFFFFF;
+  border-color: #18181B;
+  box-shadow: 0 4px 12px rgba(24, 24, 27, 0.18);
+}
+.friend-chip:active { transform: scale(0.95); }
+
+.btn-primary-black {
+  background: #18181B;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.14s, opacity 0.15s;
+}
+.btn-primary-black:active { transform: scale(0.98); }
+.btn-primary-black:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.quick-nom-btn {
+  padding: 6px 11px;
+  border-radius: 10px;
+  background: #F4F4F5;
+  border: 1px solid #E4E4E7;
+  font-size: 11px;
+  font-weight: 800;
+  color: #27272A;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.quick-nom-btn:hover { background: #18181B; color: #FFFFFF; border-color: #18181B; }
+.quick-nom-btn:active { transform: scale(0.94); }
+
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOAST NOTIFICATION ═══════════ -->
+<div id="toast-box" class="fixed top-4 left-1/2 -translate-x-1/2 z-[95] hidden px-4 py-3 rounded-2xl bg-zinc-900 text-white text-xs font-extrabold shadow-xl flex items-center gap-2 max-w-xs text-center">
+  <span id="toast-icon">✅</span>
+  <span id="toast-text">Transfer berhasil!</span>
+</div>
+
+<!-- ═══════════ MAIN CONTAINER ═══════════ -->
+<div class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="pt-8 pb-3.5 px-5 sticky top-0 z-20 bg-[#F4F6FA]/95 backdrop-blur-md border-b border-zinc-200/80">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="https://keloladuit.my.id/home" target="_top" onclick="goBackHome(event)" class="w-10 h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 active:scale-95 transition-transform shadow-xs" style="text-decoration:none" aria-label="Kembali ke Beranda">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <div>
+          <h1 class="text-base font-black text-zinc-900 leading-tight">Transfer Dana</h1>
+          <p id="my-user-subtitle" class="text-[11px] font-bold text-zinc-400 mt-0.5">Kirim ke teman atau pindah antar dompet</p>
+        </div>
+      </div>
+
+      <a href="https://keloladuit.my.id/chat" target="_top" class="px-3 py-2 rounded-xl bg-white border border-zinc-200 text-zinc-800 text-[11px] font-extrabold flex items-center gap-1.5 active:scale-95 transition-transform shadow-xs" style="text-decoration:none">
+        <span>👥 Teman</span>
+        <span id="friends-count-badge" class="px-1.5 py-0.5 rounded-full bg-zinc-900 text-white text-[9px] font-black leading-none">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="px-5 pt-4 space-y-4 flex-1">
+
+    <!-- 2 TAB MODE TRANSFER: KIRIM KE TEMAN | ANTAR DOMPET -->
+    <div class="mode-tab-bar">
+      <button type="button" id="tab-btn-friend" onclick="switchTransferTab('friend')" class="mode-tab-btn active">
+        <span>🤝 Kirim ke Teman</span>
+      </button>
+      <button type="button" id="tab-btn-wallet" onclick="switchTransferTab('wallet')" class="mode-tab-btn">
+        <span>👛 Antar Dompet</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         PANE 1: KIRIM UANG KE TEMAN (LANGSUNG POTONG & MASUK TANPA KONFIRMASI)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <section id="pane-friend" class="space-y-3.5">
+      <form id="friend-transfer-form" onsubmit="handleSendMoneyToFriend(event)" class="tf-card p-4 space-y-3.5">
+
+        <!-- Pilih Teman Tujuan -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Pilih Teman Tujuan</label>
+            <a href="https://keloladuit.my.id/chat" target="_top" class="text-[10px] font-extrabold text-zinc-900 hover:underline" style="text-decoration:none">+ Tambah Teman</a>
+          </div>
+          <div id="friend-picker-list" class="flex gap-2 overflow-x-auto no-scroll pb-1"></div>
+          <input type="hidden" id="ft-target-username" value="">
+        </div>
+
+        <!-- Pilih Dompet Sumber -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Dari Dompet Saya</label>
+            <span id="ft-avail-saldo" class="text-[11px] font-extrabold text-emerald-600">Saldo: Rp 0</span>
+          </div>
+          <select id="ft-from-dompet" class="tf-input" onchange="updateFriendTransferSaldoInfo()" required></select>
+        </div>
+
+        <!-- Nominal Kirim Uang -->
+        <div>
+          <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Nominal Kirim (Rp)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-black text-sm">Rp</span>
+            <input type="number" id="ft-amount" placeholder="0" min="1" class="tf-input !pl-10 !py-3 !text-base font-black" required oninput="updateFriendTransferSaldoInfo()">
+          </div>
+          <!-- Shortcut Nominal -->
+          <div class="flex gap-1.5 overflow-x-auto no-scroll mt-2 pb-0.5">
+            <button type="button" onclick="setFriendAmount(10000)" class="quick-nom-btn">10rb</button>
+            <button type="button" onclick="setFriendAmount(25000)" class="quick-nom-btn">25rb</button>
+            <button type="button" onclick="setFriendAmount(50000)" class="quick-nom-btn">50rb</button>
+            <button type="button" onclick="setFriendAmount(100000)" class="quick-nom-btn">100rb</button>
+            <button type="button" onclick="setFriendAmount(250000)" class="quick-nom-btn">250rb</button>
+            <button type="button" onclick="setFriendAmount(500000)" class="quick-nom-btn">500rb</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Biaya Admin (Opsional)</label>
+            <input type="number" id="ft-fee" value="0" min="0" class="tf-input" oninput="updateFriendTransferSaldoInfo()">
+          </div>
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Tanggal</label>
+            <input type="date" id="ft-date" class="tf-input" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Catatan (Opsional)</label>
+          <input type="text" id="ft-note" placeholder="Cth: Bayar titipan kopi / Ganti uang makan" class="tf-input">
+        </div>
+
+        <!-- Ringkasan Instan -->
+        <div class="p-3 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-1 text-xs">
+          <div class="flex justify-between">
+            <span class="text-zinc-500 font-semibold">Penerima</span>
+            <span id="ft-sum-receiver" class="font-black text-zinc-900">Belum dipilih</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500 font-semibold">Saldo Masuk ke Teman</span>
+            <span id="ft-sum-in" class="font-black text-emerald-600">Rp 0</span>
+          </div>
+          <div class="flex justify-between pt-1 border-t border-zinc-200">
+            <span class="text-zinc-600 font-bold">Total Dipotong dari Dompetmu</span>
+            <span id="ft-sum-out" class="font-black text-zinc-900">Rp 0</span>
+          </div>
+        </div>
+
+        <p id="ft-error" class="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl text-center hidden"></p>
+
+        <button type="submit" id="ft-submit-btn" class="w-full py-4 btn-primary-black text-xs uppercase tracking-wider">
+          💸 Kirim Uang ke Teman Sekarang
+        </button>
+      </form>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         PANE 2: TRANSFER ANTAR DOMPET SENDIRI (FITUR SEBELUMNYA UTUH)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <section id="pane-wallet" class="hidden space-y-3.5">
+      <form id="wallet-transfer-form" onsubmit="handleTransferAntarDompet(event)" class="tf-card p-4 space-y-3.5">
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Dari Dompet Asal</label>
+            <span id="wt-from-saldo" class="text-[11px] font-extrabold text-emerald-600">Saldo: Rp 0</span>
+          </div>
+          <select id="wt-from" class="tf-input" onchange="updateWalletTransferInfo()" required></select>
+        </div>
+
+        <!-- Tombol Tukar Posisi Dompet -->
+        <div class="flex justify-center -my-1">
+          <button type="button" onclick="swapWalletPositions()" class="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 flex items-center justify-center text-zinc-700 active:scale-90 transition" title="Tukar Dompet Asal & Tujuan">
+            ⇅
+          </button>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Ke Dompet Tujuan</label>
+          <select id="wt-to" class="tf-input" onchange="updateWalletTransferInfo()" required></select>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Nominal Transfer (Rp)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-black text-sm">Rp</span>
+            <input type="number" id="wt-amount" placeholder="0" min="1" class="tf-input !pl-10 !py-3 !text-base font-black" required oninput="updateWalletTransferInfo()">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Biaya Admin (Opsional)</label>
+            <input type="number" id="wt-fee" value="0" min="0" class="tf-input" oninput="updateWalletTransferInfo()">
+          </div>
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Tanggal</label>
+            <input type="date" id="wt-date" class="tf-input" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Catatan</label>
+          <input type="text" id="wt-note" placeholder="Cth: Top up e-wallet / Pindah tabungan" class="tf-input">
+        </div>
+
+        <p id="wt-error" class="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl text-center hidden"></p>
+
+        <button type="submit" id="wt-submit-btn" class="w-full py-4 btn-primary-black text-xs uppercase tracking-wider">
+          🔄 Simpan Transfer Antar Dompet
+        </button>
+      </form>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         RIWAYAT TRANSFER TERAKHIR (KE TEMAN & ANTAR DOMPET)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <section class="pt-1">
+      <div class="flex items-center justify-between mb-2.5 px-1">
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Riwayat Transfer Terakhir</p>
+        <span id="transfer-history-count" class="text-[10px] font-extrabold text-zinc-400">0 transaksi</span>
+      </div>
+      <div id="transfer-history-list" class="space-y-2"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════ JAVASCRIPT ═══════════ -->
+<script>
+const GLOBAL_GS_URL    = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY     = 'keuangan_transactions_cache';
+
+const idr   = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+const today = () => new Date().toISOString().split('T')[0];
+
+let S = {
+  akun: null,
+  gsUrl: '',
+  transactions: [],
+  dompetList: [],
+  friends: [],
+  activeTab: 'friend',
+  selectedFriendUsername: ''
+};
+
+// ── STORAGE HELPERS ──
+function storageGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v !== null) return v;
+  } catch (e) {}
+  try {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  } catch (e) { return null; }
+}
+
+function checkSession() {
+  try {
+    const raw = storageGet(AUTH_SESSION_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.username && parsed.gsUrl) {
+      S.akun = parsed;
+      S.gsUrl = parsed.gsUrl;
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function showToast(msg, icon = '✅') {
+  const box = document.getElementById('toast-box');
+  const ic  = document.getElementById('toast-icon');
+  const txt = document.getElementById('toast-text');
+  if (!box || !txt) return;
+  if (ic) ic.textContent = icon;
+  txt.textContent = msg;
+  box.classList.remove('hidden');
+  clearTimeout(window._tfToastTimer);
+  window._tfToastTimer = setTimeout(() => box.classList.add('hidden'), 2600);
+}
+
+window.goBackHome = function(e) {
+  if (e) e.preventDefault();
+  try { window.top.location.href = 'https://keloladuit.my.id/home'; }
+  catch (err) { window.location.href = 'https://keloladuit.my.id/home'; }
+};
+
+function loadLocalData() {
+  try {
+    const txRaw = localStorage.getItem(TX_CACHE_KEY);
+    if (txRaw) S.transactions = JSON.parse(txRaw) || [];
+  } catch (e) {}
+
+  try {
+    const dptRaw = localStorage.getItem('keuangan_dompet_list');
+    if (dptRaw) S.dompetList = JSON.parse(dptRaw) || [];
+  } catch (e) {}
+
+  if (S.akun && S.akun.username) {
+    try {
+      const inboxKey = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+      const raw = localStorage.getItem(inboxKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.friends)) {
+          S.friends = parsed.friends;
+        }
+      }
+    } catch (e) {}
+  }
+}
+
+function saveLocalCache() {
+  try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch (e) {}
+  try { localStorage.setItem('keuangan_dompet_list', JSON.stringify(S.dompetList)); } catch (e) {}
+}
+
+function hitungSaldoDompet(dompetId) {
+  const d = S.dompetList.find(x => String(x.id) === String(dompetId));
+  if (!d) return 0;
+  let saldo = Number(d.saldoAwal) || 0;
+  S.transactions.forEach(tx => {
+    if (String(tx.DompetId) !== String(dompetId)) return;
+    const v = Number(tx['Jumlah Uang']) || 0;
+    if (tx.Kategori === 'Uang Masuk')  saldo += v;
+    if (tx.Kategori === 'Uang Keluar') saldo -= v;
+  });
+  return saldo;
+}
+
+function calcTotalSaldo() {
+  if (S.dompetList.length > 0) {
+    return S.dompetList.reduce((sum, d) => sum + hitungSaldoDompet(d.id), 0);
+  }
+  let bal = 0;
+  S.transactions.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') bal += v;
+    else if (t.Kategori === 'Uang Keluar') bal -= v;
+  });
+  return bal;
+}
+
+function populateDompetDropdowns() {
+  const ftSel   = document.getElementById('ft-from-dompet');
+  const wtFrom  = document.getElementById('wt-from');
+  const wtTo    = document.getElementById('wt-to');
+
+  if (!S.dompetList.length) {
+    const fallbackHtml = `<option value="">Dompet Utama (${idr(calcTotalSaldo())})</option>`;
+    if (ftSel)  ftSel.innerHTML  = fallbackHtml;
+    if (wtFrom) wtFrom.innerHTML = fallbackHtml;
+    if (wtTo)   wtTo.innerHTML   = fallbackHtml;
+    return;
+  }
+
+  const optionsHtml = (selectedIdx) => S.dompetList.map((d, idx) => {
+    const s = hitungSaldoDompet(d.id);
+    const ic = d.tipe === 'tunai' ? '💵' : d.tipe === 'emoney' ? '📱' : '🏦';
+    return `<option value="${d.id}" ${idx === selectedIdx ? 'selected' : ''}>${ic} ${d.nama || d.provider} (${idr(s)})</option>`;
+  }).join('');
+
+  if (ftSel)  ftSel.innerHTML  = optionsHtml(0);
+  if (wtFrom) wtFrom.innerHTML = optionsHtml(0);
+  if (wtTo)   wtTo.innerHTML   = optionsHtml(S.dompetList.length > 1 ? 1 : 0);
+
+  updateFriendTransferSaldoInfo();
+  updateWalletTransferInfo();
+}
+
+// ── SWITCH TAB ──
+window.switchTransferTab = function(tab) {
+  S.activeTab = tab === 'wallet' ? 'wallet' : 'friend';
+  document.getElementById('tab-btn-friend').classList.toggle('active', S.activeTab === 'friend');
+  document.getElementById('tab-btn-wallet').classList.toggle('active', S.activeTab === 'wallet');
+  document.getElementById('pane-friend').classList.toggle('hidden', S.activeTab !== 'friend');
+  document.getElementById('pane-wallet').classList.toggle('hidden', S.activeTab !== 'wallet');
+};
+
+// ── TAB 1: KIRIM UANG KE TEMAN (INSTAN TANPA KONFIRMASI) ──
+function renderFriendPicker() {
+  const wrap  = document.getElementById('friend-picker-list');
+  const badge = document.getElementById('friends-count-badge');
+  if (badge) badge.textContent = String((S.friends || []).length);
+  if (!wrap) return;
+
+  if (!S.friends.length) {
+    wrap.innerHTML = `
+      <div class="w-full p-3.5 rounded-2xl bg-zinc-100 border border-zinc-200 flex items-center justify-between gap-2">
+        <span class="text-xs font-bold text-zinc-600">Kamu belum memiliki teman aktif untuk dikirimi uang.</span>
+        <a href="https://keloladuit.my.id/chat" target="_top" class="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-[10px] font-black flex-shrink-0" style="text-decoration:none">+ Add Friend</a>
+      </div>
+    `;
+    return;
+  }
+
+  // Jika belum ada teman yang terpilih, otomatis pilih teman pertama
+  if (!S.selectedFriendUsername && S.friends[0]) {
+    S.selectedFriendUsername = S.friends[0].friendUsername;
+    document.getElementById('ft-target-username').value = S.selectedFriendUsername;
+  }
+
+  wrap.innerHTML = S.friends.map(f => {
+    const isSel = String(f.friendUsername || '').toLowerCase() === String(S.selectedFriendUsername || '').toLowerCase();
+    const safeU = String(f.friendUsername || '').replace(/'/g, "\\'");
+    const safeName = String(f.friendNamaLengkap || f.friendUsername).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const initial = (safeName[0] || 'U').toUpperCase();
+    return `
+      <button type="button" onclick="selectFriendTarget('${safeU}')" class="friend-chip ${isSel ? 'selected' : ''}">
+        <span class="w-7 h-7 rounded-lg ${isSel ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-800'} flex items-center justify-center text-xs font-black flex-shrink-0">${initial}</span>
+        <div class="text-left">
+          <p class="text-xs font-extrabold leading-tight">${safeName}</p>
+          <p class="text-[10px] ${isSel ? 'text-zinc-300' : 'text-zinc-400'} font-bold">@${f.friendUsername}</p>
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  updateFriendTransferSaldoInfo();
+}
+
+window.selectFriendTarget = function(username) {
+  S.selectedFriendUsername = username;
+  document.getElementById('ft-target-username').value = username;
+  renderFriendPicker();
+};
+
+window.setFriendAmount = function(nom) {
+  const inp = document.getElementById('ft-amount');
+  if (inp) {
+    inp.value = String(nom);
+    updateFriendTransferSaldoInfo();
+  }
+};
+
+window.updateFriendTransferSaldoInfo = function() {
+  const dompetId = document.getElementById('ft-from-dompet')?.value || '';
+  const avail = dompetId ? hitungSaldoDompet(dompetId) : calcTotalSaldo();
+  const availEl = document.getElementById('ft-avail-saldo');
+  if (availEl) {
+    availEl.textContent = 'Saldo: ' + idr(avail);
+    availEl.className = 'text-[11px] font-extrabold ' + (avail > 0 ? 'text-emerald-600' : 'text-rose-600');
+  }
+
+  const amt = Math.max(0, Math.round(Number(document.getElementById('ft-amount')?.value) || 0));
+  const fee = Math.max(0, Math.round(Number(document.getElementById('ft-fee')?.value) || 0));
+
+  const fObj = S.friends.find(f => String(f.friendUsername || '').toLowerCase() === String(S.selectedFriendUsername || '').toLowerCase());
+  document.getElementById('ft-sum-receiver').textContent = fObj
+    ? `${fObj.friendNamaLengkap || fObj.friendUsername} (@${fObj.friendUsername})`
+    : 'Belum dipilih';
+  document.getElementById('ft-sum-in').textContent  = idr(amt);
+  document.getElementById('ft-sum-out').textContent = idr(amt + fee);
+};
+
+async function callMasterApi(action, dataObj) {
+  try {
+    const r = await fetch(GLOBAL_GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, data: dataObj })
+    });
+    const j = await r.json();
+    if (j) return j;
+  } catch (e) {}
+
+  try {
+    const qs = `?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(dataObj))}&_t=${Date.now()}`;
+    const r2 = await fetch(GLOBAL_GS_URL + qs);
+    return await r2.json();
+  } catch (e2) {
+    return { status: 'error', message: 'Gagal terhubung ke server.' };
+  }
+}
+
+async function postUserSheet(action, dataObj) {
+  if (!S.gsUrl) return null;
+  try {
+    const r = await fetch(S.gsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: action, data: dataObj })
+    });
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+window.handleSendMoneyToFriend = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('ft-error');
+  errEl.classList.add('hidden');
+
+  const targetU  = String(S.selectedFriendUsername || document.getElementById('ft-target-username')?.value || '').trim();
+  const dompetId = String(document.getElementById('ft-from-dompet')?.value || '').trim();
+  const amt      = Math.round(Number(document.getElementById('ft-amount')?.value) || 0);
+  const fee      = Math.max(0, Math.round(Number(document.getElementById('ft-fee')?.value) || 0));
+  const dt       = document.getElementById('ft-date')?.value || today();
+  const note     = String(document.getElementById('ft-note')?.value || '').trim();
+
+  if (!targetU) {
+    errEl.textContent = 'Pilih teman tujuan terlebih dahulu.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (amt <= 0) {
+    errEl.textContent = 'Nominal kirim harus lebih dari Rp 0.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const avail = dompetId ? hitungSaldoDompet(dompetId) : calcTotalSaldo();
+  if ((amt + fee) > avail) {
+    errEl.textContent = `Saldo dompet tidak mencukupi (${idr(avail)}).`;
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const btn = document.getElementById('ft-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Memproses Kirim Uang…';
+
+  const transferId = 'tf_friend_' + Date.now();
+  const dateIso = dt + 'T12:00:00';
+
+  const res = await callMasterApi('sendMoneyToFriend', {
+    transferId: transferId,
+    senderUsername: S.akun.username,
+    receiverUsername: targetU,
+    senderDompetId: dompetId,
+    amount: amt,
+    adminFee: fee,
+    tanggal: dateIso,
+    note: note
+  });
+
+  btn.disabled = false;
+  btn.textContent = '💸 Kirim Uang ke Teman Sekarang';
+
+  if (res && res.status === 'success') {
+    const fObj = S.friends.find(f => String(f.friendUsername || '').toLowerCase() === targetU.toLowerCase());
+    const fName = fObj ? (fObj.friendNamaLengkap || fObj.friendUsername) : targetU;
+
+    const localOutTx = (res.data && res.data.senderTransaction) ? res.data.senderTransaction : {
+      id: transferId + '_out',
+      'Kategori': 'Uang Keluar',
+      'Kategori Uang Keluar': 'Transfer',
+      'Jumlah Uang': amt + fee,
+      'Tanggal': dateIso,
+      'Deskripsi': `Kirim uang ke ${fName} (@${targetU})${note ? ' — ' + note : ''}`,
+      'DompetId': dompetId || null,
+      'TransferId': transferId,
+      'TransferTujuanNama': '@' + targetU
+    };
+
+    if (!S.transactions.some(t => String(t.id) === String(localOutTx.id))) {
+      S.transactions.unshift(localOutTx);
+      saveLocalCache();
+    }
+
+    document.getElementById('ft-amount').value = '';
+    document.getElementById('ft-fee').value = '0';
+    document.getElementById('ft-note').value = '';
+    populateDompetDropdowns();
+    renderTransferHistory();
+    showToast(`Berhasil mengirim ${idr(amt)} ke @${targetU}!`);
+  } else {
+    errEl.textContent = (res && res.message) || 'Gagal mengirim uang ke teman.';
+    errEl.classList.remove('hidden');
+  }
+};
+
+// ── TAB 2: TRANSFER ANTAR DOMPET SENDIRI ──
+window.swapWalletPositions = function() {
+  const fromSel = document.getElementById('wt-from');
+  const toSel   = document.getElementById('wt-to');
+  if (!fromSel || !toSel) return;
+  const temp = fromSel.value;
+  fromSel.value = toSel.value;
+  toSel.value = temp;
+  updateWalletTransferInfo();
+};
+
+window.updateWalletTransferInfo = function() {
+  const fromId = document.getElementById('wt-from')?.value || '';
+  const avail  = fromId ? hitungSaldoDompet(fromId) : calcTotalSaldo();
+  const el     = document.getElementById('wt-from-saldo');
+  if (el) {
+    el.textContent = 'Saldo: ' + idr(avail);
+    el.className = 'text-[11px] font-extrabold ' + (avail > 0 ? 'text-emerald-600' : 'text-rose-600');
+  }
+};
+
+window.handleTransferAntarDompet = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('wt-error');
+  errEl.classList.add('hidden');
+
+  const fromId = document.getElementById('wt-from')?.value || '';
+  const toId   = document.getElementById('wt-to')?.value || '';
+  const amt    = Math.round(Number(document.getElementById('wt-amount')?.value) || 0);
+  const fee    = Math.max(0, Math.round(Number(document.getElementById('wt-fee')?.value) || 0));
+  const dt     = document.getElementById('wt-date')?.value || today();
+  const note   = String(document.getElementById('wt-note')?.value || '').trim();
+
+  if (!fromId || !toId || fromId === toId) {
+    errEl.textContent = 'Pilih dompet asal dan dompet tujuan yang berbeda.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (amt <= 0) {
+    errEl.textContent = 'Nominal transfer harus lebih dari Rp 0.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const avail = hitungSaldoDompet(fromId);
+  if ((amt + fee) > avail) {
+    errEl.textContent = `Saldo dompet asal tidak cukup (${idr(avail)}).`;
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const dFrom = S.dompetList.find(d => String(d.id) === String(fromId));
+  const dTo   = S.dompetList.find(d => String(d.id) === String(toId));
+  const transferId = 'tf_dompet_' + Date.now();
+  const dateIso = dt + 'T12:00:00';
+
+  const txOut = {
+    id: 'tfout_' + Date.now(),
+    'Kategori': 'Uang Keluar',
+    'Kategori Uang Keluar': 'Transfer',
+    'Jumlah Uang': amt + fee,
+    'Tanggal': dateIso,
+    'Deskripsi': `Transfer ke ${dTo ? (dTo.nama || dTo.provider) : 'Dompet'}${note ? ' (' + note + ')' : ''}`,
+    'DompetId': fromId,
+    'TransferId': transferId
+  };
+  const txIn = {
+    id: 'tfin_' + (Date.now() + 1),
+    'Kategori': 'Uang Masuk',
+    'Kategori Uang Keluar': null,
+    'Jumlah Uang': amt,
+    'Tanggal': dateIso,
+    'Deskripsi': `Transfer dari ${dFrom ? (dFrom.nama || dFrom.provider) : 'Dompet'}${note ? ' (' + note + ')' : ''}`,
+    'DompetId': toId,
+    'TransferId': transferId
+  };
+
+  S.transactions.unshift(txIn, txOut);
+  saveLocalCache();
+
+  document.getElementById('wt-amount').value = '';
+  document.getElementById('wt-fee').value = '0';
+  document.getElementById('wt-note').value = '';
+  populateDompetDropdowns();
+  renderTransferHistory();
+  showToast('Transfer antar dompet berhasil dicatat!');
+
+  postUserSheet('addData', txOut);
+  postUserSheet('addData', txIn);
+};
+
+// ── RIWAYAT TRANSFER (KE TEMAN & ANTAR DOMPET) ──
+function renderTransferHistory() {
+  const wrap  = document.getElementById('transfer-history-list');
+  const count = document.getElementById('transfer-history-count');
+  if (!wrap) return;
+
+  const tfList = (S.transactions || []).filter(t => {
+    const desc = String(t.Deskripsi || '').toLowerCase();
+    const sub  = String(t['Kategori Uang Keluar'] || '').toLowerCase();
+    return Boolean(
+      t.TransferId ||
+      sub === 'transfer' ||
+      desc.indexOf('transfer ke ') === 0 ||
+      desc.indexOf('transfer dari ') === 0 ||
+      desc.indexOf('kirim uang ke ') === 0 ||
+      desc.indexOf('terima kiriman uang dari ') === 0
+    );
+  }).slice(0, 15);
+
+  if (count) count.textContent = `${tfList.length} transaksi`;
+
+  if (!tfList.length) {
+    wrap.innerHTML = `
+      <div class="tf-card p-6 text-center">
+        <p class="text-xs font-extrabold text-zinc-500">Belum ada riwayat transfer.</p>
+      </div>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = tfList.map(t => {
+    const isIn = t.Kategori === 'Uang Masuk';
+    const dObj = S.dompetList.find(d => String(d.id) === String(t.DompetId));
+    const dName = dObj ? (dObj.nama || dObj.provider) : 'Dompet Utama';
+    const dtStr = t.Tanggal ? String(t.Tanggal).split('T')[0] : '';
+    const safeDesc = String(t.Deskripsi || 'Transfer').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <div class="tf-card p-3.5 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl ${isIn ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-900'} flex items-center justify-center text-sm font-black flex-shrink-0">
+            ${isIn ? '↓' : '↑'}
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safeDesc}</p>
+            <p class="text-[10px] font-bold text-zinc-400 truncate mt-0.5">${dName} · ${dtStr}</p>
+          </div>
+        </div>
+        <span class="text-xs font-black ${isIn ? 'text-emerald-600' : 'text-zinc-900'} flex-shrink-0">
+          ${isIn ? '+' : '-'}${idr(Number(t['Jumlah Uang']) || 0)}
+        </span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── BACKGROUND SYNC ──
+async function syncFriendsAndUserSheet() {
+  if (!S.akun || !S.akun.username) return;
+  try {
+    const uname = encodeURIComponent(S.akun.username);
+    const r = await fetch(`${GLOBAL_GS_URL}?action=getFriendsAndInbox&username=${uname}&_t=${Date.now()}`);
+    const j = await r.json();
+    if (j && j.status === 'success' && j.data) {
+      S.friends = Array.isArray(j.data.friends) ? j.data.friends : [];
+      try {
+        const inboxKey = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+        localStorage.setItem(inboxKey, JSON.stringify(j.data));
+      } catch (e) {}
+      renderFriendPicker();
+    }
+  } catch (e) {}
+
+  if (S.gsUrl) {
+    try {
+      const r2 = await fetch(S.gsUrl + '&action=read&_t=' + Date.now());
+      const j2 = await r2.json();
+      if (j2 && j2.status === 'success' && j2.data) {
+        if (Array.isArray(j2.data.transactions)) S.transactions = j2.data.transactions;
+        if (Array.isArray(j2.data.dompet)) {
+          S.dompetList = j2.data.dompet.map(w => ({
+            id: w.id,
+            nama: w.nama,
+            tipe: w.tipe || 'bank',
+            provider: w.keterangan || w.nama,
+            logo: w.logo || null,
+            background: w.background || null,
+            saldoAwal: Number(w.nominal) || 0
+          }));
+        }
+        saveLocalCache();
+        populateDompetDropdowns();
+        renderTransferHistory();
+      }
+    } catch (e) {}
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch (e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+
+  document.getElementById('ft-date').value = today();
+  document.getElementById('wt-date').value = today();
+
+  loadLocalData();
+  populateDompetDropdowns();
+  renderFriendPicker();
+  renderTransferHistory();
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'wallet' || params.get('mode') === 'dompet') {
+    switchTransferTab('wallet');
+  }
+
+  syncFriendsAndUserSheet();
+});
+</script>
+</body>
+</html>
