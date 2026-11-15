@@ -1,3 +1,21 @@
+Kode HTML Halaman Beranda / Home (keloladuit.my.id/home) — 4-Slide Feature Container (Quick Add, Terjadwal, Budget, & Split Bill Aktif/Status Penolakan)
+
+Pembaruan lengkap pada halaman https://keloladuit.my.id/home:
+
+Fitur Split Bill Antar Teman:
+
+Hanya Teman (ACCEPTED) yang Bisa Ditagih: Daftar orang yang bisa dipilih pada form Split Bill diambil langsung dari daftar teman aktif Anda (ACCEPTED).
+
+Input Jumlah Total, Bagian Kita, & Bagian Masing-Masing Teman: Dilengkapi kalkulator otomatis (Bagi Rata Otomatis atau Hitung Sisa ke Teman) serta indikator validasi real-time yang memastikan Bagian Kita + Total Bagian Teman = Jumlah Total Tagihan.
+
+Saldo Pembuat Terpotong Terlebih Dahulu: Begitu pembuat menekan Kirim Split Bill, saldo dompet pembuat langsung terpotong sebesar Jumlah Total Tagihan (sebagai pembayaran awal kasir/talangan).
+
+Notifikasi Split Bill Masuk di Akun Teman: Teman yang ditagih otomatis mendapatkan Banner Notifikasi Split Bill di bagian atas Beranda beserta badge angka di tombol Split Bill.
+
+Transparansi Penuh & Konfirmasi Sebelum Potong Saldo: Teman yang dimasukkan ke Split Bill dapat membuka rincian lengkap Split Bill (melihat siapa pembuatnya, kategori, waktu, jumlah total, nominal bagian pembuat, serta daftar seluruh teman lain beserta nominal dan status pembayarannya masing-masing). Saldo teman belum terpotong sampai mereka memilih dompet dan menekan tombol Konfirmasi & Bayar Bagian Saya. Saat dikonfirmasi, barulah saldo teman terpotong dan otomatis masuk ke dompet pembuat sebagai pelunasan Split Bill.
+
+Klik tombol Copy / Salin di pojok kanan atas blok kode di bawah ini:
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -251,7 +269,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   0% { transform: translate3d(0, -125%, 0) rotate(-3deg) scale(0.95); opacity: 0; }
   100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
 }
-/* Pure visual tease/peek animation (naik-turun seperti kertas mau dibuka ke atas, tanpa teks) */
 @keyframes heroPaperTease {
   0%, 62%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   72% { transform: translate3d(0, -15px, 0) rotate(-0.8deg) scale(1.006); }
@@ -333,17 +350,61 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .feature-orbit-shell { position: relative; border-radius: 23px; padding: 2px; }
 .orbit-svg-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; overflow: visible; }
 .feature-banner-viewport { position: relative; overflow: hidden; border-radius: 21px; width: 100%; transition: height 0.36s cubic-bezier(0.22, 1, 0.36, 1); }
-.feature-banner-track { display: flex; width: 300%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
-.feature-slide-pane { width: 33.333333%; flex-shrink: 0; box-sizing: border-box; }
+.feature-banner-track { display: flex; width: 400%; align-items: flex-start; transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
+.feature-slide-pane { width: 25%; flex-shrink: 0; box-sizing: border-box; }
 .feature-slider-dots { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; }
 .feature-dot { height: 6px; width: 6px; border-radius: 99px; background: #CBD5E1; border: none; padding: 0; cursor: pointer; transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.feature-dot.active-qa { width: 22px; background: linear-gradient(90deg, #10B981, #059669); box-shadow: 0 2px 8px rgba(16,185,129,0.35); }
-.feature-dot.active-sch { width: 22px; background: linear-gradient(90deg, #6366F1, #0EA5E9); box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
-.feature-dot.active-bgt { width: 22px; background: linear-gradient(90deg, #F59E0B, #EA580C); box-shadow: 0 2px 8px rgba(245,158,11,0.35); }
+.feature-dot.active-qa { width: 22px; background: #10B981; box-shadow: 0 2px 8px rgba(16,185,129,0.35); }
+.feature-dot.active-sch { width: 22px; background: #6366F1; box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+.feature-dot.active-bgt { width: 22px; background: #F59E0B; box-shadow: 0 2px 8px rgba(245,158,11,0.35); }
+.feature-dot.active-sb { width: 22px; background: #EC4899; box-shadow: 0 2px 8px rgba(236,72,153,0.35); }
 @keyframes schClockTick { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .sch-clock-hand { transform-origin: 12px 12px; animation: schClockTick 14s linear infinite; }
+@keyframes sbIconFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-5deg); }
+}
+@keyframes sbStatusPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.sb-float-icon { animation: sbIconFloat 2.8s ease-in-out infinite; }
+.sb-status-pulse { animation: sbStatusPulse 2s ease-in-out infinite; }
+.sb-home-empty {
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 2px solid #FBCFE8;
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.08);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, box-shadow 0.2s;
+}
+.sb-home-empty:hover {
+  border-color: #EC4899;
+  box-shadow: 0 10px 26px rgba(236, 72, 153, 0.14);
+  transform: translateY(-1px);
+}
+.sb-home-empty:active { transform: scale(0.98); }
+.sb-home-active-shell {
+  background: #FFFFFF;
+  border: 2px solid #E0E7FF;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.07);
+}
+.sb-pill-card {
+  flex-shrink: 0;
+  width: 172px;
+  border-radius: 16px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s;
+}
+.sb-pill-card:hover { transform: translateY(-2px); }
+.sb-pill-card:active { transform: scale(0.95); }
 .prov-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; border:1.5px solid #F4F4F5; background:#fff; cursor:pointer; transition:all .15s; }
 .prov-item.selected { border-color:#10B981; background:#F0FDF4; }
+.sb-tab-btn { flex:1; padding:9px 12px; border-radius:12px; font-size:11px; font-weight:800; transition:all .2s; text-align:center; cursor:pointer; border:none; }
+.sb-tab-btn.active { background:#18181B; color:#FFFFFF; box-shadow:0 4px 12px rgba(24,24,27,0.18); }
+.sb-tab-btn:not(.active) { background:transparent; color:#71717A; }
 </style>
 </head>
 <body>
@@ -433,6 +494,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         </div>
         <span class="px-2.5 py-1 rounded-xl bg-rose-500 text-white text-[10px] font-black flex-shrink-0 shadow-xs">Lihat →</span>
       </div>
+
+
     </header>
 
     <main class="px-5 pt-2 pb-28 space-y-5">
@@ -449,8 +512,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         <div id="quick-add-home-box"></div>
       </div>
 
-      <!-- ── AKSI CEPAT (8 MENU GRID 4x2 — COMPACT) ── -->
-      <div id="quick-action-section" class="fade-up s2">
+      <!-- ── AKSI CEPAT (MENU CEPAT TERMASUK SPLIT BILL ANTAR TEMAN) ── -->
+      <div id="quick-action-section" class="fade-up s2 space-y-2">
         <div class="grid grid-cols-4 gap-2">
           <button onclick="openBulkModal()" class="glass rounded-xl py-2 px-1.5 flex flex-col items-center gap-1 active:scale-90 transition-transform">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff">📋</div>
@@ -487,6 +550,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
             <span class="text-[9px] font-extrabold text-zinc-700 text-center leading-tight">Investasi</span>
           </button>
         </div>
+
+
       </div>
 
       <!-- ── CICILAN / KREDIT ── -->
@@ -1406,6 +1471,17 @@ var heroStackState = {
   isDragging: false
 };
 
+// State Pertemanan & Split Bill
+var splitBillState = {
+  friends: [],            // Daftar teman ACCEPTED dari DATA MASTER
+  incomingRequests: [],   // Permintaan pertemanan masuk
+  allBills: [],           // Semua Split Bill yang melibatkan kita
+  incomingBills: [],      // Split Bill masuk yang masih PENDING menunggu konfirmasi kita
+  selectedFriends: {},    // { usernameLower: { username, namaLengkap, amount } }
+  activeTab: 'create',    // 'create' | 'list'
+  activeDetailBillId: null
+};
+
 var depositoList = [];
 var cicilanList  = [];
 var quickAddList = [];
@@ -2091,7 +2167,7 @@ function refreshAll() {
 }
 
 // ================================================================
-// QUICK ADD (CONTAINER CURVED & 1-CLICK TRANSACTION DARI SHEET "KHUSUS")
+// QUICK ADD, CHAT, REQUEST FRIEND, & SPLIT BILL ANTAR TEMAN
 // ================================================================
 var SUBCAT_EMOJI_MAP = {
   'Makanan & Minuman': '🍚',
@@ -2142,6 +2218,28 @@ window.goToBudgetPage = function(e) {
   }
 };
 
+window.goToSplitBillPage = function(e, billId) {
+  if (e) e.preventDefault();
+  if (S.akun && S.akun.gsUrl) {
+    saveAkunSession(S.akun);
+  }
+  saveTransactionsCache();
+  saveDompetLocal();
+  try {
+    if (billId) {
+      localStorage.setItem('keuangan_splitbill_open_id', String(billId));
+    } else {
+      localStorage.removeItem('keuangan_splitbill_open_id');
+    }
+  } catch(err) {}
+  var destUrl = 'https://keloladuit.my.id/home/splitbill' + (billId ? ('?id=' + encodeURIComponent(billId)) : '');
+  try {
+    window.top.location.href = destUrl;
+  } catch(err) {
+    window.location.href = destUrl;
+  }
+};
+
 window.goTochatPage = function(e, targetTab) {
   if (e) e.preventDefault();
   if (S.akun && S.akun.gsUrl) {
@@ -2162,9 +2260,16 @@ window.goTochatPage = function(e, targetTab) {
   }
 };
 
-function renderHomeChatAndFriendBadges(friendsList, incomingList) {
+function renderHomeChatAndFriendBadges(friendsList, incomingList, allSplitBills, incomingSplitBills) {
   var friends = Array.isArray(friendsList) ? friendsList : [];
   var incoming = Array.isArray(incomingList) ? incomingList : [];
+  var sBillsAll = Array.isArray(allSplitBills) ? allSplitBills : splitBillState.allBills;
+  var sBillsIn  = Array.isArray(incomingSplitBills) ? incomingSplitBills : splitBillState.incomingBills;
+
+  splitBillState.friends          = friends;
+  splitBillState.incomingRequests = incoming;
+  splitBillState.allBills         = sBillsAll;
+  splitBillState.incomingBills    = sBillsIn;
 
   var totalUnreadChat = 0;
   friends.forEach(function(f) {
@@ -2207,6 +2312,17 @@ function renderHomeChatAndFriendBadges(friendsList, incomingList) {
       reqAlert.classList.add('hidden');
     }
   }
+
+  // Render Banner Notifikasi Split Bill Masuk & Badge Tombol
+  renderHomeSplitBillAlerts();
+}
+
+function renderHomeSplitBillAlerts() {
+  var slideSb = document.getElementById('feature-slide-sb');
+  if (slideSb) {
+    slideSb.innerHTML = buildSplitBillSlideHtml();
+    requestAnimationFrame(function() { syncFeatureBannerGeometry(true); });
+  }
 }
 
 function loadHomeChatBadgesFromCache() {
@@ -2217,7 +2333,12 @@ function loadHomeChatBadgesFromCache() {
     if (!raw) return;
     var parsed = JSON.parse(raw);
     if (parsed) {
-      renderHomeChatAndFriendBadges(parsed.friends || [], parsed.incomingRequests || []);
+      renderHomeChatAndFriendBadges(
+        parsed.friends || [],
+        parsed.incomingRequests || [],
+        parsed.splitBills || [],
+        parsed.incomingSplitBills || []
+      );
     }
   } catch(e) {}
 }
@@ -2230,21 +2351,623 @@ async function syncHomeChatAndFriendNotifications() {
     var res = await fetch(url);
     var json = await res.json();
     if (json && json.status === 'success' && json.data) {
-      var friends = Array.isArray(json.data.friends) ? json.data.friends : [];
+      var friends  = Array.isArray(json.data.friends) ? json.data.friends : [];
       var incoming = Array.isArray(json.data.incomingRequests) ? json.data.incomingRequests : [];
       var outgoing = Array.isArray(json.data.outgoingRequests) ? json.data.outgoingRequests : [];
-      renderHomeChatAndFriendBadges(friends, incoming);
+      var sBillsAll = Array.isArray(json.data.splitBills) ? json.data.splitBills : splitBillState.allBills;
+      var sBillsIn  = Array.isArray(json.data.incomingSplitBills) ? json.data.incomingSplitBills : splitBillState.incomingBills;
+
+      // Jika endpoint lama belum menyertakan splitBills di getFriendsAndInbox, panggil getSplitBills
+      if (!Array.isArray(json.data.splitBills)) {
+        try {
+          var sbRes = await fetch(GLOBAL_GS_URL + '?action=getSplitBills&username=' + uname + '&_t=' + Date.now());
+          var sbJson = await sbRes.json();
+          if (sbJson && sbJson.status === 'success' && sbJson.data) {
+            sBillsAll = Array.isArray(sbJson.data.splitBills) ? sbJson.data.splitBills : [];
+            sBillsIn  = Array.isArray(sbJson.data.incomingSplitBills) ? sbJson.data.incomingSplitBills : [];
+          }
+        } catch(errSb) {}
+      }
+
+      renderHomeChatAndFriendBadges(friends, incoming, sBillsAll, sBillsIn);
+
       try {
         var key = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
         localStorage.setItem(key, JSON.stringify({
           friends: friends,
           incomingRequests: incoming,
-          outgoingRequests: outgoing
+          outgoingRequests: outgoing,
+          splitBills: sBillsAll,
+          incomingSplitBills: sBillsIn
         }));
       } catch(e) {}
+
+      // Jika modal Split Bill sedang terbuka, perbarui daftar teman & daftar tagihan
+      var sbBackdrop = document.getElementById('splitbill-backdrop');
+      if (sbBackdrop && sbBackdrop.classList.contains('show')) {
+        renderSplitBillFriendsPicker();
+        if (splitBillState.activeTab === 'list') renderSplitBillHistoryList();
+      }
     }
   } catch(e) {}
 }
+
+// ================================================================
+// LOGIKA LENGKAP SPLIT BILL ANTAR TEMAN
+// ================================================================
+
+async function callMasterSplitBillApi(action, payloadObj) {
+  try {
+    const postRes = await fetch(GLOBAL_GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, data: payloadObj })
+    });
+    const postJson = await postRes.json();
+    if (postJson) return postJson;
+  } catch (err) {}
+
+  try {
+    const qs = `?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(payloadObj))}&_t=${Date.now()}`;
+    const getRes = await fetch(GLOBAL_GS_URL + qs);
+    return await getRes.json();
+  } catch (err2) {
+    return { status: 'error', message: 'Gagal terhubung ke server DATA MASTER.' };
+  }
+}
+
+window.openSplitBillModal = function(initialTab) {
+  populateDompetSelect('sb-dompet');
+  const catSel = document.getElementById('sb-category');
+  if (catSel) {
+    const outCats = getAllUserCategories().filter(c => c.type === 'Uang Keluar');
+    catSel.innerHTML = outCats.map(c => `<option value="${c.name}">${c.icon || '🏷️'} ${c.name}</option>`).join('');
+  }
+
+  document.getElementById('splitbill-form')?.reset();
+  document.getElementById('sb-error-msg')?.classList.add('hidden');
+  splitBillState.selectedFriends = {};
+
+  renderSplitBillFriendsPicker();
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+
+  const targetTab = initialTab || (splitBillState.incomingBills.length > 0 ? 'list' : 'create');
+  switchSplitBillTab(targetTab);
+  openModal('splitbill-backdrop');
+  syncHomeChatAndFriendNotifications();
+};
+
+window.switchSplitBillTab = function(tabName) {
+  splitBillState.activeTab = tabName === 'list' ? 'list' : 'create';
+  const btnCreate  = document.getElementById('sb-tab-create');
+  const btnList    = document.getElementById('sb-tab-list');
+  const paneCreate = document.getElementById('sb-pane-create');
+  const paneList   = document.getElementById('sb-pane-list');
+
+  if (btnCreate)  btnCreate.classList.toggle('active', splitBillState.activeTab === 'create');
+  if (btnList)    btnList.classList.toggle('active', splitBillState.activeTab === 'list');
+  if (paneCreate) paneCreate.classList.toggle('hidden', splitBillState.activeTab !== 'create');
+  if (paneList)   paneList.classList.toggle('hidden', splitBillState.activeTab !== 'list');
+
+  if (splitBillState.activeTab === 'list') {
+    renderSplitBillHistoryList();
+  }
+};
+
+function renderSplitBillFriendsPicker() {
+  const pickerEl = document.getElementById('sb-friends-picker');
+  if (!pickerEl) return;
+
+  const friends = splitBillState.friends || [];
+  if (!friends.length) {
+    pickerEl.innerHTML = `
+      <div class="w-full p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-800 flex items-center justify-between gap-2">
+        <span>⚠️ Hanya teman yang bisa ditagih Split Bill. Kamu belum memiliki teman berstatus aktif.</span>
+        <a href="https://keloladuit.my.id/chat" target="_top" onclick="goTochatPage(event,'chat')" class="px-2.5 py-1 rounded-lg bg-amber-600 text-white text-[10px] font-black flex-shrink-0" style="text-decoration:none">+ Add Friend</a>
+      </div>
+    `;
+    return;
+  }
+
+  pickerEl.innerHTML = friends.map(f => {
+    const uLow = String(f.friendUsername || '').toLowerCase();
+    const isSelected = Boolean(splitBillState.selectedFriends[uLow]);
+    const safeU = String(f.friendUsername || '').replace(/'/g, "\\'");
+    const safeName = String(f.friendNamaLengkap || f.friendUsername || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <button type="button" onclick="toggleSelectSplitBillFriend('${safeU}')"
+        class="px-3 py-1.5 rounded-full text-xs font-extrabold border transition-all flex items-center gap-1.5 ${isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-zinc-700 border-zinc-200 hover:border-indigo-300'}">
+        <span>${isSelected ? '✓' : '+'}</span>
+        <span>${safeName}</span>
+        <span class="text-[10px] ${isSelected ? 'text-indigo-200' : 'text-zinc-400'}">@${f.friendUsername}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+window.toggleSelectSplitBillFriend = function(friendUsername) {
+  const uLow = String(friendUsername || '').toLowerCase();
+  if (!uLow) return;
+
+  if (splitBillState.selectedFriends[uLow]) {
+    delete splitBillState.selectedFriends[uLow];
+  } else {
+    const fObj = (splitBillState.friends || []).find(f => String(f.friendUsername || '').toLowerCase() === uLow);
+    if (!fObj) return;
+    splitBillState.selectedFriends[uLow] = {
+      username: fObj.friendUsername,
+      namaLengkap: fObj.friendNamaLengkap || fObj.friendUsername,
+      amount: 0
+    };
+  }
+
+  renderSplitBillFriendsPicker();
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+};
+
+function renderSplitBillSelectedRows() {
+  const rowsWrap = document.getElementById('sb-selected-friends-rows');
+  if (!rowsWrap) return;
+
+  const keys = Object.keys(splitBillState.selectedFriends);
+  if (!keys.length) {
+    rowsWrap.innerHTML = '<p class="text-[11px] font-semibold text-zinc-400 text-center py-2">Ketuk nama teman di atas untuk memasukkan ke daftar tagihan Split Bill.</p>';
+    return;
+  }
+
+  rowsWrap.innerHTML = keys.map(uLow => {
+    const item = splitBillState.selectedFriends[uLow];
+    const safeName = String(item.namaLengkap || item.username).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeU = String(item.username).replace(/'/g, "\\'");
+    const val = Number(item.amount) > 0 ? Number(item.amount) : '';
+    return `
+      <div class="p-2.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 flex items-center justify-between gap-2">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-black text-zinc-900 truncate">${safeName}</p>
+          <p class="text-[10px] font-bold text-indigo-600 truncate">@${item.username}</p>
+        </div>
+        <div class="relative w-36 flex-shrink-0">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-black text-zinc-400">Rp</span>
+          <input type="number" min="1" placeholder="Bagian teman" value="${val}"
+            oninput="onSplitBillFriendAmountInput('${safeU}', this.value)"
+            class="fi py-2 pl-8 pr-2.5 text-xs font-black text-right" style="background:#fff;border-color:#C7D2FE">
+        </div>
+        <button type="button" onclick="toggleSelectSplitBillFriend('${safeU}')" class="w-7 h-7 rounded-xl bg-white text-zinc-400 hover:text-rose-500 flex items-center justify-center text-xs font-black border border-zinc-200 flex-shrink-0">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+window.onSplitBillFriendAmountInput = function(username, valStr) {
+  const uLow = String(username || '').toLowerCase();
+  if (!splitBillState.selectedFriends[uLow]) return;
+  splitBillState.selectedFriends[uLow].amount = Math.max(0, Math.round(Number(valStr) || 0));
+  recalcSplitBillSummary();
+};
+
+window.onSplitBillTotalOrOwnChange = function(changedField) {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(splitBillState.selectedFriends);
+
+  // Jika hanya memilih 1 teman dan mengisi Total + Bagian Kita, otomatis isikan sisa ke teman tersebut
+  if (keys.length === 1 && total > 0 && own <= total && changedField === 'own') {
+    splitBillState.selectedFriends[keys[0]].amount = Math.max(0, total - own);
+    renderSplitBillSelectedRows();
+  }
+  recalcSplitBillSummary();
+};
+
+window.splitBillDivideEqually = function() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const keys = Object.keys(splitBillState.selectedFriends);
+  const countPeople = 1 + keys.length; // Kita + semua teman terpilih
+  if (total <= 0 || keys.length === 0) return;
+
+  const perPerson = Math.floor(total / countPeople);
+  const remainder = total - (perPerson * countPeople);
+
+  const ownInput = document.getElementById('sb-own-amount');
+  if (ownInput) ownInput.value = String(perPerson + remainder);
+
+  keys.forEach(k => {
+    splitBillState.selectedFriends[k].amount = perPerson;
+  });
+
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+};
+
+window.splitBillDivideRemainderToFriends = function() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(splitBillState.selectedFriends);
+  if (total <= 0 || keys.length === 0) return;
+
+  const rem = Math.max(0, total - own);
+  const each = Math.floor(rem / keys.length);
+  const leftover = rem - (each * keys.length);
+
+  keys.forEach((k, idx) => {
+    splitBillState.selectedFriends[k].amount = each + (idx === 0 ? leftover : 0);
+  });
+
+  renderSplitBillSelectedRows();
+  recalcSplitBillSummary();
+};
+
+function recalcSplitBillSummary() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(splitBillState.selectedFriends);
+
+  let sumFriends = 0;
+  keys.forEach(k => {
+    sumFriends += (Number(splitBillState.selectedFriends[k].amount) || 0);
+  });
+
+  const sumAll = own + sumFriends;
+  const diff   = total - sumAll;
+
+  document.getElementById('sb-sum-total').textContent   = idr(total);
+  document.getElementById('sb-sum-own').textContent     = idr(own);
+  document.getElementById('sb-sum-friends').textContent = idr(sumFriends);
+
+  const statusEl = document.getElementById('sb-sum-status');
+  if (!statusEl) return;
+
+  if (total <= 0) {
+    statusEl.textContent = 'Masukkan jumlah total';
+    statusEl.className = 'font-black text-zinc-400';
+  } else if (keys.length === 0) {
+    statusEl.textContent = 'Pilih minimal 1 teman';
+    statusEl.className = 'font-black text-amber-600';
+  } else if (diff === 0) {
+    statusEl.textContent = '✅ Pas! Sesuai Jumlah Total';
+    statusEl.className = 'font-black text-emerald-600';
+  } else if (diff > 0) {
+    statusEl.textContent = `Kurang ${idr(diff)} dari Total`;
+    statusEl.className = 'font-black text-amber-600';
+  } else {
+    statusEl.textContent = `Lebih ${idr(Math.abs(diff))} dari Total`;
+    statusEl.className = 'font-black text-rose-600';
+  }
+}
+
+window.handleCreateSplitBill = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('sb-error-msg');
+  if (errEl) errEl.classList.add('hidden');
+
+  const title    = String(document.getElementById('sb-title')?.value || '').trim();
+  const category = String(document.getElementById('sb-category')?.value || 'Makanan & Minuman').trim();
+  const dompetId = String(document.getElementById('sb-dompet')?.value || '').trim();
+  const total    = Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0);
+  const own      = Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0);
+
+  const keys = Object.keys(splitBillState.selectedFriends);
+  if (!keys.length) {
+    if (errEl) { errEl.textContent = 'Pilih minimal 1 teman untuk ditagih Split Bill.'; errEl.classList.remove('hidden'); }
+    return;
+  }
+
+  const participants = [];
+  let sumFriends = 0;
+  for (let i = 0; i < keys.length; i++) {
+    const p = splitBillState.selectedFriends[keys[i]];
+    const amt = Math.round(Number(p.amount) || 0);
+    if (amt <= 0) {
+      if (errEl) { errEl.textContent = `Nominal bagian untuk @${p.username} harus lebih dari Rp 0.`; errEl.classList.remove('hidden'); }
+      return;
+    }
+    sumFriends += amt;
+    participants.push({
+      username: p.username,
+      namaLengkap: p.namaLengkap,
+      amount: amt
+    });
+  }
+
+  if (total <= 0 || Math.abs((own + sumFriends) - total) > 1) {
+    if (errEl) {
+      errEl.textContent = `Bagian kita (${idr(own)}) + bagian teman (${idr(sumFriends)}) harus sama dengan Jumlah Total (${idr(total)}).`;
+      errEl.classList.remove('hidden');
+    }
+    return;
+  }
+
+  // Cek saldo dompet pembuat mencukupi untuk memotong Jumlah Total terlebih dahulu
+  const chosenDompet = dompetState.list.find(d => String(d.id) === String(dompetId)) || dompetState.list[0] || null;
+  const availableSaldo = chosenDompet ? hitungSaldoDompet(chosenDompet.id) : calcTotalSaldoGlobal();
+  if (total > availableSaldo) {
+    if (errEl) {
+      errEl.textContent = `Saldo dompet tidak cukup untuk menalangi total tagihan (${idr(total)}). Saldo tersedia: ${idr(availableSaldo)}.`;
+      errEl.classList.remove('hidden');
+    }
+    return;
+  }
+
+  const btn = document.getElementById('sb-submit-btn');
+  const origText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Mengirim Split Bill & Memotong Saldo…';
+  }
+
+  const creatorTxId = 'sb_init_' + Date.now();
+  const friendNamesStr = participants.map(p => '@' + p.username).join(', ');
+
+  // 1. Potong saldo pembuat terlebih dahulu sebesar Jumlah Total Tagihan
+  const creatorOutTx = {
+    id: creatorTxId,
+    'Kategori': 'Uang Keluar',
+    'Kategori Uang Keluar': category,
+    'Jumlah Uang': total,
+    'Tanggal': new Date().toISOString(),
+    'Deskripsi': `Split Bill: ${title} (Bagian sendiri ${idr(own)}, patungan ${friendNamesStr})`,
+    'DompetId': chosenDompet ? chosenDompet.id : null
+  };
+
+  S.transactions.unshift(creatorOutTx);
+  refreshAll();
+  postData('addData', creatorOutTx).catch(() => {});
+
+  // 2. Kirim data Split Bill ke tab SplitBills di DATA MASTER agar semua teman yang ditagih menerima notifikasi & rincian
+  const res = await callMasterSplitBillApi('createSplitBill', {
+    title: title,
+    category: category,
+    creatorUsername: S.akun.username,
+    creatorNamaLengkap: S.settings.username || S.akun.namaLengkap || S.akun.username,
+    creatorDompetId: chosenDompet ? chosenDompet.id : '',
+    creatorDompetNama: chosenDompet ? (chosenDompet.nama || chosenDompet.provider) : 'Dompet Utama',
+    totalAmount: total,
+    creatorShareAmount: own,
+    participants: participants,
+    creatorTxId: creatorTxId
+  });
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  }
+
+  if (res && res.status === 'success') {
+    if (res.data) {
+      splitBillState.allBills.unshift(res.data);
+    }
+    closeModal('splitbill-backdrop');
+    showSuccess(`🍕 Split Bill "${title}" terkirim! Saldo Anda terpotong ${idr(total)}.`);
+    syncHomeChatAndFriendNotifications();
+  } else {
+    if (errEl) {
+      errEl.textContent = (res && res.message) || 'Gagal mengirim Split Bill.';
+      errEl.classList.remove('hidden');
+    }
+  }
+};
+
+function renderSplitBillHistoryList() {
+  const pane = document.getElementById('sb-pane-list');
+  if (!pane) return;
+
+  const bills = splitBillState.allBills || [];
+  if (!bills.length) {
+    pane.innerHTML = `
+      <div class="p-8 rounded-2xl bg-zinc-50 border border-zinc-200/70 text-center">
+        <div class="text-3xl mb-2">🍕</div>
+        <p class="text-xs font-black text-zinc-800">Belum Ada Tagihan Split Bill</p>
+        <p class="text-[11px] font-semibold text-zinc-400 mt-1">Tagihan Split Bill yang kamu buat atau yang ditagihkan teman kepadamu akan muncul di sini.</p>
+      </div>
+    `;
+    return;
+  }
+
+  pane.innerHTML = bills.map(bill => {
+    const isCreator = Boolean(bill.isCreator || (S.akun && String(bill.creatorUsername || '').toLowerCase() === String(S.akun.username || '').toLowerCase()));
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const paidCount = parts.filter(p => String(p.status || '').toUpperCase() === 'PAID').length;
+    const myPart = bill.myParticipant || parts.find(p => S.akun && String(p.username || '').toLowerCase() === String(S.akun.username || '').toLowerCase());
+    const needMyConfirm = !isCreator && myPart && String(myPart.status || 'PENDING').toUpperCase() === 'PENDING';
+
+    const statusBadge = needMyConfirm
+      ? `<span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black">Menunggu Konfirmasimu</span>`
+      : (paidCount === parts.length
+          ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black">Lunas (${paidCount}/${parts.length})</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[9px] font-black">${paidCount}/${parts.length} Teman Bayar</span>`);
+
+    const safeTitle = String(bill.title || 'Split Bill').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeId = String(bill.id).replace(/'/g, "\\'");
+    const roleText = isCreator
+      ? `Kamu menagih ${parts.length} teman · Bagianmu ${idr(bill.creatorShareAmount)}`
+      : `Ditagih oleh @${bill.creatorUsername} · Bagianmu ${idr(myPart ? myPart.amount : 0)}`;
+
+    return `
+      <div onclick="openSplitBillDetailModal('${safeId}')" class="p-3.5 rounded-2xl border cursor-pointer transition-all active:scale-[0.99] ${needMyConfirm ? 'bg-indigo-50/70 border-indigo-200' : 'bg-white border-zinc-200/80'}">
+        <div class="flex items-start justify-between gap-2 mb-1.5">
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safeTitle}</p>
+            <p class="text-[10px] font-bold text-zinc-500 truncate mt-0.5">${roleText}</p>
+          </div>
+          ${statusBadge}
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-zinc-100 text-[11px]">
+          <span class="font-bold text-zinc-400">Total Bill: <b class="text-zinc-800">${idr(bill.totalAmount)}</b></span>
+          <span class="font-black text-indigo-600">${needMyConfirm ? 'Konfirmasi Sekarang →' : 'Lihat Rincian Semua Orang →'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openSplitBillDetailModal = function(billId) {
+  const bill = (splitBillState.allBills || []).find(b => String(b.id) === String(billId))
+            || (splitBillState.incomingBills || []).find(b => String(b.id) === String(billId));
+  if (!bill) return;
+
+  splitBillState.activeDetailBillId = bill.id;
+  const uLow = S.akun ? String(S.akun.username || '').toLowerCase() : '';
+  const isCreator = String(bill.creatorUsername || '').toLowerCase() === uLow;
+
+  document.getElementById('sbd-title').textContent    = bill.title || 'Split Bill';
+  document.getElementById('sbd-category').textContent = bill.category || 'Makanan & Minuman';
+  document.getElementById('sbd-total').textContent    = idr(bill.totalAmount);
+
+  const dateStr = bill.createdAt
+    ? new Date(bill.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : '';
+  document.getElementById('sbd-meta').textContent = `Dibuat oleh ${bill.creatorNamaLengkap || ('@' + bill.creatorUsername)} (@${bill.creatorUsername})${dateStr ? ' · ' + dateStr : ''}`;
+  document.getElementById('sbd-creator-note').textContent = isCreator
+    ? `Saldo dompetmu telah terpotong ${idr(bill.totalAmount)} di awal`
+    : `Ditalangi awal oleh @${bill.creatorUsername} sebesar ${idr(bill.totalAmount)}`;
+
+  const roleBadge = document.getElementById('sbd-badge-role');
+  if (roleBadge) {
+    roleBadge.textContent = isCreator ? 'Split Bill Buatanku' : 'Tagihan Split Bill Masuk';
+    roleBadge.className = isCreator
+      ? 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 mb-1'
+      : 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-700 mb-1';
+  }
+
+  // Render rincian semua orang: Pembuat + Seluruh Teman yang Ditagih
+  const listEl = document.getElementById('sbd-participants-list');
+  const parts = Array.isArray(bill.participants) ? bill.participants : [];
+
+  let rowsHtml = `
+    <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0">👑</div>
+        <div class="min-w-0">
+          <p class="text-xs font-black text-zinc-900 truncate">${bill.creatorNamaLengkap || bill.creatorUsername} ${isCreator ? '(Kamu)' : ''}</p>
+          <p class="text-[10px] font-bold text-emerald-700">@${bill.creatorUsername} · Pembuat Bill</p>
+        </div>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <p class="text-xs font-black text-zinc-900">${idr(bill.creatorShareAmount)}</p>
+        <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black">Sudah Terpotong</span>
+      </div>
+    </div>
+  `;
+
+  rowsHtml += parts.map(p => {
+    const isMe = String(p.username || '').toLowerCase() === uLow;
+    const st = String(p.status || 'PENDING').toUpperCase();
+    const stBadge = st === 'PAID'
+      ? `<span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black">✅ Sudah Konfirmasi</span>`
+      : st === 'REJECTED'
+        ? `<span class="inline-block px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-black">✕ Ditolak</span>`
+        : `<span class="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[9px] font-black">⏳ Menunggu Konfirmasi</span>`;
+
+    const safePName = String(p.namaLengkap || p.username).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <div class="p-3 rounded-2xl ${isMe ? 'bg-indigo-50/80 border-indigo-200' : 'bg-zinc-50 border-zinc-200/70'} border flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-xl ${isMe ? 'bg-indigo-600 text-white' : 'bg-zinc-200 text-zinc-700'} flex items-center justify-center text-xs font-black flex-shrink-0">
+            ${(safePName[0] || 'U').toUpperCase()}
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safePName} ${isMe ? '(Kamu)' : ''}</p>
+            <p class="text-[10px] font-bold text-zinc-500">@${p.username}</p>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="text-xs font-black text-zinc-900">${idr(p.amount)}</p>
+          ${stBadge}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (listEl) listEl.innerHTML = rowsHtml;
+
+  // Tampilkan kotak konfirmasi jika user adalah peserta yang ditagih dan statusnya masih PENDING
+  const myPart = parts.find(p => String(p.username || '').toLowerCase() === uLow);
+  const confirmBox = document.getElementById('sbd-confirm-box');
+  if (confirmBox) {
+    if (!isCreator && myPart && String(myPart.status || 'PENDING').toUpperCase() === 'PENDING') {
+      confirmBox.classList.remove('hidden');
+      document.getElementById('sbd-my-share').textContent = idr(myPart.amount);
+      populateDompetSelect('sbd-pay-dompet');
+    } else {
+      confirmBox.classList.add('hidden');
+    }
+  }
+
+  openModal('splitbill-detail-backdrop');
+};
+
+window.submitRespondSplitBill = async function(decision) {
+  const billId = splitBillState.activeDetailBillId;
+  if (!billId || !S.akun) return;
+
+  const bill = (splitBillState.allBills || []).find(b => String(b.id) === String(billId))
+            || (splitBillState.incomingBills || []).find(b => String(b.id) === String(billId));
+  if (!bill) return;
+
+  const uLow = String(S.akun.username || '').toLowerCase();
+  const myPart = (bill.participants || []).find(p => String(p.username || '').toLowerCase() === uLow);
+  if (!myPart) return;
+
+  const shareAmount = Number(myPart.amount) || 0;
+  const payDompetId = document.getElementById('sbd-pay-dompet')?.value || (dompetState.list[0] ? dompetState.list[0].id : '');
+
+  if (decision === 'confirm') {
+    const avail = payDompetId ? hitungSaldoDompet(payDompetId) : calcTotalSaldoGlobal();
+    if (shareAmount > avail) {
+      showSuccess(`⚠️ Saldo dompet tidak cukup (${idr(avail)}) untuk membayar ${idr(shareAmount)}.`);
+      return;
+    }
+  }
+
+  const confirmBtn = document.getElementById('sbd-confirm-btn');
+  const rejectBtn  = document.getElementById('sbd-reject-btn');
+  if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = '⏳ Memproses…'; }
+  if (rejectBtn)  rejectBtn.disabled = true;
+
+  const res = await callMasterSplitBillApi('respondSplitBill', {
+    splitBillId: bill.id,
+    username: S.akun.username,
+    decision: decision,
+    dompetId: payDompetId
+  });
+
+  if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = '✅ Konfirmasi & Potong Saldo'; }
+  if (rejectBtn)  rejectBtn.disabled = false;
+
+  if (res && res.status === 'success') {
+    if (decision === 'confirm') {
+      // Catat pemotongan saldo lokal agar UI Beranda teman langsung ter-update
+      const newLocalTx = (res.data && res.data.payerTransaction) ? res.data.payerTransaction : {
+        id: 'sb_pay_' + bill.id + '_' + uLow,
+        'Kategori': 'Uang Keluar',
+        'Kategori Uang Keluar': bill.category || 'Makanan & Minuman',
+        'Jumlah Uang': shareAmount,
+        'Tanggal': new Date().toISOString(),
+        'Deskripsi': `Bayar Split Bill: ${bill.title} (ke @${bill.creatorUsername})`,
+        'DompetId': payDompetId || null
+      };
+      if (!S.transactions.some(t => String(t.id) === String(newLocalTx.id))) {
+        S.transactions.unshift(newLocalTx);
+      }
+      myPart.status = 'PAID';
+    } else {
+      myPart.status = 'REJECTED';
+    }
+
+    splitBillState.incomingBills = (splitBillState.incomingBills || []).filter(b => String(b.id) !== String(bill.id));
+    refreshAll();
+    renderHomeSplitBillAlerts();
+    closeModal('splitbill-detail-backdrop');
+    showSuccess(decision === 'confirm'
+      ? `✅ Berhasil dikonfirmasi! Saldo dipotong ${idr(shareAmount)}.`
+      : 'Tagihan Split Bill ditolak.');
+    syncHomeChatAndFriendNotifications();
+    syncDataInBackground();
+  } else {
+    showSuccess((res && res.message) || 'Gagal memproses konfirmasi Split Bill.');
+  }
+};
 
 var featureBannerState = {
   idx: 0,
@@ -2477,15 +3200,208 @@ function buildBudgetSlideHtml() {
   `;
 }
 
+// ── SLIDE 4: SPLIT BILL (COLORFUL FLAT TANPA GRADIEN, ANIMASI HALUS, MENAMPILKAN YANG BERJALAN & STATUS PENOLAKAN) ──
+function getRunningOrActionableSplitBills() {
+  const all = Array.isArray(splitBillState.allBills) ? splitBillState.allBills : [];
+  const uLow = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase() : '';
+
+  return all.filter(bill => {
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const isCreator = Boolean(bill.isCreator || String(bill.creatorUsername || '').toLowerCase() === uLow);
+    const myPart = bill.myParticipant || parts.find(p => String(p.username || '').toLowerCase() === uLow);
+
+    if (!isCreator && myPart) {
+      const mySt = String(myPart.status || 'PENDING').toUpperCase();
+      // Tampilkan jika masih PENDING (berjalan), REJECT_PENDING (menunggu konfirmasi pengirim), atau REJECTED_APPROVED
+      return mySt === 'PENDING' || mySt === 'REJECT_PENDING' || mySt === 'REJECTED_APPROVED';
+    }
+    if (isCreator) {
+      // Tampilkan jika masih ada peserta yang PENDING atau REJECT_PENDING (menolak)
+      const hasUnfinished = parts.some(p => {
+        const st = String(p.status || 'PENDING').toUpperCase();
+        return st === 'PENDING' || st === 'REJECT_PENDING';
+      });
+      return hasUnfinished || String(bill.status || 'ACTIVE').toUpperCase() === 'ACTIVE';
+    }
+    return false;
+  });
+}
+
+function buildSplitBillSlideHtml() {
+  const runningBills = getRunningOrActionableSplitBills();
+  const uLow = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase() : '';
+
+  // JIKA TIDAK ADA SPLIT BILL YANG BERJALAN -> TAMPILKAN IKLAN TEKS (CLEAN COLORFUL FLAT TANPA GRADIEN)
+  if (!runningBills.length) {
+    return `
+      <div onclick="goToSplitBillPage(event)" class="qa-home-card sb-home-empty p-4 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3.5 min-w-0 relative z-10">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white flex-shrink-0 sb-float-icon" style="background:#EC4899;box-shadow:0 6px 14px rgba(236,72,153,0.24)">
+            <span class="text-xl">🍕</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-sm sm:text-base font-black text-zinc-900 leading-tight tracking-tight">Split Bill Bareng Teman</h3>
+              <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:#FCE7F3;color:#BE185D">Patungan</span>
+            </div>
+            <p class="text-xs font-bold text-pink-600 mt-0.5 leading-snug truncate">Habis makan atau nongkrong? Bagi tagihan otomatis!</p>
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 relative z-10" style="background:#FCE7F3;color:#DB2777">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  // JIKA ADA SPLIT BILL YANG BERJALAN / MENOLAK -> TAMPILKAN DAFTAR KARTU COLORFUL SOLID + STATUS PENOLAKAN
+  const cardsHtml = runningBills.slice(0, 10).map(bill => {
+    const isCreator = Boolean(bill.isCreator || String(bill.creatorUsername || '').toLowerCase() === uLow);
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const myPart = bill.myParticipant || parts.find(p => String(p.username || '').toLowerCase() === uLow);
+    const safeTitle = String(bill.title || 'Split Bill').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeId = String(bill.id || '').replace(/'/g, "\\'");
+    const emoji = SUBCAT_EMOJI_MAP[bill.category] || '🍕';
+
+    const rejectedParts = parts.filter(p => {
+      const s = String(p.status || '').toUpperCase();
+      return s === 'REJECT_PENDING' || s === 'REJECTED_APPROVED';
+    });
+    const paidCount = parts.filter(p => {
+      const s = String(p.status || '').toUpperCase();
+      return s === 'PAID' || s === 'AUTO_PAID_14D';
+    }).length;
+
+    // Palet warna solid (colorful flat, zero gradient) berdasarkan status
+    let cardBg = '#EEF2FF';       // Indigo soft
+    let cardBorder = '#C7D2FE';
+    let badgeBg = '#4F46E5';
+    let badgeText = '#FFFFFF';
+    let badgeLabel = 'Berjalan';
+    let accentColor = '#4338CA';
+    let statusLine = '';
+    let pulseClass = '';
+
+    if (!isCreator && myPart) {
+      const mySt = String(myPart.status || 'PENDING').toUpperCase();
+      const myAmt = Number(myPart.amount) || 0;
+      if (mySt === 'REJECT_PENDING') {
+        cardBg = '#FFF1F2';       // Rose soft (Menolak - Menunggu Konfirmasi Pengirim)
+        cardBorder = '#FECDD3';
+        badgeBg = '#E11D48';
+        badgeLabel = 'Menolak · Tunggu';
+        accentColor = '#BE123C';
+        pulseClass = 'sb-status-pulse';
+        const rsn = myPart.rejectReason ? String(myPart.rejectReason).replace(/</g, '&lt;') : 'Menunggu pengirim';
+        statusLine = `⚠️ Ditolak: "${rsn}"`;
+      } else if (mySt === 'REJECTED_APPROVED') {
+        cardBg = '#F4F4F5';
+        cardBorder = '#E4E4E7';
+        badgeBg = '#52525B';
+        badgeLabel = 'Penolakan Disetujui';
+        accentColor = '#3F3F46';
+        statusLine = `✓ Dibebaskan oleh @${bill.creatorUsername}`;
+      } else {
+        cardBg = '#FEF3C7';       // Amber soft (Perlu Konfirmasi Terima/Tolak)
+        cardBorder = '#FDE68A';
+        badgeBg = '#D97706';
+        badgeLabel = 'Konfirmasi';
+        accentColor = '#B45309';
+        pulseClass = 'sb-status-pulse';
+        statusLine = `Dari @${bill.creatorUsername} · Klik Terima/Tolak`;
+      }
+      return `
+        <button type="button" onclick="goToSplitBillPage(event, '${safeId}')" class="sb-pill-card"
+          style="background:${cardBg};border:2px solid ${cardBorder}">
+          <div class="flex items-center justify-between gap-1.5 mb-1.5">
+            <span class="w-6 h-6 rounded-lg bg-white flex items-center justify-center text-xs shadow-xs">${emoji}</span>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${pulseClass}" style="background:${badgeBg};color:${badgeText}">${badgeLabel}</span>
+          </div>
+          <p class="text-xs font-black text-zinc-900 truncate leading-snug">${safeTitle}</p>
+          <p class="text-[11px] font-black mt-0.5 truncate" style="color:${accentColor}">Bagianmu ${idr(myAmt)}</p>
+          <p class="text-[9px] font-extrabold truncate mt-0.5" style="color:${accentColor}">${statusLine}</p>
+        </button>
+      `;
+    } else {
+      // Kita adalah Pembuat Split Bill
+      if (rejectedParts.length > 0) {
+        const firstRej = rejectedParts[0];
+        const rejStatus = String(firstRej.status || '').toUpperCase();
+        cardBg = '#FFF1F2';       // Rose soft untuk menonjolkan teman yang menolak
+        cardBorder = '#FECDD3';
+        badgeBg = '#E11D48';
+        badgeLabel = rejStatus === 'REJECT_PENDING' ? `${rejectedParts.length} Menolak!` : 'Ditolak';
+        accentColor = '#BE123C';
+        pulseClass = 'sb-status-pulse';
+        const rsn = firstRej.rejectReason ? (`: "${String(firstRej.rejectReason).replace(/</g, '&lt;')}"`) : '';
+        statusLine = `⚠️ @${firstRej.username} menolak${rsn}`;
+      } else {
+        cardBg = '#ECFDF5';       // Emerald/Teal soft untuk tagihan berjalan normal
+        cardBorder = '#A7F3D0';
+        badgeBg = '#059669';
+        badgeLabel = `${paidCount}/${parts.length} Bayar`;
+        accentColor = '#047857';
+        statusLine = `Menunggu ${parts.length - paidCount} teman konfirmasi`;
+      }
+      return `
+        <button type="button" onclick="goToSplitBillPage(event, '${safeId}')" class="sb-pill-card"
+          style="background:${cardBg};border:2px solid ${cardBorder}">
+          <div class="flex items-center justify-between gap-1.5 mb-1.5">
+            <span class="w-6 h-6 rounded-lg bg-white flex items-center justify-center text-xs shadow-xs">${emoji}</span>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${pulseClass}" style="background:${badgeBg};color:${badgeText}">${badgeLabel}</span>
+          </div>
+          <p class="text-xs font-black text-zinc-900 truncate leading-snug">${safeTitle}</p>
+          <p class="text-[11px] font-black mt-0.5 truncate" style="color:${accentColor}">Total ${idr(bill.totalAmount)}</p>
+          <p class="text-[9px] font-extrabold truncate mt-0.5" style="color:${accentColor}">${statusLine}</p>
+        </button>
+      `;
+    }
+  }).join('');
+
+  const hasAnyRejection = runningBills.some(b => (b.participants || []).some(p => String(p.status || '').toUpperCase() === 'REJECT_PENDING'));
+  const headerBadgeBg = hasAnyRejection ? '#FFE4E6' : '#FCE7F3';
+  const headerBadgeClr = hasAnyRejection ? '#E11D48' : '#BE185D';
+  const headerBadgeTxt = hasAnyRejection ? 'Ada Penolakan!' : `${runningBills.length} Berjalan`;
+
+  return `
+    <div class="qa-home-card sb-home-active-shell p-3.5" style="border:2px solid #FBCFE8;background:#FFFFFF">
+      <div class="flex items-center justify-between mb-2.5 px-0.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs flex-shrink-0 sb-float-icon" style="background:#EC4899;color:#FFFFFF">🍕</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-xs font-black text-zinc-900 leading-none">Split Bill Aktif</h3>
+              <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full" style="background:${headerBadgeBg};color:${headerBadgeClr}">${headerBadgeTxt}</span>
+            </div>
+            <p class="text-[10px] font-semibold text-zinc-400 mt-0.5 leading-none">Ketuk kartu untuk cek rincian &amp; status konfirmasi</p>
+          </div>
+        </div>
+        <button type="button" onclick="goToSplitBillPage(event)" class="text-[10px] font-black px-2.5 py-1.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1 flex-shrink-0" style="background:#FCE7F3;color:#BE185D">
+          <span>Buka Split Bill</span>
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="flex gap-2.5 overflow-x-auto no-scroll pb-0.5"
+        ontouchstart="event.stopPropagation();featureBannerState.paused=true"
+        ontouchend="event.stopPropagation();featureBannerState.paused=false">
+        ${cardsHtml}
+      </div>
+    </div>
+  `;
+}
+
 function syncFeatureBannerGeometry(forceUpdatePath) {
   const shell = document.getElementById('feature-orbit-shell');
   const viewport = document.getElementById('feature-banner-viewport');
   const slide0 = document.getElementById('feature-slide-qa');
   const slide1 = document.getElementById('feature-slide-sch');
   const slide2 = document.getElementById('feature-slide-bgt');
-  if (!shell || !viewport || !slide0 || !slide1 || !slide2) return;
+  const slide3 = document.getElementById('feature-slide-sb');
+  if (!shell || !viewport || !slide0 || !slide1 || !slide2 || !slide3) return;
 
-  const slides = [slide0, slide1, slide2];
+  const slides = [slide0, slide1, slide2, slide3];
   const activeSlide = slides[featureBannerState.idx] || slide0;
   const targetH = activeSlide.offsetHeight;
   if (targetH > 0) {
@@ -2507,8 +3423,8 @@ function syncFeatureBannerGeometry(forceUpdatePath) {
 
 function applyFeatureSlideTheme() {
   const idx = featureBannerState.idx;
-  const gradUrl = idx === 0 ? 'url(#orbit-grad-qa)' : idx === 1 ? 'url(#orbit-grad-sch)' : 'url(#orbit-grad-bgt)';
-  const strokeClr = idx === 0 ? 'rgba(16,185,129,0.16)' : idx === 1 ? 'rgba(99,102,241,0.18)' : 'rgba(245,158,11,0.20)';
+  const gradUrl = idx === 0 ? 'url(#orbit-grad-qa)' : idx === 1 ? 'url(#orbit-grad-sch)' : idx === 2 ? 'url(#orbit-grad-bgt)' : 'url(#orbit-grad-sb)';
+  const strokeClr = idx === 0 ? 'rgba(16,185,129,0.16)' : idx === 1 ? 'rgba(99,102,241,0.18)' : idx === 2 ? 'rgba(245,158,11,0.20)' : 'rgba(236,72,153,0.22)';
   const baseTrack = document.getElementById('orbit-base-track');
   const halo = document.getElementById('orbit-glow-halo');
   const beam = document.getElementById('orbit-light-beam');
@@ -2520,13 +3436,15 @@ function applyFeatureSlideTheme() {
   const dot0 = document.getElementById('fdot-0');
   const dot1 = document.getElementById('fdot-1');
   const dot2 = document.getElementById('fdot-2');
+  const dot3 = document.getElementById('fdot-3');
   if (dot0) dot0.className = 'feature-dot ' + (idx === 0 ? 'active-qa' : '');
   if (dot1) dot1.className = 'feature-dot ' + (idx === 1 ? 'active-sch' : '');
   if (dot2) dot2.className = 'feature-dot ' + (idx === 2 ? 'active-bgt' : '');
+  if (dot3) dot3.className = 'feature-dot ' + (idx === 3 ? 'active-sb' : '');
 }
 
 window.goToFeatureSlide = function(idx) {
-  const totalSlides = 3;
+  const totalSlides = 4;
   featureBannerState.idx = ((idx % totalSlides) + totalSlides) % totalSlides;
   featureBannerState.elapsed = 0;
   featureBannerState.lastTs = performance.now();
@@ -2559,7 +3477,7 @@ function startFeatureOrbitLoop() {
       if (beam) beam.setAttribute('stroke-dashoffset', (155 - pos).toFixed(2));
 
       if (progress >= 1) {
-        goToFeatureSlide((featureBannerState.idx + 1) % 3, true);
+        goToFeatureSlide((featureBannerState.idx + 1) % 4, true);
       }
     }
     featureBannerState.rafId = requestAnimationFrame(step);
@@ -2583,9 +3501,9 @@ window.onFeatureBannerTouchEnd = function() {
   featureBannerState.paused = false;
   if (Math.abs(featureBannerState.touchDeltaX) > 42) {
     if (featureBannerState.touchDeltaX < 0) {
-      goToFeatureSlide((featureBannerState.idx + 1) % 3, false);
+      goToFeatureSlide((featureBannerState.idx + 1) % 4, false);
     } else if (featureBannerState.touchDeltaX > 0) {
-      goToFeatureSlide((featureBannerState.idx + 2) % 3, false);
+      goToFeatureSlide((featureBannerState.idx + 3) % 4, false);
     }
   }
   featureBannerState.touchDeltaX = 0;
@@ -2600,9 +3518,11 @@ function renderQuickAddHomeSection() {
     const slideQa  = document.getElementById('feature-slide-qa');
     const slideSch = document.getElementById('feature-slide-sch');
     const slideBgt = document.getElementById('feature-slide-bgt');
+    const slideSb  = document.getElementById('feature-slide-sb');
     if (slideQa)  slideQa.innerHTML  = buildQuickAddSlideHtml();
     if (slideSch) slideSch.innerHTML = buildScheduledSlideHtml();
     if (slideBgt) slideBgt.innerHTML = buildBudgetSlideHtml();
+    if (slideSb)  slideSb.innerHTML  = buildSplitBillSlideHtml();
     requestAnimationFrame(() => syncFeatureBannerGeometry(true));
     return;
   }
@@ -2617,18 +3537,19 @@ function renderQuickAddHomeSection() {
         <defs>
           <linearGradient id="orbit-grad-qa" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#10B981"/>
-            <stop offset="55%" stop-color="#34D399"/>
-            <stop offset="100%" stop-color="#A7F3D0"/>
+            <stop offset="100%" stop-color="#10B981"/>
           </linearGradient>
           <linearGradient id="orbit-grad-sch" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#6366F1"/>
-            <stop offset="55%" stop-color="#38BDF8"/>
-            <stop offset="100%" stop-color="#C4B5FD"/>
+            <stop offset="100%" stop-color="#6366F1"/>
           </linearGradient>
           <linearGradient id="orbit-grad-bgt" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#F59E0B"/>
-            <stop offset="55%" stop-color="#FB923C"/>
-            <stop offset="100%" stop-color="#FDE68A"/>
+            <stop offset="100%" stop-color="#F59E0B"/>
+          </linearGradient>
+          <linearGradient id="orbit-grad-sb" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#EC4899"/>
+            <stop offset="100%" stop-color="#EC4899"/>
           </linearGradient>
           <filter id="orbit-glow-filter" x="-25%" y="-25%" width="150%" height="150%">
             <feGaussianBlur stdDeviation="3.2" result="blur"/>
@@ -2654,6 +3575,9 @@ function renderQuickAddHomeSection() {
           <div id="feature-slide-bgt" class="feature-slide-pane">
             ${buildBudgetSlideHtml()}
           </div>
+          <div id="feature-slide-sb" class="feature-slide-pane">
+            ${buildSplitBillSlideHtml()}
+          </div>
         </div>
       </div>
     </div>
@@ -2662,6 +3586,7 @@ function renderQuickAddHomeSection() {
       <button type="button" id="fdot-0" onclick="goToFeatureSlide(0)" class="feature-dot active-qa" aria-label="Slide Quick Add" title="Quick Add"></button>
       <button type="button" id="fdot-1" onclick="goToFeatureSlide(1)" class="feature-dot" aria-label="Slide Transaksi Terjadwal" title="Transaksi Terjadwal"></button>
       <button type="button" id="fdot-2" onclick="goToFeatureSlide(2)" class="feature-dot" aria-label="Slide Kelola Budget" title="Kelola Budget"></button>
+      <button type="button" id="fdot-3" onclick="goToFeatureSlide(3)" class="feature-dot" aria-label="Slide Split Bill" title="Split Bill"></button>
     </div>
   `;
 
@@ -4054,14 +4979,12 @@ function getScopedCatStorageKey() {
 }
 
 function getAllUserCategories() {
-  // 1. Cek dari localStorage / cookie
   let list = null;
   try {
     const raw = storageGet(getScopedCatStorageKey()) || storageGet(CAT_STORAGE_KEY);
     if (raw) list = JSON.parse(raw);
   } catch(e) {}
 
-  // 2. Fallback cek dari S.settings.backupPassword (Cloud Spreadsheet sync)
   if ((!Array.isArray(list) || !list.length) && S.settings && S.settings.backupPassword) {
     const bp = String(S.settings.backupPassword);
     if (bp.indexOf(CLOUD_CAT_PREFIX) === 0) {
@@ -4079,7 +5002,6 @@ function getAllUserCategories() {
     list = getDefaultAppCategories();
   }
 
-  // Update SUBCAT_EMOJI_MAP agar ikon di seluruh kartu beranda ikut menyesuaikan
   list.forEach(c => {
     if (c && c.name && c.icon) {
       SUBCAT_EMOJI_MAP[c.name] = c.icon;
@@ -4125,13 +5047,12 @@ function renderDynamicCategoryButtons(catType) {
     const safeName = String(c.name).replace(/"/g, '&quot;');
     const shortLbl = c.shortLabel || c.name.split(' ')[0];
     const isAct = S.txSub === c.name ? 'active' : '';
-    return `<button type="button" data-sub="${safeName}" onclick="selectTxCategoryItem('${safeName.replace(/'/g, "\'")}')" class="subcat-icon-btn ${isAct}">
+    return `<button type="button" data-sub="${safeName}" onclick="selectTxCategoryItem('${safeName.replace(/'/g, "\\'")}')" class="subcat-icon-btn ${isAct}">
       <div class="subcat-icon-circle" style="background:${c.bg || '#F3F4F6'}">${c.icon || '🏷️'}</div>
       <span class="subcat-icon-label">${shortLbl}</span>
     </button>`;
   }).join('');
 
-  // Sembunyikan subkategori detail sampai salah satu kategori diklik
   if (!S.txSub) {
     document.getElementById('tx-subdetail-wrap')?.classList.add('hidden');
   } else {
@@ -4188,7 +5109,7 @@ function renderTxSubcategoryChips(catType, catName) {
   html += subs.map(s => {
     const isSel = S.txSubDetail === s;
     const safeS = String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const jsSafe = String(s).replace(/'/g, "\'");
+    const jsSafe = String(s).replace(/'/g, "\\'");
     return `<button type="button" onclick="selectTxSubDetail('${jsSafe}')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold border transition-all" style="${isSel ? activeStyle : idleStyle}">
       ${safeS}
     </button>`;
@@ -4216,7 +5137,6 @@ function handleCatClick() {
   const activeClass = cat === 'Uang Masuk' ? 'active-in' : cat === 'Uang Keluar' ? 'active-out' : 'active-svc';
   this.classList.add('cat-btn', activeClass);
 
-  // Tampilkan deretan Kategori & Subkategori baik untuk Uang Keluar maupun Uang Masuk
   const subSection = document.getElementById('subcat-section');
   if (subSection) subSection.classList.remove('hidden');
   renderDynamicCategoryButtons(cat);
@@ -4247,7 +5167,7 @@ function renderCtxQuickAdd(cat, sub, containerId) {
   const colorAmt = cat === 'Uang Masuk' ? '#10B981' : '#EF4444';
   const sign = cat === 'Uang Masuk' ? '+' : '-';
   container.innerHTML = items.map((tx, i) => {
-    const sid = String(tx.id).replace(/'/g,"\'");
+    const sid = String(tx.id).replace(/'/g,"\\'");
     return `<button type="button" onclick="applyQuickAdd('${sid}')" class="quick-chip" style="animation-delay:${i*0.04}s">
       <span class="q-desc">${tx.Deskripsi}</span>
       <span class="q-amt" style="color:${colorAmt}">${sign}${idr(tx['Jumlah Uang'])}</span>
@@ -4339,7 +5259,6 @@ window.openTransactionModal = function(id=null) {
   document.querySelectorAll('.cat-btn').forEach(b => b.className = 'cat-btn');
   S.txCat = null; S.txSub = null; S.txSubDetail = '';
 
-  // Pastikan daftar kategori terbaru dari Kelola Kategori termuat
   getAllUserCategories();
 
   if (id) {
@@ -4360,7 +5279,6 @@ window.openTransactionModal = function(id=null) {
   } else {
     document.getElementById('tx-modal-title').textContent = 'Transaksi Baru';
     document.getElementById('tx-date').value = today();
-    // Otomatis buka tab KELUAR agar deretan kategori langsung terlihat
     document.getElementById('cat-btn-keluar')?.click();
   }
   openModal('tx-backdrop');
