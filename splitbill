@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Split Bill — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count_sb';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
+  }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
+})();
+</script>
+<style>
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #FAFAFA;
+  color: #111111;
+  margin: 0;
+  padding-bottom: 48px;
+  overflow-x: hidden;
+}
+.mono-card {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 20px;
+}
+.mono-input {
+  background: #F4F4F5;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  padding: 12px 14px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111111;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.18s, background 0.18s;
+}
+.mono-input:focus {
+  background: #FFFFFF;
+  border-color: #111111;
+}
+.mono-input::placeholder {
+  color: #A1A1AA;
+  font-weight: 500;
+}
+.btn-black {
+  background: #111111;
+  color: #FFFFFF;
+  border: 1.5px solid #111111;
+  border-radius: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s, opacity 0.15s;
+}
+.btn-black:active { transform: scale(0.98); }
+.btn-black:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-outline {
+  background: #FFFFFF;
+  color: #111111;
+  border: 1.5px solid #E4E4E7;
+  border-radius: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+}
+.btn-outline:hover { border-color: #111111; }
+.btn-outline:active { transform: scale(0.98); }
+
+.tab-switch-wrap {
+  display: flex;
+  background: #F4F4F5;
+  padding: 4px;
+  border-radius: 16px;
+  gap: 4px;
+}
+.tab-switch-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.tab-switch-btn.active {
+  background: #111111;
+  color: #FFFFFF;
+}
+.tab-switch-btn:not(.active) {
+  background: transparent;
+  color: #71717A;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(17, 17, 17, 0.48);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+.modal-overlay.show { opacity: 1; }
+.modal-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #FFFFFF;
+  border-radius: 26px 26px 0 0;
+  padding: 22px 20px 30px;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-overlay.show .modal-sheet { transform: translateY(0); }
+
+@media (min-width: 640px) {
+  .modal-overlay { align-items: center; padding: 20px; }
+  .modal-sheet { border-radius: 24px; transform: scale(0.96); }
+  .modal-overlay.show .modal-sheet { transform: scale(1); }
+}
+
+.chat-bubble-me {
+  align-self: flex-end;
+  max-width: 80%;
+  background: #111111;
+  color: #FFFFFF;
+  border-radius: 16px 16px 4px 16px;
+  padding: 9px 13px;
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.chat-bubble-other {
+  align-self: flex-start;
+  max-width: 80%;
+  background: #F4F4F5;
+  color: #111111;
+  border: 1px solid #E4E4E7;
+  border-radius: 16px 16px 16px 4px;
+  padding: 9px 13px;
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOAST FEEDBACK ═══════════ -->
+<div id="toast-box" class="fixed top-4 left-1/2 -translate-x-1/2 z-[95] hidden px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-extrabold shadow-lg flex items-center gap-2 max-w-xs text-center">
+  <span id="toast-text">Tersimpan</span>
+</div>
+
+<!-- ═══════════ CONTAINER UTAMA ═══════════ -->
+<div class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- HEADER CLEAN MONOCHROME + TOMBOL "?" -->
+  <header class="pt-8 pb-3.5 px-5 sticky top-0 z-20 bg-[#FAFAFA]/95 backdrop-blur-md border-b border-zinc-200/80">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="https://keloladuit.my.id/home" target="_top" onclick="goBackHome(event)" class="w-10 h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-zinc-900 active:scale-95 transition-transform" style="text-decoration:none" aria-label="Kembali">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <div>
+          <h1 class="text-base font-black text-zinc-900 leading-tight">Split Bill</h1>
+          <p id="my-user-label" class="text-[11px] font-bold text-zinc-400 mt-0.5">@pengguna</p>
+        </div>
+      </div>
+
+      <!-- Tombol "?" (Pop-up Penjelasan) -->
+      <button type="button" onclick="openHelpModal()" class="w-9 h-9 rounded-full bg-zinc-900 text-white text-sm font-black flex items-center justify-center active:scale-90 transition-transform" title="Cara Kerja Split Bill" aria-label="Bantuan Split Bill">
+        ?
+      </button>
+    </div>
+  </header>
+
+  <main class="px-5 pt-4 space-y-4 flex-1">
+
+    <!-- 2 TAB UTAMA: BUAT SPLIT BILL | TAGIHAN & RIWAYAT -->
+    <div class="tab-switch-wrap">
+      <button type="button" id="tab-btn-create" onclick="switchMainTab('create')" class="tab-switch-btn active">
+        <span>Buat Baru</span>
+      </button>
+      <button type="button" id="tab-btn-list" onclick="switchMainTab('list')" class="tab-switch-btn">
+        <span>Tagihan &amp; Riwayat</span>
+        <span id="badge-pending-count" class="hidden px-1.5 py-0.5 rounded-full bg-white text-zinc-900 text-[10px] font-black leading-none">0</span>
+      </button>
+    </div>
+
+    <!-- ═══ PANE 1: FORM BUAT SPLIT BILL ═══ -->
+    <section id="pane-create" class="space-y-3.5">
+      <form id="sb-form" onsubmit="handleCreateSplitBill(event)" class="mono-card p-4 space-y-3.5">
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Nama Tagihan</label>
+            <input type="text" id="sb-title" placeholder="Cth: Makan Malam" class="mono-input" required>
+          </div>
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Kategori</label>
+            <select id="sb-category" class="mono-input"></select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Dompet Pembayaran Awal</label>
+          <select id="sb-dompet" class="mono-input"></select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Jumlah Total (Rp)</label>
+            <input type="number" id="sb-total-amount" placeholder="0" min="1" class="mono-input text-sm font-black" required oninput="onTotalOrOwnInput('total')">
+          </div>
+          <div>
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1">Bagian Kita (Rp)</label>
+            <input type="number" id="sb-own-amount" placeholder="0" min="0" class="mono-input text-sm font-black" required oninput="onTotalOrOwnInput('own')">
+          </div>
+        </div>
+
+        <!-- Pemilihan Teman (Hanya Teman ACCEPTED) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Pilih Teman</label>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="divideEquallyAll()" class="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-[10px] font-extrabold transition">Bagi Rata</button>
+              <button type="button" onclick="divideRemainderFriends()" class="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-[10px] font-extrabold transition">Bagi Sisa</button>
+            </div>
+          </div>
+
+          <div id="friends-chip-list" class="flex flex-wrap gap-1.5 mb-2.5 max-h-28 overflow-y-auto"></div>
+          <div id="selected-friends-inputs" class="space-y-2 max-h-52 overflow-y-auto"></div>
+        </div>
+
+        <!-- Ringkasan Singkat -->
+        <div class="p-3 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-1 text-xs">
+          <div class="flex justify-between">
+            <span class="text-zinc-500 font-semibold">Total Tagihan</span>
+            <span id="sum-total" class="font-black text-zinc-900">Rp 0</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500 font-semibold">Bagian Kita</span>
+            <span id="sum-own" class="font-black text-zinc-900">Rp 0</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500 font-semibold">Total Ditagih ke Teman</span>
+            <span id="sum-friends" class="font-black text-zinc-900">Rp 0</span>
+          </div>
+          <div class="pt-1.5 border-t border-zinc-200 flex justify-between items-center">
+            <span class="text-zinc-500 font-bold">Validasi</span>
+            <span id="sum-status" class="font-black text-zinc-400">Isi nominal</span>
+          </div>
+        </div>
+
+        <p id="form-err" class="text-xs font-bold text-zinc-900 bg-zinc-100 p-2.5 rounded-xl text-center hidden"></p>
+
+        <button type="submit" id="btn-submit-sb" class="w-full py-3.5 btn-black text-xs uppercase tracking-wider">
+          Kirim Split Bill
+        </button>
+      </form>
+    </section>
+
+    <!-- ═══ PANE 2: DAFTAR TAGIHAN & RIWAYAT SPLIT BILL ═══ -->
+    <section id="pane-list" class="hidden space-y-3">
+      <!-- Filter Sub-Tab -->
+      <div class="flex gap-1.5 overflow-x-auto no-scroll pb-1">
+        <button type="button" id="flt-all" onclick="setListFilter('all')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold bg-zinc-900 text-white">Semua</button>
+        <button type="button" id="flt-incoming" onclick="setListFilter('incoming')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold bg-white border border-zinc-200 text-zinc-600">Ditagih ke Saya</button>
+        <button type="button" id="flt-created" onclick="setListFilter('created')" class="px-3 py-1.5 rounded-full text-[11px] font-extrabold bg-white border border-zinc-200 text-zinc-600">Tagihan Buatanku</button>
+      </div>
+
+      <div id="bills-list-container" class="space-y-2.5"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     POP-UP TOMBOL "?" (PENJELASAN SINGKAT SPLIT BILL)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="help-modal" class="modal-overlay" onclick="if(event.target===this)closeHelpModal()">
+  <div class="modal-sheet">
+    <div class="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-base font-black text-zinc-900">Cara Kerja Split Bill</h3>
+      <button type="button" onclick="closeHelpModal()" class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-600 font-black text-xs">✕</button>
+    </div>
+    <div class="space-y-2.5 text-xs text-zinc-600 font-medium leading-relaxed">
+      <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
+        <p class="font-black text-zinc-900 mb-0.5">1. Khusus Sesama Teman</p>
+        <p>Hanya pengguna yang sudah berteman denganmu yang dapat dimasukkan ke dalam Split Bill.</p>
+      </div>
+      <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
+        <p class="font-black text-zinc-900 mb-0.5">2. Potong Saldo Pembuat di Awal</p>
+        <p>Saat kamu mengirim Split Bill, saldo dompetmu terpotong sebesar <b>Jumlah Total</b> terlebih dahulu.</p>
+      </div>
+      <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
+        <p class="font-black text-zinc-900 mb-0.5">3. Konfirmasi Penerima (Terima / Tolak)</p>
+        <p>Teman yang ditagih dapat melihat seluruh rincian setiap orang. Jika <b>Terima</b>, saldo mereka terpotong dan masuk ke dompetmu. Jika <b>Tolak</b>, mereka memilih alasan dan menunggu konfirmasimu.</p>
+      </div>
+      <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200/80">
+        <p class="font-black text-zinc-900 mb-0.5">4. Potong Otomatis 14 Hari</p>
+        <p>Jika penerima tidak memberi konfirmasi dalam <b>14 hari</b>, sistem otomatis memotong saldo penerima.</p>
+      </div>
+    </div>
+    <button type="button" onclick="closeHelpModal()" class="w-full mt-4 py-3 btn-black text-xs">Mengerti</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL DETAIL SPLIT BILL, KONFIRMASI (TERIMA / TOLAK + ALASAN), & INLINE CHAT
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="detail-modal" class="modal-overlay" onclick="if(event.target===this)closeDetailModal()">
+  <div class="modal-sheet">
+    <div class="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-4"></div>
+
+    <!-- Header Detail -->
+    <div class="flex items-start justify-between gap-3 mb-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-1.5 mb-1">
+          <span id="dt-role-pill" class="px-2 py-0.5 rounded-md bg-zinc-900 text-white text-[10px] font-black uppercase">Split Bill</span>
+          <span id="dt-countdown-pill" class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[10px] font-bold">⏳ 14 hari</span>
+        </div>
+        <h3 id="dt-title" class="text-base font-black text-zinc-900 truncate">Nama Tagihan</h3>
+        <p id="dt-meta" class="text-[11px] font-semibold text-zinc-400 mt-0.5">Dibuat oleh @user</p>
+      </div>
+      <button type="button" onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-600 font-black text-xs flex-shrink-0">✕</button>
+    </div>
+
+    <!-- Kotak Total Monokrom Hitam -->
+    <div class="p-4 rounded-2xl bg-zinc-900 text-white mb-3.5 flex items-center justify-between">
+      <div>
+        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Jumlah Total</p>
+        <p id="dt-total" class="text-xl font-black mt-0.5">Rp 0</p>
+      </div>
+      <div class="text-right">
+        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Kategori</p>
+        <p id="dt-category" class="text-xs font-extrabold text-zinc-200 mt-0.5">Makanan</p>
+      </div>
+    </div>
+
+    <!-- Daftar Rincian Semua Orang (Pembuat + Teman-teman) -->
+    <div class="mb-3.5">
+      <p class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider mb-2">Rincian Bagian Semua Orang</p>
+      <div id="dt-participants-list" class="space-y-2 max-h-52 overflow-y-auto pr-0.5"></div>
+    </div>
+
+    <!-- KOTAK AKSI PENERIMA: TERIMA / TOLAK (MUNCUL JIKA USER ADALAH PENERIMA & STATUS PENDING) -->
+    <div id="dt-receiver-action-box" class="hidden p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-3 mb-3.5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-zinc-600">Tagihan Bagianmu</span>
+        <span id="dt-my-share" class="text-sm font-black text-zinc-900">Rp 0</span>
+      </div>
+
+      <div>
+        <label class="text-[10px] font-extrabold text-zinc-400 uppercase block mb-1">Potong dari Dompet</label>
+        <select id="dt-pay-dompet" class="mono-input !bg-white border border-zinc-200"></select>
+      </div>
+
+      <!-- Tombol Utama Terima / Tolak -->
+      <div id="dt-main-decision-btns" class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="toggleRejectReasonForm(true)" class="py-3 btn-outline text-xs">
+          Tolak
+        </button>
+        <button type="button" id="btn-accept-bill" onclick="submitReceiverDecision('confirm')" class="py-3 btn-black text-xs">
+          Terima &amp; Bayar
+        </button>
+      </div>
+
+      <!-- Sub-Form Opsi Alasan Penolakan (Muncul Saat Klik Tolak) -->
+      <div id="dt-reject-reason-box" class="hidden pt-2 border-t border-zinc-200 space-y-2.5">
+        <p class="text-[11px] font-extrabold text-zinc-800">Pilih Alasan Penolakan:</p>
+        <div class="space-y-1.5">
+          <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-zinc-200 cursor-pointer text-xs font-bold text-zinc-800">
+            <input type="radio" name="sb_reject_reason" value="Nominal tidak sesuai" checked onchange="onRejectReasonRadioChange()" class="accent-zinc-900">
+            <span>Nominal tidak sesuai</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-zinc-200 cursor-pointer text-xs font-bold text-zinc-800">
+            <input type="radio" name="sb_reject_reason" value="Saya tidak merasa memiliki ini" onchange="onRejectReasonRadioChange()" class="accent-zinc-900">
+            <span>Saya tidak merasa memiliki ini</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-zinc-200 cursor-pointer text-xs font-bold text-zinc-800">
+            <input type="radio" name="sb_reject_reason" value="custom" onchange="onRejectReasonRadioChange()" class="accent-zinc-900">
+            <span>Lainnya (isi sendiri)</span>
+          </label>
+        </div>
+
+        <input type="text" id="dt-reject-custom-input" placeholder="Tulis alasan penolakanmu…" class="mono-input !bg-white border border-zinc-300 hidden">
+
+        <div class="flex gap-2">
+          <button type="button" onclick="toggleRejectReasonForm(false)" class="px-4 py-2.5 btn-outline text-xs">Batal</button>
+          <button type="button" id="btn-submit-reject" onclick="submitReceiverDecision('reject')" class="flex-1 py-2.5 btn-black text-xs">
+            Kirim Penolakan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO STATUS MENUNGGU KONFIRMASI PENGIRIM (MUNCUL SETELAH PENERIMA MENOLAK) -->
+    <div id="dt-waiting-creator-box" class="hidden p-3.5 rounded-2xl bg-zinc-100 border border-zinc-300 mb-3.5">
+      <p class="text-xs font-black text-zinc-900">⏳ Menunggu Konfirmasi Pengirim</p>
+      <p id="dt-waiting-reason-text" class="text-[11px] font-semibold text-zinc-600 mt-0.5">Alasan penolakanmu telah dikirim ke pengirim.</p>
+    </div>
+
+    <!-- TOMBOL & PANEL INLINE CHAT (LANGSUNG KIRIM PESAN TANPA PINDAH HALAMAN) -->
+    <div class="border-t border-zinc-200 pt-3">
+      <div class="flex items-center justify-between mb-2">
+        <button type="button" onclick="toggleInlineChatPanel()" class="w-full py-2.5 px-3.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-900 text-xs font-extrabold flex items-center justify-between transition">
+          <span id="dt-chat-toggle-label">💬 Chat dengan Pengirim</span>
+          <span id="dt-chat-partner-Tag" class="text-[11px] font-bold text-zinc-500">@username ▾</span>
+        </button>
+      </div>
+
+      <!-- Pilihan lawan chat (jika kita pembuat dan peserta > 1 teman) -->
+      <div id="dt-chat-target-selector" class="hidden flex gap-1.5 overflow-x-auto no-scroll mb-2"></div>
+
+      <!-- Kotak Inline Chat -->
+      <div id="dt-inline-chat-panel" class="hidden rounded-2xl border border-zinc-200 bg-white overflow-hidden">
+        <div id="dt-inline-chat-stream" class="p-3 max-h-44 min-h-[110px] overflow-y-auto flex flex-col gap-2 bg-[#FAFAFA]">
+          <p class="text-[11px] text-zinc-400 text-center my-auto">Memuat obrolan…</p>
+        </div>
+        <form onsubmit="handleSendInlineChat(event)" class="p-2 bg-white border-t border-zinc-200 flex items-center gap-2">
+          <input type="text" id="dt-inline-chat-input" placeholder="Ketik pesan langsung di sini…" class="mono-input !py-2 !px-3 !text-xs flex-1">
+          <button type="submit" class="px-3.5 py-2 btn-black text-xs flex-shrink-0">Kirim</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ JAVASCRIPT ═══════════ -->
+<script>
+const GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const TX_CACHE_KEY     = 'keuangan_transactions_cache';
+const CAT_STORAGE_KEY  = 'keuangan_categories_v1';
+
+const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+
+let S = {
+  akun: null,
+  gsUrl: '',
+  transactions: [],
+  dompetList: [],
+  friends: [],
+  allBills: [],
+  incomingBills: [],
+  selectedFriends: {}, // { uLow: { username, namaLengkap, amount } }
+  mainTab: 'create',
+  listFilter: 'all',
+  activeBillId: null,
+  inlineChatOpen: false,
+  inlineChatTargetUsername: '',
+  inlineChatMessages: {}, // { roomId: [msg, ...] }
+  inlineChatTimer: null
+};
+
+// ── STORAGE HELPERS ──
+function storageGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    if (v !== null) return v;
+  } catch (e) {}
+  try {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  } catch (e) { return null; }
+}
+
+function checkSession() {
+  try {
+    const raw = storageGet(AUTH_SESSION_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.username && parsed.gsUrl) {
+      S.akun = parsed;
+      S.gsUrl = parsed.gsUrl;
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function showToast(msg) {
+  const box = document.getElementById('toast-box');
+  const txt = document.getElementById('toast-text');
+  if (!box || !txt) return;
+  txt.textContent = msg;
+  box.classList.remove('hidden');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => box.classList.add('hidden'), 2600);
+}
+
+window.goBackHome = function(e) {
+  if (e) e.preventDefault();
+  try { window.top.location.href = 'https://keloladuit.my.id/home'; }
+  catch (err) { window.location.href = 'https://keloladuit.my.id/home'; }
+};
+
+// ── LOAD LOCAL CACHES (DOMPET, TRANSAKSI, KATEGORI, INBOX) ──
+function loadLocalData() {
+  try {
+    const txRaw = localStorage.getItem(TX_CACHE_KEY);
+    if (txRaw) S.transactions = JSON.parse(txRaw) || [];
+  } catch (e) {}
+
+  try {
+    const dptRaw = localStorage.getItem('keuangan_dompet_list');
+    if (dptRaw) S.dompetList = JSON.parse(dptRaw) || [];
+  } catch (e) {}
+
+  if (S.akun && S.akun.username) {
+    try {
+      const inboxKey = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+      const inbRaw = localStorage.getItem(inboxKey);
+      if (inbRaw) {
+        const parsed = JSON.parse(inbRaw);
+        if (parsed) {
+          S.friends = Array.isArray(parsed.friends) ? parsed.friends : [];
+          S.allBills = Array.isArray(parsed.splitBills) ? parsed.splitBills : [];
+          S.incomingBills = Array.isArray(parsed.incomingSplitBills) ? parsed.incomingSplitBills : [];
+        }
+      }
+    } catch (e) {}
+  }
+}
+
+function saveLocalTransactionsAndCache() {
+  try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch (e) {}
+  if (S.akun && S.akun.username) {
+    try {
+      const inboxKey = 'keuangan_chat_inbox_v1_' + String(S.akun.username).toLowerCase();
+      const existing = JSON.parse(localStorage.getItem(inboxKey) || '{}');
+      existing.friends = S.friends;
+      existing.splitBills = S.allBills;
+      existing.incomingSplitBills = S.incomingBills;
+      localStorage.setItem(inboxKey, JSON.stringify(existing));
+    } catch (e) {}
+  }
+}
+
+function hitungSaldoDompet(dompetId) {
+  const d = S.dompetList.find(x => String(x.id) === String(dompetId));
+  if (!d) return 0;
+  let s = Number(d.saldoAwal) || 0;
+  S.transactions.forEach(t => {
+    if (String(t.DompetId) !== String(dompetId)) return;
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') s += v;
+    if (t.Kategori === 'Uang Keluar') s -= v;
+  });
+  return s;
+}
+
+function populateDompetOptions(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  if (!S.dompetList.length) {
+    sel.innerHTML = '<option value="">Dompet Utama / Tunai</option>';
+    return;
+  }
+  sel.innerHTML = S.dompetList.map(d => {
+    const s = hitungSaldoDompet(d.id);
+    return `<option value="${d.id}">${d.nama || d.provider} (${idr(s)})</option>`;
+  }).join('');
+}
+
+function populateCategories() {
+  const sel = document.getElementById('sb-category');
+  if (!sel) return;
+  let cats = [
+    'Makanan & Minuman', 'Transportasi', 'Hiburan & Langganan', 'Kebutuhan',
+    'Tagihan Rutin', 'Pendidikan', 'Kesehatan', 'Lainnya'
+  ];
+  try {
+    const scopedKey = S.akun ? `${CAT_STORAGE_KEY}_${String(S.akun.username).toLowerCase()}` : CAT_STORAGE_KEY;
+    const raw = storageGet(scopedKey) || storageGet(CAT_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) {
+        cats = parsed.filter(c => c && c.type === 'Uang Keluar' && c.active !== false).map(c => c.name);
+      }
+    }
+  } catch (e) {}
+  sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+// ── API CALLER (POST DENGAN FALLBACK GET ANTI-302) ──
+async function callMasterApi(action, dataObj) {
+  try {
+    const r = await fetch(GLOBAL_GS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, data: dataObj })
+    });
+    const j = await r.json();
+    if (j) return j;
+  } catch (e) {}
+
+  try {
+    const qs = `?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(dataObj))}&_t=${Date.now()}`;
+    const r2 = await fetch(GLOBAL_GS_URL + qs);
+    return await r2.json();
+  } catch (e2) {
+    return { status: 'error', message: 'Gagal terhubung ke server.' };
+  }
+}
+
+async function postUserSheetData(action, dataObj) {
+  if (!S.gsUrl) return null;
+  try {
+    const r = await fetch(S.gsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: action, data: dataObj })
+    });
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+// ── SYNC SERVER DATA ──
+async function syncSplitBillAndFriends() {
+  if (!S.akun || !S.akun.username) return;
+  try {
+    const uname = encodeURIComponent(S.akun.username);
+    const r = await fetch(`${GLOBAL_GS_URL}?action=getFriendsAndInbox&username=${uname}&_t=${Date.now()}`);
+    const j = await r.json();
+    if (j && j.status === 'success' && j.data) {
+      S.friends = Array.isArray(j.data.friends) ? j.data.friends : [];
+      if (Array.isArray(j.data.splitBills)) {
+        S.allBills = j.data.splitBills;
+        S.incomingBills = Array.isArray(j.data.incomingSplitBills) ? j.data.incomingSplitBills : [];
+      } else {
+        const rSb = await fetch(`${GLOBAL_GS_URL}?action=getSplitBills&username=${uname}&_t=${Date.now()}`);
+        const jSb = await rSb.json();
+        if (jSb && jSb.status === 'success' && jSb.data) {
+          S.allBills = Array.isArray(jSb.data.splitBills) ? jSb.data.splitBills : [];
+          S.incomingBills = Array.isArray(jSb.data.incomingSplitBills) ? jSb.data.incomingSplitBills : [];
+        }
+      }
+      saveLocalTransactionsAndCache();
+      renderFriendsPicker();
+      renderPendingBadge();
+      if (S.mainTab === 'list') renderBillsList();
+      if (S.activeBillId) refreshOpenDetailModal();
+    }
+  } catch (e) {}
+}
+
+// ── TAB & HELP MODAL ──
+window.switchMainTab = function(tab) {
+  S.mainTab = tab === 'list' ? 'list' : 'create';
+  document.getElementById('tab-btn-create').classList.toggle('active', S.mainTab === 'create');
+  document.getElementById('tab-btn-list').classList.toggle('active', S.mainTab === 'list');
+  document.getElementById('pane-create').classList.toggle('hidden', S.mainTab !== 'create');
+  document.getElementById('pane-list').classList.toggle('hidden', S.mainTab !== 'list');
+  if (S.mainTab === 'list') renderBillsList();
+};
+
+window.openHelpModal = function() {
+  const el = document.getElementById('help-modal');
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+window.closeHelpModal = function() {
+  const el = document.getElementById('help-modal');
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 240);
+};
+
+function renderPendingBadge() {
+  const badge = document.getElementById('badge-pending-count');
+  if (!badge) return;
+  const count = (S.incomingBills || []).length;
+  if (count > 0) {
+    badge.textContent = String(count);
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+// ── FORM PEMBUATAN SPLIT BILL ──
+function renderFriendsPicker() {
+  const wrap = document.getElementById('friends-chip-list');
+  if (!wrap) return;
+  if (!S.friends.length) {
+    wrap.innerHTML = `
+      <div class="w-full p-3 rounded-xl bg-zinc-100 text-xs font-bold text-zinc-600 flex items-center justify-between">
+        <span>Belum ada teman aktif.</span>
+        <a href="https://keloladuit.my.id/chat" target="_top" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black" style="text-decoration:none">+ Tambah Teman</a>
+      </div>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = S.friends.map(f => {
+    const uLow = String(f.friendUsername || '').toLowerCase();
+    const isSel = Boolean(S.selectedFriends[uLow]);
+    const safeU = String(f.friendUsername || '').replace(/'/g, "\\'");
+    const safeName = String(f.friendNamaLengkap || f.friendUsername).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <button type="button" onclick="toggleFriend('${safeU}')"
+        class="px-3 py-1.5 rounded-full text-xs font-extrabold border transition ${isSel ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-800 border-zinc-200 hover:border-zinc-900'}">
+        ${isSel ? '✓ ' : '+ '}${safeName} <span class="opacity-60 text-[10px]">@${f.friendUsername}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+window.toggleFriend = function(username) {
+  const uLow = String(username || '').toLowerCase();
+  if (!uLow) return;
+  if (S.selectedFriends[uLow]) {
+    delete S.selectedFriends[uLow];
+  } else {
+    const f = S.friends.find(x => String(x.friendUsername || '').toLowerCase() === uLow);
+    if (!f) return;
+    S.selectedFriends[uLow] = {
+      username: f.friendUsername,
+      namaLengkap: f.friendNamaLengkap || f.friendUsername,
+      amount: 0
+    };
+  }
+  renderFriendsPicker();
+  renderSelectedFriendInputs();
+  recalcSummary();
+};
+
+function renderSelectedFriendInputs() {
+  const wrap = document.getElementById('selected-friends-inputs');
+  if (!wrap) return;
+  const keys = Object.keys(S.selectedFriends);
+  if (!keys.length) {
+    wrap.innerHTML = '<p class="text-[11px] font-semibold text-zinc-400 text-center py-2">Pilih teman di atas untuk mengisi bagian tagihan mereka.</p>';
+    return;
+  }
+
+  wrap.innerHTML = keys.map(k => {
+    const item = S.selectedFriends[k];
+    const safeName = String(item.namaLengkap || item.username).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeU = String(item.username).replace(/'/g, "\\'");
+    const val = item.amount > 0 ? item.amount : '';
+    return `
+      <div class="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between gap-2">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-black text-zinc-900 truncate">${safeName}</p>
+          <p class="text-[10px] font-bold text-zinc-400 truncate">@${item.username}</p>
+        </div>
+        <div class="relative w-36 flex-shrink-0">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-zinc-400">Rp</span>
+          <input type="number" min="1" placeholder="0" value="${val}"
+            oninput="onFriendAmountInput('${safeU}', this.value)"
+            class="mono-input !bg-white !py-2 !pl-8 !pr-2.5 text-right text-xs font-black border border-zinc-200">
+        </div>
+        <button type="button" onclick="toggleFriend('${safeU}')" class="w-7 h-7 rounded-lg bg-white border border-zinc-200 text-zinc-500 text-xs font-black flex-shrink-0">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+window.onFriendAmountInput = function(username, val) {
+  const uLow = String(username || '').toLowerCase();
+  if (!S.selectedFriends[uLow]) return;
+  S.selectedFriends[uLow].amount = Math.max(0, Math.round(Number(val) || 0));
+  recalcSummary();
+};
+
+window.onTotalOrOwnInput = function(source) {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(S.selectedFriends);
+  if (keys.length === 1 && total > 0 && own <= total && source === 'own') {
+    S.selectedFriends[keys[0]].amount = Math.max(0, total - own);
+    renderSelectedFriendInputs();
+  }
+  recalcSummary();
+};
+
+window.divideEquallyAll = function() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const keys  = Object.keys(S.selectedFriends);
+  const n     = 1 + keys.length;
+  if (total <= 0 || !keys.length) return;
+  const each = Math.floor(total / n);
+  const rem  = total - (each * n);
+  document.getElementById('sb-own-amount').value = String(each + rem);
+  keys.forEach(k => { S.selectedFriends[k].amount = each; });
+  renderSelectedFriendInputs();
+  recalcSummary();
+};
+
+window.divideRemainderFriends = function() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(S.selectedFriends);
+  if (total <= 0 || !keys.length) return;
+  const rem  = Math.max(0, total - own);
+  const each = Math.floor(rem / keys.length);
+  const left = rem - (each * keys.length);
+  keys.forEach((k, i) => { S.selectedFriends[k].amount = each + (i === 0 ? left : 0); });
+  renderSelectedFriendInputs();
+  recalcSummary();
+};
+
+function recalcSummary() {
+  const total = Math.max(0, Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0));
+  const own   = Math.max(0, Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0));
+  const keys  = Object.keys(S.selectedFriends);
+  let sumFriends = 0;
+  keys.forEach(k => { sumFriends += (Number(S.selectedFriends[k].amount) || 0); });
+
+  document.getElementById('sum-total').textContent   = idr(total);
+  document.getElementById('sum-own').textContent     = idr(own);
+  document.getElementById('sum-friends').textContent = idr(sumFriends);
+
+  const stEl = document.getElementById('sum-status');
+  const diff = total - (own + sumFriends);
+  if (total <= 0) {
+    stEl.textContent = 'Isi nominal';
+    stEl.className = 'font-black text-zinc-400';
+  } else if (!keys.length) {
+    stEl.textContent = 'Pilih teman';
+    stEl.className = 'font-black text-zinc-500';
+  } else if (diff === 0) {
+    stEl.textContent = '✓ Sesuai Total';
+    stEl.className = 'font-black text-zinc-900';
+  } else if (diff > 0) {
+    stEl.textContent = `Kurang ${idr(diff)}`;
+    stEl.className = 'font-black text-zinc-600';
+  } else {
+    stEl.textContent = `Lebih ${idr(Math.abs(diff))}`;
+    stEl.className = 'font-black text-zinc-600';
+  }
+}
+
+window.handleCreateSplitBill = async function(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('form-err');
+  errEl.classList.add('hidden');
+
+  const title    = String(document.getElementById('sb-title')?.value || '').trim();
+  const category = String(document.getElementById('sb-category')?.value || 'Makanan & Minuman').trim();
+  const dompetId = String(document.getElementById('sb-dompet')?.value || '').trim();
+  const total    = Math.round(Number(document.getElementById('sb-total-amount')?.value) || 0);
+  const own      = Math.round(Number(document.getElementById('sb-own-amount')?.value) || 0);
+  const keys     = Object.keys(S.selectedFriends);
+
+  if (!keys.length) {
+    errEl.textContent = 'Pilih minimal 1 teman.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const participants = [];
+  let sumFriends = 0;
+  for (let i = 0; i < keys.length; i++) {
+    const it = S.selectedFriends[keys[i]];
+    const amt = Math.round(Number(it.amount) || 0);
+    if (amt <= 0) {
+      errEl.textContent = `Bagian @${it.username} harus lebih dari Rp 0.`;
+      errEl.classList.remove('hidden');
+      return;
+    }
+    sumFriends += amt;
+    participants.push({
+      username: it.username,
+      namaLengkap: it.namaLengkap,
+      amount: amt
+    });
+  }
+
+  if (total <= 0 || Math.abs((own + sumFriends) - total) > 1) {
+    errEl.textContent = `Bagian kita + teman (${idr(own + sumFriends)}) harus sama dengan Total (${idr(total)}).`;
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const chosenDompet = S.dompetList.find(d => String(d.id) === String(dompetId)) || S.dompetList[0] || null;
+  if (chosenDompet) {
+    const avail = hitungSaldoDompet(chosenDompet.id);
+    if (total > avail) {
+      errEl.textContent = `Saldo dompet tidak cukup (${idr(avail)}).`;
+      errEl.classList.remove('hidden');
+      return;
+    }
+  }
+
+  const btn = document.getElementById('btn-submit-sb');
+  btn.disabled = true;
+  btn.textContent = 'Mengirim Split Bill…';
+
+  const creatorTxId = 'sb_init_' + Date.now();
+  const friendTags  = participants.map(p => '@' + p.username).join(', ');
+
+  // 1. Potong saldo pembuat terlebih dahulu
+  const creatorOutTx = {
+    id: creatorTxId,
+    'Kategori': 'Uang Keluar',
+    'Kategori Uang Keluar': category,
+    'Jumlah Uang': total,
+    'Tanggal': new Date().toISOString(),
+    'Deskripsi': `Split Bill: ${title} (Bagian sendiri ${idr(own)}, patungan ${friendTags})`,
+    'DompetId': chosenDompet ? chosenDompet.id : null
+  };
+  S.transactions.unshift(creatorOutTx);
+  saveLocalTransactionsAndCache();
+  postUserSheetData('addData', creatorOutTx);
+
+  // 2. Simpan ke DATA MASTER SplitBills
+  const res = await callMasterApi('createSplitBill', {
+    title: title,
+    category: category,
+    creatorUsername: S.akun.username,
+    creatorNamaLengkap: S.akun.namaLengkap || S.akun.username,
+    creatorDompetId: chosenDompet ? chosenDompet.id : '',
+    creatorDompetNama: chosenDompet ? (chosenDompet.nama || chosenDompet.provider) : 'Dompet Utama',
+    totalAmount: total,
+    creatorShareAmount: own,
+    participants: participants,
+    creatorTxId: creatorTxId
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Kirim Split Bill';
+
+  if (res && res.status === 'success' && res.data) {
+    S.allBills.unshift(res.data);
+    saveLocalTransactionsAndCache();
+    document.getElementById('sb-form').reset();
+    S.selectedFriends = {};
+    renderFriendsPicker();
+    renderSelectedFriendInputs();
+    recalcSummary();
+    populateDompetOptions('sb-dompet');
+    showToast('Split Bill terkirim & saldo Anda telah dipotong.');
+    // Langsung buka detail Split Bill yang baru dibuat (lengkap dengan opsi Chat langsung)
+    switchMainTab('list');
+    openDetailModal(res.data.id);
+  } else {
+    errEl.textContent = (res && res.message) || 'Gagal membuat Split Bill.';
+    errEl.classList.remove('hidden');
+  }
+};
+
+// ── DAFTAR TAGIHAN & RIWAYAT SPLIT BILL ──
+window.setListFilter = function(flt) {
+  S.listFilter = flt;
+  ['all', 'incoming', 'created'].forEach(k => {
+    const el = document.getElementById('flt-' + k);
+    if (!el) return;
+    el.className = k === flt
+      ? 'px-3 py-1.5 rounded-full text-[11px] font-extrabold bg-zinc-900 text-white'
+      : 'px-3 py-1.5 rounded-full text-[11px] font-extrabold bg-white border border-zinc-200 text-zinc-600';
+  });
+  renderBillsList();
+};
+
+function calcRemainingDays14(createdAtIso) {
+  if (!createdAtIso) return 14;
+  const createdMs = new Date(createdAtIso).getTime();
+  if (isNaN(createdMs)) return 14;
+  const deadlineMs = createdMs + (14 * 24 * 60 * 60 * 1000);
+  const diffDays = Math.ceil((deadlineMs - Date.now()) / (24 * 60 * 60 * 1000));
+  return Math.max(0, diffDays);
+}
+
+function getParticipantStatusLabel(statusRaw) {
+  const st = String(statusRaw || 'PENDING').toUpperCase();
+  if (st === 'PAID') return 'Diterima & Lunas';
+  if (st === 'AUTO_PAID_14D') return 'Dipotong Otomatis (14 Hari)';
+  if (st === 'REJECT_PENDING') return 'Menolak · Menunggu Konfirmasi Pengirim';
+  if (st === 'REJECTED_APPROVED') return 'Penolakan Disetujui';
+  return 'Menunggu Konfirmasi';
+}
+
+function renderBillsList() {
+  const wrap = document.getElementById('bills-list-container');
+  if (!wrap) return;
+
+  const uLow = S.akun ? String(S.akun.username || '').toLowerCase() : '';
+  let list = (S.allBills || []).slice();
+
+  if (S.listFilter === 'incoming') {
+    list = list.filter(b => String(b.creatorUsername || '').toLowerCase() !== uLow);
+  } else if (S.listFilter === 'created') {
+    list = list.filter(b => String(b.creatorUsername || '').toLowerCase() === uLow);
+  }
+
+  if (!list.length) {
+    wrap.innerHTML = `
+      <div class="mono-card p-8 text-center">
+        <p class="text-xs font-black text-zinc-900">Belum Ada Data Split Bill</p>
+        <p class="text-[11px] font-medium text-zinc-400 mt-1">Tagihan yang kamu buat atau terima akan tampil di sini.</p>
+      </div>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = list.map(bill => {
+    const isCreator = String(bill.creatorUsername || '').toLowerCase() === uLow;
+    const parts = Array.isArray(bill.participants) ? bill.participants : [];
+    const myPart = parts.find(p => String(p.username || '').toLowerCase() === uLow);
+    const remDays = calcRemainingDays14(bill.createdAt);
+
+    const paidCount = parts.filter(p => {
+      const s = String(p.status || '').toUpperCase();
+      return s === 'PAID' || s === 'AUTO_PAID_14D';
+    }).length;
+    const hasRejectPending = parts.some(p => String(p.status || '').toUpperCase() === 'REJECT_PENDING');
+
+    let badgeHtml = '';
+    if (!isCreator && myPart) {
+      const mySt = String(myPart.status || 'PENDING').toUpperCase();
+      if (mySt === 'PENDING') {
+        badgeHtml = `<span class="px-2 py-0.5 rounded-md bg-zinc-900 text-white text-[10px] font-black">Perlu Konfirmasi · ${remDays}h</span>`;
+      } else if (mySt === 'REJECT_PENDING') {
+        badgeHtml = `<span class="px-2 py-0.5 rounded-md bg-zinc-200 text-zinc-800 text-[10px] font-black">Menunggu Pengirim</span>`;
+      } else {
+        badgeHtml = `<span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[10px] font-bold">${getParticipantStatusLabel(mySt)}</span>`;
+      }
+    } else {
+      if (hasRejectPending) {
+        badgeHtml = `<span class="px-2 py-0.5 rounded-md bg-zinc-900 text-white text-[10px] font-black">Ada Penolakan</span>`;
+      } else {
+        badgeHtml = `<span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 text-[10px] font-extrabold">${paidCount}/${parts.length} Selesai</span>`;
+      }
+    }
+
+    const safeTitle = String(bill.title || 'Split Bill').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeId = String(bill.id).replace(/'/g, "\\'");
+    const subInfo = isCreator
+      ? `Kamu menagih ${parts.length} teman · Bagianmu ${idr(bill.creatorShareAmount)}`
+      : `Dari @${bill.creatorUsername} · Bagianmu ${idr(myPart ? myPart.amount : 0)}`;
+
+    return `
+      <div onclick="openDetailModal('${safeId}')" class="mono-card p-4 cursor-pointer active:scale-[0.99] transition">
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safeTitle}</p>
+            <p class="text-[11px] font-semibold text-zinc-500 truncate mt-0.5">${subInfo}</p>
+          </div>
+          ${badgeHtml}
+        </div>
+        <div class="pt-2.5 border-t border-zinc-100 flex items-center justify-between text-[11px]">
+          <span class="font-semibold text-zinc-400">Total: <b class="text-zinc-900">${idr(bill.totalAmount)}</b></span>
+          <span class="font-extrabold text-zinc-900">Buka Detail &amp; Chat →</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── MODAL DETAIL SPLIT BILL, KONFIRMASI TERIMA / TOLAK + ALASAN, & INLINE CHAT ──
+window.openDetailModal = function(billId) {
+  const bill = (S.allBills || []).find(b => String(b.id) === String(billId));
+  if (!bill) return;
+
+  S.activeBillId = bill.id;
+  S.inlineChatOpen = false;
+  document.getElementById('dt-inline-chat-panel')?.classList.add('hidden');
+  toggleRejectReasonForm(false);
+
+  const uLow = S.akun ? String(S.akun.username || '').toLowerCase() : '';
+  const isCreator = String(bill.creatorUsername || '').toLowerCase() === uLow;
+  const parts = Array.isArray(bill.participants) ? bill.participants : [];
+
+  // Tentukan default lawan bicara untuk Inline Chat
+  if (!isCreator) {
+    S.inlineChatTargetUsername = bill.creatorUsername;
+  } else if (parts.length > 0) {
+    S.inlineChatTargetUsername = parts[0].username;
+  }
+
+  refreshOpenDetailModal();
+
+  const el = document.getElementById('detail-modal');
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+
+window.closeDetailModal = function() {
+  S.activeBillId = null;
+  S.inlineChatOpen = false;
+  if (S.inlineChatTimer) {
+    clearInterval(S.inlineChatTimer);
+    S.inlineChatTimer = null;
+  }
+  const el = document.getElementById('detail-modal');
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 240);
+};
+
+function refreshOpenDetailModal() {
+  if (!S.activeBillId) return;
+  const bill = (S.allBills || []).find(b => String(b.id) === String(S.activeBillId));
+  if (!bill) return;
+
+  const uLow = S.akun ? String(S.akun.username || '').toLowerCase() : '';
+  const isCreator = String(bill.creatorUsername || '').toLowerCase() === uLow;
+  const parts = Array.isArray(bill.participants) ? bill.participants : [];
+  const remDays = calcRemainingDays14(bill.createdAt);
+
+  document.getElementById('dt-role-pill').textContent = isCreator ? 'Tagihan Buatanku' : 'Tagihan Masuk';
+  document.getElementById('dt-countdown-pill').textContent = remDays > 0
+    ? `Otomatis potong dlm ${remDays} hari`
+    : 'Batas 14 hari tercapai';
+  document.getElementById('dt-title').textContent    = bill.title || 'Split Bill';
+  document.getElementById('dt-meta').textContent     = `Oleh ${bill.creatorNamaLengkap || bill.creatorUsername} (@${bill.creatorUsername})`;
+  document.getElementById('dt-total').textContent    = idr(bill.totalAmount);
+  document.getElementById('dt-category').textContent = bill.category || 'Lainnya';
+
+  // Render daftar semua orang (Pembuat + Semua Peserta)
+  let listHtml = `
+    <div class="p-3 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between gap-2">
+      <div class="min-w-0">
+        <p class="text-xs font-black text-zinc-900 truncate">${bill.creatorNamaLengkap || bill.creatorUsername} ${isCreator ? '(Kamu)' : ''}</p>
+        <p class="text-[10px] font-bold text-zinc-400">@${bill.creatorUsername} · Pembuat</p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <p class="text-xs font-black text-zinc-900">${idr(bill.creatorShareAmount)}</p>
+        <span class="text-[10px] font-bold text-zinc-500">Sudah Terpotong</span>
+      </div>
+    </div>
+  `;
+
+  listHtml += parts.map(p => {
+    const pLow = String(p.username || '').toLowerCase();
+    const isMe = pLow === uLow;
+    const st   = String(p.status || 'PENDING').toUpperCase();
+    const safeName = String(p.namaLengkap || p.username).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeU    = String(p.username).replace(/'/g, "\\'");
+    const reasonHtml = p.rejectReason
+      ? `<p class="text-[10px] font-bold text-zinc-700 bg-zinc-100 px-2 py-1 rounded-lg mt-1">Alasan tolak: "${String(p.rejectReason).replace(/</g, '&lt;')}"</p>`
+      : '';
+
+    // Jika kita adalah pembuat dan peserta ini berstatus REJECT_PENDING, tampilkan tombol konfirmasi pengirim
+    const creatorConfirmBtns = (isCreator && st === 'REJECT_PENDING')
+      ? `<div class="flex gap-1.5 mt-2">
+           <button type="button" onclick="submitCreatorRejectResponse('${safeU}', 'approve_reject')" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-extrabold">Setujui Penolakan</button>
+           <button type="button" onclick="submitCreatorRejectResponse('${safeU}', 'deny_reject')" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-300 text-zinc-800 text-[10px] font-extrabold">Tetap Tagih</button>
+         </div>`
+      : '';
+
+    return `
+      <div class="p-3 rounded-xl bg-white border ${isMe ? 'border-zinc-900' : 'border-zinc-200'}">
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-xs font-black text-zinc-900 truncate">${safeName} ${isMe ? '(Kamu)' : ''}</p>
+            <p class="text-[10px] font-bold text-zinc-400">@${p.username}</p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="text-xs font-black text-zinc-900">${idr(p.amount)}</p>
+            <span class="text-[10px] font-bold ${st === 'PAID' || st === 'AUTO_PAID_14D' ? 'text-zinc-900' : 'text-zinc-500'}">${getParticipantStatusLabel(st)}</span>
+          </div>
+        </div>
+        ${reasonHtml}
+        ${creatorConfirmBtns}
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('dt-participants-list').innerHTML = listHtml;
+
+  // Kotak aksi untuk penerima
+  const myPart = parts.find(p => String(p.username || '').toLowerCase() === uLow);
+  const actionBox  = document.getElementById('dt-receiver-action-box');
+  const waitingBox = document.getElementById('dt-waiting-creator-box');
+
+  if (!isCreator && myPart) {
+    const mySt = String(myPart.status || 'PENDING').toUpperCase();
+    if (mySt === 'PENDING') {
+      actionBox.classList.remove('hidden');
+      waitingBox.classList.add('hidden');
+      document.getElementById('dt-my-share').textContent = idr(myPart.amount);
+      populateDompetOptions('dt-pay-dompet');
+    } else if (mySt === 'REJECT_PENDING') {
+      actionBox.classList.add('hidden');
+      waitingBox.classList.remove('hidden');
+      document.getElementById('dt-waiting-reason-text').textContent =
+        `Alasanmu: "${myPart.rejectReason || '-'}" — Menunggu konfirmasi dari @${bill.creatorUsername}.`;
+    } else {
+      actionBox.classList.add('hidden');
+      waitingBox.classList.add('hidden');
+    }
+  } else {
+    actionBox.classList.add('hidden');
+    waitingBox.classList.add('hidden');
+  }
+
+  // Konfigurasi Label & Target Inline Chat
+  const toggleLbl = document.getElementById('dt-chat-toggle-label');
+  const partnerTag = document.getElementById('dt-chat-partner-Tag');
+  const targetSelWrap = document.getElementById('dt-chat-target-selector');
+
+  if (!isCreator) {
+    toggleLbl.textContent = '💬 Chat dengan Pengirim';
+    partnerTag.textContent = '@' + bill.creatorUsername + (S.inlineChatOpen ? ' ▴' : ' ▾');
+    targetSelWrap.classList.add('hidden');
+  } else {
+    toggleLbl.textContent = '💬 Chat dengan Teman di Bill Ini';
+    partnerTag.textContent = '@' + (S.inlineChatTargetUsername || '') + (S.inlineChatOpen ? ' ▴' : ' ▾');
+    if (parts.length > 1) {
+      targetSelWrap.classList.remove('hidden');
+      targetSelWrap.innerHTML = parts.map(p => {
+        const active = String(p.username).toLowerCase() === String(S.inlineChatTargetUsername).toLowerCase();
+        const safeU = String(p.username).replace(/'/g, "\\'");
+        return `<button type="button" onclick="selectInlineChatPartner('${safeU}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border flex-shrink-0 ${active ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-700 border-zinc-200'}">@${p.username}</button>`;
+      }).join('');
+    } else {
+      targetSelWrap.classList.add('hidden');
+    }
+  }
+}
+
+window.toggleRejectReasonForm = function(show) {
+  const mainBtns  = document.getElementById('dt-main-decision-btns');
+  const reasonBox = document.getElementById('dt-reject-reason-box');
+  if (show) {
+    mainBtns?.classList.add('hidden');
+    reasonBox?.classList.remove('hidden');
+    onRejectReasonRadioChange();
+  } else {
+    mainBtns?.classList.remove('hidden');
+    reasonBox?.classList.add('hidden');
+  }
+};
+
+window.onRejectReasonRadioChange = function() {
+  const checked = document.querySelector('input[name="sb_reject_reason"]:checked');
+  const customInp = document.getElementById('dt-reject-custom-input');
+  if (!customInp) return;
+  if (checked && checked.value === 'custom') {
+    customInp.classList.remove('hidden');
+    customInp.focus();
+  } else {
+    customInp.classList.add('hidden');
+  }
+};
+
+window.submitReceiverDecision = async function(decision) {
+  if (!S.activeBillId || !S.akun) return;
+  const bill = (S.allBills || []).find(b => String(b.id) === String(S.activeBillId));
+  if (!bill) return;
+
+  const uLow = String(S.akun.username || '').toLowerCase();
+  const myPart = (bill.participants || []).find(p => String(p.username || '').toLowerCase() === uLow);
+  if (!myPart) return;
+
+  let rejectReason = '';
+  if (decision === 'reject') {
+    const checked = document.querySelector('input[name="sb_reject_reason"]:checked');
+    if (checked && checked.value === 'custom') {
+      rejectReason = String(document.getElementById('dt-reject-custom-input')?.value || '').trim();
+      if (!rejectReason) {
+        showToast('Tulis alasan penolakanmu terlebih dahulu.');
+        return;
+      }
+    } else {
+      rejectReason = checked ? checked.value : 'Nominal tidak sesuai';
+    }
+  }
+
+  const dompetId = document.getElementById('dt-pay-dompet')?.value || (S.dompetList[0] ? S.dompetList[0].id : '');
+  const shareAmt = Number(myPart.amount) || 0;
+
+  if (decision === 'confirm' && dompetId) {
+    const avail = hitungSaldoDompet(dompetId);
+    if (shareAmt > avail) {
+      showToast(`Saldo dompet tidak cukup (${idr(avail)}).`);
+      return;
+    }
+  }
+
+  const btnAccept = document.getElementById('btn-accept-bill');
+  const btnReject = document.getElementById('btn-submit-reject');
+  if (btnAccept) btnAccept.disabled = true;
+  if (btnReject) btnReject.disabled = true;
+
+  const res = await callMasterApi('respondSplitBill', {
+    splitBillId: bill.id,
+    username: S.akun.username,
+    decision: decision,
+    dompetId: dompetId,
+    rejectReason: rejectReason
+  });
+
+  if (btnAccept) btnAccept.disabled = false;
+  if (btnReject) btnReject.disabled = false;
+
+  if (res && res.status === 'success') {
+    if (decision === 'confirm') {
+      myPart.status = 'PAID';
+      const newTx = (res.data && res.data.payerTransaction) ? res.data.payerTransaction : {
+        id: 'sb_pay_' + bill.id + '_' + uLow,
+        'Kategori': 'Uang Keluar',
+        'Kategori Uang Keluar': bill.category || 'Makanan & Minuman',
+        'Jumlah Uang': shareAmt,
+        'Tanggal': new Date().toISOString(),
+        'Deskripsi': `Bayar Split Bill: ${bill.title} (ke @${bill.creatorUsername})`,
+        'DompetId': dompetId || null
+      };
+      if (!S.transactions.some(t => String(t.id) === String(newTx.id))) {
+        S.transactions.unshift(newTx);
+      }
+      showToast(`Split Bill diterima & dibayar (${idr(shareAmt)}).`);
+    } else {
+      myPart.status = 'REJECT_PENDING';
+      myPart.rejectReason = rejectReason;
+      showToast('Penolakan dikirim. Menunggu konfirmasi pengirim.');
+    }
+
+    S.incomingBills = (S.incomingBills || []).filter(b => String(b.id) !== String(bill.id));
+    saveLocalTransactionsAndCache();
+    renderPendingBadge();
+    renderBillsList();
+    refreshOpenDetailModal();
+    // Buka otomatis panel inline chat agar penerima bisa langsung berdiskusi dengan pengirim
+    if (!S.inlineChatOpen) toggleInlineChatPanel();
+  } else {
+    showToast((res && res.message) || 'Gagal memproses Split Bill.');
+  }
+};
+
+window.submitCreatorRejectResponse = async function(participantUsername, decision) {
+  if (!S.activeBillId || !S.akun) return;
+  const res = await callMasterApi('creatorRespondReject', {
+    splitBillId: S.activeBillId,
+    creatorUsername: S.akun.username,
+    participantUsername: participantUsername,
+    decision: decision
+  });
+  if (res && res.status === 'success') {
+    showToast(res.message || 'Status diperbarui.');
+    syncSplitBillAndFriends();
+  } else {
+    showToast((res && res.message) || 'Gagal memperbarui status.');
+  }
+};
+
+// ── INLINE CHAT LANGSUNG DI DALAM MODAL SPLIT BILL (TANPA REDIRECT KE /CHAT) ──
+function buildRoomId(u1, u2) {
+  return [String(u1 || '').trim().toLowerCase(), String(u2 || '').trim().toLowerCase()].sort().join('__');
+}
+
+window.selectInlineChatPartner = function(username) {
+  S.inlineChatTargetUsername = username;
+  refreshOpenDetailModal();
+  if (S.inlineChatOpen) {
+    fetchInlineChatMessages();
+  }
+};
+
+window.toggleInlineChatPanel = function() {
+  S.inlineChatOpen = !S.inlineChatOpen;
+  const panel = document.getElementById('dt-inline-chat-panel');
+  if (panel) panel.classList.toggle('hidden', !S.inlineChatOpen);
+  refreshOpenDetailModal();
+
+  if (S.inlineChatTimer) {
+    clearInterval(S.inlineChatTimer);
+    S.inlineChatTimer = null;
+  }
+
+  if (S.inlineChatOpen && S.inlineChatTargetUsername) {
+    fetchInlineChatMessages();
+    S.inlineChatTimer = setInterval(fetchInlineChatMessages, 3500);
+    setTimeout(() => document.getElementById('dt-inline-chat-input')?.focus(), 100);
+  }
+};
+
+async function fetchInlineChatMessages() {
+  if (!S.akun || !S.inlineChatTargetUsername) return;
+  const roomId = buildRoomId(S.akun.username, S.inlineChatTargetUsername);
+  const res = await callMasterApi('getChatMessages', {
+    username: S.akun.username,
+    friendUsername: S.inlineChatTargetUsername,
+    roomId: roomId,
+    afterTimestamp: ''
+  });
+  if (res && res.status === 'success' && res.data && Array.isArray(res.data.messages)) {
+    S.inlineChatMessages[roomId] = res.data.messages;
+    renderInlineChatStream();
+  }
+}
+
+function renderInlineChatStream() {
+  const stream = document.getElementById('dt-inline-chat-stream');
+  if (!stream || !S.akun || !S.inlineChatTargetUsername) return;
+  const roomId = buildRoomId(S.akun.username, S.inlineChatTargetUsername);
+  const msgs = S.inlineChatMessages[roomId] || [];
+
+  if (!msgs.length) {
+    stream.innerHTML = `<p class="text-[11px] font-semibold text-zinc-400 text-center my-auto">Belum ada pesan dengan @${S.inlineChatTargetUsername}. Kirim pesan langsung di bawah.</p>`;
+    return;
+  }
+
+  const myLow = String(S.akun.username || '').toLowerCase();
+  stream.innerHTML = msgs.map(m => {
+    const isMe = String(m.senderUsername || '').toLowerCase() === myLow;
+    const safeMsg = String(m.message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `<div class="${isMe ? 'chat-bubble-me' : 'chat-bubble-other'}">${safeMsg}</div>`;
+  }).join('');
+  stream.scrollTop = stream.scrollHeight;
+}
+
+window.handleSendInlineChat = async function(e) {
+  e.preventDefault();
+  const inp = document.getElementById('dt-inline-chat-input');
+  const text = String(inp?.value || '').trim();
+  if (!text || !S.akun || !S.inlineChatTargetUsername) return;
+
+  inp.value = '';
+  const roomId = buildRoomId(S.akun.username, S.inlineChatTargetUsername);
+  if (!S.inlineChatMessages[roomId]) S.inlineChatMessages[roomId] = [];
+
+  const tempId = 'inline_' + Date.now();
+  S.inlineChatMessages[roomId].push({
+    id: tempId,
+    roomId: roomId,
+    senderUsername: S.akun.username,
+    receiverUsername: S.inlineChatTargetUsername,
+    message: text,
+    createdAt: new Date().toISOString()
+  });
+  renderInlineChatStream();
+
+  await callMasterApi('sendChatMessage', {
+    clientMsgId: tempId,
+    senderUsername: S.akun.username,
+    receiverUsername: S.inlineChatTargetUsername,
+    message: text
+  });
+  fetchInlineChatMessages();
+};
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch (e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+
+  document.getElementById('my-user-label').textContent = '@' + S.akun.username;
+  loadLocalData();
+  populateCategories();
+  populateDompetOptions('sb-dompet');
+  renderFriendsPicker();
+  renderSelectedFriendInputs();
+  renderPendingBadge();
+
+  // Cek apakah dibuka dengan parameter ?id=... atau dari klik notifikasi Beranda
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryBillId = urlParams.get('id') || localStorage.getItem('keuangan_splitbill_open_id') || '';
+  if (queryBillId) {
+    try { localStorage.removeItem('keuangan_splitbill_open_id'); } catch (e) {}
+    switchMainTab('list');
+    setTimeout(() => openDetailModal(queryBillId), 120);
+  } else if ((S.incomingBills || []).length > 0) {
+    switchMainTab('list');
+  }
+
+  syncSplitBillAndFriends();
+  setInterval(syncSplitBillAndFriends, 8000);
+});
+</script>
+</body>
+</html>
