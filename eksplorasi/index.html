@@ -530,6 +530,52 @@ body {
       </div>
     </section>
 
+    <!-- ── 5. QUOTE HARI INI (QUOTABLE API) ── -->
+    <section class="fade-up d4">
+      <div class="flex justify-between items-center mb-3 px-0.5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Quote Hari Ini</span>
+        </div>
+        <button onclick="openQuoteModal()" class="text-[11px] font-extrabold text-zinc-900 active:scale-90 transition-transform">
+          Jelajahi &amp; Cari →
+        </button>
+      </div>
+
+      <div id="quote-widget" class="clean-card p-5 relative overflow-hidden">
+        <div class="flex gap-1.5 overflow-x-auto no-scroll mb-3.5">
+          <button class="pill-btn active" onclick="setQuoteWidgetTag('', this)">Semua</button>
+          <button class="pill-btn" onclick="setQuoteWidgetTag('inspirational', this)">Inspirational</button>
+          <button class="pill-btn" onclick="setQuoteWidgetTag('wisdom', this)">Wisdom</button>
+          <button class="pill-btn" onclick="setQuoteWidgetTag('technology', this)">Technology</button>
+          <button class="pill-btn" onclick="setQuoteWidgetTag('success', this)">Success</button>
+          <button class="pill-btn" onclick="setQuoteWidgetTag('life', this)">Life</button>
+        </div>
+
+        <div id="quote-loading" class="space-y-2.5 py-2">
+          <div class="h-4 bg-zinc-100 rounded w-11/12" style="animation:shimmer 1.4s infinite"></div>
+          <div class="h-4 bg-zinc-100 rounded w-4/5" style="animation:shimmer 1.4s infinite;animation-delay:.08s"></div>
+          <div class="h-3 bg-zinc-100 rounded w-1/3 mt-2" style="animation:shimmer 1.4s infinite;animation-delay:.16s"></div>
+        </div>
+
+        <div id="quote-content-wrap" class="hidden space-y-3">
+          <div class="text-3xl font-black text-amber-400 leading-none select-none">“</div>
+          <p id="quote-text" class="text-[15px] font-bold text-zinc-900 leading-relaxed -mt-2"></p>
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <button onclick="openQuoteAuthorInfo()" class="text-left group">
+              <p id="quote-author" class="text-xs font-black text-zinc-900 group-hover:text-emerald-600 transition">--</p>
+              <p id="quote-meta" class="text-[10px] font-semibold text-zinc-400 mt-0.5">--</p>
+            </button>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button onclick="copyActiveQuote()" id="quote-copy-btn" class="px-3 py-1.5 rounded-xl bg-zinc-100 text-zinc-700 text-[11px] font-black active:scale-95 transition">Salin</button>
+              <button onclick="fetchRandomQuote()" class="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-[11px] font-black active:scale-95 transition">↻ Baru</button>
+            </div>
+          </div>
+          <div id="quote-tags" class="flex flex-wrap gap-1.5 pt-1"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Hidden Weather Holders -->
     <div style="display:none">
       <span id="weather-city">Serpong, Tangerang Selatan</span>
@@ -914,6 +960,55 @@ body {
   </div>
 </div>
 
+<!-- ══════════════ QUOTE EXPLORER MODAL (QUOTABLE API) ══════════════ -->
+<div id="quote-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'quote-detail-modal')">
+  <div class="sheet" style="max-height:92vh;display:flex;flex-direction:column">
+    <div class="px-5 pt-3 pb-3 border-b border-zinc-100 flex-shrink-0">
+      <div class="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-lg font-black text-zinc-900">💬 Jelajahi Quote</h2>
+          <p id="qm-subtitle" class="text-[10px] font-bold text-zinc-400 mt-0.5">Sumber: Quotable API (lukePeavey/quotable)</p>
+        </div>
+        <button onclick="closeModal('quote-detail-modal')" class="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-600 font-black text-xs">✕</button>
+      </div>
+      <div class="flex gap-2 mb-2.5">
+        <input type="text" id="qm-search-input" placeholder="Cari quote atau penulis (mis. Einstein, success)…" class="fi flex-1" onkeydown="if(event.key==='Enter') searchQuotesModal()">
+        <button onclick="searchQuotesModal()" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-black active:scale-95 transition">Cari</button>
+      </div>
+      <div id="qm-tags-bar" class="flex gap-1.5 overflow-x-auto no-scroll pb-0.5">
+        <button class="pill-btn active" onclick="filterQuotesByTag('', this)">Semua</button>
+      </div>
+    </div>
+
+    <div class="overflow-y-auto px-5 pt-3 pb-8 flex-1 space-y-3">
+      <div id="qm-author-card" class="hidden p-4 rounded-2xl bg-zinc-900 text-white space-y-1.5">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <p id="qm-author-name" class="text-sm font-black">--</p>
+            <p id="qm-author-desc" class="text-[11px] font-semibold text-zinc-300">--</p>
+          </div>
+          <button onclick="document.getElementById('qm-author-card').classList.add('hidden')" class="w-7 h-7 rounded-full bg-white/10 text-white text-xs font-black">✕</button>
+        </div>
+        <p id="qm-author-bio" class="text-xs text-zinc-300 leading-relaxed pt-1"></p>
+        <div class="flex items-center justify-between pt-1">
+          <span id="qm-author-count" class="text-[10px] font-bold text-emerald-400"></span>
+          <a id="qm-author-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[10px] font-black text-white underline hidden">Profil / Wiki ↗</a>
+        </div>
+      </div>
+
+      <div id="qm-loading" class="space-y-2.5">
+        <div class="h-24 bg-zinc-100 rounded-2xl" style="animation:shimmer 1.4s infinite"></div>
+        <div class="h-24 bg-zinc-100 rounded-2xl" style="animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
+      </div>
+      <div id="qm-list" class="hidden space-y-2.5"></div>
+      <div id="qm-more-wrap" class="hidden pt-1">
+        <button onclick="loadMoreQuotesModal()" class="w-full py-2.5 rounded-xl bg-zinc-100 text-zinc-800 text-xs font-black active:scale-95 transition">Muat Lebih Banyak</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ AI CHAT MODAL ══════════════ -->
 <div id="gpt-overlay" onclick="if(event.target===this)gptClose()"
   style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(17,24,39,.58);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
@@ -999,6 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderExplore();
   initWeather();
   initForex();
+  initQuotes();
 });
 
 // ================================================================
@@ -2303,7 +2399,272 @@ function initQuake() {
   fetchEarthquakes();
   setInterval(fetchEarthquakes, 120000);
 }
+
+// ================================================================
+// QUOTABLE API MODULE (github.com/lukePeavey/quotable)
+// ================================================================
+var QUOTABLE_SERVERS = [
+  'https://api.quotable.io',
+  'https://quotable.vercel.app'
+];
+var QUOTABLE_FALLBACK = [
+  { _id: 'fb1', content: 'An investment in knowledge pays the best interest.', author: 'Benjamin Franklin', authorSlug: 'benjamin-franklin', length: 49, tags: ['wisdom', 'finance'] },
+  { _id: 'fb2', content: 'Do not save what is left after spending, but spend what is left after saving.', author: 'Warren Buffett', authorSlug: 'warren-buffett', length: 78, tags: ['wisdom', 'success'] },
+  { _id: 'fb3', content: 'It is not the strongest of the species that survives, nor the most intelligent, but the one most responsive to change.', author: 'Charles Darwin', authorSlug: 'charles-darwin', length: 118, tags: ['wisdom', 'life'] },
+  { _id: 'fb4', content: 'The secret of getting ahead is getting started.', author: 'Mark Twain', authorSlug: 'mark-twain', length: 47, tags: ['inspirational', 'success'] },
+  { _id: 'fb5', content: 'Simplicity is the ultimate sophistication.', author: 'Leonardo da Vinci', authorSlug: 'leonardo-da-vinci', length: 42, tags: ['technology', 'wisdom'] }
+];
+
+var quoteState = {
+  activeQuote: null,
+  widgetTag: '',
+  modalTag: '',
+  modalQuery: '',
+  modalPage: 1,
+  modalTotalPages: 1,
+  modalItems: [],
+  tagsLoaded: false
+};
+
+async function quotableFetch(path) {
+  for (var i = 0; i < QUOTABLE_SERVERS.length; i++) {
+    try {
+      var res = await fetch(QUOTABLE_SERVERS[i] + path);
+      if (res.ok) return await res.json();
+    } catch (e) {}
+  }
+  return null;
+}
+
+window.setQuoteWidgetTag = function(tag, btn) {
+  quoteState.widgetTag = tag;
+  if (btn && btn.parentNode) {
+    btn.parentNode.querySelectorAll('.pill-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  fetchRandomQuote();
+};
+
+window.fetchRandomQuote = async function() {
+  var loadEl = document.getElementById('quote-loading');
+  var wrapEl = document.getElementById('quote-content-wrap');
+  if (loadEl) loadEl.classList.remove('hidden');
+  if (wrapEl) wrapEl.classList.add('hidden');
+
+  var qs = quoteState.widgetTag ? ('?tags=' + encodeURIComponent(quoteState.widgetTag)) : '';
+  var data = await quotableFetch('/quotes/random' + qs);
+  var q = Array.isArray(data) ? data[0] : data;
+
+  if (!q || !q.content) {
+    // Fallback ke dummyjson atau koleksi lokal jika server quotable.io sedang down/SSL error
+    try {
+      var dj = await fetch('https://dummyjson.com/quotes/random').then(function(r) { return r.json(); });
+      if (dj && dj.quote) {
+        q = { _id: 'dj-' + dj.id, content: dj.quote, author: dj.author || 'Unknown', authorSlug: '', length: dj.quote.length, tags: [quoteState.widgetTag || 'inspirational'] };
+      }
+    } catch (e) {}
+  }
+
+  if (!q || !q.content) {
+    var pool = quoteState.widgetTag
+      ? QUOTABLE_FALLBACK.filter(function(item) { return item.tags.indexOf(quoteState.widgetTag) !== -1; })
+      : QUOTABLE_FALLBACK;
+    if (!pool.length) pool = QUOTABLE_FALLBACK;
+    q = pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  quoteState.activeQuote = q;
+  renderActiveQuote(q);
+};
+
+function renderActiveQuote(q) {
+  var loadEl   = document.getElementById('quote-loading');
+  var wrapEl   = document.getElementById('quote-content-wrap');
+  var textEl   = document.getElementById('quote-text');
+  var authorEl = document.getElementById('quote-author');
+  var metaEl   = document.getElementById('quote-meta');
+  var tagsEl   = document.getElementById('quote-tags');
+  if (loadEl) loadEl.classList.add('hidden');
+  if (wrapEl) wrapEl.classList.remove('hidden');
+
+  if (textEl)   textEl.textContent = q.content;
+  if (authorEl) authorEl.textContent = '— ' + (q.author || 'Unknown');
+  if (metaEl)   metaEl.textContent = `${q.length || q.content.length} karakter · Ketuk nama untuk info penulis`;
+  if (tagsEl) {
+    var tags = Array.isArray(q.tags) ? q.tags : [];
+    tagsEl.innerHTML = tags.map(function(t) {
+      return `<span class="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-[10px] font-bold">#${t}</span>`;
+    }).join('');
+  }
+}
+
+window.copyActiveQuote = function() {
+  var q = quoteState.activeQuote;
+  if (!q) return;
+  var txt = `"${q.content}" — ${q.author}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).catch(function() {});
+  }
+  var btn = document.getElementById('quote-copy-btn');
+  if (btn) {
+    var orig = btn.textContent;
+    btn.textContent = '✓ Tersalin';
+    btn.classList.add('bg-emerald-100', 'text-emerald-700');
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.classList.remove('bg-emerald-100', 'text-emerald-700');
+    }, 1400);
+  }
+};
+
+window.openQuoteAuthorInfo = function() {
+  var q = quoteState.activeQuote;
+  openQuoteModal();
+  if (q && (q.authorSlug || q.author)) {
+    loadAuthorDetail(q.authorSlug || q.author);
+  }
+};
+
+window.openQuoteModal = function() {
+  openModal('quote-detail-modal');
+  if (!quoteState.tagsLoaded) loadQuoteTags();
+  if (!quoteState.modalItems.length) loadQuotesList(1, false);
+};
+
+async function loadQuoteTags() {
+  var bar = document.getElementById('qm-tags-bar');
+  if (!bar) return;
+  var tags = await quotableFetch('/tags?sortBy=quoteCount&order=desc');
+  if (Array.isArray(tags) && tags.length) {
+    quoteState.tagsLoaded = true;
+    bar.innerHTML = `<button class="pill-btn active" onclick="filterQuotesByTag('', this)">Semua</button>` +
+      tags.slice(0, 18).map(function(t) {
+        return `<button class="pill-btn" onclick="filterQuotesByTag('${t.name}', this)">${t.name}${t.quoteCount ? ' (' + t.quoteCount + ')' : ''}</button>`;
+      }).join('');
+  }
+}
+
+window.filterQuotesByTag = function(tag, btn) {
+  quoteState.modalTag = tag;
+  quoteState.modalQuery = '';
+  var inp = document.getElementById('qm-search-input');
+  if (inp) inp.value = '';
+  if (btn && btn.parentNode) {
+    btn.parentNode.querySelectorAll('.pill-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  loadQuotesList(1, false);
+};
+
+window.searchQuotesModal = function() {
+  var inp = document.getElementById('qm-search-input');
+  quoteState.modalQuery = inp ? inp.value.trim() : '';
+  loadQuotesList(1, false);
+};
+
+window.loadMoreQuotesModal = function() {
+  if (quoteState.modalPage < quoteState.modalTotalPages) {
+    loadQuotesList(quoteState.modalPage + 1, true);
+  }
+};
+
+async function loadQuotesList(page, append) {
+  var loadEl = document.getElementById('qm-loading');
+  var listEl = document.getElementById('qm-list');
+  var moreEl = document.getElementById('qm-more-wrap');
+  var subEl  = document.getElementById('qm-subtitle');
+
+  if (!append) {
+    if (loadEl) loadEl.classList.remove('hidden');
+    if (listEl) listEl.classList.add('hidden');
+  }
+
+  var path = '';
+  if (quoteState.modalQuery) {
+    path = `/search/quotes?query=${encodeURIComponent(quoteState.modalQuery)}&limit=12&page=${page}`;
+  } else {
+    path = `/quotes?limit=12&page=${page}` + (quoteState.modalTag ? `&tags=${encodeURIComponent(quoteState.modalTag)}` : '');
+  }
+
+  var data = await quotableFetch(path);
+  if (loadEl) loadEl.classList.add('hidden');
+  if (listEl) listEl.classList.remove('hidden');
+
+  if (data && Array.isArray(data.results)) {
+    quoteState.modalPage = data.page || page;
+    quoteState.modalTotalPages = data.totalPages || 1;
+    quoteState.modalItems = append ? quoteState.modalItems.concat(data.results) : data.results;
+    if (subEl) subEl.textContent = `${data.totalCount || quoteState.modalItems.length} quote ditemukan · Hal ${quoteState.modalPage}/${quoteState.modalTotalPages}`;
+    if (moreEl) {
+      if (quoteState.modalPage < quoteState.modalTotalPages) moreEl.classList.remove('hidden');
+      else moreEl.classList.add('hidden');
+    }
+    renderQuotesModalList(quoteState.modalItems);
+  } else {
+    if (!append) {
+      quoteState.modalItems = QUOTABLE_FALLBACK;
+      if (subEl) subEl.textContent = 'Menampilkan koleksi offline (server Quotable sedang sibuk)';
+      if (moreEl) moreEl.classList.add('hidden');
+      renderQuotesModalList(QUOTABLE_FALLBACK);
+    }
+  }
+}
+
+function renderQuotesModalList(items) {
+  var listEl = document.getElementById('qm-list');
+  if (!listEl) return;
+  if (!items.length) {
+    listEl.innerHTML = '<div class="p-6 text-center text-xs font-bold text-zinc-400">Quote tidak ditemukan.</div>';
+    return;
+  }
+  listEl.innerHTML = items.map(function(q) {
+    var safeText = String(q.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var safeAuthor = String(q.author || 'Unknown').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var slug = q.authorSlug || safeAuthor;
+    var tags = Array.isArray(q.tags) ? q.tags : [];
+    return `
+      <div class="modern-row !block space-y-2">
+        <p class="text-xs font-bold text-zinc-900 leading-relaxed">“${safeText}”</p>
+        <div class="flex items-center justify-between gap-2">
+          <button onclick="loadAuthorDetail('${String(slug).replace(/'/g, "\\'")}')" class="text-[11px] font-black text-emerald-600 hover:underline text-left">— ${safeAuthor}</button>
+          <span class="text-[10px] font-bold text-zinc-400">${q.length || safeText.length} kar</span>
+        </div>
+        ${tags.length ? `<div class="flex flex-wrap gap-1">${tags.map(t => `<span class="px-2 py-0.5 rounded bg-zinc-100 text-zinc-500 text-[9px] font-bold">#${t}</span>`).join('')}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+window.loadAuthorDetail = async function(slugOrName) {
+  var cardEl = document.getElementById('qm-author-card');
+  var nameEl = document.getElementById('qm-author-name');
+  var descEl = document.getElementById('qm-author-desc');
+  var bioEl  = document.getElementById('qm-author-bio');
+  var cntEl  = document.getElementById('qm-author-count');
+  var lnkEl  = document.getElementById('qm-author-link');
+  if (!cardEl) return;
+
+  var slug = String(slugOrName || '').toLowerCase().trim().replace(/\s+/g, '-');
+  var data = await quotableFetch('/authors?slug=' + encodeURIComponent(slug));
+  var author = (data && Array.isArray(data.results) && data.results[0]) ? data.results[0] : null;
+  if (!author) return;
+
+  cardEl.classList.remove('hidden');
+  if (nameEl) nameEl.textContent = author.name || slugOrName;
+  if (descEl) descEl.textContent = author.description || '';
+  if (bioEl)  bioEl.textContent  = author.bio || '';
+  if (cntEl)  cntEl.textContent  = author.quoteCount ? `${author.quoteCount} quote di database` : '';
+  if (lnkEl) {
+    if (author.link) { lnkEl.href = author.link; lnkEl.classList.remove('hidden'); }
+    else lnkEl.classList.add('hidden');
+  }
+};
+
+function initQuotes() {
+  fetchRandomQuote();
+}
 </script>
 </body>
 </html>
+
 
