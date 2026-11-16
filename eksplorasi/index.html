@@ -331,7 +331,23 @@ body {
 .no-scroll::-webkit-scrollbar { display: none; }
 .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 .hidden { display: none; }
+.leaflet-container img, .leaflet-tile { max-width: none !important; max-height: none !important; }
+.leaflet-container { font-family: 'Plus Jakarta Sans', sans-serif; }
 </style>
+<script>
+// Redirect otomatis ke halaman login jika belum login
+(function() {
+  try {
+    var raw = localStorage.getItem('keuangan_akun_session');
+    var s = raw ? JSON.parse(raw) : null;
+    if (!s || (!s.gsUrl && !s.username)) {
+      window.location.replace('https://keloladuit.my.id/login');
+    }
+  } catch (e) {
+    window.location.replace('https://keloladuit.my.id/login');
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -805,8 +821,8 @@ body {
       </div>
     </div>
     <div id="qd-scroll-area" class="overflow-y-auto px-5 pt-4 pb-8 flex-1 space-y-3">
-      <div id="qd-map-wrap" class="hidden space-y-1.5">
-        <div id="qd-map" style="height:230px;width:100%;border-radius:18px;overflow:hidden;border:1px solid #E4E4E7;background:#F4F4F5;z-index:1"></div>
+      <div id="qd-map-wrap" class="hidden space-y-1.5 flex-shrink-0">
+        <div id="qd-map" style="height:230px;min-height:230px;width:100%;border-radius:18px;overflow:hidden;border:1px solid #E4E4E7;background:#F4F4F5;position:relative;z-index:1"></div>
         <div class="flex items-center justify-between px-1">
           <p id="qd-map-caption" class="text-[10px] font-bold text-zinc-500 truncate">Ketuk marker atau kartu gempa untuk fokus lokasi</p>
           <a id="qd-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[10px] font-black text-emerald-600 flex-shrink-0 ml-2">Google Maps ↗</a>
@@ -823,8 +839,8 @@ body {
 
 <!-- ══════════════ CUACA MODAL & LOCATION PICKER ══════════════ -->
 <div id="weather-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'weather-detail-modal')">
-  <div class="sheet">
-    <div class="p-5 pb-8">
+  <div class="sheet" style="max-height:92vh;display:flex;flex-direction:column">
+    <div class="p-5 pb-8 overflow-y-auto flex-1">
       <div class="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-4"></div>
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -862,6 +878,14 @@ body {
             <span class="text-[9px] font-bold text-zinc-400 uppercase">Tekanan Udara</span>
             <span id="wm-vis" class="text-sm font-black">-- mb</span>
           </div>
+        </div>
+      </div>
+
+      <div id="wm-map-wrap" class="mb-4 space-y-1.5">
+        <div id="wm-map" style="height:185px;min-height:185px;width:100%;border-radius:18px;overflow:hidden;border:1px solid #E4E4E7;background:#F4F4F5;position:relative;z-index:1"></div>
+        <div class="flex items-center justify-between px-1">
+          <p id="wm-map-caption" class="text-[10px] font-bold text-zinc-500 truncate">Memuat peta lokasi…</p>
+          <a id="wm-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[10px] font-black text-emerald-600 flex-shrink-0 ml-2">Google Maps ↗</a>
         </div>
       </div>
 
@@ -952,8 +976,9 @@ const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: '
 function loadSessionTransactions() {
   try {
     const raw = localStorage.getItem(AUTH_SESSION_KEY);
-    if (!raw) return;
+    if (!raw) { window.location.replace('https://keloladuit.my.id/login'); return; }
     const session = JSON.parse(raw);
+    if (!session || (!session.gsUrl && !session.username)) { window.location.replace('https://keloladuit.my.id/login'); return; }
     if (session && session.gsUrl) {
       S.akun = session;
       GS_URL = session.gsUrl;
@@ -991,6 +1016,7 @@ window.openModal = function(id) {
   }
   if (id === 'weather-detail-modal') {
     syncWeatherModal();
+    setTimeout(renderWeatherMap, 80);
   }
 };
 
@@ -1221,6 +1247,9 @@ function renderExploreItems(items) {
 // WEATHER MODULE
 // ================================================================
 var weatherCity = localStorage.getItem('weather_city') || 'Serpong, Tangerang Selatan';
+var weatherGeo  = { lat: -6.301, lon: 106.673, name: 'Serpong', region: 'Banten', temp: '--°C', desc: '' };
+var weatherMapInstance = null;
+var weatherMarkerInstance = null;
 var WEATHER_DESC_ID = {
   0:'Cerah',1:'Cerah Berawan',2:'Berawan Sebagian',3:'Berawan',45:'Berkabut',
   51:'Gerimis Ringan',53:'Gerimis',61:'Hujan Ringan',63:'Hujan',65:'Hujan Lebat',
@@ -1272,8 +1301,77 @@ async function fetchWeather(city) {
     document.getElementById('strip-weather-city').textContent = geo.name;
     document.getElementById('strip-weather-temp').textContent = tempStr;
 
+    weatherGeo = {
+      lat: Number(geo.lat),
+      lon: Number(geo.lon),
+      name: geo.name,
+      region: geo.region || '',
+      temp: tempStr,
+      desc: WEATHER_DESC_ID[wmo] || 'Cerah Berawan'
+    };
+
     syncWeatherModal();
+    var wModal = document.getElementById('weather-detail-modal');
+    if (wModal && wModal.style.display !== 'none') renderWeatherMap();
   } catch (e) {}
+}
+
+function renderOsmIframe(container, lat, lon, zoomDelta) {
+  var d = zoomDelta || 0.08;
+  var bbox = [lon - d, lat - d, lon + d, lat + d].join(',');
+  container.innerHTML = `<iframe title="Peta Lokasi" width="100%" height="100%" frameborder="0" scrolling="no" style="border:0;display:block" src="https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat},${lon}"></iframe>`;
+}
+
+function renderWeatherMap() {
+  var mapEl   = document.getElementById('wm-map');
+  var capEl   = document.getElementById('wm-map-caption');
+  var gmapsEl = document.getElementById('wm-gmaps-link');
+  if (!mapEl || !weatherGeo) return;
+
+  var lat = Number(weatherGeo.lat);
+  var lon = Number(weatherGeo.lon);
+  var label = weatherGeo.name + (weatherGeo.region ? ', ' + weatherGeo.region : '');
+  if (capEl)   capEl.textContent = `${label} (${lat.toFixed(4)}°, ${lon.toFixed(4)}°)`;
+  if (gmapsEl) gmapsEl.href = `https://www.google.com/maps?q=${lat},${lon}`;
+
+  if (typeof L === 'undefined') {
+    renderOsmIframe(mapEl, lat, lon, 0.06);
+    return;
+  }
+
+  try {
+    if (!weatherMapInstance) {
+      mapEl.innerHTML = '';
+      weatherMapInstance = L.map('wm-map', { zoomControl: true, attributionControl: false }).setView([lat, lon], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(weatherMapInstance);
+    } else {
+      weatherMapInstance.setView([lat, lon], 11);
+    }
+
+    if (weatherMarkerInstance) {
+      try { weatherMapInstance.removeLayer(weatherMarkerInstance); } catch (e) {}
+    }
+    weatherMarkerInstance = L.circleMarker([lat, lon], {
+      radius: 10,
+      color: '#0F172A',
+      weight: 2,
+      fillColor: '#10B981',
+      fillOpacity: 0.9
+    }).addTo(weatherMapInstance);
+
+    weatherMarkerInstance.bindPopup(
+      `<div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:140px">` +
+      `<div style="font-weight:900;font-size:12px;color:#111">${label}</div>` +
+      `<div style="font-weight:700;font-size:11px;color:#059669;margin-top:2px">${weatherGeo.temp} · ${weatherGeo.desc}</div>` +
+      `</div>`
+    ).openPopup();
+
+    [120, 360, 700].forEach(function(ms) {
+      setTimeout(function() { if (weatherMapInstance) weatherMapInstance.invalidateSize(); }, ms);
+    });
+  } catch (e) {
+    renderOsmIframe(mapEl, lat, lon, 0.06);
+  }
 }
 
 function syncWeatherModal() {
@@ -2004,7 +2102,7 @@ function formatQuakeFullTime(isoStr) {
 function renderQuakeMap(payload) {
   var mapWrap = document.getElementById('qd-map-wrap');
   var mapEl   = document.getElementById('qd-map');
-  if (!mapWrap || !mapEl || typeof L === 'undefined') return;
+  if (!mapWrap || !mapEl) return;
 
   var validEvents = payload.filter(function(ev) {
     var c = (ev.geometry && ev.geometry.coordinates) || [];
@@ -2014,8 +2112,17 @@ function renderQuakeMap(payload) {
 
   mapWrap.classList.remove('hidden');
 
+  if (typeof L === 'undefined') {
+    var c0 = validEvents[0].geometry.coordinates;
+    updateQuakeMapCaption(validEvents[0]);
+    renderOsmIframe(mapEl, Number(c0[1]), Number(c0[0]), 2.5);
+    return;
+  }
+
   if (!quakeMapInstance) {
-    quakeMapInstance = L.map('qd-map', { zoomControl: true, attributionControl: false });
+    mapEl.innerHTML = '';
+    var cInit = validEvents[0].geometry.coordinates;
+    quakeMapInstance = L.map('qd-map', { zoomControl: true, attributionControl: false }).setView([Number(cInit[1]), Number(cInit[0])], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(quakeMapInstance);
   }
 
@@ -2055,10 +2162,13 @@ function renderQuakeMap(payload) {
     quakeMarkers.push(marker);
   });
 
-  setTimeout(function() {
-    quakeMapInstance.invalidateSize();
-    focusQuakeOnMap(0, false);
-  }, 180);
+  [120, 360, 700].forEach(function(ms, i) {
+    setTimeout(function() {
+      if (!quakeMapInstance) return;
+      quakeMapInstance.invalidateSize();
+      if (i === 0) focusQuakeOnMap(0, false);
+    }, ms);
+  });
 }
 
 function updateQuakeMapCaption(ev) {
@@ -2091,6 +2201,9 @@ window.focusQuakeOnMap = function(idx, scrollTop) {
     if (quakeMarkers[idx]) {
       setTimeout(function() { try { quakeMarkers[idx].openPopup(); } catch (e) {} }, 400);
     }
+  } else {
+    var mapEl = document.getElementById('qd-map');
+    if (mapEl) renderOsmIframe(mapEl, lat, lon, 2.5);
   }
 };
 
@@ -2193,3 +2306,4 @@ function initQuake() {
 </script>
 </body>
 </html>
+
