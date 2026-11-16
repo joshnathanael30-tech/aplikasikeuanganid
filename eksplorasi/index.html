@@ -1,3 +1,27 @@
+Kode HTML Halaman Eksplorasi (keloladuit.my.id/eksplorasi) — UI/UX Modern, Fresh, Clean & Animasi + Revamp Kurs Valas & Cek Kripto
+
+Pembaruan menyeluruh pada halaman https://keloladuit.my.id/eksplorasi:
+
+Tampilan Baru yang Fresh, Clean, Modern & Beranimasi:
+
+Menggunakan tata letak Bento & Clean Surface dengan staggered entrance animation, spring micro-interactions saat disentuh, dan live status pulse tanpa tampilan yang monoton.
+
+Dilengkapi Live Market & Cuaca Strip di bagian atas agar informasi cuaca kota aktif, kurs USD/IDR, dan pergerakan BTC langsung terlihat sekilas.
+
+Perbaikan & Desain Baru Modal "Kurs Valas":
+
+Menggabungkan Kalkulator Konversi Instan (dengan tombol tukar animasi ⇄ dan quick-select mata uang berbendera) langsung di bagian atas modal Kurs Valas.
+
+Dilengkapi pencarian mata uang, pill pilihan base currency (IDR, USD, EUR, SGD, GBP, JPY), serta kartu kurs modern yang bisa diketuk untuk menampilkan Grafik Tren 7 Hari interaktif.
+
+Perbaikan & Desain Baru Modal "Cek Kripto":
+
+Dilengkapi Ringkasan Pasar (Top Gainer, jumlah koin terpantau, serta tombol Toggle Tampilan Utama USD / IDR), tab filter cepat (Semua, Naik, Turun), kolom pencarian, serta kartu koin modern dengan kurva Sparkline SVG halus.
+
+Seluruh Fitur Eksplorasi Tetap Utuh: Kalkulator iOS-style, Cek Cuaca + Ganti Kota, Gempa Bumi Terkini (TerraQuake API), Berita Bisnis, AI Assistant (Mode Keuangan & Bebas), serta Navigasi Bawah.
+
+Klik tombol Copy / Salin di pojok kanan atas blok kode di bawah ini:
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -576,6 +600,68 @@ body {
       </div>
     </section>
 
+    <!-- ── 6. HARGA EMAS & LOGAM MULIA (GOLDPRICE.DEV API) ── -->
+    <section class="fade-up d4">
+      <div class="flex justify-between items-center mb-3 px-0.5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+          <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Emas &amp; Logam Mulia</span>
+        </div>
+        <button onclick="openGoldModal()" class="text-[11px] font-extrabold text-zinc-900 active:scale-90 transition-transform">
+          Detail &amp; Grafik →
+        </button>
+      </div>
+
+      <div id="gold-widget" onclick="openGoldModal()" class="clean-card p-5 cursor-pointer active:scale-[0.99] transition space-y-3.5">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-200/70 flex items-center justify-center text-2xl">🪙</div>
+            <div>
+              <p class="text-xs font-black text-zinc-900">Emas Spot (XAU / IDR)</p>
+              <p id="gold-widget-oz" class="text-[10px] font-bold text-zinc-400 mt-0.5">Memuat harga troy oz…</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p id="gold-widget-gram" class="text-base font-black text-amber-600">--</p>
+            <p class="text-[9px] font-extrabold text-zinc-400">per gram</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-1 border-t border-zinc-100">
+          <div class="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/70">
+            <p class="text-[9px] font-bold text-zinc-400">XAU / USD</p>
+            <p id="gold-mini-xau" class="text-xs font-black text-zinc-900 mt-0.5">--</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/70">
+            <p class="text-[9px] font-bold text-zinc-400">Perak (XAG)</p>
+            <p id="gold-mini-xag" class="text-xs font-black text-zinc-900 mt-0.5">--</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/70">
+            <p class="text-[9px] font-bold text-zinc-400">Tembaga (HG)</p>
+            <p id="gold-mini-hg" class="text-xs font-black text-zinc-900 mt-0.5">--</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. DUNIA STUDIO GHIBLI (GHIBLI API) ── -->
+    <section class="fade-up d4">
+      <div class="flex justify-between items-center mb-3 px-0.5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+          <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Studio Ghibli</span>
+        </div>
+        <button onclick="openGhibliModal()" class="text-[11px] font-extrabold text-zinc-900 active:scale-90 transition-transform">
+          Jelajahi Semua →
+        </button>
+      </div>
+
+      <div id="ghibli-widget-list" class="flex gap-3 overflow-x-auto no-scroll pb-1">
+        <div class="min-w-[210px] h-44 bg-zinc-200 rounded-2xl flex-shrink-0" style="animation:shimmer 1.4s infinite"></div>
+        <div class="min-w-[210px] h-44 bg-zinc-200 rounded-2xl flex-shrink-0" style="animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
+      </div>
+    </section>
+
     <!-- Hidden Weather Holders -->
     <div style="display:none">
       <span id="weather-city">Serpong, Tangerang Selatan</span>
@@ -1009,6 +1095,95 @@ body {
   </div>
 </div>
 
+<!-- ══════════════ GOLD & METALS MODAL (GOLDPRICE.DEV) ══════════════ -->
+<div id="gold-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'gold-detail-modal')">
+  <div class="sheet" style="max-height:92vh;display:flex;flex-direction:column">
+    <div class="px-5 pt-3 pb-3 border-b border-zinc-100 flex-shrink-0">
+      <div class="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-black text-zinc-900">🪙 Emas &amp; Logam Mulia</h2>
+          <p id="gm-subtitle" class="text-[10px] font-bold text-zinc-400 mt-0.5">Sumber: goldprice.dev</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="fetchGoldPrices()" class="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-[11px] font-black active:scale-95 transition">↻ Refresh</button>
+          <button onclick="closeModal('gold-detail-modal')" class="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-600 font-black text-xs">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-y-auto px-5 pt-4 pb-8 flex-1 space-y-4">
+      <!-- Kalkulator Berat Emas -->
+      <div class="p-4 rounded-2xl bg-zinc-900 text-white space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Kalkulator Nilai Emas (Gram)</span>
+          <span id="gm-unit-gram" class="text-[10px] font-black text-amber-400">-- / gr</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="number" id="gm-gram-input" value="1" min="0" step="0.1" oninput="calcGoldValue()" class="w-24 bg-white/10 border border-white/15 rounded-xl px-3 py-2 text-lg font-black text-white outline-none">
+          <span class="text-xs font-bold text-zinc-400">gram =</span>
+          <div class="flex-1 text-right">
+            <p id="gm-calc-idr" class="text-base font-black text-emerald-400">--</p>
+            <p id="gm-calc-usd" class="text-[10px] font-bold text-zinc-400">--</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grafik Historis Emas -->
+      <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p id="gm-chart-title" class="text-xs font-black text-zinc-900">Tren XAU / USD</p>
+            <p id="gm-chart-note" class="text-[10px] font-semibold text-zinc-400">Memuat grafik…</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button id="gm-range-7" onclick="switchGoldChartRange(7)" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black">7H</button>
+            <button id="gm-range-30" onclick="switchGoldChartRange(30)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-600 text-[10px] font-black">30H</button>
+          </div>
+        </div>
+        <div style="height:150px;position:relative">
+          <canvas id="gm-chart-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Kartu Harga Logam -->
+      <div id="gm-cards" class="space-y-2.5"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ STUDIO GHIBLI EXPLORER MODAL ══════════════ -->
+<div id="ghibli-detail-modal" class="modal-backdrop" style="display:none" onclick="handleBackdropClick(event,'ghibli-detail-modal')">
+  <div class="sheet" style="max-height:92vh;display:flex;flex-direction:column">
+    <div class="px-5 pt-3 pb-3 border-b border-zinc-100 flex-shrink-0">
+      <div class="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-3"></div>
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-lg font-black text-zinc-900">🍃 Dunia Studio Ghibli</h2>
+          <p id="gh-subtitle" class="text-[10px] font-bold text-zinc-400 mt-0.5">Sumber: Studio Ghibli API</p>
+        </div>
+        <button onclick="closeModal('ghibli-detail-modal')" class="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-600 font-black text-xs">✕</button>
+      </div>
+      <div class="flex gap-1.5 overflow-x-auto no-scroll mb-2.5">
+        <button class="pill-btn active" onclick="setGhibliTab('films', this)">🎬 Film</button>
+        <button class="pill-btn" onclick="setGhibliTab('people', this)">👤 Karakter</button>
+        <button class="pill-btn" onclick="setGhibliTab('locations', this)">🏞️ Lokasi</button>
+        <button class="pill-btn" onclick="setGhibliTab('vehicles', this)">✈️ Kendaraan</button>
+      </div>
+      <input type="text" id="gh-search" placeholder="Cari judul film, karakter, lokasi…" class="fi" oninput="filterGhibliList(this.value)">
+    </div>
+
+    <div class="overflow-y-auto px-5 pt-3 pb-8 flex-1 space-y-3">
+      <div id="gh-film-detail" class="hidden clean-card overflow-hidden"></div>
+      <div id="gh-loading" class="space-y-2.5">
+        <div class="h-24 bg-zinc-100 rounded-2xl" style="animation:shimmer 1.4s infinite"></div>
+        <div class="h-24 bg-zinc-100 rounded-2xl" style="animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
+      </div>
+      <div id="gh-list" class="hidden space-y-2.5"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ AI CHAT MODAL ══════════════ -->
 <div id="gpt-overlay" onclick="if(event.target===this)gptClose()"
   style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(17,24,39,.58);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
@@ -1095,6 +1270,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initWeather();
   initForex();
   initQuotes();
+  initGold();
+  initGhibli();
 });
 
 // ================================================================
@@ -2663,8 +2840,411 @@ window.loadAuthorDetail = async function(slugOrName) {
 function initQuotes() {
   fetchRandomQuote();
 }
+
+// ================================================================
+// GOLD PRICE MODULE (api.goldprice.dev)
+// ================================================================
+var GOLD_API_KEY  = 'ga_live_9OoIV5_3QPVdjHfSS3Aogel0DWQWRhtrMVhKpL47';
+var GOLD_API_BASE = 'https://api.goldprice.dev/v1';
+var TROY_OZ_GRAM  = 31.1034768;
+
+var goldState = {
+  prices: {},
+  barsDays: 7,
+  loaded: false
+};
+
+async function fetchGoldPrices() {
+  var headers = { 'Authorization': 'Bearer ' + GOLD_API_KEY };
+  var syms = ['XAU-IDR-SPOT', 'XAU-USD-SPOT', 'XAG-USD-SPOT', 'HG-USD-SPOT'];
+
+  try {
+    var results = await Promise.all(syms.map(function(sym) {
+      return fetch(`${GOLD_API_BASE}/prices?symbol=${sym}`, { headers: headers })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .catch(function() { return null; });
+    }));
+
+    results.forEach(function(d, idx) {
+      if (d && Array.isArray(d.symbols) && d.symbols[0]) {
+        goldState.prices[syms[idx]] = d.symbols[0];
+      }
+    });
+    goldState.loaded = true;
+    renderGoldWidget();
+    renderGoldModalCards();
+    calcGoldValue();
+  } catch (e) {}
+}
+
+function renderGoldWidget() {
+  var xauIdr = goldState.prices['XAU-IDR-SPOT'];
+  var xauUsd = goldState.prices['XAU-USD-SPOT'];
+  var xagUsd = goldState.prices['XAG-USD-SPOT'];
+  var hgUsd  = goldState.prices['HG-USD-SPOT'];
+
+  if (xauIdr && xauIdr.price) {
+    var ozPrice = Number(xauIdr.price);
+    var grPrice = ozPrice / TROY_OZ_GRAM;
+    var elGr = document.getElementById('gold-widget-gram');
+    var elOz = document.getElementById('gold-widget-oz');
+    if (elGr) elGr.textContent = 'Rp ' + Math.round(grPrice).toLocaleString('id-ID');
+    if (elOz) elOz.textContent = 'Rp ' + Math.round(ozPrice).toLocaleString('id-ID') + ' / troy oz';
+  }
+  if (xauUsd && xauUsd.price) {
+    var el = document.getElementById('gold-mini-xau');
+    if (el) el.textContent = '$' + Number(xauUsd.price).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+  if (xagUsd && xagUsd.price) {
+    var el2 = document.getElementById('gold-mini-xag');
+    if (el2) el2.textContent = '$' + Number(xagUsd.price).toFixed(2);
+  }
+  if (hgUsd && hgUsd.price) {
+    var el3 = document.getElementById('gold-mini-hg');
+    if (el3) el3.textContent = '$' + Number(hgUsd.price).toFixed(3);
+  }
+}
+
+window.calcGoldValue = function() {
+  var grInput = parseFloat(document.getElementById('gm-gram-input')?.value) || 0;
+  var xauIdr  = goldState.prices['XAU-IDR-SPOT'];
+  var xauUsd  = goldState.prices['XAU-USD-SPOT'];
+
+  var idrPerGr = xauIdr && xauIdr.price ? (Number(xauIdr.price) / TROY_OZ_GRAM) : 0;
+  var usdPerGr = xauUsd && xauUsd.price ? (Number(xauUsd.price) / TROY_OZ_GRAM) : 0;
+
+  var uEl = document.getElementById('gm-unit-gram');
+  var iEl = document.getElementById('gm-calc-idr');
+  var dEl = document.getElementById('gm-calc-usd');
+  if (uEl && idrPerGr) uEl.textContent = 'Rp ' + Math.round(idrPerGr).toLocaleString('id-ID') + ' / gr';
+  if (iEl) iEl.textContent = idrPerGr ? ('Rp ' + Math.round(grInput * idrPerGr).toLocaleString('id-ID')) : '--';
+  if (dEl) dEl.textContent = usdPerGr ? ('≈ $' + (grInput * usdPerGr).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD') : '--';
+};
+
+function renderGoldModalCards() {
+  var box = document.getElementById('gm-cards');
+  var sub = document.getElementById('gm-subtitle');
+  if (!box) return;
+
+  var defs = [
+    { key: 'XAU-IDR-SPOT', title: 'Emas Spot (XAU / IDR)', icon: '🥇', curr: 'IDR' },
+    { key: 'XAU-USD-SPOT', title: 'Emas Spot (XAU / USD)', icon: '🪙', curr: 'USD' },
+    { key: 'XAG-USD-SPOT', title: 'Perak Spot (XAG / USD)', icon: '🥈', curr: 'USD' },
+    { key: 'HG-USD-SPOT',  title: 'Tembaga Spot (HG / USD)', icon: '🔶', curr: 'USD' }
+  ];
+
+  var anyTime = null;
+  box.innerHTML = defs.map(function(df) {
+    var item = goldState.prices[df.key];
+    if (!item || !item.price) return '';
+    if (!anyTime && item.computed_at) anyTime = item.computed_at;
+    var p = Number(item.price);
+    var perGr = p / TROY_OZ_GRAM;
+    var mainFmt = df.curr === 'IDR'
+      ? 'Rp ' + Math.round(p).toLocaleString('id-ID')
+      : '$' + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+    var grFmt = df.curr === 'IDR'
+      ? 'Rp ' + Math.round(perGr).toLocaleString('id-ID') + ' / gr'
+      : '$' + perGr.toFixed(2) + ' / gr';
+    return `
+      <div class="modern-row">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200/70 flex items-center justify-center text-xl">${df.icon}</span>
+          <div>
+            <p class="text-xs font-black text-zinc-900">${df.title}</p>
+            <p class="text-[10px] font-bold text-zinc-400">${item.unit || 'troy_ounce'} · ${item.is_stale ? 'Tertunda' : 'Aktif'}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-xs font-black text-zinc-900">${mainFmt}</p>
+          <p class="text-[10px] font-bold text-amber-600 mt-0.5">${grFmt}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (sub && anyTime) {
+    try {
+      sub.textContent = 'Update: ' + new Date(anyTime).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' · goldprice.dev';
+    } catch (e) {}
+  }
+}
+
+window.switchGoldChartRange = function(days) {
+  goldState.barsDays = days;
+  var b7  = document.getElementById('gm-range-7');
+  var b30 = document.getElementById('gm-range-30');
+  if (b7 && b30) {
+    b7.className  = days === 7  ? 'px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black' : 'px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-600 text-[10px] font-black';
+    b30.className = days === 30 ? 'px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black' : 'px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-600 text-[10px] font-black';
+  }
+  fetchGoldBars(days);
+};
+
+async function fetchGoldBars(days) {
+  var noteEl = document.getElementById('gm-chart-note');
+  var canvas = document.getElementById('gm-chart-canvas');
+  if (!canvas) return;
+  if (noteEl) noteEl.textContent = `Memuat grafik ${days} hari…`;
+
+  var toDate   = new Date();
+  var fromDate = new Date(Date.now() - days * 86400000);
+  var fmtISO   = function(d) { return d.toISOString().slice(0, 10); };
+
+  try {
+    var r = await fetch(`${GOLD_API_BASE}/bars?symbol=XAU-USD-SPOT&interval=1d&from=${fmtISO(fromDate)}&to=${fmtISO(toDate)}`, {
+      headers: { 'Authorization': 'Bearer ' + GOLD_API_KEY }
+    });
+    var d = await r.json();
+    var bars = (d && (d.bars || d.data || d.results)) || (Array.isArray(d) ? d : []);
+    if (!bars.length) {
+      if (noteEl) noteEl.textContent = 'Data historis belum tersedia.';
+      return;
+    }
+
+    var labels = bars.map(function(b) {
+      var dt = String(b.timestamp || b.date || b.time || '').slice(0, 10).split('-');
+      return dt.length === 3 ? (dt[2] + '/' + dt[1]) : '--';
+    });
+    var points = bars.map(function(b) { return Number(b.close || b.price || b.c || 0); });
+    var isUp   = points[points.length - 1] >= points[0];
+    var color  = isUp ? '#10B981' : '#EF4444';
+
+    if (noteEl) noteEl.textContent = `Historis ${points.length} hari (${days}H) · goldprice.dev`;
+    if (window._gmChart) { try { window._gmChart.destroy(); } catch (e) {} }
+
+    var ctx = canvas.getContext('2d');
+    var grad = ctx.createLinearGradient(0, 0, 0, 145);
+    grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.22)' : 'rgba(239,68,68,0.22)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+
+    window._gmChart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{ data: points, borderColor: color, backgroundColor: grad, fill: true, tension: 0.35, pointRadius: 2.5, pointBackgroundColor: color, borderWidth: 2 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+          y: { position: 'right', grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 9 }, callback: function(v) { return '$' + Number(v).toLocaleString('en-US'); } } }
+        }
+      }
+    });
+  } catch (e) {
+    if (noteEl) noteEl.textContent = 'Gagal memuat grafik historis.';
+  }
+}
+
+window.openGoldModal = function() {
+  openModal('gold-detail-modal');
+  if (!goldState.loaded) fetchGoldPrices();
+  else { renderGoldModalCards(); calcGoldValue(); }
+  fetchGoldBars(goldState.barsDays);
+};
+
+function initGold() {
+  fetchGoldPrices();
+}
+
+// ================================================================
+// STUDIO GHIBLI MODULE (ghibliapi.vercel.app)
+// ================================================================
+var GHIBLI_BASE = 'https://ghibliapi.vercel.app';
+var ghibliState = {
+  tab: 'films',
+  searchQ: '',
+  cache: { films: [], people: [], locations: [], vehicles: [] }
+};
+
+async function fetchGhibliEndpoint(ep) {
+  if (ghibliState.cache[ep] && ghibliState.cache[ep].length) return ghibliState.cache[ep];
+  try {
+    var r = await fetch(`${GHIBLI_BASE}/${ep}`);
+    var d = await r.json();
+    if (Array.isArray(d)) {
+      ghibliState.cache[ep] = d;
+      return d;
+    }
+  } catch (e) {}
+  return [];
+}
+
+async function initGhibli() {
+  var films = await fetchGhibliEndpoint('films');
+  renderGhibliWidget(films);
+}
+
+function renderGhibliWidget(films) {
+  var box = document.getElementById('ghibli-widget-list');
+  if (!box) return;
+  if (!films || !films.length) {
+    box.innerHTML = '<div class="clean-card p-5 w-full text-center text-xs font-bold text-zinc-400">Data Studio Ghibli belum tersedia.</div>';
+    return;
+  }
+
+  box.innerHTML = films.slice(0, 10).map(function(f) {
+    var title = String(f.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var img   = f.movie_banner || f.image || '';
+    return `
+      <div onclick="openGhibliFilm('${f.id}')" class="clean-card min-w-[205px] max-w-[205px] overflow-hidden flex-shrink-0 cursor-pointer active:scale-[0.98] transition">
+        <div class="h-28 bg-zinc-200 relative overflow-hidden">
+          ${img ? `<img src="${img}" alt="${title}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-zinc-900/80 text-white text-[9px] font-black">★ ${f.rt_score || '--'}%</span>
+        </div>
+        <div class="p-3">
+          <p class="text-xs font-black text-zinc-900 truncate">${title}</p>
+          <p class="text-[10px] font-bold text-zinc-400 mt-0.5 truncate">${f.release_date || '--'} · ${f.director || '--'}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openGhibliModal = function() {
+  openModal('ghibli-detail-modal');
+  var dEl = document.getElementById('gh-film-detail');
+  if (dEl) dEl.classList.add('hidden');
+  loadGhibliTabData(ghibliState.tab);
+};
+
+window.openGhibliFilm = async function(filmId) {
+  openModal('ghibli-detail-modal');
+  var films = await fetchGhibliEndpoint('films');
+  var f = films.find(function(x) { return x.id === filmId; });
+  if (f) showGhibliFilmDetail(f);
+  loadGhibliTabData('films');
+};
+
+function showGhibliFilmDetail(f) {
+  var box = document.getElementById('gh-film-detail');
+  if (!box) return;
+  box.classList.remove('hidden');
+  box.innerHTML = `
+    ${f.movie_banner ? `<div class="h-40 bg-zinc-200 overflow-hidden"><img src="${f.movie_banner}" alt="" class="w-full h-full object-cover"></div>` : ''}
+    <div class="p-4 space-y-2">
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h3 class="text-sm font-black text-zinc-900">${f.title}</h3>
+          <p class="text-[10px] font-bold text-zinc-400">${f.original_title || ''} (${f.original_title_romanised || ''})</p>
+        </div>
+        <button onclick="document.getElementById('gh-film-detail').classList.add('hidden')" class="w-7 h-7 rounded-full bg-zinc-100 text-zinc-500 text-xs font-black">✕</button>
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black">★ RT ${f.rt_score}%</span>
+        <span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 text-[10px] font-bold">${f.release_date}</span>
+        <span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 text-[10px] font-bold">${f.running_time} mnt</span>
+      </div>
+      <p class="text-xs text-zinc-600 leading-relaxed">${f.description || ''}</p>
+      <p class="text-[10px] font-bold text-zinc-400">Sutradara: <span class="text-zinc-700">${f.director}</span> · Produser: <span class="text-zinc-700">${f.producer}</span></p>
+    </div>
+  `;
+}
+
+window.setGhibliTab = function(tab, btn) {
+  ghibliState.tab = tab;
+  ghibliState.searchQ = '';
+  var inp = document.getElementById('gh-search');
+  if (inp) inp.value = '';
+  var dEl = document.getElementById('gh-film-detail');
+  if (dEl) dEl.classList.add('hidden');
+  if (btn && btn.parentNode) {
+    btn.parentNode.querySelectorAll('.pill-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  loadGhibliTabData(tab);
+};
+
+window.filterGhibliList = function(q) {
+  ghibliState.searchQ = q.trim().toLowerCase();
+  renderGhibliTabList(ghibliState.tab, ghibliState.cache[ghibliState.tab] || []);
+};
+
+async function loadGhibliTabData(tab) {
+  var loadEl = document.getElementById('gh-loading');
+  var listEl = document.getElementById('gh-list');
+  if (loadEl) loadEl.classList.remove('hidden');
+  if (listEl) listEl.classList.add('hidden');
+
+  var data = await fetchGhibliEndpoint(tab);
+  if (loadEl) loadEl.classList.add('hidden');
+  if (listEl) listEl.classList.remove('hidden');
+  renderGhibliTabList(tab, data);
+}
+
+function renderGhibliTabList(tab, data) {
+  var listEl = document.getElementById('gh-list');
+  var subEl  = document.getElementById('gh-subtitle');
+  if (!listEl) return;
+
+  var q = ghibliState.searchQ;
+  var filtered = (data || []).filter(function(item) {
+    if (!q) return true;
+    return JSON.stringify(item).toLowerCase().includes(q);
+  });
+
+  if (subEl) subEl.textContent = `${filtered.length} data ${tab} · ghibliapi.vercel.app`;
+  if (!filtered.length) {
+    listEl.innerHTML = '<div class="p-6 text-center text-xs font-bold text-zinc-400">Data tidak ditemukan.</div>';
+    return;
+  }
+
+  if (tab === 'films') {
+    listEl.innerHTML = filtered.map(function(f) {
+      return `
+        <div onclick="openGhibliFilm('${f.id}')" class="modern-row cursor-pointer">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${f.image || ''}" alt="" class="w-12 h-16 rounded-xl object-cover bg-zinc-100 flex-shrink-0" onerror="this.style.display='none'">
+            <div class="min-w-0">
+              <p class="text-xs font-black text-zinc-900 truncate">${f.title}</p>
+              <p class="text-[10px] font-bold text-zinc-400 truncate">${f.director} · ${f.release_date}</p>
+              <span class="inline-block mt-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-black">★ RT ${f.rt_score}%</span>
+            </div>
+          </div>
+          <span class="text-xs font-black text-zinc-400">→</span>
+        </div>
+      `;
+    }).join('');
+  } else if (tab === 'people') {
+    listEl.innerHTML = filtered.map(function(p) {
+      return `
+        <div class="modern-row !block space-y-1">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-black text-zinc-900">${p.name}</p>
+            <span class="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[9px] font-bold">${p.gender || '--'} · Usia ${p.age || '--'}</span>
+          </div>
+          <p class="text-[10px] font-semibold text-zinc-500">Mata: ${p.eye_color || '--'} · Rambut: ${p.hair_color || '--'}</p>
+        </div>
+      `;
+    }).join('');
+  } else if (tab === 'locations') {
+    listEl.innerHTML = filtered.map(function(l) {
+      return `
+        <div class="modern-row !block space-y-1">
+          <p class="text-xs font-black text-zinc-900">${l.name}</p>
+          <p class="text-[10px] font-semibold text-zinc-500">Iklim: ${l.climate || '--'} · Medan: ${l.terrain || '--'} · Air: ${l.surface_water || '--'}%</p>
+        </div>
+      `;
+    }).join('');
+  } else {
+    listEl.innerHTML = filtered.map(function(v) {
+      return `
+        <div class="modern-row !block space-y-1">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-black text-zinc-900">${v.name}</p>
+            <span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 text-[9px] font-black">${v.vehicle_class || 'Vehicle'}</span>
+          </div>
+          <p class="text-[10px] font-medium text-zinc-500 leading-relaxed">${v.description || ''}</p>
+        </div>
+      `;
+    }).join('');
+  }
+}
 </script>
 </body>
 </html>
+
 
 
