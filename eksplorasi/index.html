@@ -2833,24 +2833,51 @@ var goldState = {
 async function fetchGoldPrices() {
   var headers = { 'Authorization': 'Bearer ' + GOLD_API_KEY };
   var syms = ['XAU-IDR-SPOT', 'XAU-USD-SPOT', 'XAG-USD-SPOT', 'HG-USD-SPOT'];
+  var gotFromGoldPriceDev = false;
 
+  // 1. Coba api.goldprice.dev (catatan: dokumentasi resmi menyatakan belum mendukung CORS browser)
   try {
     var results = await Promise.all(syms.map(function(sym) {
       return fetch(`${GOLD_API_BASE}/prices?symbol=${sym}`, { headers: headers })
         .then(function(r) { return r.ok ? r.json() : null; })
         .catch(function() { return null; });
     }));
-
     results.forEach(function(d, idx) {
       if (d && Array.isArray(d.symbols) && d.symbols[0]) {
         goldState.prices[syms[idx]] = d.symbols[0];
+        gotFromGoldPriceDev = true;
       }
     });
-    goldState.loaded = true;
-    renderGoldWidget();
-    renderGoldModalCards();
-    calcGoldValue();
   } catch (e) {}
+
+  // 2. Fallback browser-safe (CORS enabled) via jsDelivr currency-api (XAU & XAG per troy ounce)
+  if (!gotFromGoldPriceDev) {
+    try {
+      var [xauRes, xagRes] = await Promise.all([
+        fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/xau.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+        fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/xag.json').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+      ]);
+
+      if (xauRes && xauRes.xau) {
+        var nowIso = xauRes.date ? (xauRes.date + 'T00:00:00Z') : new Date().toISOString();
+        if (xauRes.xau.idr) {
+          goldState.prices['XAU-IDR-SPOT'] = { symbol: 'XAU', quote_currency: 'IDR', unit: 'troy_ounce', price: String(xauRes.xau.idr), is_stale: false, computed_at: nowIso };
+        }
+        if (xauRes.xau.usd) {
+          goldState.prices['XAU-USD-SPOT'] = { symbol: 'XAU', quote_currency: 'USD', unit: 'troy_ounce', price: String(xauRes.xau.usd), is_stale: false, computed_at: nowIso };
+        }
+      }
+      if (xagRes && xagRes.xag && xagRes.xag.usd) {
+        var nowIso2 = xagRes.date ? (xagRes.date + 'T00:00:00Z') : new Date().toISOString();
+        goldState.prices['XAG-USD-SPOT'] = { symbol: 'XAG', quote_currency: 'USD', unit: 'troy_ounce', price: String(xagRes.xag.usd), is_stale: false, computed_at: nowIso2 };
+      }
+    } catch (e) {}
+  }
+
+  goldState.loaded = true;
+  renderGoldWidget();
+  renderGoldModalCards();
+  calcGoldValue();
 }
 
 function renderGoldWidget() {
@@ -2968,21 +2995,49 @@ async function fetchGoldBars(days) {
   var fmtISO   = function(d) { return d.toISOString().slice(0, 10); };
 
   try {
-    var r = await fetch(`${GOLD_API_BASE}/bars?symbol=XAU-USD-SPOT&interval=1d&from=${fmtISO(fromDate)}&to=${fmtISO(toDate)}`, {
-      headers: { 'Authorization': 'Bearer ' + GOLD_API_KEY }
-    });
-    var d = await r.json();
-    var bars = (d && (d.bars || d.data || d.results)) || (Array.isArray(d) ? d : []);
-    if (!bars.length) {
+    var labels = [], points = [];
+    try {
+      var r = await fetch(`${GOLD_API_BASE}/bars?symbol=XAU-USD-SPOT&interval=1d&from=${fmtISO(fromDate)}&to=${fmtISO(toDate)}`, {
+        headers: { 'Authorization': 'Bearer ' + GOLD_API_KEY }
+      });
+      if (r.ok) {
+        var d = await r.json();
+        var bars = (d && (d.bars || d.data || d.results)) || (Array.isArray(d) ? d : []);
+        if (bars.length) {
+          labels = bars.map(function(b) {
+            var dt = String(b.timestamp || b.date || b.time || '').slice(0, 10).split('-');
+            return dt.length === 3 ? (dt[2] + '/' + dt[1]) : '--';
+          });
+          points = bars.map(function(b) { return Number(b.close || b.price || b.c || 0); });
+        }
+      }
+    } catch (e) {}
+
+    // Fallback historis XAU/USD bebas CORS via jsDelivr currency-api
+    if (!points.length) {
+      var step = days > 14 ? 3 : 1;
+      var dateList = [];
+      for (var i = days; i >= 0; i -= step) {
+        dateList.push(fmtISO(new Date(Date.now() - i * 86400000)));
+      }
+      var histRes = await Promise.all(dateList.map(function(dtStr) {
+        return fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${dtStr}/v1/currencies/xau.json`)
+          .then(function(res) { return res.ok ? res.json() : null; })
+          .catch(function() { return null; });
+      }));
+      histRes.forEach(function(item, idx) {
+        if (item && item.xau && item.xau.usd) {
+          var p = dateList[idx].split('-');
+          labels.push(p[2] + '/' + p[1]);
+          points.push(Number(item.xau.usd));
+        }
+      });
+    }
+
+    if (!points.length) {
       if (noteEl) noteEl.textContent = 'Data historis belum tersedia.';
       return;
     }
-
-    var labels = bars.map(function(b) {
-      var dt = String(b.timestamp || b.date || b.time || '').slice(0, 10).split('-');
-      return dt.length === 3 ? (dt[2] + '/' + dt[1]) : '--';
-    });
-    var points = bars.map(function(b) { return Number(b.close || b.price || b.c || 0); });
     var isUp   = points[points.length - 1] >= points[0];
     var color  = isUp ? '#10B981' : '#EF4444';
 
@@ -3138,17 +3193,90 @@ window.filterGhibliList = function(q) {
   renderGhibliTabList(ghibliState.tab, ghibliState.cache[ghibliState.tab] || []);
 };
 
+function findFilmByUrlOrId(urlOrId) {
+  var id = String(urlOrId || '').split('/').pop();
+  return (ghibliState.cache.films || []).find(function(f) { return f.id === id; }) || null;
+}
+
+function getItemFilmPoster(item) {
+  var filmArr = Array.isArray(item.films) ? item.films : (item.films ? [item.films] : []);
+  for (var i = 0; i < filmArr.length; i++) {
+    var f = findFilmByUrlOrId(filmArr[i]);
+    if (f && (f.image || f.movie_banner)) return { film: f, img: f.image || f.movie_banner };
+  }
+  return { film: null, img: '' };
+}
+
 async function loadGhibliTabData(tab) {
   var loadEl = document.getElementById('gh-loading');
   var listEl = document.getElementById('gh-list');
   if (loadEl) loadEl.classList.remove('hidden');
   if (listEl) listEl.classList.add('hidden');
 
+  if (!ghibliState.cache.films.length) await fetchGhibliEndpoint('films');
   var data = await fetchGhibliEndpoint(tab);
   if (loadEl) loadEl.classList.add('hidden');
   if (listEl) listEl.classList.remove('hidden');
   renderGhibliTabList(tab, data);
 }
+
+window.openGhibliItemDetail = async function(tab, itemId) {
+  var list = await fetchGhibliEndpoint(tab);
+  var item = list.find(function(x) { return x.id === itemId; });
+  var box  = document.getElementById('gh-film-detail');
+  if (!item || !box) return;
+
+  var ref = getItemFilmPoster(item);
+  var filmLinks = (Array.isArray(item.films) ? item.films : (item.films ? [item.films] : [])).map(function(u) {
+    var f = findFilmByUrlOrId(u);
+    if (!f) return '';
+    return `<button onclick="openGhibliFilm('${f.id}')" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black active:scale-95 transition">🎬 ${f.title}</button>`;
+  }).filter(Boolean).join('');
+
+  var bodyHtml = '';
+  if (tab === 'people') {
+    bodyHtml = `
+      <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-zinc-50 border border-zinc-200/70 text-[11px]">
+        <div><p class="text-[9px] font-bold text-zinc-400">Gender</p><p class="font-black text-zinc-900">${item.gender || '--'}</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Usia</p><p class="font-black text-zinc-900">${item.age || '--'}</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Warna Mata</p><p class="font-black text-zinc-900">${item.eye_color || '--'}</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Warna Rambut</p><p class="font-black text-zinc-900">${item.hair_color || '--'}</p></div>
+      </div>`;
+  } else if (tab === 'locations') {
+    var resCount = Array.isArray(item.residents) ? item.residents.filter(function(r) { return r !== 'TODO'; }).length : 0;
+    bodyHtml = `
+      <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-zinc-50 border border-zinc-200/70 text-[11px]">
+        <div><p class="text-[9px] font-bold text-zinc-400">Iklim</p><p class="font-black text-zinc-900">${item.climate || '--'}</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Medan</p><p class="font-black text-zinc-900">${item.terrain || '--'}</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Permukaan Air</p><p class="font-black text-zinc-900">${item.surface_water || '--'}%</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Penghuni Tercatat</p><p class="font-black text-zinc-900">${resCount} karakter</p></div>
+      </div>`;
+  } else {
+    bodyHtml = `
+      <p class="text-xs text-zinc-600 leading-relaxed">${item.description || 'Tidak ada deskripsi.'}</p>
+      <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-zinc-50 border border-zinc-200/70 text-[11px]">
+        <div><p class="text-[9px] font-bold text-zinc-400">Kelas Kendaraan</p><p class="font-black text-zinc-900">${item.vehicle_class || '--'}</p></div>
+        <div><p class="text-[9px] font-bold text-zinc-400">Panjang</p><p class="font-black text-zinc-900">${item.length ? item.length + ' m' : '--'}</p></div>
+      </div>`;
+  }
+
+  box.classList.remove('hidden');
+  box.innerHTML = `
+    ${ref.film && ref.film.movie_banner ? `<div class="h-32 bg-zinc-200 relative overflow-hidden"><img src="${ref.film.movie_banner}" alt="" class="w-full h-full object-cover"><span class="absolute bottom-2 left-3 px-2 py-0.5 rounded-md bg-black/65 text-white text-[9px] font-bold">Dari film: ${ref.film.title}</span></div>` : ''}
+    <div class="p-4 space-y-3">
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h3 class="text-sm font-black text-zinc-900">${item.name}</h3>
+          <p class="text-[10px] font-bold text-zinc-400 uppercase">${tab}</p>
+        </div>
+        <button onclick="document.getElementById('gh-film-detail').classList.add('hidden')" class="w-7 h-7 rounded-full bg-zinc-100 text-zinc-500 text-xs font-black">✕</button>
+      </div>
+      ${bodyHtml}
+      ${filmLinks ? `<div class="space-y-1.5"><p class="text-[10px] font-bold text-zinc-400">Muncul di Film:</p><div class="flex flex-wrap gap-1.5">${filmLinks}</div></div>` : ''}
+    </div>
+  `;
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 
 function renderGhibliTabList(tab, data) {
   var listEl = document.getElementById('gh-list');
@@ -3185,34 +3313,52 @@ function renderGhibliTabList(tab, data) {
     }).join('');
   } else if (tab === 'people') {
     listEl.innerHTML = filtered.map(function(p) {
+      var ref = getItemFilmPoster(p);
       return `
-        <div class="modern-row !block space-y-1">
-          <div class="flex items-center justify-between">
-            <p class="text-xs font-black text-zinc-900">${p.name}</p>
-            <span class="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[9px] font-bold">${p.gender || '--'} · Usia ${p.age || '--'}</span>
+        <div onclick="openGhibliItemDetail('people','${p.id}')" class="modern-row cursor-pointer">
+          <div class="flex items-center gap-3 min-w-0">
+            ${ref.img ? `<img src="${ref.img}" alt="" class="w-11 h-14 rounded-xl object-cover bg-zinc-100 flex-shrink-0" onerror="this.style.display='none'">` : `<div class="w-11 h-14 rounded-xl bg-zinc-100 flex items-center justify-center text-lg flex-shrink-0">👤</div>`}
+            <div class="min-w-0">
+              <p class="text-xs font-black text-zinc-900 truncate">${p.name}</p>
+              <p class="text-[10px] font-bold text-zinc-400 truncate">${p.gender || '--'} · Usia ${p.age || '--'}</p>
+              <p class="text-[10px] font-semibold text-emerald-600 truncate mt-0.5">${ref.film ? ref.film.title : 'Lihat detail →'}</p>
+            </div>
           </div>
-          <p class="text-[10px] font-semibold text-zinc-500">Mata: ${p.eye_color || '--'} · Rambut: ${p.hair_color || '--'}</p>
+          <span class="text-xs font-black text-zinc-400">→</span>
         </div>
       `;
     }).join('');
   } else if (tab === 'locations') {
     listEl.innerHTML = filtered.map(function(l) {
+      var ref = getItemFilmPoster(l);
       return `
-        <div class="modern-row !block space-y-1">
-          <p class="text-xs font-black text-zinc-900">${l.name}</p>
-          <p class="text-[10px] font-semibold text-zinc-500">Iklim: ${l.climate || '--'} · Medan: ${l.terrain || '--'} · Air: ${l.surface_water || '--'}%</p>
+        <div onclick="openGhibliItemDetail('locations','${l.id}')" class="modern-row cursor-pointer">
+          <div class="flex items-center gap-3 min-w-0">
+            ${ref.img ? `<img src="${ref.img}" alt="" class="w-11 h-14 rounded-xl object-cover bg-zinc-100 flex-shrink-0" onerror="this.style.display='none'">` : `<div class="w-11 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-lg flex-shrink-0">🏞️</div>`}
+            <div class="min-w-0">
+              <p class="text-xs font-black text-zinc-900 truncate">${l.name}</p>
+              <p class="text-[10px] font-bold text-zinc-400 truncate">Iklim: ${l.climate || '--'} · Medan: ${l.terrain || '--'}</p>
+              <p class="text-[10px] font-semibold text-emerald-600 truncate mt-0.5">${ref.film ? ref.film.title : 'Lihat detail →'}</p>
+            </div>
+          </div>
+          <span class="text-xs font-black text-zinc-400">→</span>
         </div>
       `;
     }).join('');
   } else {
     listEl.innerHTML = filtered.map(function(v) {
+      var ref = getItemFilmPoster(v);
       return `
-        <div class="modern-row !block space-y-1">
-          <div class="flex items-center justify-between">
-            <p class="text-xs font-black text-zinc-900">${v.name}</p>
-            <span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 text-[9px] font-black">${v.vehicle_class || 'Vehicle'}</span>
+        <div onclick="openGhibliItemDetail('vehicles','${v.id}')" class="modern-row cursor-pointer">
+          <div class="flex items-center gap-3 min-w-0">
+            ${ref.img ? `<img src="${ref.img}" alt="" class="w-11 h-14 rounded-xl object-cover bg-zinc-100 flex-shrink-0" onerror="this.style.display='none'">` : `<div class="w-11 h-14 rounded-xl bg-sky-50 flex items-center justify-center text-lg flex-shrink-0">✈️</div>`}
+            <div class="min-w-0">
+              <p class="text-xs font-black text-zinc-900 truncate">${v.name}</p>
+              <p class="text-[10px] font-bold text-zinc-400 truncate">${v.vehicle_class || 'Vehicle'} · ${v.length ? v.length + ' m' : '--'}</p>
+              <p class="text-[10px] font-semibold text-emerald-600 truncate mt-0.5">${ref.film ? ref.film.title : 'Lihat detail →'}</p>
+            </div>
           </div>
-          <p class="text-[10px] font-medium text-zinc-500 leading-relaxed">${v.description || ''}</p>
+          <span class="text-xs font-black text-zinc-400">→</span>
         </div>
       `;
     }).join('');
@@ -3221,6 +3367,8 @@ function renderGhibliTabList(tab, data) {
 </script>
 </body>
 </html>
+
+
 
 
 
