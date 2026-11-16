@@ -7,6 +7,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 // ══════════════════════════════════════════════════════════════
 // DETEKSI KEGAGALAN TAILWIND CDN — AUTO RELOAD
@@ -643,16 +645,34 @@ body {
         </div>
       </div>
 
-      <!-- 2. Chart Tren 7 Hari (Muncul Saat Mata Uang Diketuk) -->
-      <div id="fdm-chart-panel" class="hidden p-4 rounded-2xl bg-zinc-50 border border-zinc-200">
-        <div class="flex items-center justify-between mb-2">
+      <!-- 2. Chart Tren Historis Asli (Muncul Saat Mata Uang Diketuk) -->
+      <div id="fdm-chart-panel" class="hidden p-4 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-2.5">
+        <div class="flex items-start justify-between gap-2">
           <div>
-            <p id="fdm-chart-title" class="text-xs font-black text-zinc-900">--</p>
-            <p id="fdm-chart-note" class="text-[10px] font-semibold text-zinc-400">Tren 7 hari terakhir</p>
+            <div class="flex items-center gap-2 flex-wrap">
+              <p id="fdm-chart-title" class="text-xs font-black text-zinc-900">--</p>
+              <span id="fdm-chart-pct" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-zinc-200 text-zinc-700">--</span>
+            </div>
+            <p id="fdm-chart-note" class="text-[10px] font-semibold text-zinc-400 mt-0.5">Memuat data historis…</p>
           </div>
-          <button onclick="document.getElementById('fdm-chart-panel').classList.add('hidden')" class="w-7 h-7 rounded-full bg-white border border-zinc-200 text-zinc-500 text-xs font-black">✕</button>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button id="fdm-range-7" onclick="fdmSwitchChartRange(7)" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black">7H</button>
+            <button id="fdm-range-30" onclick="fdmSwitchChartRange(30)" class="px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-600 text-[10px] font-black">30H</button>
+            <button onclick="document.getElementById('fdm-chart-panel').classList.add('hidden')" class="w-7 h-7 rounded-full bg-white border border-zinc-200 text-zinc-500 text-xs font-black">✕</button>
+          </div>
         </div>
-        <div style="height:130px;position:relative">
+        <div id="fdm-chart-stats" class="grid grid-cols-2 gap-2 hidden">
+          <div class="px-2.5 py-1.5 rounded-xl bg-white border border-zinc-200/80">
+            <p class="text-[9px] font-bold text-zinc-400 uppercase">Terendah</p>
+            <p id="fdm-chart-low" class="text-[11px] font-black text-zinc-900">--</p>
+          </div>
+          <div class="px-2.5 py-1.5 rounded-xl bg-white border border-zinc-200/80">
+            <p class="text-[9px] font-bold text-zinc-400 uppercase">Tertinggi</p>
+            <p id="fdm-chart-high" class="text-[11px] font-black text-zinc-900">--</p>
+          </div>
+        </div>
+        <div id="fdm-chart-empty" class="hidden py-6 text-center text-[11px] font-bold text-zinc-400"></div>
+        <div id="fdm-chart-canvas-wrap" style="height:145px;position:relative">
           <canvas id="fdm-chart-canvas"></canvas>
         </div>
       </div>
@@ -784,7 +804,14 @@ body {
         </div>
       </div>
     </div>
-    <div class="overflow-y-auto px-5 pt-4 pb-8 flex-1">
+    <div id="qd-scroll-area" class="overflow-y-auto px-5 pt-4 pb-8 flex-1 space-y-3">
+      <div id="qd-map-wrap" class="hidden space-y-1.5">
+        <div id="qd-map" style="height:230px;width:100%;border-radius:18px;overflow:hidden;border:1px solid #E4E4E7;background:#F4F4F5;z-index:1"></div>
+        <div class="flex items-center justify-between px-1">
+          <p id="qd-map-caption" class="text-[10px] font-bold text-zinc-500 truncate">Ketuk marker atau kartu gempa untuk fokus lokasi</p>
+          <a id="qd-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[10px] font-black text-emerald-600 flex-shrink-0 ml-2">Google Maps ↗</a>
+        </div>
+      </div>
       <div id="qd-loading" class="space-y-3">
         <div class="h-32 bg-zinc-100 rounded-2xl" style="animation:shimmer 1.4s infinite"></div>
         <div class="h-32 bg-zinc-100 rounded-2xl" style="animation:shimmer 1.4s infinite;animation-delay:.1s"></div>
@@ -1109,17 +1136,54 @@ async function renderExplore() {
   for (var ui = 0; ui < urls.length; ui++) {
     try {
       var r = await fetch(urls[ui]);
-      var d = await r.json();
-      if (d.results && d.results.length > 0) {
-        exploreData   = d.results;
+      if (r.ok) {
+        var d = await r.json();
+        if (d.status !== 'error' && d.results && d.results.length > 0) {
+          exploreData   = d.results;
+          exploreLoaded = true;
+          renderExploreItems(d.results);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('NewsData API blocked/failed:', e);
+    }
+  }
+
+  // Fallback otomatis ke RSS Bisnis Indonesia via rss2json (bebas CORS di browser)
+  var rssFallbacks = [
+    { src: 'CNBC INDONESIA', url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.cnbcindonesia.com/market/rss') },
+    { src: 'ANTARA EKONOMI', url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.antaranews.com/rss/ekonomi.xml') },
+    { src: 'CNN EKONOMI',    url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.cnnindonesia.com/ekonomi/rss') }
+  ];
+
+  for (var ri = 0; ri < rssFallbacks.length; ri++) {
+    try {
+      var rr = await fetch(rssFallbacks[ri].url);
+      if (!rr.ok) continue;
+      var rd = await rr.json();
+      if (rd.status === 'ok' && Array.isArray(rd.items) && rd.items.length > 0) {
+        var mapped = rd.items.map(function(it) {
+          var cleanDesc = String(it.description || it.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+          var img = it.thumbnail || (it.enclosure && it.enclosure.link) || '';
+          return {
+            title: it.title,
+            description: cleanDesc,
+            link: it.link,
+            pubDate: it.pubDate,
+            source_id: rssFallbacks[ri].src,
+            image_url: img
+          };
+        });
+        exploreData   = mapped;
         exploreLoaded = true;
-        renderExploreItems(d.results);
+        renderExploreItems(mapped);
         return;
       }
     } catch (e) {}
   }
 
-  list.innerHTML = '<div class="clean-card p-6 text-center text-xs font-bold text-zinc-400">Berita belum tersedia saat ini.</div>';
+  list.innerHTML = '<div class="clean-card p-6 text-center space-y-2.5"><p class="text-xs font-bold text-zinc-500">Berita belum dapat dimuat (API NewsData terkena limit/CORS atau koneksi terputus).</p><button onclick="exploreLoaded=false;fetchNews()" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-black active:scale-95 transition">↻ Coba Muat Ulang</button></div>';
 }
 
 function renderExploreItems(items) {
@@ -1645,46 +1709,166 @@ function fdmRender(rates) {
   }).join('');
 }
 
-window.fdmShowMiniChart = function(sym, base, currentRate) {
-  var panel = document.getElementById('fdm-chart-panel');
+var fdmChartState = { sym: null, base: null, currentRate: null, days: 7 };
+
+window.fdmSwitchChartRange = function(days) {
+  fdmChartState.days = days;
+  var b7 = document.getElementById('fdm-range-7');
+  var b30 = document.getElementById('fdm-range-30');
+  if (b7 && b30) {
+    b7.className = days === 7 ? 'px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black' : 'px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-600 text-[10px] font-black';
+    b30.className = days === 30 ? 'px-2.5 py-1 rounded-lg bg-zinc-900 text-white text-[10px] font-black' : 'px-2.5 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-600 text-[10px] font-black';
+  }
+  if (fdmChartState.sym && fdmChartState.base) {
+    fdmShowMiniChart(fdmChartState.sym, fdmChartState.base, fdmChartState.currentRate, days);
+  }
+};
+
+window.fdmShowMiniChart = async function(sym, base, currentRate, days) {
+  days = days || fdmChartState.days || 7;
+  fdmChartState = { sym: sym, base: base, currentRate: currentRate, days: days };
+
+  var panel   = document.getElementById('fdm-chart-panel');
   var titleEl = document.getElementById('fdm-chart-title');
-  var canvas = document.getElementById('fdm-chart-canvas');
+  var noteEl  = document.getElementById('fdm-chart-note');
+  var pctEl   = document.getElementById('fdm-chart-pct');
+  var statsEl = document.getElementById('fdm-chart-stats');
+  var lowEl   = document.getElementById('fdm-chart-low');
+  var highEl  = document.getElementById('fdm-chart-high');
+  var emptyEl = document.getElementById('fdm-chart-empty');
+  var wrapEl  = document.getElementById('fdm-chart-canvas-wrap');
+  var canvas  = document.getElementById('fdm-chart-canvas');
   if (!panel || !canvas) return;
 
   panel.classList.remove('hidden');
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   if (titleEl) titleEl.textContent = `1 ${base} = ${fmtRate(currentRate, sym)} ${sym}`;
+  if (noteEl)  noteEl.textContent = `Mengambil data historis ${days} hari…`;
+  if (pctEl)   { pctEl.textContent = '…'; pctEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-zinc-200 text-zinc-700'; }
+  if (statsEl) statsEl.classList.add('hidden');
+  if (emptyEl) emptyEl.classList.add('hidden');
+  if (wrapEl)  wrapEl.classList.remove('hidden');
 
-  var labels = [], points = [];
-  for (var i = 6; i >= 0; i--) {
-    var d = new Date(Date.now() - i * 86400000);
-    labels.push(d.getDate() + '/' + (d.getMonth() + 1));
-    var wave = Math.sin(i * 1.1) * 0.008 * currentRate;
-    points.push(currentRate + wave);
+  var endDate = new Date();
+  var startDate = new Date(Date.now() - (days + 3) * 86400000);
+  var fmtISO = function(d) { return d.toISOString().slice(0, 10); };
+  var startStr = fmtISO(startDate);
+  var endStr   = fmtISO(endDate);
+
+  var histUrls = [
+    `https://api.frankfurter.dev/v1/${startStr}..${endStr}?base=${base}&symbols=${sym}`,
+    `https://api.frankfurter.app/${startStr}..${endStr}?from=${base}&to=${sym}`
+  ];
+
+  var ratesMap = null;
+  for (var i = 0; i < histUrls.length; i++) {
+    try {
+      var res = await fetch(histUrls[i]);
+      if (!res.ok) continue;
+      var data = await res.json();
+      if (data && data.rates && Object.keys(data.rates).length > 0) {
+        ratesMap = data.rates;
+        break;
+      }
+    } catch (e) {}
   }
-  points[6] = currentRate;
 
-  var isUp = points[6] >= points[0];
-  var color = isUp ? '#10B981' : '#EF4444';
+  if (!ratesMap) {
+    if (window._fdmChart) { try { window._fdmChart.destroy(); } catch (e) {} }
+    if (wrapEl)  wrapEl.classList.add('hidden');
+    if (emptyEl) { emptyEl.classList.remove('hidden'); emptyEl.textContent = `Data historis resmi untuk ${base}/${sym} tidak tersedia saat ini.`; }
+    if (noteEl)  noteEl.textContent = 'Data historis tidak tersedia';
+    if (pctEl)   pctEl.textContent = '--';
+    return;
+  }
+
+  var sortedDates = Object.keys(ratesMap).sort();
+  var slicedDates = sortedDates.slice(-days);
+  var labels = [];
+  var points = [];
+
+  slicedDates.forEach(function(dt) {
+    var val = ratesMap[dt] && ratesMap[dt][sym];
+    if (val != null) {
+      var parts = dt.split('-');
+      labels.push(parts[2] + '/' + parts[1]);
+      points.push(Number(val));
+    }
+  });
+
+  if (points.length === 0) {
+    if (wrapEl)  wrapEl.classList.add('hidden');
+    if (emptyEl) { emptyEl.classList.remove('hidden'); emptyEl.textContent = `Data historis ${base}/${sym} kosong.`; }
+    return;
+  }
+
+  // Tambahkan titik terbaru real-time hari ini jika belum tercatat
+  var todayLabel = String(endDate.getDate()).padStart(2,'0') + '/' + String(endDate.getMonth()+1).padStart(2,'0');
+  if (labels[labels.length - 1] !== todayLabel && currentRate) {
+    labels.push('Hari ini');
+    points.push(currentRate);
+  }
+
+  var firstVal = points[0];
+  var lastVal  = points[points.length - 1];
+  var diffPct  = firstVal ? (((lastVal - firstVal) / firstVal) * 100) : 0;
+  var minVal   = Math.min.apply(null, points);
+  var maxVal   = Math.max.apply(null, points);
+  var isUp     = diffPct >= 0;
+  var color    = isUp ? '#10B981' : '#EF4444';
+
+  if (pctEl) {
+    pctEl.textContent = (isUp ? '▲ +' : '▼ ') + diffPct.toFixed(2) + '%';
+    pctEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-black ' + (isUp ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700');
+  }
+  if (noteEl)  noteEl.textContent = `Data historis asli ${points.length} titik (${days} hari) · Frankfurter`;
+  if (statsEl) statsEl.classList.remove('hidden');
+  if (lowEl)   lowEl.textContent  = `${fmtRate(minVal, sym)} ${sym}`;
+  if (highEl)  highEl.textContent = `${fmtRate(maxVal, sym)} ${sym}`;
+
   if (window._fdmChart) { try { window._fdmChart.destroy(); } catch (e) {} }
-
   var ctx = canvas.getContext('2d');
-  var grad = ctx.createLinearGradient(0, 0, 0, 120);
+  var grad = ctx.createLinearGradient(0, 0, 0, 140);
   grad.addColorStop(0, isUp ? 'rgba(16,185,129,0.22)' : 'rgba(239,68,68,0.22)');
   grad.addColorStop(1, 'rgba(255,255,255,0)');
 
   window._fdmChart = new Chart(canvas, {
     type: 'line',
     data: {
-      labels,
-      datasets: [{ data: points, borderColor: color, backgroundColor: grad, fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: color, borderWidth: 2 }]
+      labels: labels,
+      datasets: [{
+        data: points,
+        borderColor: color,
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        pointBackgroundColor: color,
+        borderWidth: 2.2
+      }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(c) { return ` 1 ${base} = ${fmtRate(c.parsed.y, sym)} ${sym}`; }
+          }
+        }
+      },
       scales: {
         x: { grid: { display: false }, ticks: { font: { size: 9 } } },
-        y: { position: 'right', grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 9 } } }
+        y: {
+          position: 'right',
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: {
+            font: { size: 9 },
+            callback: function(v) { return fmtRate(v, sym); }
+          }
+        }
       }
     }
   });
@@ -1797,10 +1981,127 @@ function renderQuakeList(payload) {
   }).join('');
 }
 
+var quakeMapInstance = null;
+var quakeMarkers = [];
+
+function depthCategory(depthKm) {
+  if (depthKm === null || depthKm === undefined || isNaN(depthKm)) return '';
+  if (depthKm < 70) return 'Dangkal';
+  if (depthKm <= 300) return 'Menengah';
+  return 'Dalam';
+}
+
+function formatQuakeFullTime(isoStr) {
+  if (!isoStr) return '--';
+  try {
+    return new Date(isoStr).toLocaleString('id-ID', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+  } catch (e) { return isoStr; }
+}
+
+function renderQuakeMap(payload) {
+  var mapWrap = document.getElementById('qd-map-wrap');
+  var mapEl   = document.getElementById('qd-map');
+  if (!mapWrap || !mapEl || typeof L === 'undefined') return;
+
+  var validEvents = payload.filter(function(ev) {
+    var c = (ev.geometry && ev.geometry.coordinates) || [];
+    return c.length >= 2 && !isNaN(c[0]) && !isNaN(c[1]);
+  });
+  if (!validEvents.length) return;
+
+  mapWrap.classList.remove('hidden');
+
+  if (!quakeMapInstance) {
+    quakeMapInstance = L.map('qd-map', { zoomControl: true, attributionControl: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(quakeMapInstance);
+  }
+
+  quakeMarkers.forEach(function(m) { try { quakeMapInstance.removeLayer(m); } catch (e) {} });
+  quakeMarkers = [];
+
+  payload.forEach(function(ev, idx) {
+    var props  = ev.properties || {};
+    var coords = (ev.geometry && ev.geometry.coordinates) || [];
+    if (coords.length < 2 || isNaN(coords[0]) || isNaN(coords[1])) { quakeMarkers.push(null); return; }
+
+    var lon = Number(coords[0]);
+    var lat = Number(coords[1]);
+    var depth = coords[2] != null ? Math.abs(Number(coords[2])).toFixed(1) : '--';
+    var mag = props.mag != null ? Number(props.mag) : 0;
+    var mc = magColor(mag);
+    var place = props.place || 'Lokasi tidak diketahui';
+    var timeStr = formatQuakeFullTime(props.time || ev.time);
+
+    var marker = L.circleMarker([lat, lon], {
+      radius: Math.max(7, Math.min(18, mag * 3)),
+      color: '#18181B',
+      weight: 1.5,
+      fillColor: mc.bg,
+      fillOpacity: 0.85
+    }).addTo(quakeMapInstance);
+
+    marker.bindPopup(
+      `<div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:170px">` +
+      `<div style="font-weight:900;font-size:12px;color:#111">M ${mag.toFixed(1)} · ${mc.label}</div>` +
+      `<div style="font-weight:700;font-size:11px;color:#3F3F46;margin-top:2px">${place}</div>` +
+      `<div style="font-size:10px;color:#71717A;margin-top:4px">Kedalaman: <b>${depth} km</b><br>Koordinat: <b>${lat.toFixed(3)}, ${lon.toFixed(3)}</b><br>Waktu: ${timeStr}</div>` +
+      `</div>`
+    );
+
+    marker.on('click', function() { updateQuakeMapCaption(ev); });
+    quakeMarkers.push(marker);
+  });
+
+  setTimeout(function() {
+    quakeMapInstance.invalidateSize();
+    focusQuakeOnMap(0, false);
+  }, 180);
+}
+
+function updateQuakeMapCaption(ev) {
+  var capEl = document.getElementById('qd-map-caption');
+  var gmapsEl = document.getElementById('qd-gmaps-link');
+  var props = ev.properties || {};
+  var coords = (ev.geometry && ev.geometry.coordinates) || [];
+  var lon = Number(coords[0] || 0);
+  var lat = Number(coords[1] || 0);
+  var mag = props.mag != null ? Number(props.mag).toFixed(1) : '--';
+  if (capEl) capEl.textContent = `M ${mag} · ${props.place || 'Lokasi tidak diketahui'} (${lat.toFixed(3)}, ${lon.toFixed(3)})`;
+  if (gmapsEl) gmapsEl.href = `https://www.google.com/maps?q=${lat},${lon}`;
+}
+
+window.focusQuakeOnMap = function(idx, scrollTop) {
+  var ev = quakeState.data[idx];
+  if (!ev) return;
+  var coords = (ev.geometry && ev.geometry.coordinates) || [];
+  if (coords.length < 2) return;
+  var lon = Number(coords[0]);
+  var lat = Number(coords[1]);
+
+  updateQuakeMapCaption(ev);
+  if (scrollTop) {
+    var sc = document.getElementById('qd-scroll-area');
+    if (sc) sc.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  if (quakeMapInstance) {
+    quakeMapInstance.flyTo([lat, lon], 6, { duration: 0.7 });
+    if (quakeMarkers[idx]) {
+      setTimeout(function() { try { quakeMarkers[idx].openPopup(); } catch (e) {} }, 400);
+    }
+  }
+};
+
 window.openQuakeDetailModal = function() {
   openModal('quake-detail-modal');
-  if (quakeState.loaded) renderQuakeDetailList(quakeState.data);
-  else fetchEarthquakes();
+  if (quakeState.loaded) {
+    renderQuakeDetailList(quakeState.data);
+    renderQuakeMap(quakeState.data);
+  } else {
+    fetchEarthquakes();
+  }
 };
 
 function renderQuakeDetailList(payload) {
@@ -1810,23 +2111,76 @@ function renderQuakeDetailList(payload) {
   if (loading) loading.style.display = 'none';
   if (!listEl) return;
   listEl.classList.remove('hidden');
-  if (subEl) subEl.textContent = `${payload.length} gempa terkini terdeteksi`;
+  if (subEl) subEl.textContent = `${payload.length} gempa terkini terdeteksi · Sumber TerraQuake`;
 
-  listEl.innerHTML = payload.map(ev => {
-    var props = ev.properties || {};
+  var modalEl = document.getElementById('quake-detail-modal');
+  if (modalEl && modalEl.style.display !== 'none') renderQuakeMap(payload);
+
+  listEl.innerHTML = payload.map(function(ev, idx) {
+    var props  = ev.properties || {};
     var coords = (ev.geometry && ev.geometry.coordinates) || [];
-    var mag = props.mag != null ? props.mag : 0;
-    var mc = magColor(mag);
-    var depth = coords[2] != null ? Math.abs(coords[2]).toFixed(1) + ' km' : '--';
+    var mag    = props.mag != null ? Number(props.mag) : 0;
+    var magType = props.magType || props.type || 'M';
+    var mc     = magColor(mag);
+    var lon    = coords[0] != null ? Number(coords[0]) : null;
+    var lat    = coords[1] != null ? Number(coords[1]) : null;
+    var depthNum = coords[2] != null ? Math.abs(Number(coords[2])) : null;
+    var depth  = depthNum !== null ? depthNum.toFixed(1) + ' km (' + depthCategory(depthNum) + ')' : '--';
+    var coordStr = (lat !== null && lon !== null) ? `${lat.toFixed(4)}°, ${lon.toFixed(4)}°` : '--';
+    var fullTime = formatQuakeFullTime(props.time || ev.time);
+    var gmapsUrl = (lat !== null && lon !== null) ? `https://www.google.com/maps?q=${lat},${lon}` : '#';
+
+    var extraBadges = [];
+    if (props.tsunami === 1 || props.tsunami === true) extraBadges.push('<span class="px-2 py-0.5 rounded-md bg-red-100 text-red-700 text-[9px] font-black">⚠ Potensi Tsunami</span>');
+    else if (props.tsunami === 0 || props.tsunami === false) extraBadges.push('<span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[9px] font-bold">Tidak Berpotensi Tsunami</span>');
+    if (props.alert) extraBadges.push(`<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[9px] font-black">Alert: ${String(props.alert).toUpperCase()}</span>`);
+    if (props.mmi != null) extraBadges.push(`<span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 text-[9px] font-bold">MMI: ${props.mmi}</span>`);
+    if (props.felt != null) extraBadges.push(`<span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 text-[9px] font-bold">Dirasakan: ${props.felt} laporan</span>`);
+    if (props.status) extraBadges.push(`<span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[9px] font-bold">Status: ${props.status}</span>`);
+    if (props.net) extraBadges.push(`<span class="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[9px] font-bold">Jaringan: ${String(props.net).toUpperCase()}</span>`);
+
     return `
-      <div class="modern-row !block space-y-2">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0" style="background:${mc.bg};color:${mc.text}">${mag.toFixed(1)}</div>
+      <div class="modern-row !block space-y-2.5">
+        <div class="flex items-start gap-3">
+          <div class="w-11 h-11 rounded-2xl flex flex-col items-center justify-center font-black flex-shrink-0" style="background:${mc.bg};color:${mc.text}">
+            <span class="text-sm leading-none">${mag.toFixed(1)}</span>
+            <span class="text-[8px] opacity-80 mt-0.5">${magType}</span>
+          </div>
           <div class="min-w-0 flex-1">
-            <p class="text-xs font-black text-zinc-900">${props.place || 'Lokasi tidak diketahui'}</p>
-            <p class="text-[10px] font-bold text-zinc-400 mt-0.5">${mc.label} · ${quakeTimeAgo(props.time || ev.time)} · Kedalaman ${depth}</p>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-black" style="background:${mc.bg};color:${mc.text}">${mc.label}</span>
+              <span class="text-[10px] font-bold text-zinc-400">${quakeTimeAgo(props.time || ev.time)}</span>
+            </div>
+            <p class="text-xs font-black text-zinc-900 mt-1 leading-snug">${props.place || 'Lokasi tidak diketahui'}</p>
           </div>
         </div>
+
+        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/70 text-[10px]">
+          <div>
+            <p class="font-bold text-zinc-400">Waktu Kejadian</p>
+            <p class="font-extrabold text-zinc-800 mt-0.5">${fullTime}</p>
+          </div>
+          <div>
+            <p class="font-bold text-zinc-400">Kedalaman</p>
+            <p class="font-extrabold text-zinc-800 mt-0.5">${depth}</p>
+          </div>
+          <div>
+            <p class="font-bold text-zinc-400">Koordinat Episenter</p>
+            <p class="font-extrabold text-zinc-800 mt-0.5">${coordStr}</p>
+          </div>
+          <div>
+            <p class="font-bold text-zinc-400">ID Event</p>
+            <p class="font-extrabold text-zinc-800 mt-0.5 truncate">${ev.id || props.code || '--'}</p>
+          </div>
+        </div>
+
+        ${extraBadges.length ? `<div class="flex flex-wrap gap-1.5">${extraBadges.join('')}</div>` : ''}
+
+        ${lat !== null && lon !== null ? `
+        <div class="flex gap-2 pt-0.5">
+          <button onclick="focusQuakeOnMap(${idx}, true)" class="flex-1 py-2 rounded-xl bg-zinc-900 text-white text-[11px] font-black active:scale-95 transition">📍 Lihat di Peta</button>
+          <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-zinc-100 text-zinc-700 text-[11px] font-black active:scale-95 transition" style="text-decoration:none">Google Maps ↗</a>
+        </div>` : ''}
       </div>
     `;
   }).join('');
