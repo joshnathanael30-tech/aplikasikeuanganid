@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Edit Profil — Keloladuit.id</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('keuangan_akun_session');
+    var s = raw ? JSON.parse(raw) : null;
+    if (!s || (!s.gsUrl && !s.username)) {
+      window.location.replace('https://keloladuit.my.id/login');
+    }
+  } catch (e) {
+    window.location.replace('https://keloladuit.my.id/login');
+  }
+})();
+</script>
+<style>
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F6F7FB;
+  color: #111827;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+.clean-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(228, 228, 231, 0.85);
+  border-radius: 24px;
+  box-shadow: 0 6px 20px -6px rgba(15, 23, 42, 0.04);
+}
+.fi {
+  width: 100%;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  outline: none;
+  transition: all .18s ease;
+}
+.fi:focus {
+  background: #FFFFFF;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+}
+.pill-btn {
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1.5px solid #E4E4E7;
+  background: #FFFFFF;
+  color: #52525B;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all .16s ease;
+}
+.pill-btn.active {
+  background: #111827;
+  color: #FFFFFF;
+  border-color: #111827;
+}
+.style-card {
+  min-width: 82px;
+  padding: 10px 8px;
+  border-radius: 18px;
+  border: 1.5px solid #E4E4E7;
+  background: #FAFAFA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .16s ease;
+  flex-shrink: 0;
+}
+.style-card.active {
+  background: #111827;
+  border-color: #111827;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+.no-scroll::-webkit-scrollbar { display: none; }
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="pb-20">
+
+<!-- ══════════════ HEADER STICKY ══════════════ -->
+<header class="sticky top-0 z-30 px-5 pt-8 pb-3.5 border-b border-zinc-200/70" style="background:rgba(246,247,251,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+  <div class="max-w-md mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="https://keloladuit.my.id/account" target="_top" class="w-9 h-9 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-zinc-800 font-black text-sm shadow-xs active:scale-90 transition" style="text-decoration:none">←</a>
+      <h1 class="text-base font-black text-zinc-900 leading-tight">Edit Profil</h1>
+    </div>
+    <button onclick="saveAllProfile()" id="btn-save-top" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-black active:scale-95 transition shadow-sm">
+      Simpan
+    </button>
+  </div>
+</header>
+
+<main class="max-w-md mx-auto px-5 pt-4 space-y-4">
+
+  <!-- ══════════════ 1. PREVIEW PROFIL ══════════════ -->
+  <section class="clean-card p-5">
+    <div class="flex items-center gap-4">
+      <div class="relative flex-shrink-0">
+        <div id="hero-avatar-box" class="w-20 h-20 rounded-[26px] flex items-center justify-center text-white font-black text-2xl shadow-md overflow-hidden border-2 border-white bg-zinc-900">
+          P
+        </div>
+        <button onclick="randomizeDicebear()" title="Acak Karakter" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-xl bg-zinc-900 text-white text-xs font-black flex items-center justify-center shadow border-2 border-white active:scale-90 transition">
+          🎲
+        </button>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h2 id="hero-name" class="text-base font-black text-zinc-900 truncate">Pengguna</h2>
+        <p id="hero-username" class="text-xs font-bold text-zinc-400 truncate mt-0.5">@username</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ 2. AVATAR ══════════════ -->
+  <section class="clean-card p-5 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-black text-zinc-900">Avatar</h3>
+      <div class="flex gap-1">
+        <button id="mode-btn-dicebear" onclick="setAvatarMode('dicebear')" class="pill-btn active">Karakter</button>
+        <button id="mode-btn-emoji" onclick="setAvatarMode('emoji')" class="pill-btn">Emoji</button>
+        <button id="mode-btn-upload" onclick="setAvatarMode('upload')" class="pill-btn">Foto</button>
+      </div>
+    </div>
+
+    <!-- MODE 1: DICEBEAR -->
+    <div id="panel-avatar-dicebear" class="space-y-4">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-extrabold text-zinc-700">Gaya Karakter</span>
+          <button type="button" onclick="randomizeDicebear()" class="px-3 py-1 rounded-xl bg-zinc-900 text-white text-[11px] font-black active:scale-95 transition">🎲 Acak</button>
+        </div>
+        <div id="db-style-grid" class="flex gap-2 overflow-x-auto no-scroll pb-1"></div>
+      </div>
+
+      <div class="space-y-1.5">
+        <span class="text-[11px] font-extrabold text-zinc-700 block">Warna Latar</span>
+        <div id="db-bg-swatches" class="flex items-center gap-2 overflow-x-auto no-scroll py-0.5"></div>
+      </div>
+    </div>
+
+    <!-- MODE 2: EMOJI -->
+    <div id="panel-avatar-emoji" class="hidden space-y-3">
+      <div id="emoji-grid" class="grid grid-cols-6 gap-2"></div>
+      <button type="button" onclick="useInitialAvatar()" class="w-full py-2.5 rounded-xl bg-zinc-100 text-zinc-800 text-xs font-black">Gunakan Huruf Inisial</button>
+    </div>
+
+    <!-- MODE 3: UPLOAD FOTO -->
+    <div id="panel-avatar-upload" class="hidden">
+      <label class="block w-full py-6 px-4 rounded-2xl border-2 border-dashed border-zinc-300 bg-zinc-50 text-center cursor-pointer hover:border-zinc-900 transition">
+        <span class="text-2xl block mb-1">📷</span>
+        <span class="text-xs font-black text-zinc-800">Pilih Foto</span>
+        <input type="file" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+      </label>
+    </div>
+  </section>
+
+  <!-- ══════════════ 3. DATA PROFIL ══════════════ -->
+  <section class="clean-card p-5 space-y-3.5">
+    <h3 class="text-sm font-black text-zinc-900">Data Profil</h3>
+
+    <div>
+      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Nama Lengkap</label>
+      <input type="text" id="prof-nama" placeholder="Nama lengkap" class="fi" oninput="updateHeroTexts()">
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Username</label>
+      <input type="text" id="prof-username" placeholder="username" class="fi" oninput="updateHeroTexts()">
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div>
+        <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Email</label>
+        <input type="email" id="prof-email" placeholder="nama@email.com" class="fi">
+      </div>
+      <div>
+        <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Tanggal Lahir</label>
+        <input type="date" id="prof-dob" class="fi">
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Anggaran Bulanan (Rp)</label>
+      <input type="number" id="prof-budget" placeholder="0" min="0" step="50000" class="fi">
+    </div>
+  </section>
+
+  <!-- ══════════════ 4. PASSWORD & KEAMANAN ══════════════ -->
+  <section class="clean-card p-5 space-y-3.5">
+    <h3 class="text-sm font-black text-zinc-900">Keamanan</h3>
+
+    <div>
+      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Password / PIN Baru</label>
+      <div class="relative">
+        <input type="password" id="prof-password" placeholder="Kosongkan jika tidak diubah" class="fi pr-16">
+        <button type="button" onclick="togglePassVisibility()" id="btn-toggle-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-extrabold text-zinc-500">Lihat</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Kode Pemulihan Cadangan</label>
+      <input type="text" id="prof-backup-pass" placeholder="Kata kunci cadangan" class="fi">
+    </div>
+  </section>
+
+  <!-- ══════════════ 5. SIMPAN ══════════════ -->
+  <section class="pt-1">
+    <button onclick="saveAllProfile()" id="btn-save-bottom" class="w-full py-3.5 rounded-2xl bg-zinc-900 text-white text-sm font-black shadow-md active:scale-[0.99] transition">
+      Simpan Perubahan
+    </button>
+  </section>
+
+</main>
+
+<!-- ══════════════ TOAST NOTIFIKASI ══════════════ -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-2xl bg-zinc-900 text-white text-xs font-black shadow-xl">
+  Tersimpan!
+</div>
+
+<script>
+const AUTH_SESSION_KEY = 'keuangan_akun_session';
+const DEFAULT_MASTER_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
+const DICEBEAR_API_BASE = 'https://api.dicebear.com/10.x';
+
+var DICEBEAR_STYLES = [
+  'adventurer', 'adventurer-neutral', 'avataaars', 'avataaars-neutral',
+  'big-ears', 'big-ears-neutral', 'big-smile', 'bottts', 'bottts-neutral',
+  'croodles', 'croodles-neutral', 'dylan', 'fun-emoji', 'glass', 'icons',
+  'identicon', 'initials', 'lorelei', 'lorelei-neutral', 'micah', 'miniavs',
+  'notionists', 'notionists-neutral', 'open-peeps', 'personas', 'pixel-art',
+  'pixel-art-neutral', 'rings', 'shapes', 'thumbs', 'toon-head'
+];
+
+const DICEBEAR_BG_PALETTE = [
+  { code: '',       label: 'Transparan', css: 'repeating-conic-gradient(#e5e7eb 0% 25%, #fff 0% 50%) 50% / 10px 10px' },
+  { code: 'b6e3f4', label: 'Sky',        css: '#b6e3f4' },
+  { code: 'c0aede', label: 'Lavender',   css: '#c0aede' },
+  { code: 'd1d4f9', label: 'Periwinkle', css: '#d1d4f9' },
+  { code: 'ffd5dc', label: 'Rose',       css: '#ffd5dc' },
+  { code: 'ffdfbf', label: 'Peach',      css: '#ffdfbf' },
+  { code: 'd1fae5', label: 'Mint',       css: '#d1fae5' },
+  { code: 'fef08a', label: 'Lemon',      css: '#fef08a' },
+  { code: '18181b', label: 'Dark',       css: '#18181b' }
+];
+
+const EMOJI_LIST = ['😎','🚀','🐱','🦊','🐼','🦁','⚡','💎','🌸','🔥','🎯','👑','🥑','☕','🎮','🎧','💡','🌟'];
+
+var state = {
+  akun: {},
+  gsUrl: '',
+  oldUsername: '',
+  avatarMode: 'dicebear',
+  avatarValue: '',
+  avatarBg: 'emerald',
+  dicebear: {
+    style: 'adventurer',
+    seed: 'KelolaDuit',
+    backgroundColor: 'b6e3f4'
+  }
+};
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(function() { t.classList.add('hidden'); }, 2200);
+}
+
+function renderHeroAvatar() {
+  var box = document.getElementById('hero-avatar-box');
+  if (!box) return;
+  var name = document.getElementById('prof-nama')?.value || state.akun.namaLengkap || state.akun.username || 'P';
+  var initial = (name.trim()[0] || 'P').toUpperCase();
+  var val = state.avatarValue || '';
+
+  if (val && (val.indexOf('http') === 0 || val.indexOf('data:image/') === 0)) {
+    box.innerHTML = `<img src="${val}" alt="Avatar" class="w-full h-full object-cover block" onerror="this.parentNode.textContent='${initial}'">`;
+  } else if (val && val.indexOf('emoji:') === 0) {
+    box.innerHTML = `<span class="text-4xl leading-none">${val.slice(6)}</span>`;
+  } else {
+    box.textContent = initial;
+  }
+}
+
+window.updateHeroTexts = function() {
+  var n = document.getElementById('prof-nama')?.value?.trim() || 'Pengguna';
+  var u = document.getElementById('prof-username')?.value?.trim() || 'username';
+  document.getElementById('hero-name').textContent = n;
+  document.getElementById('hero-username').textContent = '@' + u;
+  renderHeroAvatar();
+};
+
+function buildDicebearUrl() {
+  var db = state.dicebear;
+  var params = [];
+  if (db.seed) params.push('seed=' + encodeURIComponent(db.seed));
+  if (db.backgroundColor) params.push('backgroundColor=' + encodeURIComponent(db.backgroundColor));
+  var qs = params.length ? ('?' + params.join('&')) : '';
+  return `${DICEBEAR_API_BASE}/${encodeURIComponent(db.style)}/svg${qs}`;
+}
+
+function parseExistingDicebearUrl(url) {
+  try {
+    var m = url.match(/dicebear\.com\/(?:10\.x|9\.x|8\.x|7\.x)\/([a-z0-9-]+)\/(?:svg|png)/i);
+    if (!m) return false;
+    state.dicebear.style = m[1].toLowerCase();
+    var u = new URL(url);
+    if (u.searchParams.get('seed')) state.dicebear.seed = u.searchParams.get('seed');
+    state.dicebear.backgroundColor = u.searchParams.get('backgroundColor') || '';
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function fetchAllDicebearStyles() {
+  try {
+    var r = await fetch(DICEBEAR_API_BASE);
+    if (!r.ok) return;
+    var d = await r.json();
+    if (d && Array.isArray(d.styles) && d.styles.length) {
+      DICEBEAR_STYLES = d.styles;
+      renderDicebearStyleGrid();
+    }
+  } catch (e) {}
+}
+
+function renderDicebearStyleGrid() {
+  var grid = document.getElementById('db-style-grid');
+  if (!grid) return;
+  var seed = encodeURIComponent(state.dicebear.seed || 'KelolaDuit');
+  grid.innerHTML = DICEBEAR_STYLES.map(function(styleName) {
+    var active = state.dicebear.style === styleName;
+    var thumbUrl = `${DICEBEAR_API_BASE}/${styleName}/svg?seed=${seed}&backgroundColor=b6e3f4`;
+    return `
+      <button type="button" onclick="selectDicebearStyle('${styleName}')" class="style-card ${active ? 'active' : ''}">
+        <img src="${thumbUrl}" alt="${styleName}" class="w-11 h-11 rounded-xl bg-white object-cover" loading="lazy">
+        <span class="text-[10px] font-extrabold truncate max-w-[74px]">${styleName}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderDicebearBgSwatches() {
+  var box = document.getElementById('db-bg-swatches');
+  if (!box) return;
+  box.innerHTML = DICEBEAR_BG_PALETTE.map(function(p) {
+    var active = state.dicebear.backgroundColor === p.code;
+    return `<button type="button" onclick="selectDicebearBg('${p.code}')" title="${p.label}" class="w-8 h-8 rounded-xl border border-zinc-300 flex items-center justify-center flex-shrink-0 transition ${active ? 'ring-2 ring-zinc-900 scale-105' : ''}" style="background:${p.css}">
+      ${active ? '<span class="text-[10px] font-black px-1 rounded bg-white/80 text-zinc-900">✓</span>' : ''}
+    </button>`;
+  }).join('');
+}
+
+window.selectDicebearBg = function(code) {
+  state.dicebear.backgroundColor = code;
+  renderDicebearBgSwatches();
+  applyDicebearToState();
+};
+
+window.selectDicebearStyle = function(styleName) {
+  state.dicebear.style = styleName;
+  renderDicebearStyleGrid();
+  applyDicebearToState();
+};
+
+window.randomizeDicebear = function() {
+  var randomSeeds = ['Aurora','Nusantara','Garuda','Bintang','Ksatria','Surya','Aether','Zenith','Viona','Dagonaut','Pixel','Nova'];
+  state.dicebear.seed = randomSeeds[Math.floor(Math.random() * randomSeeds.length)] + '-' + Math.floor(100 + Math.random() * 900);
+  state.avatarMode = 'dicebear';
+  applyDicebearToState();
+  renderDicebearStyleGrid();
+};
+
+function applyDicebearToState() {
+  state.avatarValue = buildDicebearUrl();
+  renderHeroAvatar();
+}
+
+window.setAvatarMode = function(mode) {
+  state.avatarMode = mode;
+  ['dicebear','emoji','upload'].forEach(function(m) {
+    var btn = document.getElementById('mode-btn-' + m);
+    var pnl = document.getElementById('panel-avatar-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+    if (pnl) pnl.classList.toggle('hidden', m !== mode);
+  });
+  if (mode === 'dicebear') applyDicebearToState();
+};
+
+function renderEmojiGrid() {
+  var g = document.getElementById('emoji-grid');
+  if (!g) return;
+  g.innerHTML = EMOJI_LIST.map(function(em) {
+    return `<button type="button" onclick="selectEmojiAvatar('${em}')" class="h-12 rounded-2xl bg-zinc-50 border border-zinc-200 hover:border-zinc-900 text-2xl flex items-center justify-center active:scale-90 transition">${em}</button>`;
+  }).join('');
+}
+
+window.selectEmojiAvatar = function(em) {
+  state.avatarValue = 'emoji:' + em;
+  renderHeroAvatar();
+};
+
+window.useInitialAvatar = function() {
+  state.avatarValue = '';
+  renderHeroAvatar();
+};
+
+window.handlePhotoUpload = function(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var size = 160;
+      canvas.width = size;
+      canvas.height = size;
+      var ctx = canvas.getContext('2d');
+      var minSide = Math.min(img.width, img.height);
+      var sx = (img.width - minSide) / 2;
+      var sy = (img.height - minSide) / 2;
+      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+      state.avatarValue = canvas.toDataURL('image/jpeg', 0.82);
+      renderHeroAvatar();
+      showToast('Foto dipilih');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.togglePassVisibility = function() {
+  var inp = document.getElementById('prof-password');
+  var btn = document.getElementById('btn-toggle-pass');
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; if (btn) btn.textContent = 'Sembunyi'; }
+  else { inp.type = 'password'; if (btn) btn.textContent = 'Lihat'; }
+};
+
+async function initProfilePage() {
+  try {
+    var raw = localStorage.getItem(AUTH_SESSION_KEY);
+    if (raw) state.akun = JSON.parse(raw) || {};
+  } catch (e) {}
+
+  state.gsUrl = state.akun.gsUrl || '';
+  state.oldUsername = state.akun.username || '';
+  state.avatarValue = localStorage.getItem('keuangan_user_avatar') || state.akun.avatar || '';
+  state.avatarBg    = localStorage.getItem('keuangan_user_avatar_bg') || state.akun.avatarBg || 'emerald';
+
+  document.getElementById('prof-nama').value     = state.akun.namaLengkap || state.akun.username || '';
+  document.getElementById('prof-username').value = state.akun.username || '';
+  document.getElementById('prof-email').value    = state.akun.email || '';
+  document.getElementById('prof-dob').value      = (state.akun.tanggalLahir || '').slice(0, 10);
+
+  if (state.avatarValue && state.avatarValue.indexOf('dicebear.com') !== -1) {
+    parseExistingDicebearUrl(state.avatarValue);
+  } else {
+    state.dicebear.seed = state.akun.username || 'KelolaDuit';
+  }
+
+  renderDicebearBgSwatches();
+  renderDicebearStyleGrid();
+  renderEmojiGrid();
+  updateHeroTexts();
+
+  if (!state.avatarValue) applyDicebearToState();
+  fetchAllDicebearStyles();
+
+  if (state.gsUrl) {
+    try {
+      var r = await fetch(state.gsUrl + (state.gsUrl.includes('?') ? '&' : '?') + 'action=read');
+      var d = await r.json();
+      if (d && d.status === 'success' && d.data) {
+        var st = d.data.settings || {};
+        if (st.email && !document.getElementById('prof-email').value) document.getElementById('prof-email').value = st.email;
+        if (st.budget !== undefined) document.getElementById('prof-budget').value = st.budget;
+        if (st.backupPassword) document.getElementById('prof-backup-pass').value = st.backupPassword;
+        if (st.avatar) {
+          state.avatarValue = st.avatar;
+          localStorage.setItem('keuangan_user_avatar', st.avatar);
+          if (st.avatar.indexOf('dicebear.com') !== -1) parseExistingDicebearUrl(st.avatar);
+        }
+        if (st.avatarBg) {
+          state.avatarBg = st.avatarBg;
+          localStorage.setItem('keuangan_user_avatar_bg', st.avatarBg);
+        }
+        renderHeroAvatar();
+      }
+    } catch (e) {}
+  }
+}
+
+window.saveAllProfile = async function() {
+  var btnTop = document.getElementById('btn-save-top');
+  var btnBot = document.getElementById('btn-save-bottom');
+
+  var nama     = document.getElementById('prof-nama')?.value?.trim() || '';
+  var uname    = document.getElementById('prof-username')?.value?.trim() || '';
+  var email    = document.getElementById('prof-email')?.value?.trim() || '';
+  var dob      = document.getElementById('prof-dob')?.value || '';
+  var budget   = Number(document.getElementById('prof-budget')?.value || 0);
+  var newPass  = document.getElementById('prof-password')?.value || '';
+  var backPass = document.getElementById('prof-backup-pass')?.value?.trim() || '';
+
+  if (!uname) {
+    showToast('Username wajib diisi');
+    return;
+  }
+
+  if (btnTop) { btnTop.disabled = true; btnTop.textContent = '…'; }
+  if (btnBot) { btnBot.disabled = true; btnBot.textContent = 'Menyimpan…'; }
+
+  state.akun.namaLengkap  = nama || uname;
+  state.akun.username     = uname;
+  state.akun.email        = email;
+  state.akun.tanggalLahir = dob;
+  state.akun.avatar       = state.avatarValue;
+  state.akun.avatarBg     = state.avatarBg;
+
+  try {
+    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(state.akun));
+    localStorage.setItem('keuangan_user_avatar', state.avatarValue || '');
+    localStorage.setItem('keuangan_user_avatar_bg', state.avatarBg || 'emerald');
+  } catch (e) {}
+
+  var settingsPayload = {
+    username: nama || uname,
+    email: email,
+    budget: budget,
+    backupPassword: backPass,
+    avatar: state.avatarValue || '',
+    avatarBg: state.avatarBg || 'emerald'
+  };
+  if (newPass) settingsPayload.password = newPass;
+
+  if (state.gsUrl) {
+    try {
+      await fetch(state.gsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'updateSettings', data: settingsPayload })
+      });
+    } catch (e) {}
+  }
+
+  try {
+    var masterPayload = {
+      id: state.akun.id || '',
+      oldUsername: state.oldUsername || uname,
+      newUsername: uname,
+      namaLengkap: nama || uname,
+      email: email,
+      tanggalLahir: dob,
+      budget: budget,
+      backupPassword: backPass,
+      avatar: state.avatarValue || '',
+      avatarBg: state.avatarBg || 'emerald'
+    };
+    if (newPass) masterPayload.password = newPass;
+    await fetch(DEFAULT_MASTER_EXEC_URL + '?action=updateAkunProfile&payload=' + encodeURIComponent(JSON.stringify(masterPayload)));
+    state.oldUsername = uname;
+  } catch (e) {}
+
+  if (btnTop) { btnTop.disabled = false; btnTop.textContent = 'Simpan'; }
+  if (btnBot) { btnBot.disabled = false; btnBot.textContent = 'Simpan Perubahan'; }
+  document.getElementById('prof-password').value = '';
+  showToast('✓ Profil disimpan');
+};
+
+document.addEventListener('DOMContentLoaded', initProfilePage);
+</script>
+</body>
+</html>
