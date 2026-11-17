@@ -1,948 +1,1546 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Edit Profil & Avatar — Keloladuit.id</title>
+<title>Akun — Keloladuit.id</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>
-// Redirect otomatis ke halaman login jika belum login
 (function() {
-  try {
-    var raw = localStorage.getItem('keuangan_akun_session');
-    var s = raw ? JSON.parse(raw) : null;
-    if (!s || (!s.gsUrl && !s.username)) {
-      window.location.replace('https://keloladuit.my.id/login');
-    }
-  } catch (e) {
-    window.location.replace('https://keloladuit.my.id/login');
+  var RELOAD_KEY = 'keuangan_tailwind_reload_count';
+  var MAX_RELOADS = 2;
+  var CHECK_DELAY_MS = 2500;
+  function getReloadCount() {
+    try { return parseInt(sessionStorage.getItem(RELOAD_KEY) || '0', 10); } catch(e) { return 0; }
   }
+  function setReloadCount(n) {
+    try { sessionStorage.setItem(RELOAD_KEY, String(n)); } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var test = document.createElement('div');
+      test.className = 'flex';
+      test.style.position = 'absolute';
+      test.style.visibility = 'hidden';
+      test.style.pointerEvents = 'none';
+      document.body.appendChild(test);
+      var computedDisplay = window.getComputedStyle(test).display;
+      document.body.removeChild(test);
+      if (computedDisplay !== 'flex') {
+        var count = getReloadCount();
+        if (count < MAX_RELOADS) {
+          setReloadCount(count + 1);
+          location.reload();
+        }
+      } else {
+        setReloadCount(0);
+      }
+    }, CHECK_DELAY_MS);
+  });
 })();
 </script>
 <style>
+:root {
+  --bg: #F4FAF8;
+  --primary: #10B981;
+  --teal-dark: #0F3F38;
+  --ease: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
 * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #F6F7FB;
-  color: #111827;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(180deg, #E6F7F2 0%, #F4FAF8 260px, #F8FAFC 100%);
+  color: #0F172A;
   margin: 0;
-  padding: 0;
+  padding-bottom: 98px;
+  min-height: 100vh;
   overflow-x: hidden;
 }
-.clean-card {
-  background: #FFFFFF;
-  border: 1px solid rgba(228, 228, 231, 0.85);
-  border-radius: 24px;
-  box-shadow: 0 6px 20px -6px rgba(15, 23, 42, 0.04);
-}
-.fi {
-  width: 100%;
-  background: #F9FAFB;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 16px;
-  padding: 11px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
-  outline: none;
-  transition: all .18s ease;
-}
-.fi:focus {
-  background: #FFFFFF;
-  border-color: #111827;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
-}
-.pill-btn {
-  padding: 7px 13px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  border: 1.5px solid #E4E4E7;
-  background: #FFFFFF;
-  color: #52525B;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all .16s ease;
-}
-.pill-btn.active {
-  background: #111827;
-  color: #FFFFFF;
-  border-color: #111827;
-}
-.style-card {
-  min-width: 86px;
-  padding: 10px 8px;
-  border-radius: 18px;
-  border: 1.5px solid #E4E4E7;
-  background: #FAFAFA;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all .16s ease;
-  flex-shrink: 0;
-}
-.style-card.active {
-  background: #111827;
-  border-color: #111827;
-  color: #FFFFFF;
-  transform: translateY(-2px);
-}
-.no-scroll::-webkit-scrollbar { display: none; }
-.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fadeUp .32s cubic-bezier(.22,1,.36,1) both; }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes orbPing {
+  0% { opacity: 0.8; transform: scale(0.9); }
+  70% { opacity: 0; transform: scale(1.18); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+.fade-up { animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.s1 { animation-delay: 0.04s; }
+.s2 { animation-delay: 0.09s; }
+.s3 { animation-delay: 0.14s; }
+.s4 { animation-delay: 0.19s; }
+
+/* Profile Hero Card (Mint-Teal Gradient) */
+.profile-hero-card {
+  position: relative;
+  border-radius: 26px;
+  padding: 20px 20px;
+  background: linear-gradient(135deg, #6EE7B7 0%, #A7F3D0 48%, #5EEAD4 100%);
+  box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.28), 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  overflow: hidden;
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+.profile-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -30px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, transparent 70%);
+  pointer-events: none;
+}
+.profile-hero-card:active { transform: scale(0.985); }
+
+.avatar-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 3px;
+  box-shadow: 0 6px 18px rgba(15, 63, 56, 0.14);
+  flex-shrink: 0;
+  position: relative;
+}
+.avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 26px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #10B981, #0D9488);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4.5px 12px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0F3F38;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(15, 63, 56, 0.08);
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.status-pill:active { transform: scale(0.95); }
+
+/* Balance Summary Card with Stacked Wallet Badges */
+.balance-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+  border: 1px solid #EEF2F6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.balance-card:hover {
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.balance-card:active { transform: scale(0.985); }
+
+.wallet-stack {
+  display: flex;
+  align-items: center;
+}
+.wallet-bubble {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2.5px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+  margin-left: -9px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #F1F5F9;
+}
+.wallet-bubble:first-child { margin-left: 0; }
+
+/* Section Group & Menu Item Rows */
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0 4px;
+  margin-bottom: 8px;
+}
+.menu-group-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 6px 8px;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F1F5F9;
+}
+.menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+  padding: 12px 10px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #0F172A;
+  transition: background 0.16s ease, transform 0.14s ease;
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.menu-row:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 62px;
+  right: 12px;
+  height: 1px;
+  background: #F1F5F9;
+}
+.menu-row:hover { background: #F8FAFC; }
+.menu-row:active { transform: scale(0.985); background: #F1F5F9; }
+
+.menu-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.10);
+}
+.menu-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.menu-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+  line-height: 1.25;
+}
+.menu-desc {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+  margin-top: 2px;
+  line-height: 1.35;
+}
+.menu-chevron {
+  color: #94A3B8;
+  flex-shrink: 0;
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+.menu-row:hover .menu-chevron {
+  transform: translateX(2px);
+  color: #475569;
+}
+
+/* Danger / Logout & Delete Rows */
+.menu-row-danger .menu-title {
+  color: #EF4444;
+}
+.menu-row-danger .menu-desc {
+  color: #94A3B8;
+}
+
+/* Modal & Bottom Sheet Styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 70;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.modal-backdrop.show { opacity: 1; }
+.modal-backdrop .sheet {
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -12px 48px rgba(15, 23, 42, 0.14);
+  transform: translateY(100%);
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.modal-backdrop.show .sheet { transform: translateY(0); }
+
+.fi {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 11px 14px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.fi:focus {
+  border-color: #10B981;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+}
+
+.period-pill {
+  padding: 9px 10px;
+  border-radius: 13px;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-align: center;
+}
+.period-pill.active {
+  border-color: #8B5CF6;
+  background: #F5F3FF;
+  color: #6D28D9;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+}
+
+.export-fmt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  border-radius: 16px;
+  border: 1.5px solid #F1F5F9;
+  background: #F8FAFC;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.18s ease;
+}
+.export-fmt-btn:hover {
+  border-color: #CBD5E1;
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+}
+.export-fmt-btn:active { transform: scale(0.98); }
+
+.check-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: checkDraw 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.15s forwards;
+}
+.spin-sm {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Bottom Navigation Bar */
+.nav-btn { transition: color 0.2s, transform 0.15s; color: #A1A1AA; text-decoration: none; }
+.nav-btn.active { color: #18181B; }
+.nav-btn.active svg { stroke-width: 2.5; }
+.nav-btn.active span { font-weight: 800; }
+.nav-btn:active { transform: scale(0.88); }
+.ai-nav-orb {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+.orb-ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  animation: orbPing 3s ease-out infinite;
+  pointer-events: none;
+}
+.hidden { display: none !important; }
 </style>
 </head>
-<body class="pb-28">
+<body>
 
-<!-- ══════════════ HEADER STICKY ══════════════ -->
-<header class="sticky top-0 z-30 px-5 pt-8 pb-3.5 border-b border-zinc-200/70" style="background:rgba(246,247,251,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
-  <div class="max-w-md mx-auto flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <a href="https://keloladuit.my.id/home" class="w-9 h-9 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-zinc-800 font-black text-sm shadow-xs active:scale-90 transition" style="text-decoration:none">←</a>
-      <div>
-        <h1 class="text-base font-black text-zinc-900 leading-tight">Edit Profil &amp; Avatar</h1>
-        <p id="sync-status-label" class="text-[10px] font-bold text-zinc-400 mt-0.5">Keloladuit.id · Tersinkronisasi</p>
-      </div>
+<!-- ═══════════ SUCCESS TOAST MODAL ═══════════ -->
+<div id="success-modal" class="fixed inset-0 z-[90] flex items-center justify-center hidden pointer-events-none bg-slate-900/20 backdrop-blur-sm">
+  <div class="bg-white rounded-[28px] shadow-2xl p-7 flex flex-col items-center min-w-[230px] max-w-[300px] border border-slate-100" style="animation:scaleIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards">
+    <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mb-3">
+      <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
     </div>
-    <button onclick="saveAllProfile()" id="btn-save-top" class="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-black active:scale-95 transition shadow-sm">
-      Simpan
-    </button>
+    <p class="text-lg font-black text-slate-900 mb-1">Berhasil!</p>
+    <p id="success-msg" class="text-xs text-slate-500 font-bold text-center leading-relaxed">Selesai.</p>
   </div>
-</header>
-
-<main class="max-w-md mx-auto px-5 pt-4 space-y-4">
-
-  <!-- ══════════════ 1. HERO PREVIEW PROFIL & AVATAR ══════════════ -->
-  <section class="clean-card p-5 fade-up">
-    <div class="flex items-center gap-4">
-      <div class="relative flex-shrink-0">
-        <div id="hero-avatar-box" class="w-20 h-20 rounded-[26px] flex items-center justify-center text-white font-black text-2xl shadow-md overflow-hidden border-2 border-white" style="background:linear-gradient(135deg,#34D399,#0D9488)">
-          P
-        </div>
-        <button onclick="randomizeDicebear()" title="Acak Avatar Cepat" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-xl bg-zinc-900 text-white text-xs font-black flex items-center justify-center shadow border-2 border-white active:scale-90 transition">
-          🎲
-        </button>
-      </div>
-      <div class="min-w-0 flex-1">
-        <div class="flex items-center gap-1.5">
-          <h2 id="hero-name" class="text-base font-black text-zinc-900 truncate">Pengguna</h2>
-          <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-black">AKTIF</span>
-        </div>
-        <p id="hero-username" class="text-xs font-bold text-zinc-400 truncate mt-0.5">@username</p>
-        <div class="flex items-center gap-2 mt-2.5">
-          <span id="hero-streak" class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 text-[10px] font-black">🔥 0 Hari Streak</span>
-          <span id="hero-coins" class="px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 text-[10px] font-black">🪙 0 Koin</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pilihan Bingkai / Background Container Avatar -->
-    <div class="mt-4 pt-3.5 border-t border-zinc-100">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">Warna Bingkai Avatar</span>
-        <span id="frame-bg-label" class="text-[10px] font-bold text-zinc-500">Emerald</span>
-      </div>
-      <div id="avatar-frame-swatches" class="flex items-center gap-2 overflow-x-auto no-scroll py-0.5"></div>
-    </div>
-  </section>
-
-  <!-- ══════════════ 2. STUDIO PEMBUAT AVATAR DICEBEAR (HTTP API v10.x) ══════════════ -->
-  <section class="clean-card p-5 space-y-4 fade-up" style="animation-delay:.05s">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="flex items-center gap-2">
-          <h3 class="text-sm font-black text-zinc-900">🎨 Studio Avatar Kustom</h3>
-          <span class="px-2 py-0.5 rounded-md bg-zinc-900 text-white text-[9px] font-black">DiceBear 10.x</span>
-        </div>
-        <p class="text-[10px] font-semibold text-zinc-400 mt-0.5">Buat karakter unik dari 60+ style resmi DiceBear API</p>
-      </div>
-      <div class="flex gap-1">
-        <button id="mode-btn-dicebear" onclick="setAvatarMode('dicebear')" class="pill-btn active">DiceBear</button>
-        <button id="mode-btn-emoji" onclick="setAvatarMode('emoji')" class="pill-btn">Emoji</button>
-        <button id="mode-btn-upload" onclick="setAvatarMode('upload')" class="pill-btn">Foto</button>
-      </div>
-    </div>
-
-    <!-- PANEL MODE 1: DICEBEAR BUILDER -->
-    <div id="panel-avatar-dicebear" class="space-y-4">
-      <!-- Pencarian & Daftar Style DiceBear -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <label class="text-[11px] font-extrabold text-zinc-700">1. Pilih Gaya Karakter (<span id="db-style-count">24</span> Style)</label>
-          <input type="text" id="db-style-search" placeholder="Cari style (pixel, lorelei, bottts…)" oninput="renderDicebearStyleGrid(this.value)" class="px-2.5 py-1 rounded-lg bg-zinc-100 border border-zinc-200 text-[11px] font-bold text-zinc-800 outline-none w-44">
-        </div>
-        <div id="db-style-grid" class="flex gap-2 overflow-x-auto no-scroll pb-1"></div>
-      </div>
-
-      <!-- Seed & Tombol Acak -->
-      <div class="space-y-1.5">
-        <label class="text-[11px] font-extrabold text-zinc-700">2. Seed Karakter (Nama / Kode Unik)</label>
-        <div class="flex gap-2">
-          <input type="text" id="db-seed-input" placeholder="Ketik kata/nama apa saja…" oninput="onDicebearControlChange()" class="fi flex-1">
-          <button type="button" onclick="randomizeDicebear()" class="px-3.5 py-2 rounded-2xl bg-zinc-900 text-white text-xs font-black active:scale-95 transition flex items-center gap-1.5 flex-shrink-0">
-            <span>🎲</span><span>Acak</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Warna Latar SVG DiceBear (backgroundColor) -->
-      <div class="space-y-1.5">
-        <div class="flex items-center justify-between">
-          <label class="text-[11px] font-extrabold text-zinc-700">3. Latar Belakang Gambar (`backgroundColor`)</label>
-          <span id="db-bg-code" class="text-[10px] font-bold text-zinc-400">Transparan</span>
-        </div>
-        <div id="db-bg-swatches" class="flex items-center gap-2 overflow-x-auto no-scroll py-0.5"></div>
-      </div>
-
-      <!-- Transformasi Core Options (Flip, Scale, Rotate, Radius) -->
-      <div class="grid grid-cols-2 gap-2.5 p-3 rounded-2xl bg-zinc-50 border border-zinc-200/80">
-        <div>
-          <div class="flex justify-between text-[10px] font-extrabold text-zinc-600 mb-1">
-            <span>Scale (Ukuran)</span>
-            <span id="db-scale-val">100%</span>
-          </div>
-          <input type="range" id="db-scale" min="60" max="140" step="5" value="100" oninput="onDicebearControlChange()" class="w-full accent-zinc-900">
-        </div>
-        <div>
-          <div class="flex justify-between text-[10px] font-extrabold text-zinc-600 mb-1">
-            <span>Rotate (Putar)</span>
-            <span id="db-rotate-val">0°</span>
-          </div>
-          <input type="range" id="db-rotate" min="0" max="360" step="15" value="0" oninput="onDicebearControlChange()" class="w-full accent-zinc-900">
-        </div>
-        <div>
-          <div class="flex justify-between text-[10px] font-extrabold text-zinc-600 mb-1">
-            <span>Radius Sudut</span>
-            <span id="db-radius-val">0</span>
-          </div>
-          <input type="range" id="db-radius" min="0" max="50" step="5" value="0" oninput="onDicebearControlChange()" class="w-full accent-zinc-900">
-        </div>
-        <div class="flex items-center justify-between pt-2">
-          <span class="text-[10px] font-extrabold text-zinc-600">Flip Horizontal</span>
-          <button type="button" id="db-flip-btn" onclick="toggleDicebearFlip()" class="px-3 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-black text-zinc-700">Nonaktif</button>
-        </div>
-      </div>
-
-      <!-- Opsi Spesifik Style dari /10.x/<styleName>/options.json -->
-      <div id="db-dynamic-options-wrap" class="space-y-2.5 pt-1 border-t border-zinc-100">
-        <div class="flex items-center justify-between">
-          <p class="text-[11px] font-extrabold text-zinc-700">4. Kustomisasi Fitur (<span id="db-current-style-label">adventurer</span>)</p>
-          <button type="button" onclick="resetStyleSpecificOptions()" class="text-[10px] font-bold text-zinc-400 hover:text-zinc-800">Reset Fitur</button>
-        </div>
-        <div id="db-dynamic-options" class="grid grid-cols-2 gap-2.5">
-          <div class="col-span-2 text-[11px] font-semibold text-zinc-400 py-2">Memuat opsi fitur dari DiceBear…</div>
-        </div>
-      </div>
-
-      <!-- URL API & Unduh SVG / PNG -->
-      <div class="p-3 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-[10px] font-extrabold text-zinc-400 uppercase">Endpoint URL DiceBear Aktif</span>
-          <button type="button" onclick="copyDicebearUrl()" id="btn-copy-db-url" class="text-[10px] font-black text-emerald-600">Salin URL</button>
-        </div>
-        <input type="text" id="db-url-preview" readonly class="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-[10px] font-mono text-zinc-600 outline-none">
-        <div class="flex gap-2 pt-0.5">
-          <a id="db-download-svg" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 rounded-xl bg-zinc-900 text-white text-[11px] font-black text-center" style="text-decoration:none">⬇ Unduh SVG</a>
-          <a id="db-download-png" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 rounded-xl bg-zinc-100 text-zinc-800 text-[11px] font-black text-center" style="text-decoration:none">⬇ Buka PNG</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANEL MODE 2: EMOJI / INISIAL -->
-    <div id="panel-avatar-emoji" class="hidden space-y-3">
-      <p class="text-xs font-bold text-zinc-500">Pilih emoji favorit atau gunakan huruf inisial nama:</p>
-      <div id="emoji-grid" class="grid grid-cols-6 gap-2"></div>
-      <button type="button" onclick="useInitialAvatar()" class="w-full py-2.5 rounded-xl bg-zinc-100 text-zinc-800 text-xs font-black">Gunakan Huruf Inisial Nama</button>
-    </div>
-
-    <!-- PANEL MODE 3: UPLOAD FOTO -->
-    <div id="panel-avatar-upload" class="hidden space-y-3">
-      <p class="text-xs font-bold text-zinc-500">Unggah foto dari perangkatmu (otomatis dikompresi agar hemat kuota Google Sheet):</p>
-      <label class="block w-full py-6 px-4 rounded-2xl border-2 border-dashed border-zinc-300 bg-zinc-50 text-center cursor-pointer hover:border-zinc-900 transition">
-        <span class="text-2xl block mb-1">📷</span>
-        <span class="text-xs font-black text-zinc-800">Pilih Foto dari Galeri / Kamera</span>
-        <input type="file" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
-      </label>
-    </div>
-  </section>
-
-  <!-- ══════════════ 3. FORM DATA DIRI & ANGGARAN ══════════════ -->
-  <section class="clean-card p-5 space-y-3.5 fade-up" style="animation-delay:.1s">
-    <div>
-      <h3 class="text-sm font-black text-zinc-900">👤 Informasi Pribadi</h3>
-      <p class="text-[10px] font-semibold text-zinc-400 mt-0.5">Data akun yang digunakan pada fitur Chat, Split Bill, dan Transfer Teman</p>
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Nama Lengkap / Nama Tampilan</label>
-      <input type="text" id="prof-nama" placeholder="Nama lengkap kamu" class="fi" oninput="updateHeroTexts()">
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Username</label>
-      <input type="text" id="prof-username" placeholder="username" class="fi" oninput="updateHeroTexts()">
-      <p class="text-[10px] font-semibold text-zinc-400 mt-1">Digunakan teman untuk mencari akunmu di Chat &amp; Split Bill.</p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div>
-        <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Email</label>
-        <input type="email" id="prof-email" placeholder="nama@email.com" class="fi">
-      </div>
-      <div>
-        <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Tanggal Lahir</label>
-        <input type="date" id="prof-dob" class="fi">
-      </div>
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Target Anggaran Bulanan (Rp)</label>
-      <input type="number" id="prof-budget" placeholder="Contoh: 3000000" min="0" step="50000" class="fi">
-    </div>
-  </section>
-
-  <!-- ══════════════ 4. KEAMANAN & PIN / PASSWORD ══════════════ -->
-  <section class="clean-card p-5 space-y-3.5 fade-up" style="animation-delay:.15s">
-    <div class="flex items-center justify-between">
-      <div>
-        <h3 class="text-sm font-black text-zinc-900">🔒 Keamanan &amp; Password</h3>
-        <p class="text-[10px] font-semibold text-zinc-400 mt-0.5">Kosongkan jika tidak ingin mengubah password saat ini</p>
-      </div>
-      <span id="pass-status-badge" class="px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-600 text-[10px] font-black">Terlindungi</span>
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Password / PIN Baru</label>
-      <div class="relative">
-        <input type="password" id="prof-password" placeholder="Masukkan password atau PIN baru…" class="fi pr-16">
-        <button type="button" onclick="togglePassVisibility()" id="btn-toggle-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-extrabold text-zinc-500">Lihat</button>
-      </div>
-    </div>
-
-    <div>
-      <label class="block text-[11px] font-extrabold text-zinc-600 mb-1">Kode / Jawaban Pemulihan Cadangan</label>
-      <input type="text" id="prof-backup-pass" placeholder="Kata kunci cadangan lupa PIN" class="fi">
-    </div>
-  </section>
-
-  <!-- ══════════════ 5. TOMBOL SIMPAN & LOGOUT ══════════════ -->
-  <section class="space-y-2.5 pt-1">
-    <button onclick="saveAllProfile()" id="btn-save-bottom" class="w-full py-3.5 rounded-2xl bg-zinc-900 text-white text-sm font-black shadow-md active:scale-[0.99] transition">
-      💾 Simpan Perubahan Profil
-    </button>
-    <div class="grid grid-cols-2 gap-2.5">
-      <a href="https://keloladuit.my.id/home" class="py-3 rounded-2xl bg-white border border-zinc-200 text-zinc-700 text-xs font-black text-center active:scale-95 transition" style="text-decoration:none">
-        ← Kembali ke Beranda
-      </a>
-      <button onclick="logoutAccount()" class="py-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-black active:scale-95 transition">
-        Keluar Akun (Logout)
-      </button>
-    </div>
-  </section>
-
-</main>
-
-<!-- ══════════════ TOAST NOTIFIKASI ══════════════ -->
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-2xl bg-zinc-900 text-white text-xs font-black shadow-xl">
-  Tersimpan!
 </div>
 
+<div class="max-w-md mx-auto">
+
+  <!-- ═══════════ TOP HEADER (Tanpa Tombol Lonceng & Gerigi) ═══════════ -->
+  <header class="pt-8 pb-3 px-5 sticky top-0 z-30 flex items-center" style="background:rgba(230,247,242,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)">
+    <div class="flex items-center gap-2.5">
+      <a href="https://keloladuit.my.id/home" target="_top" class="w-9 h-9 rounded-xl bg-white/80 border border-emerald-900/10 flex items-center justify-center text-teal-950 active:scale-90 transition-transform shadow-sm" style="text-decoration:none" title="Kembali ke Beranda">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <h1 class="text-2xl font-black tracking-tight" style="color:#0F3F38">Akun</h1>
+    </div>
+  </header>
+
+  <main class="px-5 pt-2 space-y-5">
+
+    <!-- ═══════════ PROFILE HERO CARD ═══════════ -->
+    <div class="profile-hero-card fade-up s1">
+      <div class="flex items-center gap-4 relative z-10">
+        <!-- Klik Avatar langsung ke Edit Profil -->
+        <a href="https://keloladuit.my.id/edit-profil" target="_top" class="avatar-ring" style="text-decoration:none" title="Ubah Foto Profil">
+          <div id="acc-avatar" class="avatar-inner">P</div>
+          <span class="w-6 h-6 rounded-full bg-teal-900 text-white flex items-center justify-center text-[11px] absolute -bottom-0.5 -right-0.5 border-2 border-white shadow">✎</span>
+        </a>
+
+        <div class="min-w-0 flex-1">
+          <a href="https://keloladuit.my.id/edit-profil" target="_top" style="text-decoration:none">
+            <h2 id="acc-name" class="text-lg font-black truncate leading-tight" style="color:#0B3B34">Pengguna</h2>
+            <p id="acc-email" class="text-xs font-semibold truncate mt-0.5" style="color:#1F5E55">pengguna@keloladuit.id</p>
+          </a>
+          <div class="mt-2.5 flex items-center gap-2 flex-wrap">
+            <a href="https://keloladuit.my.id/status-langganan" target="_top" class="status-pill" id="acc-tier-pill">
+              <span class="text-amber-500 text-xs">★</span>
+              <span id="acc-tier-text">Anggota Premium</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TOTAL SALDO CARD + STACKED WALLET ICONS ═══════════ -->
+    <a href="https://keloladuit.my.id/daftar-rekening" target="_top" class="balance-card fade-up s1" title="Lihat Daftar Rekening & Dompet">
+      <div class="min-w-0">
+        <p class="text-xs font-bold text-slate-400">Total Saldo Anda</p>
+        <p id="acc-total-balance" class="text-2xl font-black text-slate-900 tracking-tight mt-0.5 truncate">Rp 0</p>
+      </div>
+      <div id="acc-wallet-bubbles" class="wallet-stack">
+        <div class="wallet-bubble" style="background:linear-gradient(135deg,#1D4ED8,#1E3A8A)">🏦</div>
+        <div class="wallet-bubble" style="background:linear-gradient(135deg,#0EA5E9,#0284C7)">👛</div>
+        <div class="wallet-bubble" style="background:linear-gradient(135deg,#F59E0B,#D97706)">💳</div>
+      </div>
+    </a>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         1. PENGATURAN PROFIL & KEAMANAN
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="fade-up s2">
+      <p class="section-label">Pengaturan Profil &amp; Keamanan</p>
+      <div class="menu-group-card">
+
+        <!-- Edit Profil -->
+        <a href="https://keloladuit.my.id/edit-profil" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#10B981,#059669)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Edit Profil</p>
+            <p class="menu-desc">Mengubah foto, nama pengguna, email, dan nomor telepon</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Keamanan & PIN -->
+        <a href="https://keloladuit.my.id/keamanan-pin" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#0F766E,#115E59)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Keamanan &amp; PIN</p>
+            <p class="menu-desc">Mengatur PIN keamanan aplikasi dan kata sandi akun</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Status Langganan -->
+        <a href="https://keloladuit.my.id/status-langganan" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#F59E0B,#D97706)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <div class="flex items-center gap-2">
+              <p class="menu-title">Status Langganan</p>
+              <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Upgrade Pro</span>
+            </div>
+            <p class="menu-desc">Memeriksa status akun gratis/berbayar &amp; upgrade ke fitur premium</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         2. MANAJEMEN DATA & KEUANGAN
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="fade-up s3">
+      <p class="section-label">Manajemen Data &amp; Keuangan</p>
+      <div class="menu-group-card">
+
+        <!-- Kelola Kategori -->
+        <a href="https://keloladuit.my.id/kelola-kategori" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#F97316,#EA580C)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Kelola Kategori</p>
+            <p class="menu-desc">Menambah, mengubah, atau menghapus kategori &amp; subkategori transaksi</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Daftar Rekening -->
+        <a href="https://keloladuit.my.id/daftar-rekening" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#34D399,#10B981)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Daftar Rekening</p>
+            <p class="menu-desc">Mengatur daftar dompet digital, rekening bank, dan kartu kredit terhubung</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Ekspor Data (LANGSUNG BUKA POP-UP TANPA REDIRECT) -->
+        <button type="button" onclick="openExportModal()" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <div class="flex items-center gap-1.5">
+              <p class="menu-title">Ekspor Data</p>
+              <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-violet-100 text-violet-700">CSV · Excel · PDF</span>
+            </div>
+            <p class="menu-desc">Mengunduh rekap laporan keuangan dalam format CSV, Excel, atau PDF</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <!-- Mata Uang & Bahasa -->
+        <a href="https://keloladuit.my.id/mata-uang-bahasa" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#3B82F6,#2563EB)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <div class="flex items-center justify-between pr-1">
+              <p class="menu-title">Mata Uang &amp; Bahasa</p>
+              <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">IDR · ID</span>
+            </div>
+            <p class="menu-desc">Menentukan mata uang acuan utama dan bahasa antarmuka aplikasi</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         3. BANTUAN & SESI AKUN
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="fade-up s4">
+      <p class="section-label">Bantuan &amp; Sesi Akun</p>
+      <div class="menu-group-card">
+
+        <!-- Pusat Bantuan -->
+        <a href="https://keloladuit.my.id/pusat-bantuan" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#14B8A6,#0D9488)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Pusat Bantuan</p>
+            <p class="menu-desc">Mengakses panduan cara penggunaan aplikasi dan pertanyaan umum (FAQ)</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Hubungi Dukungan -->
+        <a href="https://keloladuit.my.id/hubungi-dukungan" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#0EA5E9,#0284C7)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Hubungi Dukungan</p>
+            <p class="menu-desc">Mengirim pesan atau tiket bantuan ke tim layanan pelanggan</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Kebijakan Privasi -->
+        <a href="https://keloladuit.my.id/kebijakan-privasi" target="_top" class="menu-row">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#64748B,#475569)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Kebijakan Privasi</p>
+            <p class="menu-desc">Membaca dokumen hukum terkait perlindungan data pengguna</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <!-- Keluar dari Akun (LANGSUNG BUKA POP-UP KONFIRMASI) -->
+        <button type="button" onclick="openModal('logout-modal')" class="menu-row menu-row-danger">
+          <div class="menu-icon-circle" style="background:#FEE2E2;color:#EF4444;box-shadow:none">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Keluar dari Akun</p>
+            <p class="menu-desc">Mengakhiri sesi masuk saat ini di perangkat Anda</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" style="color:#FCA5A5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <!-- Hapus Akun Permanen (LANGSUNG BUKA POP-UP & EKSEKUSI) -->
+        <button type="button" onclick="openDeleteAccountModal()" class="menu-row menu-row-danger">
+          <div class="menu-icon-circle" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </div>
+          <div class="menu-text-wrap">
+            <p class="menu-title">Hapus Akun Permanen</p>
+            <p class="menu-desc">Menghapus akun beserta seluruh data transaksi secara permanen</p>
+          </div>
+          <svg class="w-5 h-5 menu-chevron" style="color:#FCA5A5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- App Version Footer -->
+    <div class="text-center pt-1 pb-4">
+      <p class="text-[11px] font-bold text-slate-400">Keloladuit.id v2.4 · Manajemen Keuangan Cerdas</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     POP-UP 1: EKSPOR DATA (CSV, EXCEL, PDF)
+════════════════════════════════════════════════════════════════════ -->
+<div id="export-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('export-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9)">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 leading-tight">Ekspor Laporan Keuangan</h3>
+          <p id="export-summary-count" class="text-[11px] font-semibold text-slate-400 mt-0.5">0 transaksi siap diekspor</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeModal('export-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">✕</button>
+    </div>
+
+    <!-- Pilih Periode Waktu -->
+    <div class="mb-4">
+      <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2">Pilih Rentang Waktu</label>
+      <div class="grid grid-cols-4 gap-2">
+        <button type="button" onclick="setExportPeriod('this_month')" id="ep-this_month" class="period-pill active">Bulan Ini</button>
+        <button type="button" onclick="setExportPeriod('last_month')" id="ep-last_month" class="period-pill">Bulan Lalu</button>
+        <button type="button" onclick="setExportPeriod('all')" id="ep-all" class="period-pill">Semua</button>
+        <button type="button" onclick="setExportPeriod('custom')" id="ep-custom" class="period-pill">Tanggal</button>
+      </div>
+
+      <!-- Input Tanggal Kustom -->
+      <div id="export-custom-dates" class="hidden grid grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-slate-100">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 block mb-1">Dari Tanggal</label>
+          <input type="date" id="export-date-start" class="fi py-2 text-xs" onchange="updateExportPreviewCount()">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 block mb-1">Sampai Tanggal</label>
+          <input type="date" id="export-date-end" class="fi py-2 text-xs" onchange="updateExportPreviewCount()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Ringkasan Singkat Data yang Akan Diekspor -->
+    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 mb-4 grid grid-cols-2 gap-3">
+      <div>
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Pemasukan</p>
+        <p id="export-prev-in" class="text-xs font-black text-emerald-600 mt-0.5">+Rp 0</p>
+      </div>
+      <div>
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Pengeluaran</p>
+        <p id="export-prev-out" class="text-xs font-black text-red-500 mt-0.5">-Rp 0</p>
+      </div>
+    </div>
+
+    <!-- Pilihan Format File -->
+    <div class="space-y-2.5">
+      <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Pilih Format Unduhan</label>
+
+      <!-- Format CSV -->
+      <button type="button" onclick="executeExportData('csv')" class="export-fmt-btn">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs">CSV</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Unduh Format CSV (.csv)</p>
+            <p class="text-[10px] font-semibold text-slate-400">Cocok untuk Google Sheets, Excel &amp; aplikasi olah data</p>
+          </div>
+        </div>
+        <span class="text-xs font-black text-emerald-600">Unduh ↓</span>
+      </button>
+
+      <!-- Format Excel (.xls) -->
+      <button type="button" onclick="executeExportData('excel')" class="export-fmt-btn">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-xs">XLS</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Unduh Microsoft Excel (.xls)</p>
+            <p class="text-[10px] font-semibold text-slate-400">Tabel rapi lengkap dengan ringkasan saldo &amp; kategori</p>
+          </div>
+        </div>
+        <span class="text-xs font-black text-blue-600">Unduh ↓</span>
+      </button>
+
+      <!-- Format PDF / Cetak -->
+      <button type="button" onclick="executeExportData('pdf')" class="export-fmt-btn">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-black text-xs">PDF</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Simpan PDF / Cetak Laporan</p>
+            <p class="text-[10px] font-semibold text-slate-400">Dokumen laporan resmi siap cetak atau simpan sebagai PDF</p>
+          </div>
+        </div>
+        <span class="text-xs font-black text-violet-600">Buka ↗</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     POP-UP 2: KONFIRMASI KELUAR DARI AKUN
+════════════════════════════════════════════════════════════════════ -->
+<div id="logout-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('logout-modal')">
+  <div class="sheet p-6 pb-8 text-center">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="w-14 h-14 bg-red-50 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-500">
+      <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-black text-slate-900 mb-1">Keluar dari Akun?</h3>
+    <p class="text-xs font-semibold text-slate-400 mb-6 max-w-xs mx-auto leading-relaxed">
+      Sesi Anda di perangkat ini akan diakhiri. Data keuangan Anda tetap tersimpan aman di Cloud Spreadsheet.
+    </p>
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('logout-modal')" class="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-black text-xs active:scale-95 transition-transform">
+        Batal
+      </button>
+      <button type="button" onclick="confirmLogoutAccount()" class="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-black text-xs shadow-lg shadow-red-500/25 active:scale-95 transition-transform">
+        Ya, Keluar Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     POP-UP 3: KONFIRMASI HAPUS AKUN PERMANEN
+════════════════════════════════════════════════════════════════════ -->
+<div id="delete-account-modal" class="modal-backdrop" onclick="if(event.target===this)closeModal('delete-account-modal')">
+  <div class="sheet p-6 pb-8">
+    <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+    <div class="text-center">
+      <div class="w-14 h-14 bg-red-100 rounded-2xl mx-auto flex items-center justify-center mb-3 text-red-600">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-black text-slate-900 mb-1">Hapus Akun Permanen?</h3>
+      <p class="text-xs font-semibold text-slate-500 leading-relaxed mb-4">
+        Tindakan ini <b>tidak dapat dibatalkan</b>. Akun <span id="del-acc-username" class="font-extrabold text-red-600">@pengguna</span> beserta akses seluruh data transaksi, dompet, dan jadwal akan dihapus secara permanen.
+      </p>
+    </div>
+
+    <div class="p-3.5 rounded-2xl bg-red-50 border border-red-200/80 mb-4">
+      <label for="delete-confirm-input" class="block text-[11px] font-extrabold text-red-900 mb-1.5">
+        Ketik kata <span class="underline font-black">HAPUS</span> untuk mengonfirmasi:
+      </label>
+      <input type="text" id="delete-confirm-input" placeholder="Ketik HAPUS di sini…" autocomplete="off" class="fi bg-white border-red-200 text-center font-black uppercase tracking-widest" oninput="onDeleteConfirmInput(this.value)">
+      <p id="delete-acc-error" class="text-[11px] font-bold text-red-600 text-center mt-2 hidden"></p>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('delete-account-modal')" class="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-black text-xs active:scale-95 transition-transform">
+        Batal
+      </button>
+      <button type="button" id="btn-exec-delete-acc" onclick="executeDeleteAccountPermanent()" disabled class="flex-1 py-3.5 rounded-2xl bg-red-600 text-white font-black text-xs shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 opacity-40 cursor-not-allowed transition-all">
+        <span id="del-acc-btn-text">Hapus Permanen</span>
+        <div id="del-acc-spin" class="spin-sm hidden"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV BAR (Direct Links) ═══════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+  <div class="h-5 bg-gradient-to-t from-[#F8FAFC] to-transparent pointer-events-none -mb-1"></div>
+  <div class="bg-white border-t border-zinc-100 h-[72px] px-4 flex justify-between items-center shadow-[0_-8px_32px_rgba(0,0,0,0.04)]">
+    <a href="https://keloladuit.my.id/home" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold">Beranda</span>
+    </a>
+    <a href="https://keloladuit.my.id/laporan" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px] font-bold">Laporan</span>
+    </a>
+    <a href="https://keloladuit.my.id/home#tambah" target="_top" class="relative flex flex-col items-center justify-center w-14 h-full -mt-5" style="outline:none;text-decoration:none">
+      <div class="ai-nav-orb">
+        <div class="orb-ping"></div>
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <span class="text-[9px] font-black mt-1.5" style="color:#10B981">Tambah</span>
+    </a>
+    <a href="https://keloladuit.my.id/histori" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="https://keloladuit.my.id/eksplorasi" target="_top" class="nav-btn flex flex-col items-center gap-1 w-16 h-full justify-center">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span class="text-[10px] font-bold">Eksplorasi</span>
+    </a>
+  </div>
+</nav>
+
 <script>
+// ================================================================
+// SESSION, SALDO, PROFIL & POP-UP ACTIONS (EKSPOR, LOGOUT, HAPUS AKUN)
+// ================================================================
+const GLOBAL_GS_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
 const AUTH_SESSION_KEY = 'keuangan_akun_session';
-const DEFAULT_MASTER_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxC6ZbEz0GDuxLaqkNYQEQsO4-WLB5dnEPHBhqBjqovaAizmPqlCcxBvLWTHmcD5Jth/exec';
-const DICEBEAR_API_BASE = 'https://api.dicebear.com/10.x';
+const TX_CACHE_KEY = 'keuangan_transactions_cache';
+const QUICK_ADD_STORAGE_PREFIX = 'keuangan_quickadd_khusus_';
+const SCHEDULED_STORAGE_PREFIX = 'keuangan_scheduled_jadwal_';
 
-const AVATAR_GRADIENTS = [
-  { id: 'emerald', label: 'Emerald', css: 'linear-gradient(135deg,#34D399,#0D9488)' },
-  { id: 'ocean',   label: 'Ocean',   css: 'linear-gradient(135deg,#38BDF8,#2563EB)' },
-  { id: 'violet',  label: 'Violet',  css: 'linear-gradient(135deg,#A78BFA,#6D28D9)' },
-  { id: 'amber',   label: 'Amber',   css: 'linear-gradient(135deg,#FBBF24,#EA580C)' },
-  { id: 'rose',    label: 'Rose',    css: 'linear-gradient(135deg,#F472B6,#E11D48)' },
-  { id: 'slate',   label: 'Slate',   css: 'linear-gradient(135deg,#334155,#0F172A)' },
-  { id: 'gold',    label: 'Gold',    css: 'linear-gradient(135deg,#FDE047,#CA8A04)' }
-];
-
-// Daftar style kurasi populer DiceBear 10.x (akan diperkaya otomatis dari GET https://api.dicebear.com/10.x)
-var DICEBEAR_STYLES = [
-  'adventurer', 'adventurer-neutral', 'avataaars', 'avataaars-neutral',
-  'big-ears', 'big-ears-neutral', 'big-smile', 'bottts', 'bottts-neutral',
-  'croodles', 'croodles-neutral', 'dylan', 'fun-emoji', 'glass', 'icons',
-  'identicon', 'initials', 'lorelei', 'lorelei-neutral', 'micah', 'miniavs',
-  'notionists', 'notionists-neutral', 'open-peeps', 'personas', 'pixel-art',
-  'pixel-art-neutral', 'rings', 'shapes', 'thumbs', 'toon-head'
-];
-
-const DICEBEAR_BG_PALETTE = [
-  { code: '',       label: 'Transparan', css: 'repeating-conic-gradient(#e5e7eb 0% 25%, #fff 0% 50%) 50% / 10px 10px' },
-  { code: 'b6e3f4', label: 'Sky Pastel', css: '#b6e3f4' },
-  { code: 'c0aede', label: 'Lavender',   css: '#c0aede' },
-  { code: 'd1d4f9', label: 'Periwinkle', css: '#d1d4f9' },
-  { code: 'ffd5dc', label: 'Rose Soft',  css: '#ffd5dc' },
-  { code: 'ffdfbf', label: 'Peach',      css: '#ffdfbf' },
-  { code: 'd1fae5', label: 'Mint',       css: '#d1fae5' },
-  { code: 'fef08a', label: 'Lemon',      css: '#fef08a' },
-  { code: '18181b', label: 'Dark Zinc',  css: '#18181b' }
-];
-
-const EMOJI_LIST = ['😎','🚀','🐱','🦊','🐼','🦁','⚡','💎','🌸','🔥','🎯','👑','🥑','☕','🎮','🎧','💡','🌟'];
-
-var state = {
-  akun: {},
-  gsUrl: '',
-  oldUsername: '',
-  avatarMode: 'dicebear', // 'dicebear' | 'emoji' | 'upload'
-  avatarValue: '',
-  avatarBg: 'emerald',
-  dicebear: {
-    style: 'adventurer',
-    seed: 'KelolaDuit',
-    backgroundColor: 'b6e3f4',
-    scale: 100,
-    rotate: 0,
-    borderRadius: 0,
-    flip: 'none',
-    customOptions: {}
-  },
-  optionsCache: {}
+let GS_URL = '';
+let S = {
+  akun: null,
+  settings: {},
+  transactions: [],
+  dompetList: [],
+  exportPeriod: 'this_month'
 };
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.remove('hidden');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(function() { t.classList.add('hidden'); }, 2400);
-}
+const idr = n => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0);
+
+var AVATAR_GRADIENTS = [
+  { id: 'emerald', css: 'linear-gradient(135deg,#34D399,#0D9488)' },
+  { id: 'ocean',   css: 'linear-gradient(135deg,#38BDF8,#2563EB)' },
+  { id: 'violet',  css: 'linear-gradient(135deg,#A78BFA,#6D28D9)' },
+  { id: 'amber',   css: 'linear-gradient(135deg,#FBBF24,#EA580C)' },
+  { id: 'rose',    css: 'linear-gradient(135deg,#F472B6,#E11D48)' },
+  { id: 'slate',   css: 'linear-gradient(135deg,#334155,#0F172A)' },
+  { id: 'gold',    css: 'linear-gradient(135deg,#FDE047,#CA8A04)' }
+];
 
 function getAvatarBgCss(bgId) {
-  var found = AVATAR_GRADIENTS.find(function(g) { return g.id === bgId; });
+  const found = AVATAR_GRADIENTS.find(g => g.id === bgId);
   return found ? found.css : AVATAR_GRADIENTS[0].css;
 }
 
-function renderFrameSwatches() {
-  var box = document.getElementById('avatar-frame-swatches');
-  var lbl = document.getElementById('frame-bg-label');
-  if (!box) return;
-  box.innerHTML = AVATAR_GRADIENTS.map(function(g) {
-    var active = state.avatarBg === g.id;
-    if (active && lbl) lbl.textContent = g.label;
-    return `<button type="button" onclick="selectAvatarFrameBg('${g.id}')" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition ${active ? 'ring-2 ring-zinc-900 scale-105' : 'opacity-80'}" style="background:${g.css}">
-      ${active ? '<span class="text-white text-xs font-black">✓</span>' : ''}
-    </button>`;
-  }).join('');
-}
-
-window.selectAvatarFrameBg = function(bgId) {
-  state.avatarBg = bgId;
-  renderFrameSwatches();
-  renderHeroAvatar();
-};
-
-function renderHeroAvatar() {
-  var box = document.getElementById('hero-avatar-box');
-  if (!box) return;
-  box.style.background = getAvatarBgCss(state.avatarBg);
-  var name = document.getElementById('prof-nama')?.value || state.akun.namaLengkap || state.akun.username || 'P';
-  var initial = (name.trim()[0] || 'P').toUpperCase();
-  var val = state.avatarValue || '';
-
-  if (val && (val.indexOf('http') === 0 || val.indexOf('data:image/') === 0)) {
-    box.innerHTML = `<img src="${val}" alt="Avatar" class="w-full h-full object-cover block" onerror="this.parentNode.textContent='${initial}'">`;
-  } else if (val && val.indexOf('emoji:') === 0) {
-    box.innerHTML = `<span class="text-4xl leading-none">${val.slice(6)}</span>`;
-  } else {
-    box.textContent = initial;
-  }
-}
-
-window.updateHeroTexts = function() {
-  var n = document.getElementById('prof-nama')?.value?.trim() || 'Pengguna';
-  var u = document.getElementById('prof-username')?.value?.trim() || 'username';
-  document.getElementById('hero-name').textContent = n;
-  document.getElementById('hero-username').textContent = '@' + u;
-  renderHeroAvatar();
-};
-
-// ================================================================
-// DICEBEAR HTTP API v10.x BUILDER
-// ================================================================
-function buildDicebearUrl(format) {
-  var fmt = format || 'svg';
-  var db = state.dicebear;
-  var params = [];
-  if (db.seed) params.push('seed=' + encodeURIComponent(db.seed));
-  if (db.backgroundColor) params.push('backgroundColor=' + encodeURIComponent(db.backgroundColor));
-  if (db.flip && db.flip !== 'none') params.push('flip=' + encodeURIComponent(db.flip));
-  if (Number(db.scale) && Number(db.scale) !== 100) params.push('scale=' + Number(db.scale));
-  if (Number(db.rotate) && Number(db.rotate) !== 0) params.push('rotate=' + Number(db.rotate));
-  if (Number(db.borderRadius) && Number(db.borderRadius) !== 0) params.push('borderRadius=' + Number(db.borderRadius));
-
-  Object.keys(db.customOptions || {}).forEach(function(k) {
-    var v = db.customOptions[k];
-    if (v !== undefined && v !== null && v !== '') {
-      params.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
-    }
-  });
-
-  var qs = params.length ? ('?' + params.join('&')) : '';
-  return `${DICEBEAR_API_BASE}/${encodeURIComponent(db.style)}/${fmt}${qs}`;
-}
-
-function parseExistingDicebearUrl(url) {
+// ── STORAGE ABSTRACTION ──
+var _storageMode = null;
+var _memoryStore = {};
+function detectStorageMode() {
+  if (_storageMode) return _storageMode;
   try {
-    var m = url.match(/dicebear\.com\/(?:10\.x|9\.x|8\.x|7\.x)\/([a-z0-9-]+)\/(?:svg|png)/i);
-    if (!m) return false;
-    state.dicebear.style = m[1].toLowerCase();
-    var u = new URL(url);
-    if (u.searchParams.get('seed')) state.dicebear.seed = u.searchParams.get('seed');
-    state.dicebear.backgroundColor = u.searchParams.get('backgroundColor') || '';
-    state.dicebear.scale = Number(u.searchParams.get('scale') || 100);
-    state.dicebear.rotate = Number(u.searchParams.get('rotate') || 0);
-    state.dicebear.borderRadius = Number(u.searchParams.get('borderRadius') || 0);
-    state.dicebear.flip = u.searchParams.get('flip') || 'none';
+    localStorage.setItem('__storage_test__', '1');
+    localStorage.removeItem('__storage_test__');
+    _storageMode = 'localStorage';
+    return _storageMode;
+  } catch(e) {}
+  try {
+    document.cookie = '__storage_test__=1; SameSite=Lax; path=/';
+    var ok = document.cookie.indexOf('__storage_test__=1') !== -1;
+    document.cookie = '__storage_test__=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    if (ok) { _storageMode = 'cookie'; return _storageMode; }
+  } catch(e) {}
+  _storageMode = 'memory';
+  return _storageMode;
+}
+function storageGet(key) {
+  var mode = detectStorageMode();
+  if (mode === 'localStorage') { try { return localStorage.getItem(key); } catch(e) { return null; } }
+  if (mode === 'cookie') {
+    try {
+      var m = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch(e) { return null; }
+  }
+  return _memoryStore[key] || null;
+}
+function storageRemove(key) {
+  try { localStorage.removeItem(key); } catch(e) {}
+  try { document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; } catch(e) {}
+  delete _memoryStore[key];
+}
+
+function getAkunSession() {
+  try { const raw = storageGet(AUTH_SESSION_KEY); return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+}
+
+function checkAkunSession() {
+  const session = getAkunSession();
+  if (session && session.username && session.gsUrl) {
+    S.akun = session;
+    GS_URL = session.gsUrl;
     return true;
-  } catch (e) {
-    return false;
   }
+  return false;
 }
 
-async function fetchAllDicebearStyles() {
-  try {
-    var r = await fetch(DICEBEAR_API_BASE);
-    if (!r.ok) return;
-    var d = await r.json();
-    if (d && Array.isArray(d.styles) && d.styles.length) {
-      DICEBEAR_STYLES = d.styles;
-      var cntEl = document.getElementById('db-style-count');
-      if (cntEl) cntEl.textContent = d.styles.length;
-      renderDicebearStyleGrid(document.getElementById('db-style-search')?.value || '');
-    }
-  } catch (e) {}
+function loadLocalCaches() {
+  try { const r = localStorage.getItem(TX_CACHE_KEY); if (r) S.transactions = JSON.parse(r) || []; } catch(e) {}
+  try { const r = localStorage.getItem('keuangan_settings_cache'); if (r) S.settings = JSON.parse(r) || {}; } catch(e) {}
+  try { const r = localStorage.getItem('keuangan_dompet_list'); if (r) S.dompetList = JSON.parse(r) || []; } catch(e) {}
 }
 
-window.renderDicebearStyleGrid = function(query) {
-  var grid = document.getElementById('db-style-grid');
-  if (!grid) return;
-  var q = String(query || '').trim().toLowerCase();
-  var seed = encodeURIComponent(state.dicebear.seed || 'KelolaDuit');
-  var list = DICEBEAR_STYLES.filter(function(s) { return !q || s.includes(q); });
-
-  grid.innerHTML = list.map(function(styleName) {
-    var active = state.dicebear.style === styleName;
-    var thumbUrl = `${DICEBEAR_API_BASE}/${styleName}/svg?seed=${seed}&backgroundColor=b6e3f4`;
-    return `
-      <button type="button" onclick="selectDicebearStyle('${styleName}')" class="style-card ${active ? 'active' : ''}">
-        <img src="${thumbUrl}" alt="${styleName}" class="w-11 h-11 rounded-xl bg-white object-cover" loading="lazy">
-        <span class="text-[10px] font-extrabold truncate max-w-[76px]">${styleName}</span>
-      </button>
-    `;
-  }).join('');
-};
-
-function renderDicebearBgSwatches() {
-  var box = document.getElementById('db-bg-swatches');
-  var lbl = document.getElementById('db-bg-code');
-  if (!box) return;
-  box.innerHTML = DICEBEAR_BG_PALETTE.map(function(p) {
-    var active = state.dicebear.backgroundColor === p.code;
-    if (active && lbl) lbl.textContent = p.code ? ('#' + p.code.toUpperCase()) : 'Transparan';
-    return `<button type="button" onclick="selectDicebearBg('${p.code}')" title="${p.label}" class="w-8 h-8 rounded-xl border border-zinc-300 flex items-center justify-center flex-shrink-0 transition ${active ? 'ring-2 ring-zinc-900 scale-105' : ''}" style="background:${p.css}">
-      ${active ? '<span class="text-[10px] font-black px-1 rounded bg-white/80 text-zinc-900">✓</span>' : ''}
-    </button>`;
-  }).join('');
-}
-
-window.selectDicebearBg = function(code) {
-  state.dicebear.backgroundColor = code;
-  renderDicebearBgSwatches();
-  applyDicebearToState();
-};
-
-window.selectDicebearStyle = function(styleName) {
-  state.dicebear.style = styleName;
-  state.dicebear.customOptions = {};
-  document.getElementById('db-current-style-label').textContent = styleName;
-  renderDicebearStyleGrid(document.getElementById('db-style-search')?.value || '');
-  applyDicebearToState();
-  loadStyleOptionsSchema(styleName);
-};
-
-window.onDicebearControlChange = function() {
-  var seedVal = document.getElementById('db-seed-input')?.value || 'KelolaDuit';
-  var scaleVal = Number(document.getElementById('db-scale')?.value || 100);
-  var rotVal   = Number(document.getElementById('db-rotate')?.value || 0);
-  var radVal   = Number(document.getElementById('db-radius')?.value || 0);
-
-  state.dicebear.seed = seedVal;
-  state.dicebear.scale = scaleVal;
-  state.dicebear.rotate = rotVal;
-  state.dicebear.borderRadius = radVal;
-
-  document.getElementById('db-scale-val').textContent = scaleVal + '%';
-  document.getElementById('db-rotate-val').textContent = rotVal + '°';
-  document.getElementById('db-radius-val').textContent = radVal;
-  applyDicebearToState();
-};
-
-window.toggleDicebearFlip = function() {
-  state.dicebear.flip = state.dicebear.flip === 'horizontal' ? 'none' : 'horizontal';
-  var btn = document.getElementById('db-flip-btn');
-  if (btn) {
-    var on = state.dicebear.flip === 'horizontal';
-    btn.textContent = on ? 'Aktif (Horizontal)' : 'Nonaktif';
-    btn.className = on
-      ? 'px-3 py-1 rounded-lg bg-zinc-900 text-[10px] font-black text-white'
-      : 'px-3 py-1 rounded-lg bg-white border border-zinc-200 text-[10px] font-black text-zinc-700';
-  }
-  applyDicebearToState();
-};
-
-window.randomizeDicebear = function() {
-  var randomSeeds = ['Aurora','Nusantara','Garuda','Bintang','Ksatria','Surya','Aether','Zenith','Viona','Dagonaut','Pixel','Nova'];
-  var pick = randomSeeds[Math.floor(Math.random() * randomSeeds.length)] + '-' + Math.floor(100 + Math.random() * 900);
-  state.dicebear.seed = pick;
-  var inp = document.getElementById('db-seed-input');
-  if (inp) inp.value = pick;
-  state.AvatarMode = 'dicebear';
-  applyDicebearToState();
-  renderDicebearStyleGrid(document.getElementById('db-style-search')?.value || '');
-};
-
-function applyDicebearToState() {
-  var svgUrl = buildDicebearUrl('svg');
-  var pngUrl = buildDicebearUrl('png');
-  state.avatarValue = svgUrl;
-
-  var urlPrev = document.getElementById('db-url-preview');
-  var dlSvg   = document.getElementById('db-download-svg');
-  var dlPng   = document.getElementById('db-download-png');
-  if (urlPrev) urlPrev.value = svgUrl;
-  if (dlSvg)   dlSvg.href = svgUrl;
-  if (dlPng)   dlPng.href = pngUrl;
-
-  renderHeroAvatar();
-}
-
-// Memuat opsi spesifik tiap style dari https://api.dicebear.com/10.x/<styleName>/options.json
-async function loadStyleOptionsSchema(styleName) {
-  var box = document.getElementById('db-dynamic-options');
-  if (!box) return;
-  box.innerHTML = '<div class="col-span-2 text-[11px] font-semibold text-zinc-400 py-2">Memuat opsi fitur ' + styleName + '…</div>';
-
-  var schema = state.optionsCache[styleName];
-  if (!schema) {
-    try {
-      var r = await fetch(`${DICEBEAR_API_BASE}/${encodeURIComponent(styleName)}/options.json`);
-      if (r.ok) {
-        schema = await r.json();
-        state.optionsCache[styleName] = schema;
-      }
-    } catch (e) {}
-  }
-
-  if (!schema || typeof schema !== 'object') {
-    box.innerHTML = '<div class="col-span-2 text-[11px] font-semibold text-zinc-400 py-1">Gunakan Seed dan kontrol di atas untuk memvariasikan style ini.</div>';
-    return;
-  }
-
-  var ignoredCore = { seed:1, flip:1, rotate:1, scale:1, borderRadius:1, backgroundColor:1, backgroundType:1, backgroundRotation:1, translateX:1, translateY:1, clip:1, size:1, radius:1, tags:1 };
-  var keys = Object.keys(schema).filter(function(k) {
-    if (ignoredCore[k] || k.endsWith('Probability')) return false;
-    var def = schema[k];
-    return def && (def.type === 'enum' || def.type === 'color') && Array.isArray(def.values) && def.values.length > 0;
-  }).slice(0, 6);
-
-  if (!keys.length) {
-    box.innerHTML = '<div class="col-span-2 text-[11px] font-semibold text-zinc-400 py-1">Style ini diatur sepenuhnya secara otomatis dari Seed.</div>';
-    return;
-  }
-
-  box.innerHTML = keys.map(function(key) {
-    var def = schema[key];
-    var vals = def.values.slice(0, 40);
-    var curVal = state.dicebear.customOptions[key] || '';
-    var niceLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, function(c) { return c.toUpperCase(); });
-    return `
-      <div>
-        <label class="block text-[10px] font-extrabold text-zinc-500 mb-1 truncate">${niceLabel}</label>
-        <select onchange="setDicebearCustomOption('${key}', this.value)" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-2.5 py-2 text-[11px] font-bold text-zinc-800 outline-none">
-          <option value="">Otomatis (Seed)</option>
-          ${vals.map(function(v) {
-            return `<option value="${v}" ${curVal === v ? 'selected' : ''}>${v}</option>`;
-          }).join('')}
-        </select>
-      </div>
-    `;
-  }).join('');
-}
-
-window.setDicebearCustomOption = function(key, val) {
-  if (!val) delete state.dicebear.customOptions[key];
-  else state.dicebear.customOptions[key] = val;
-  applyDicebearToState();
-};
-
-window.resetStyleSpecificOptions = function() {
-  state.dicebear.customOptions = {};
-  loadStyleOptionsSchema(state.dicebear.style);
-  applyDicebearToState();
-};
-
-window.copyDicebearUrl = function() {
-  var u = buildDicebearUrl('svg');
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(u).catch(function() {});
-  }
-  var btn = document.getElementById('btn-copy-db-url');
-  if (btn) {
-    btn.textContent = '✓ URL Tersalin';
-    setTimeout(function() { btn.textContent = 'Salin URL'; }, 1400);
-  }
-};
-
-// ================================================================
-// MODE AVATAR ALTERNATIF (EMOJI, INISIAL, UPLOAD FOTO)
-// ================================================================
-window.setAvatarMode = function(mode) {
-  state.avatarMode = mode;
-  ['dicebear','emoji','upload'].forEach(function(m) {
-    var btn = document.getElementById('mode-btn-' + m);
-    var pnl = document.getElementById('panel-avatar-' + m);
-    if (btn) btn.classList.toggle('active', m === mode);
-    if (pnl) pnl.classList.toggle('hidden', m !== mode);
+function hitungSaldoDompet(dompetId) {
+  var dompet = S.dompetList.find(d => String(d.id) === String(dompetId));
+  if (!dompet) return 0;
+  var saldo = Number(dompet.saldoAwal) || 0;
+  S.transactions.forEach(tx => {
+    if (String(tx.DompetId) !== String(dompetId)) return;
+    var v = Number(tx['Jumlah Uang']) || 0;
+    if (tx.Kategori === 'Uang Masuk')  saldo += v;
+    if (tx.Kategori === 'Uang Keluar') saldo -= v;
   });
-  if (mode === 'dicebear') applyDicebearToState();
-};
-
-function renderEmojiGrid() {
-  var g = document.getElementById('emoji-grid');
-  if (!g) return;
-  g.innerHTML = EMOJI_LIST.map(function(em) {
-    return `<button type="button" onclick="selectEmojiAvatar('${em}')" class="h-12 rounded-2xl bg-zinc-50 border border-zinc-200 hover:border-zinc-900 text-2xl flex items-center justify-center active:scale-90 transition">${em}</button>`;
-  }).join('');
+  return saldo;
 }
 
-window.selectEmojiAvatar = function(em) {
-  state.avatarValue = 'emoji:' + em;
-  renderHeroAvatar();
-};
-
-window.useInitialAvatar = function() {
-  state.avatarValue = '';
-  renderHeroAvatar();
-};
-
-window.handlePhotoUpload = function(e) {
-  var file = e.target.files && e.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var size = 160;
-      canvas.width = size;
-      canvas.height = size;
-      var ctx = canvas.getContext('2d');
-      var minSide = Math.min(img.width, img.height);
-      var sx = (img.width - minSide) / 2;
-      var sy = (img.height - minSide) / 2;
-      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-      state.avatarValue = canvas.toDataURL('image/jpeg', 0.82);
-      renderHeroAvatar();
-      showToast('Foto siap disimpan!');
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-window.togglePassVisibility = function() {
-  var inp = document.getElementById('prof-password');
-  var btn = document.getElementById('btn-toggle-pass');
-  if (!inp) return;
-  if (inp.type === 'password') { inp.type = 'text'; if (btn) btn.textContent = 'Sembunyi'; }
-  else { inp.type = 'password'; if (btn) btn.textContent = 'Lihat'; }
-};
-
-// ================================================================
-// LOAD & SAVE PROFIL KE LOCALSTORAGE + GOOGLE SHEETS
-// ================================================================
-async function initProfilePage() {
-  try {
-    var raw = localStorage.getItem(AUTH_SESSION_KEY);
-    if (raw) state.akun = JSON.parse(raw) || {};
-  } catch (e) {}
-
-  state.gsUrl = state.akun.gsUrl || '';
-  state.oldUsername = state.akun.username || '';
-  state.avatarValue = localStorage.getItem('keuangan_user_avatar') || state.akun.avatar || '';
-  state.avatarBg    = localStorage.getItem('keuangan_user_avatar_bg') || state.akun.avatarBg || 'emerald';
-
-  document.getElementById('prof-nama').value     = state.akun.namaLengkap || state.akun.username || '';
-  document.getElementById('prof-username').value = state.akun.username || '';
-  document.getElementById('prof-email').value    = state.akun.email || '';
-  document.getElementById('prof-dob').value      = (state.akun.tanggalLahir || '').slice(0, 10);
-
-  if (state.avatarValue && state.avatarValue.indexOf('dicebear.com') !== -1) {
-    parseExistingDicebearUrl(state.avatarValue);
-  } else {
-    state.dicebear.seed = state.akun.username || 'KelolaDuit';
+function calcTotalSaldo() {
+  if (S.dompetList.length > 0) {
+    return S.dompetList.reduce((sum, d) => sum + hitungSaldoDompet(d.id), 0);
   }
-  document.getElementById('db-seed-input').value = state.dicebear.seed;
-  document.getElementById('db-current-style-label').textContent = state.dicebear.style;
+  let bal = 0;
+  S.transactions.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') bal += v;
+    else if (t.Kategori === 'Uang Keluar') bal -= v;
+  });
+  return bal;
+}
 
-  renderFrameSwatches();
-  renderDicebearBgSwatches();
-  renderDicebearStyleGrid('');
-  renderEmojiGrid();
-  updateHeroTexts();
+// ── MODAL HELPERS ──
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+};
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('show');
+  setTimeout(() => { el.style.display = 'none'; }, 300);
+};
+function showSuccess(msg) {
+  const el = document.getElementById('success-modal');
+  document.getElementById('success-msg').textContent = msg;
+  el.classList.remove('hidden');
+  const path = el.querySelector('.check-path');
+  if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
+  setTimeout(() => el.classList.add('hidden'), 2200);
+}
 
-  if (!state.avatarValue) {
-    applyDicebearToState();
-  } else {
-    var urlPrev = document.getElementById('db-url-preview');
-    if (urlPrev) urlPrev.value = buildDicebearUrl('svg');
+// ── RENDER ACCOUNT PROFILE & BALANCE ──
+function renderAccountUI() {
+  const displayName = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
+  const rawEmail = (S.settings.email && S.settings.email !== 'NONE')
+    ? S.settings.email
+    : (S.akun && S.akun.email ? S.akun.email : (S.akun && S.akun.username ? `@${S.akun.username}` : 'pengguna@keloladuit.id'));
+
+  const nameEl = document.getElementById('acc-name');
+  const emailEl = document.getElementById('acc-email');
+  if (nameEl) nameEl.textContent = displayName;
+  if (emailEl) emailEl.textContent = rawEmail;
+
+  // Render Avatar
+  const avEl = document.getElementById('acc-avatar');
+  const avatarVal = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
+  const avatarBg  = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || 'emerald';
+  if (avEl) {
+    avEl.style.background = getAvatarBgCss(avatarBg);
+    const initial = ((displayName || 'P').trim()[0] || 'P').toUpperCase();
+    if (avatarVal && (avatarVal.indexOf('data:image/') === 0 || avatarVal.indexOf('http') === 0)) {
+      avEl.innerHTML = `<img src="${avatarVal}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.textContent='${initial}'">`;
+    } else if (avatarVal && avatarVal.indexOf('emoji:') === 0) {
+      avEl.innerHTML = `<span style="font-size:32px;line-height:1">${avatarVal.slice(6)}</span>`;
+    } else {
+      avEl.textContent = initial;
+    }
   }
 
-  fetchAllDicebearStyles();
-  loadStyleOptionsSchema(state.dicebear.style);
+  // Render Total Saldo
+  const hideBal = localStorage.getItem('keuangan_hide_balance') === '1';
+  const totalBal = calcTotalSaldo();
+  const balEl = document.getElementById('acc-total-balance');
+  if (balEl) balEl.textContent = hideBal ? 'Rp ••••••••' : idr(totalBal);
 
-  // Sinkronkan data terbaru dari Sheet User
-  if (state.gsUrl) {
-    try {
-      var r = await fetch(state.gsUrl + (state.gsUrl.includes('?') ? '&' : '?') + 'action=read');
-      var d = await r.json();
-      if (d && d.status === 'success' && d.data) {
-        var st = d.data.settings || {};
-        var ci = d.data.checkIn || {};
-        if (st.email && !document.getElementById('prof-email').value) document.getElementById('prof-email').value = st.email;
-        if (st.budget !== undefined) document.getElementById('prof-budget').value = st.budget;
-        if (st.backupPassword) document.getElementById('prof-backup-pass').value = st.backupPassword;
-        if (st.avatar) {
-          state.avatarValue = st.avatar;
-          localStorage.setItem('keuangan_user_avatar', st.avatar);
-          if (st.avatar.indexOf('dicebear.com') !== -1) {
-            parseExistingDicebearUrl(st.avatar);
-            document.getElementById('db-seed-input').value = state.dicebear.seed;
-          }
-        }
-        if (st.avatarBg) {
-          state.avatarBg = st.avatarBg;
-          localStorage.setItem('keuangan_user_avatar_bg', st.avatarBg);
-        }
-        document.getElementById('hero-streak').textContent = `🔥 ${ci.streak || 0} Hari Streak`;
-        document.getElementById('hero-coins').textContent  = `🪙 ${ci.coins || 0} Koin`;
-        renderFrameSwatches();
-        renderHeroAvatar();
+  // Render Tumpukan Ikon Dompet (Wallet Bubbles)
+  const stackEl = document.getElementById('acc-wallet-bubbles');
+  if (stackEl && S.dompetList.length > 0) {
+    const topWallets = S.dompetList.slice(0, 3);
+    const fallbackGrads = [
+      'linear-gradient(135deg,#1D4ED8,#1E3A8A)',
+      'linear-gradient(135deg,#0EA5E9,#0284C7)',
+      'linear-gradient(135deg,#F59E0B,#D97706)'
+    ];
+    stackEl.innerHTML = topWallets.map((w, idx) => {
+      if (w.logo) {
+        return `<div class="wallet-bubble" style="background:#FFFFFF;padding:4px" title="${w.nama || w.provider}">
+          <img src="${w.logo}" alt="" style="width:100%;height:100%;object-fit:contain" onerror="this.parentNode.textContent='🏦'">
+        </div>`;
       }
-    } catch (e) {}
+      const ic = w.tipe === 'tunai' ? '💵' : w.tipe === 'emoney' ? '📱' : '🏦';
+      return `<div class="wallet-bubble" style="background:${fallbackGrads[idx % fallbackGrads.length]}" title="${w.nama || w.provider}">${ic}</div>`;
+    }).join('');
   }
 }
 
-window.saveAllProfile = async function() {
-  var btnTop = document.getElementById('btn-save-top');
-  var btnBot = document.getElementById('btn-save-bottom');
-  var statusLbl = document.getElementById('sync-status-label');
+async function syncAccountInBackground() {
+  if (!GS_URL) return;
+  try {
+    const r = await fetch(GS_URL + '?action=read&_t=' + Date.now());
+    const d = await r.json();
+    if (d && d.status === 'success' && d.data) {
+      if (Array.isArray(d.data.transactions)) {
+        S.transactions = d.data.transactions;
+        try { localStorage.setItem(TX_CACHE_KEY, JSON.stringify(S.transactions)); } catch(e) {}
+      }
+      if (d.data.settings) {
+        const prevAvatar = S.settings.avatar || storageGet('keuangan_user_avatar') || '';
+        const prevBg     = S.settings.avatarBg || storageGet('keuangan_user_avatar_bg') || '';
+        S.settings = d.data.settings;
+        if (!S.settings.avatar && prevAvatar) S.settings.avatar = prevAvatar;
+        if (!S.settings.avatarBg && prevBg)   S.settings.avatarBg = prevBg;
+        try { localStorage.setItem('keuangan_settings_cache', JSON.stringify(S.settings)); } catch(e) {}
+      }
+      if (Array.isArray(d.data.dompet)) {
+        S.dompetList = d.data.dompet.map(w => ({
+          id: w.id,
+          nama: w.nama,
+          tipe: w.tipe || 'bank',
+          provider: w.keterangan || w.nama,
+          logo: w.logo || null,
+          background: w.background || null,
+          saldoAwal: Number(w.nominal) || 0
+        }));
+        try { localStorage.setItem('keuangan_dompet_list', JSON.stringify(S.dompetList)); } catch(e) {}
+      }
+      renderAccountUI();
+    }
+  } catch(e) {}
+}
 
-  var nama     = document.getElementById('prof-nama')?.value?.trim() || '';
-  var uname    = document.getElementById('prof-username')?.value?.trim() || '';
-  var email    = document.getElementById('prof-email')?.value?.trim() || '';
-  var dob      = document.getElementById('prof-dob')?.value || '';
-  var budget   = Number(document.getElementById('prof-budget')?.value || 0);
-  var newPass  = document.getElementById('prof-password')?.value || '';
-  var backPass = document.getElementById('prof-backup-pass')?.value?.trim() || '';
+// ================================================================
+// 1. FUNGSI POP-UP EKSPOR DATA (CSV, EXCEL, PDF)
+// ================================================================
+window.openExportModal = function() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const startDefault = `${y}-${m}-01`;
+  const endDefault   = now.toISOString().split('T')[0];
 
-  if (!uname) {
-    showToast('Username tidak boleh kosong!');
+  const startEl = document.getElementById('export-date-start');
+  const endEl   = document.getElementById('export-date-end');
+  if (startEl && !startEl.value) startEl.value = startDefault;
+  if (endEl && !endEl.value)     endEl.value   = endDefault;
+
+  setExportPeriod(S.exportPeriod || 'this_month');
+  openModal('export-modal');
+};
+
+window.setExportPeriod = function(period) {
+  S.exportPeriod = period;
+  ['this_month', 'last_month', 'all', 'custom'].forEach(p => {
+    const btn = document.getElementById('ep-' + p);
+    if (btn) btn.classList.toggle('active', p === period);
+  });
+  const customBox = document.getElementById('export-custom-dates');
+  if (customBox) customBox.classList.toggle('hidden', period !== 'custom');
+  updateExportPreviewCount();
+};
+
+function getFilteredExportTransactions() {
+  const now = new Date();
+  const thisYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const lastDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastYM = `${lastDate.getFullYear()}-${String(lastDate.getMonth() + 1).padStart(2, '0')}`;
+  const startCustom = document.getElementById('export-date-start')?.value || '1970-01-01';
+  const endCustom   = document.getElementById('export-date-end')?.value   || '2099-12-31';
+
+  return S.transactions.filter(tx => {
+    const rawDate = String(tx.Tanggal || '').split('T')[0];
+    if (!rawDate) return false;
+    if (S.exportPeriod === 'this_month') return rawDate.startsWith(thisYM);
+    if (S.exportPeriod === 'last_month') return rawDate.startsWith(lastYM);
+    if (S.exportPeriod === 'custom')     return rawDate >= startCustom && rawDate <= endCustom;
+    return true;
+  }).sort((a, b) => String(b.Tanggal || '').localeCompare(String(a.Tanggal || '')));
+}
+
+function getExportPeriodLabel() {
+  const now = new Date();
+  if (S.exportPeriod === 'this_month') {
+    return 'Bulan Ini (' + now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + ')';
+  }
+  if (S.exportPeriod === 'last_month') {
+    const lastDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return 'Bulan Lalu (' + lastDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + ')';
+  }
+  if (S.exportPeriod === 'custom') {
+    const s = document.getElementById('export-date-start')?.value || '-';
+    const e = document.getElementById('export-date-end')?.value || '-';
+    return `Periode ${s} s/d ${e}`;
+  }
+  return 'Semua Periode Transaksi';
+}
+
+window.updateExportPreviewCount = function() {
+  const list = getFilteredExportTransactions();
+  let tIn = 0, tOut = 0;
+  list.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') tIn += v;
+    else if (t.Kategori === 'Uang Keluar') tOut += v;
+  });
+  const countEl = document.getElementById('export-summary-count');
+  const inEl    = document.getElementById('export-prev-in');
+  const outEl   = document.getElementById('export-prev-out');
+  if (countEl) countEl.textContent = `${list.length} transaksi siap diekspor`;
+  if (inEl)    inEl.textContent    = '+' + idr(tIn);
+  if (outEl)   outEl.textContent   = '-' + idr(tOut);
+};
+
+function getWalletNameById(dompetId) {
+  if (!dompetId) return 'Tunai / Utama';
+  const w = S.dompetList.find(d => String(d.id) === String(dompetId));
+  return w ? (w.nama || w.provider || 'Dompet') : 'Tunai / Utama';
+}
+
+window.executeExportData = function(format) {
+  const list = getFilteredExportTransactions();
+  if (!list.length) {
+    showSuccess('Tidak ada transaksi pada rentang waktu yang dipilih.');
     return;
   }
 
-  if (btnTop) { btnTop.disabled = true; btnTop.textContent = 'Menyimpan…'; }
-  if (btnBot) { btnBot.disabled = true; btnBot.textContent = '⏳ Menyimpan ke Google Sheets…'; }
-  if (statusLbl) statusLbl.textContent = 'Menyimpan perubahan…';
+  const periodLbl = getExportPeriodLabel();
+  const dateStamp = new Date().toISOString().split('T')[0];
+  const userName  = S.settings.username || (S.akun && (S.akun.namaLengkap || S.akun.username)) || 'Pengguna';
 
-  // 1. Simpan ke localStorage agar seluruh halaman langsung sinkron
-  state.akun.namaLengkap  = nama || uname;
-  state.akun.username     = uname;
-  state.akun.email        = email;
-  state.akun.tanggalLahir = dob;
-  state.akun.avatar       = state.avatarValue;
-  state.akun.avatarBg     = state.avatarBg;
+  if (format === 'csv') {
+    const headers = ['No', 'Tanggal', 'Jenis Transaksi', 'Subkategori', 'Deskripsi / Catatan', 'Sumber Dana', 'Nominal (Rp)'];
+    const rows = list.map((tx, idx) => {
+      const dt = String(tx.Tanggal || '').split('T')[0];
+      const jenis = tx.Kategori || 'Uang Keluar';
+      const sub = jenis === 'Uang Masuk' ? 'Pemasukan' : (tx['Kategori Uang Keluar'] || 'Lainnya');
+      const desc = String(tx.Deskripsi || '').replace(/"/g, '""');
+      const wallet = getWalletNameById(tx.DompetId).replace(/"/g, '""');
+      const amt = Number(tx['Jumlah Uang']) || 0;
+      return [
+        idx + 1,
+        `"${dt}"`,
+        `"${jenis}"`,
+        `"${sub}"`,
+        `"${desc}"`,
+        `"${wallet}"`,
+        amt
+      ].join(',');
+    });
 
-  try {
-    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(state.akun));
-    localStorage.setItem('keuangan_user_avatar', state.avatarValue || '');
-    localStorage.setItem('keuangan_user_avatar_bg', state.avatarBg || 'emerald');
-  } catch (e) {}
+    const csvContent = '\uFEFF' + headers.join(',') + '\r\n' + rows.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_Keloladuit_${dateStamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-  // 2. Simpan ke Sheet Pribadi User (updateSettings)
-  var settingsPayload = {
-    username: nama || uname,
-    email: email,
-    budget: budget,
-    backupPassword: backPass,
-    avatar: state.avatarValue || '',
-    avatarBg: state.avatarBg || 'emerald'
-  };
-  if (newPass) settingsPayload.password = newPass;
-
-  if (state.gsUrl) {
-    try {
-      await fetch(state.gsUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'updateSettings', data: settingsPayload })
-      });
-    } catch (e) {}
+    closeModal('export-modal');
+    showSuccess('File CSV berhasil diunduh!');
+    return;
   }
 
-  // 3. Simpan ke DATA MASTER (updateAkunProfile)
-  try {
-    var masterPayload = {
-      id: state.akun.id || '',
-      oldUsername: state.oldUsername || uname,
-      newUsername: uname,
-      namaLengkap: nama || uname,
-      email: email,
-      tanggalLahir: dob,
-      budget: budget,
-      backupPassword: backPass,
-      avatar: state.avatarValue || '',
-      avatarBg: state.avatarBg || 'emerald'
-    };
-    if (newPass) masterPayload.password = newPass;
-    await fetch(DEFAULT_MASTER_EXEC_URL + '?action=updateAkunProfile&payload=' + encodeURIComponent(JSON.stringify(masterPayload)));
-    state.oldUsername = uname;
-  } catch (e) {}
+  let totIn = 0, totOut = 0;
+  list.forEach(t => {
+    const v = Number(t['Jumlah Uang']) || 0;
+    if (t.Kategori === 'Uang Masuk') totIn += v;
+    else if (t.Kategori === 'Uang Keluar') totOut += v;
+  });
+  const net = totIn - totOut;
 
-  if (btnTop) { btnTop.disabled = false; btnTop.textContent = 'Simpan'; }
-  if (btnBot) { btnBot.disabled = false; btnBot.textContent = '💾 Simpan Perubahan Profil'; }
-  if (statusLbl) statusLbl.textContent = 'Tersimpan · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  document.getElementById('prof-password').value = '';
-  showToast('✓ Profil & Avatar berhasil disimpan!');
+  if (format === 'excel') {
+    const rowsHtml = list.map((tx, idx) => {
+      const dt = String(tx.Tanggal || '').split('T')[0];
+      const jenis = tx.Kategori || 'Uang Keluar';
+      const sub = jenis === 'Uang Masuk' ? 'Pemasukan' : (tx['Kategori Uang Keluar'] || 'Lainnya');
+      const desc = String(tx.Deskripsi || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const wallet = getWalletNameById(tx.DompetId).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const amt = Number(tx['Jumlah Uang']) || 0;
+      const clr = jenis === 'Uang Masuk' ? '#059669' : '#DC2626';
+      return `<tr>
+        <td style="border:1px solid #CBD5E1;padding:6px;text-align:center">${idx + 1}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${dt}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px;font-weight:bold;color:${clr}">${jenis}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${sub}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${desc}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px">${wallet}</td>
+        <td style="border:1px solid #CBD5E1;padding:6px;text-align:right;font-weight:bold;color:${clr}">${jenis === 'Uang Masuk' ? amt : -amt}</td>
+      </tr>`;
+    }).join('');
+
+    const excelHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="UTF-8"></head>
+      <body>
+        <h2>LAPORAN KEUANGAN KELOLADUIT.ID</h2>
+        <p><b>Nama Akun:</b> ${userName} &nbsp;|&nbsp; <b>Periode:</b> ${periodLbl}</p>
+        <p><b>Total Pemasukan:</b> ${idr(totIn)} &nbsp;|&nbsp; <b>Total Pengeluaran:</b> ${idr(totOut)} &nbsp;|&nbsp; <b>Selisih Bersih:</b> ${idr(net)}</p>
+        <table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px">
+          <thead>
+            <tr style="background:#0F3F38;color:#FFFFFF">
+              <th style="border:1px solid #0F3F38;padding:8px">No</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Tanggal</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Jenis</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Kategori</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Deskripsi / Catatan</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Sumber Dana</th>
+              <th style="border:1px solid #0F3F38;padding:8px">Nominal (Rp)</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </body>
+    </html>`;
+
+    const blob = new Blob(['\uFEFF' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_Keloladuit_${dateStamp}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    closeModal('export-modal');
+    showSuccess('File Excel (.xls) berhasil diunduh!');
+    return;
+  }
+
+  if (format === 'pdf') {
+    const printedAt = new Date().toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const txRows = list.map((tx, i) => {
+      const isI = tx.Kategori === 'Uang Masuk';
+      const clr = isI ? '#10B981' : '#EF4444';
+      const sgn = isI ? '+' : '-';
+      const dt = String(tx.Tanggal || '').split('T')[0];
+      const sub = isI ? 'Pemasukan' : (tx['Kategori Uang Keluar'] || 'Lainnya');
+      const wallet = getWalletNameById(tx.DompetId);
+      return `<tr style="background:${i % 2 === 0 ? '#FFFFFF' : '#F8FAFC'}">
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center;color:#94A3B8;font-size:10px">${i + 1}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-size:11px;white-space:nowrap">${dt}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-weight:800;font-size:12px">${String(tx.Deskripsi || '').replace(/</g, '&lt;')}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-size:11px;color:#64748B">${sub}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;font-size:11px;color:#64748B">${wallet}</td>
+        <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:right;font-weight:900;font-size:12px;color:${clr};white-space:nowrap">${sgn}${idr(tx['Jumlah Uang'])}</td>
+      </tr>`;
+    }).join('');
+
+    const pdfHtml = `\x3c!DOCTYPE html>\x3chtml lang="id">\x3chead><meta charset="UTF-8"><title>Laporan Keuangan — ${userName}</title>
+    \x3cstyle>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;background:#F8FAFC;color:#0F172A;padding:24px}
+    .page{max-width:840px;margin:0 auto}
+    .hdr{background:linear-gradient(135deg,#0F3F38,#064E3B);border-radius:18px;padding:24px 28px;color:#fff;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start}
+    .brand{font-size:11px;font-weight:900;color:#6EE7B7;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+    .title{font-size:22px;font-weight:900}.sub{font-size:12px;color:#A7F3D0;margin-top:4px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+    .card{background:#fff;border-radius:14px;padding:16px;border:1px solid #E2E8F0}
+    .cl{font-size:9px;font-weight:900;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    .cv{font-size:17px;font-weight:900}
+    .tw{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #E2E8F0}
+    table{width:100%;border-collapse:collapse}
+    thead th{background:#F1F5F9;padding:10px 12px;text-align:left;font-size:9px;font-weight:900;color:#475569;text-transform:uppercase;letter-spacing:.05em}
+    .ft{text-align:center;padding:16px;font-size:10px;color:#94A3B8;margin-top:8px}
+    @media print{body{background:#fff;padding:10px}.hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}}\x3c/style>\x3c/head>
+    \x3cbody><div class="page">
+      <div class="hdr">
+        <div><div class="brand">💰 KELOLADUIT.ID</div><div class="title">Laporan Rekapitulasi Keuangan</div><div class="sub">${periodLbl} · ${list.length} Transaksi</div></div>
+        <div style="text-align:right"><div style="font-size:14px;font-weight:800">${userName}</div><div style="font-size:10px;color:#A7F3D0;margin-top:3px">Dicetak: ${printedAt}</div></div>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="cl">Total Pemasukan</div><div class="cv" style="color:#10B981">+${idr(totIn)}</div></div>
+        <div class="card"><div class="cl">Total Pengeluaran</div><div class="cv" style="color:#EF4444">-${idr(totOut)}</div></div>
+        <div class="card"><div class="cl">Arus Kas Bersih</div><div class="cv" style="color:${net >= 0 ? '#10B981' : '#EF4444'}">${net >= 0 ? '+' : ''}${idr(net)}</div></div>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th style="width:36px;text-align:center">#</th><th>Tanggal</th><th>Deskripsi / Catatan</th><th>Kategori</th><th>Sumber Dana</th><th style="text-align:right">Nominal</th></tr></thead>
+        <tbody>${txRows}</tbody>
+      </table></div>
+      <div class="ft">Dokumen Resmi Otomatis · Keloladuit.id · ${printedAt}</div>
+    </div><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));<\/script>\x3c/body>\x3c/html>`;
+
+    const w = window.open('', '_blank', 'width=900,height=760');
+    if (w) {
+      w.document.open();
+      w.document.write(pdfHtml);
+      w.document.close();
+      closeModal('export-modal');
+    } else {
+      showSuccess('Izinkan pop-up di browser untuk menyimpan PDF / mencetak.');
+    }
+  }
 };
 
-window.logoutAccount = function() {
-  if (!confirm('Keluar dari akun Keloladuit.id sekarang?')) return;
+// ================================================================
+// 2. FUNGSI POP-UP KELUAR DARI AKUN
+// ================================================================
+function clearAllUserSessionAndCaches() {
+  const uname = (S.akun && S.akun.username) ? String(S.akun.username).toLowerCase().trim() : '';
+  if (uname) {
+    storageRemove(QUICK_ADD_STORAGE_PREFIX + uname);
+    storageRemove(SCHEDULED_STORAGE_PREFIX + uname);
+    storageRemove('keuangan_custom_gsurl_' + uname);
+  }
+  storageRemove('keuangan_quickadd_khusus');
+  storageRemove('keuangan_scheduled_jadwal');
+  storageRemove('keuangan_user_avatar');
+  storageRemove('keuangan_user_avatar_bg');
+  storageRemove(AUTH_SESSION_KEY);
   try {
-    localStorage.removeItem(AUTH_SESSION_KEY);
+    localStorage.removeItem(TX_CACHE_KEY);
+    localStorage.removeItem('keuangan_settings_cache');
+    localStorage.removeItem('keuangan_dompet_list');
+    localStorage.removeItem('keuangan_deposito_list');
+    localStorage.removeItem('keuangan_cicilan_list');
+    localStorage.removeItem('keuangan_wishlist');
+    localStorage.removeItem('keuangan_subscriptions');
     sessionStorage.removeItem('keuangan_pin_unlocked');
-  } catch (e) {}
-  window.location.replace('https://keloladuit.my.id/login');
+  } catch(err) {}
+}
+
+window.confirmLogoutAccount = function() {
+  closeModal('logout-modal');
+  clearAllUserSessionAndCaches();
+  try {
+    window.top.location.href = 'https://keloladuit.my.id/login?logout=1';
+  } catch(err) {
+    window.location.href = 'https://keloladuit.my.id/login?logout=1';
+  }
 };
 
-document.addEventListener('DOMContentLoaded', initProfilePage);
+// ================================================================
+// 3. FUNGSI POP-UP HAPUS AKUN PERMANEN
+// ================================================================
+window.openDeleteAccountModal = function() {
+  const uname = (S.akun && S.akun.username) ? ('@' + S.akun.username) : (S.settings.username || 'Anda');
+  const unameEl = document.getElementById('del-acc-username');
+  if (unameEl) unameEl.textContent = uname;
+
+  const inp = document.getElementById('delete-confirm-input');
+  if (inp) inp.value = '';
+  document.getElementById('delete-acc-error')?.classList.add('hidden');
+  onDeleteConfirmInput('');
+  openModal('delete-account-modal');
+};
+
+window.onDeleteConfirmInput = function(val) {
+  const isMatch = String(val || '').trim().toUpperCase() === 'HAPUS';
+  const btn = document.getElementById('btn-exec-delete-acc');
+  if (!btn) return;
+  btn.disabled = !isMatch;
+  btn.style.opacity = isMatch ? '1' : '0.4';
+  btn.style.cursor  = isMatch ? 'pointer' : 'not-allowed';
+};
+
+window.executeDeleteAccountPermanent = async function() {
+  const inpVal = document.getElementById('delete-confirm-input')?.value || '';
+  if (inpVal.trim().toUpperCase() !== 'HAPUS') return;
+
+  const btn     = document.getElementById('btn-exec-delete-acc');
+  const btnText = document.getElementById('del-acc-btn-text');
+  const spin    = document.getElementById('del-acc-spin');
+  const errEl   = document.getElementById('delete-acc-error');
+
+  btn.disabled = true;
+  if (btnText) btnText.textContent = 'Menghapus…';
+  spin?.classList.remove('hidden');
+  errEl?.classList.add('hidden');
+
+  try {
+    // 1. Jika akun memiliki ID di DATA MASTER, panggil deleteAkun ke GLOBAL_GS_URL
+    let akunId = S.akun && S.akun.id ? S.akun.id : '';
+    if (!akunId && S.akun && S.akun.username) {
+      try {
+        const rList = await fetch(GLOBAL_GS_URL + '?type=akun&_t=' + Date.now());
+        const jList = await rList.json();
+        if (jList && jList.status === 'success' && Array.isArray(jList.data)) {
+          const found = jList.data.find(a => String(a.username || '').toLowerCase() === String(S.akun.username).toLowerCase());
+          if (found && found.id) akunId = found.id;
+        }
+      } catch(e) {}
+    }
+
+    if (akunId) {
+      try {
+        await fetch(GLOBAL_GS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'deleteAkun', data: { id: akunId } })
+        });
+      } catch(e) {}
+    }
+
+    // 2. Bersihkan seluruh cache & sesi di perangkat
+    clearAllUserSessionAndCaches();
+    closeModal('delete-account-modal');
+    showSuccess('Akun Anda telah dihapus secara permanen.');
+
+    setTimeout(() => {
+      try {
+        window.top.location.href = 'https://keloladuit.my.id/login?deleted=1';
+      } catch(err) {
+        window.location.href = 'https://keloladuit.my.id/login?deleted=1';
+      }
+    }, 1100);
+  } catch (err) {
+    if (errEl) {
+      errEl.textContent = 'Gagal menghapus akun. Periksa koneksi internet Anda.';
+      errEl.classList.remove('hidden');
+    }
+    btn.disabled = false;
+    if (btnText) btnText.textContent = 'Hapus Permanen';
+    spin?.classList.add('hidden');
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!checkAkunSession()) {
+    try { window.top.location.href = 'https://keloladuit.my.id/login'; }
+    catch(e) { window.location.href = 'https://keloladuit.my.id/login'; }
+    return;
+  }
+  loadLocalCaches();
+  renderAccountUI();
+  syncAccountInBackground();
+});
 </script>
 </body>
 </html>
