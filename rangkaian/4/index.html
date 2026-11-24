@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulasi Ujian Praktek Modul 5 — Domain Frekuensi, Bode, Lissajous & Resonansi RLC</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-soft: #F1F5F9;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #475569;
+      --accent: #0284C7;
+      --accent-soft: #E0F2FE;
+      --ok: #059669;
+      --ok-soft: #D1FAE5;
+      --warn: #D97706;
+      --warn-soft: #FEF3C7;
+      --err: #DC2626;
+      --err-soft: #FFE4E6;
+      --shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --ease: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 14px;
+    }
+
+    .app {
+      max-width: 1460px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Header */
+    .topbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand h1 { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; }
+    .brand p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .exam-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .pill {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.79rem;
+      font-weight: 700;
+    }
+
+    .pill.timer { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; font-variant-numeric: tabular-nums; }
+    .pill.score { background: var(--ok-soft); border-color: #A7F3D0; color: #065F46; }
+
+    /* Step Strip */
+    .step-strip { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; }
+
+    .step-chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--ease);
+    }
+
+    .step-chip:hover { border-color: #94A3B8; }
+    .step-chip.active { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
+    .step-chip.done { background: var(--ok-soft); color: #065F46; border-color: #6EE7B7; }
+    .step-chip.done.active { background: #047857; color: #FFFFFF; border-color: #047857; }
+
+    /* Mission Card */
+    .mission-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 1000px) { .mission-card { grid-template-columns: 1fr; } }
+
+    .mission-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--accent-soft);
+      color: #0369A1;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .mission-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+    .mission-desc { font-size: 0.85rem; color: #334155; }
+
+    .mission-warn {
+      margin-top: 8px;
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: #9A3412;
+      background: #FFEDD5;
+      border: 1px solid #FDBA74;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .live-progress {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .prog-tag {
+      font-size: 0.73rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .prog-tag.ok { background: var(--ok-soft); border-color: #6EE7B7; color: #065F46; }
+
+    .mission-action-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .bcl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .bcl-row label { font-size: 0.79rem; font-weight: 700; min-width: 118px; }
+
+    .bcl-input {
+      flex: 1;
+      min-width: 95px;
+      padding: 6px 10px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text);
+      background: #FFFFFF;
+    }
+
+    .bcl-unit { font-size: 0.79rem; font-weight: 800; color: var(--text-muted); min-width: 34px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 12px;
+      font-size: 0.79rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--ease);
+      background: #FFFFFF;
+      color: var(--text);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    .btn-primary:hover { background: #0369A1; }
+    .btn-success { background: var(--ok); border-color: var(--ok); color: #FFFFFF; }
+    .btn-warn { background: var(--warn-soft); border-color: #FCD34D; color: #92400E; }
+    .btn-danger { background: var(--err-soft); border-color: #FDA4AF; color: #BE123C; }
+
+    /* Feedback */
+    .feedback-box {
+      grid-column: 1 / -1;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.83rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; }
+    .feedback-box.pass { background: var(--ok-soft); border: 1px solid #6EE7B7; color: #065F46; }
+    .feedback-box.fail { background: var(--err-soft); border: 1px solid #FDA4AF; color: #9F1239; }
+    .feedback-box.hint { background: var(--warn-soft); border: 1px solid #FCD34D; color: #78350F; }
+    .check-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+    .check-list li { display: flex; align-items: baseline; gap: 6px; font-weight: 600; }
+
+    /* Cable Bar */
+    .cable-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cable-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+    .cable-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid var(--border);
+      background: #FFFFFF;
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--ease);
+    }
+
+    .cable-btn.active { border-color: var(--accent); background: var(--accent-soft); color: #0369A1; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); display: inline-block; }
+    .dot-split { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg,#EF4444 50%,#1E293B 50%); border: 1px solid rgba(0,0,0,0.25); }
+
+    .wire-hint {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0369A1;
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    /* MAIN WORKSPACE */
+    .bench-container {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .bench-grid {
+      display: grid;
+      grid-template-columns: 500px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 1180px) { .bench-grid { grid-template-columns: 1fr; } }
+
+    #cable-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #cable-overlay .cable-hit { pointer-events: stroke; cursor: pointer; }
+    #cable-overlay .cable-group:hover .cable-vis { filter: drop-shadow(0 0 6px rgba(239,68,68,0.85)); opacity: 0.8; }
+
+    /* INSTRUMENTS */
+    .instrument-rack { display: flex; flex-direction: column; gap: 10px; }
+
+    .inst-panel {
+      background: #1E293B;
+      color: #F8FAFC;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 10px rgba(15,23,42,0.16);
+    }
+
+    .inst-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 5px;
+    }
+
+    .inst-name { font-size: 0.73rem; font-weight: 800; letter-spacing: 0.05em; color: #CBD5E1; text-transform: uppercase; }
+    .inst-model { font-size: 0.66rem; color: #94A3B8; font-weight: 600; }
+
+    .led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #475569; margin-right: 5px; }
+    .led.green { background: #22C55E; box-shadow: 0 0 8px #22C55E; }
+    .led.red { background: #EF4444; box-shadow: 0 0 8px #EF4444; }
+
+    .hw-btn {
+      background: #334155;
+      color: #F1F5F9;
+      border: 1px solid #475569;
+      border-bottom: 2px solid #0F172A;
+      border-radius: 6px;
+      padding: 4px 7px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .hw-btn:hover { background: #475569; }
+    .hw-btn:active { transform: translateY(1px); }
+    .hw-btn.active { background: #0284C7; border-color: #38BDF8; color: #FFFFFF; }
+    .hw-btn.on { background: #16A34A; border-color: #4ADE80; color: #FFFFFF; }
+    .hw-btn.stop { background: #DC2626; border-color: #FCA5A5; color: #FFFFFF; }
+
+    /* OSCILLOSCOPE */
+    .scope-top {
+      display: grid;
+      grid-template-columns: 1fr 144px;
+      gap: 8px;
+      align-items: start;
+    }
+
+    canvas#scope-canvas {
+      width: 100%;
+      height: 214px;
+      background: #06131F;
+      border: 2px solid #0F172A;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .scope-ctrl-col { display: flex; flex-direction: column; gap: 5px; }
+    .scope-row { display: flex; gap: 4px; }
+    .scope-row .hw-btn { flex: 1; padding: 4px 3px; font-size: 0.65rem; }
+
+    .scope-meas-bar {
+      margin-top: 7px;
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 6px 9px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px 8px;
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 0.72rem;
+    }
+
+    .sm-item { display: flex; flex-direction: column; }
+    .sm-item span { font-size: 0.62rem; color: #94A3B8; font-family: sans-serif; font-weight: 700; }
+    .sm-item strong { color: #38BDF8; font-size: 0.78rem; }
+
+    /* FUNCTION GENERATOR WIDE-SWEEP */
+    .lcd-dark {
+      background: #0B192C;
+      border: 2px solid #0F172A;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-family: "Courier New", Consolas, monospace;
+      font-weight: 900;
+    }
+
+    .gen-top-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+
+    .gen-freq-input {
+      width: 104px;
+      background: #0F172A;
+      border: 1.5px solid #38BDF8;
+      border-radius: 6px;
+      color: #38BDF8;
+      font-family: "Courier New", monospace;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 4px 7px;
+      text-align: right;
+    }
+
+    .gen-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: #CBD5E1;
+    }
+
+    .gen-slider-row input[type="range"] { flex: 1; accent-color: #38BDF8; cursor: pointer; }
+
+    /* JACKS */
+    .jack-strip {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-top: 7px;
+      border-top: 1px dashed #334155;
+      margin-top: 7px;
+    }
+
+    .jack-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+    }
+
+    .jack-wrap span { font-size: 0.64rem; font-weight: 800; color: #CBD5E1; }
+
+    .port-jack {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid #94A3B8;
+      background: radial-gradient(circle, #0F172A 32%, #CBD5E1 36%, #CBD5E1 64%, #64748B 68%);
+      position: relative;
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+
+    .port-jack.bnc {
+      border-color: #94A3B8;
+      background: radial-gradient(circle, #D97706 20%, #FFFFFF 24%, #FFFFFF 55%, #64748B 60%);
+    }
+    .port-jack.bnc::before, .port-jack.bnc::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: #CBD5E1;
+      transform: translateY(-50%);
+    }
+    .port-jack.bnc::before { left: -5px; }
+    .port-jack.bnc::after { right: -5px; }
+
+    .port-jack:hover { transform: scale(1.16); box-shadow: 0 0 0 3px rgba(56,189,248,0.55); }
+    .port-jack.match-hint { box-shadow: 0 0 0 3px rgba(56,189,248,0.42); }
+    .port-jack.selected-port { box-shadow: 0 0 0 4px #38BDF8; transform: scale(1.18); }
+
+    /* RIGHT SIDE: CIRCUIT BOARD + LIVE PLOTTER + BCL */
+    .board-side { display: flex; flex-direction: column; gap: 12px; }
+
+    .board-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .board-title { font-size: 0.88rem; font-weight: 800; }
+
+    svg#kit-svg { width: 100%; height: auto; display: block; user-select: none; }
+    .svg-port { cursor: pointer; }
+    .svg-port:hover .svg-ring { stroke: #0284C7; stroke-width: 3.2; }
+
+    .hw-control-bar {
+      margin-top: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+    }
+
+    .opt-btn {
+      border: 1.5px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 7px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .opt-btn.active { border-color: var(--accent); background: var(--accent-soft); color: #0369A1; }
+
+    /* Live Bode / Resonance Plot Card */
+    .plot-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .plot-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    canvas#plot-canvas {
+      width: 100%;
+      height: 150px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* Bottom Grid */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 960px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    .sub-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .sub-card h3 { font-size: 0.84rem; font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between; }
+
+    table.bcl-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+    table.bcl-table th, table.bcl-table td { border: 1px solid var(--border); padding: 5px 8px; text-align: left; }
+    table.bcl-table th { background: var(--surface-soft); color: var(--text-muted); }
+
+    .cable-list { display: flex; flex-direction: column; gap: 5px; max-height: 165px; overflow-y: auto; }
+    .cable-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.74rem; }
+    .cable-del { border: none; background: var(--err-soft); color: #BE123C; font-size: 0.7rem; font-weight: 700; padding: 3px 7px; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="brand">
+        <h1>Simulasi Ujian Praktek Modul 5 — Domain Frekuensi, Bode Plot, Lissajous &amp; Resonansi RLC</h1>
+        <p>Latihan mengukur filter HPF/LPF, metode Lissajous (Mode X-Y), serta mencari puncak &amp; lembah resonansi seri, paralel, dan seri-paralel</p>
+      </div>
+      <div class="exam-meta">
+        <span id="timer-pill" class="pill timer">⏱ 00:00</span>
+        <span id="score-pill" class="pill score">Selesai: 0 / 11</span>
+        <button id="btn-reset-exam" class="btn">Ulangi Ujian</button>
+      </div>
+    </header>
+
+    <!-- STEP STRIP -->
+    <nav id="step-strip" class="step-strip"></nav>
+
+    <!-- MISSION CARD -->
+    <section class="mission-card">
+      <div>
+        <span id="m-tag" class="mission-tag">Domain Frekuensi</span>
+        <h2 id="m-title" class="mission-title">Judul Langkah</h2>
+        <p id="m-desc" class="mission-desc"></p>
+        <div id="m-warn" class="mission-warn" style="display:none;"></div>
+        <div id="live-progress" class="live-progress"></div>
+      </div>
+
+      <div class="mission-action-box">
+        <div id="bcl-row-1" class="bcl-row">
+          <label for="bcl-in-1" id="bcl-lbl-1">Parameter 1:</label>
+          <input id="bcl-in-1" class="bcl-input" type="text" placeholder="Ketik angka..." autocomplete="off" />
+          <span id="bcl-unit-1" class="bcl-unit">kHz</span>
+        </div>
+        <div id="bcl-row-2" class="bcl-row" style="display:none;">
+          <label for="bcl-in-2" id="bcl-lbl-2">Parameter 2:</label>
+          <input id="bcl-in-2" class="bcl-input" type="text" placeholder="Ketik angka..." autocomplete="off" />
+          <span id="bcl-unit-2" class="bcl-unit">dB</span>
+        </div>
+        <div class="btn-row">
+          <button id="btn-check" class="btn btn-primary">✓ Cek Langkah Ini</button>
+          <button id="btn-hint" class="btn btn-warn">💡 Minta Cara Benar</button>
+          <button id="btn-auto" class="btn">⚡ Demo Pasang Benar</button>
+          <button id="btn-next" class="btn btn-success" style="display:none;">Lanjut Langkah →</button>
+        </div>
+      </div>
+
+      <div id="feedback-box" class="feedback-box"></div>
+    </section>
+
+    <!-- CABLE BAR -->
+    <section class="cable-bar">
+      <div class="cable-pills">
+        <strong style="font-size:0.75rem;color:#475569;text-transform:uppercase;">Kabel:</strong>
+        <button class="cable-btn active" data-cable="bnc-banana"><span class="dot-split"></span> BNC–Dual Banana</button>
+        <button class="cable-btn" data-cable="bnc-alligator"><span class="dot-split" style="background:linear-gradient(135deg,#F59E0B 50%,#1E293B 50%)"></span> BNC–Capit Buaya (Probe)</button>
+        <button class="cable-btn" data-cable="banana-blue"><span class="dot" style="background:#2563EB"></span> Banana Jumper Biru</button>
+        <button class="cable-btn" data-cable="banana-black"><span class="dot" style="background:#1E293B"></span> Banana Hitam (GND)</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="wire-hint" class="wire-hint">Pilih kabel lalu klik port BNC / Banana.</span>
+        <button id="btn-undo" class="btn">Undo</button>
+        <button id="btn-clear" class="btn btn-danger">Lepas Semua Kabel</button>
+      </div>
+    </section>
+
+    <!-- LAB BENCH -->
+    <main id="bench-container" class="bench-container">
+      <svg id="cable-overlay"></svg>
+
+      <div class="bench-grid">
+        <!-- LEFT: OSCILLOSCOPE (Y-T & X-Y LISSAJOUS) + WIDE-SWEEP FUNCTION GENERATOR -->
+        <aside class="instrument-rack">
+          <!-- 1. DIGITAL OSCILLOSCOPE 2-CH WITH X-Y LISSAJOUS -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="sc-led" class="led green"></span>Digital Oscilloscope 2-CH (Y-T &amp; X-Y Lissajous)</span>
+              <span class="inst-model">TDS-2012B</span>
+            </div>
+
+            <div class="scope-top">
+              <canvas id="scope-canvas" width="330" height="214"></canvas>
+              <div class="scope-ctrl-col">
+                <div class="scope-row">
+                  <button id="sc-run" class="hw-btn on">RUN</button>
+                  <button id="sc-auto" class="hw-btn">AUTO</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-yt" class="hw-btn active">Y-T</button>
+                  <button id="sc-xy" class="hw-btn">X-Y (Liss)</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-v1-m" class="hw-btn">V1 −</button>
+                  <button id="sc-v1-p" class="hw-btn">V1 +</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-v2-m" class="hw-btn">V2 −</button>
+                  <button id="sc-v2-p" class="hw-btn">V2 +</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-t-m" class="hw-btn">T/d −</button>
+                  <button id="sc-t-p" class="hw-btn">T/d +</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-cpl" class="hw-btn active">CPL: AC</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scope-meas-bar">
+              <div class="sm-item"><span>CH1 (Input)</span><strong id="m-ch1">0.00 Vpp</strong></div>
+              <div class="sm-item"><span>CH2 (Output)</span><strong id="m-ch2" style="color:#FBBF24;">0.00 Vpp</strong></div>
+              <div class="sm-item"><span>Rasio Vo/Vi</span><strong id="m-ratio" style="color:#4ADE80;">0.000</strong></div>
+              <div class="sm-item"><span>Gain (dB)</span><strong id="m-db" style="color:#4ADE80;">— dB</strong></div>
+              <div class="sm-item"><span>Fasa (θ)</span><strong id="m-phase" style="color:#F472B6;">0.0°</strong></div>
+              <div class="sm-item"><span>Lissajous B/A</span><strong id="m-ba" style="color:#F472B6;">0.000</strong></div>
+            </div>
+
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="osc_ch1" data-ptype="bnc" title="Osiloskop CH1 (X / Input — Biru)">
+                <div class="port-jack bnc"></div><span style="color:#38BDF8;">CH1 (X / Vi)</span>
+              </div>
+              <div class="jack-wrap" data-port="osc_ch2" data-ptype="bnc" title="Osiloskop CH2 (Y / Output — Kuning)">
+                <div class="port-jack bnc"></div><span style="color:#FBBF24;">CH2 (Y / Vo)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. WIDE-RANGE DIGITAL FUNCTION GENERATOR (10 Hz – 250 kHz) -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="gen-led" class="led"></span>Function Generator (50 Ω Internal, 10 Hz – 250 kHz)</span>
+              <button id="gen-out" class="hw-btn">OUT: OFF</button>
+            </div>
+
+            <div class="gen-top-row">
+              <div id="gen-disp" class="lcd-dark" style="flex:1;color:#38BDF8;font-size:0.95rem;">SQR • 50.0 Hz • 4.0 Vpp</div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <input id="gen-freq-num" class="gen-freq-input" type="number" step="any" value="50" title="Ketik frekuensi dalam Hz lalu tekan Enter" />
+                <span style="font-size:0.7rem;font-weight:800;color:#94A3B8;">Hz</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+              <button class="hw-btn active" data-wave="SQUARE">SQR</button>
+              <button class="hw-btn" data-wave="SINE">SIN</button>
+              <span style="color:#475569;">|</span>
+              <button class="hw-btn" data-vpp="1">1 Vpp</button>
+              <button class="hw-btn active" data-vpp="4">4 Vpp</button>
+              <span style="color:#475569;">|</span>
+              <button class="hw-btn" data-fset="50">50Hz</button>
+              <button class="hw-btn" data-fset="500">500Hz</button>
+              <button class="hw-btn" data-fset="5000">5kHz</button>
+              <button class="hw-btn" data-fset="50000">50kHz</button>
+              <button class="hw-btn" data-fset="100000">100k</button>
+              <button class="hw-btn" data-fset="150000">150k</button>
+            </div>
+
+            <div class="gen-slider-row">
+              <strong>Sweep:</strong>
+              <input id="gen-log-slider" type="range" min="1.0" max="5.4" step="0.002" value="1.699" />
+            </div>
+
+            <div class="gen-slider-row">
+              <strong>Fine:</strong>
+              <button class="hw-btn" data-fmul="0.90">−10%</button>
+              <button class="hw-btn" data-fmul="0.99">−1%</button>
+              <button class="hw-btn" data-fadd="-200">−200Hz</button>
+              <button class="hw-btn" data-fadd="200">+200Hz</button>
+              <button class="hw-btn" data-fmul="1.01">+1%</button>
+              <button class="hw-btn" data-fmul="1.10">+10%</button>
+            </div>
+
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="gen_bnc" data-ptype="bnc" title="Function Generator Output 50Ω (BNC)">
+                <div class="port-jack bnc"></div><span>OUTPUT 50Ω (BNC)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. RESONANCE PROBE READOUT (V_AB & V_BO HELPER) -->
+          <div id="res-probe-card" class="inst-panel" style="display:none;">
+            <div class="inst-head">
+              <span class="inst-name"><span class="led green"></span>Ukur Tegangan Komponen (V_AB Induktor &amp; V_BO Kapasitor)</span>
+              <span class="inst-model">AC Millivoltmeter / Diff Probe</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+              <div class="lcd-dark" style="color:#38BDF8;font-size:0.86rem;">
+                <div style="font-size:0.62rem;color:#94A3B8;font-family:sans-serif;">V_AB (Induktor)</div>
+                <span id="rd-vab">0.00 Vpp</span>
+              </div>
+              <div class="lcd-dark" style="color:#FBBF24;font-size:0.86rem;">
+                <div style="font-size:0.62rem;color:#94A3B8;font-family:sans-serif;">V_BO (Kapasitor)</div>
+                <span id="rd-vbo">0.00 Vpp</span>
+              </div>
+              <div class="lcd-dark" style="color:#4ADE80;font-size:0.86rem;">
+                <div style="font-size:0.62rem;color:#94A3B8;font-family:sans-serif;">V_o (47 Ω)</div>
+                <span id="rd-vo">0.00 Vpp</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: CIRCUIT BOARD + LIVE BODE/RESONANCE PLOT + BCL -->
+        <section class="board-side">
+          <div class="board-card">
+            <div class="board-head">
+              <span id="board-title" class="board-title">Rangkaian RC Domain Frekuensi (R = 10 kΩ, C = 8.2 nF)</span>
+              <span id="status-badge" class="pill" style="font-size:0.73rem;">Siap Dirangkai</span>
+            </div>
+
+            <svg id="kit-svg" viewBox="0 0 720 345" xmlns="http://www.w3.org/2000/svg"></svg>
+
+            <div id="rc-topo-bar" class="hw-control-bar">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <strong>Susunan Rangkaian RC:</strong>
+                <button class="opt-btn active" data-rctopo="hpf">C → R (Diferensiator / HPF)</button>
+                <button class="opt-btn" data-rctopo="lpf">R → C (Integrator / LPF)</button>
+              </div>
+              <span style="font-size:0.74rem;color:#475569;font-weight:700;">R = 10 kΩ • C = 8.2 nF • τ = 82 µs • f₀ = 1.94 kHz</span>
+            </div>
+          </div>
+
+          <!-- LIVE BODE / RESONANCE CURVE PLOTTER -->
+          <div class="plot-card">
+            <div class="plot-head">
+              <span id="plot-title">Grafik Plot Bode (Magnituda dB &amp; Fasa) — Real-Time</span>
+              <span id="plot-sub" style="font-size:0.72rem;color:#0284C7;">Titik merah mengikuti frekuensi Generator</span>
+            </div>
+            <canvas id="plot-canvas" width="680" height="150"></canvas>
+          </div>
+
+          <!-- BOTTOM: BCL & CABLE LIST -->
+          <div class="bottom-grid">
+            <div class="sub-card">
+              <h3><span>Buku Catatan Laboratorium (BCL)</span><span style="font-size:0.71rem;color:#64748B;">Otomatis tercatat saat lulus</span></h3>
+              <div style="max-height:165px;overflow-y:auto;">
+                <table class="bcl-table">
+                  <thead>
+                    <tr>
+                      <th>Langkah</th>
+                      <th>Parameter</th>
+                      <th>Hasil Kamu</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bcl-tbody">
+                    <tr><td colspan="4" style="color:#94A3B8;text-align:center;">Belum ada data tercatat.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="sub-card">
+              <h3><span>Kabel Terpasang</span><span id="cable-count-badge" style="color:#0284C7;">0 kabel</span></h3>
+              <div id="cable-list" class="cable-list"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      // ============================================================
+      // 1. KOMPLEKS PHASOR MATH & PARAMETER KOMPONEN MODUL 5
+      // ============================================================
+      const Cx = {
+        add: (a, b) => ({ re: a.re + b.re, im: a.im + b.im }),
+        sub: (a, b) => ({ re: a.re - b.re, im: a.im - b.im }),
+        mul: (a, b) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re }),
+        div: (a, b) => {
+          const d = b.re * b.re + b.im * b.im || 1e-24;
+          return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
+        },
+        par: (a, b) => Cx.div(Cx.mul(a, b), Cx.add(a, b)),
+        abs: (a) => Math.hypot(a.re, a.im),
+        ang: (a) => Math.atan2(a.im, a.re)
+      };
+
+      // Domain Frekuensi RC
+      const RC_R = 10e3;      // 10 kOhm
+      const RC_C = 8.2e-9;    // 8.2 nF
+      const RC_TAU = RC_R * RC_C; // 82 us
+      const RC_F0 = 1 / (2 * Math.PI * RC_TAU); // ~1940.9 Hz
+
+      // Resonansi RLC (Gambar 5-4 s/d 5-7)
+      const RES_RG = 50;      // 50 Ohm internal generator
+      const RES_RL = 30;      // ~30 Ohm resistansi kawat induktor 2.5 mH
+      const RES_L  = 2.5e-3;  // 2.5 mH
+      const RES_C  = 470e-12; // 470 pF
+      const RES_RO = 47;      // 47 Ohm beban
+      // f_r = 1 / (2*pi*sqrt(2.5mH * 470pF)) = 146.83 kHz
+      // f_r2 = f_r / sqrt(2) = 103.82 kHz
+
+      const VDIVS = [0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
+      const TDIVS = [1e-6, 2e-6, 5e-6, 20e-6, 100e-6, 500e-6, 2e-3, 5e-3];
+
+      // ============================================================
+      // 2. 11 LANGKAH UJIAN PRAKTEK MODUL 5
+      // ============================================================
+      const STEPS = [
+        {
+          id: "rc_diff_sq",
+          short: "1. Dif Kotak (4 Freq)",
+          tag: "Domain Frekuensi — Langkah 2–6",
+          board: "rc",
+          title: "Diferensiator (HPF) R = 10 kΩ, C = 8.2 nF — Uji 4 Frekuensi Kotak",
+          desc: "Pilih susunan 'C → R (Diferensiator / HPF)'. Pasang Function Generator (Gel. Kotak SQR, 4 Vpp, OUT: ON) ke Input & GND, serta Osiloskop (mode Y-T) CH1 ke Input–GND dan CH2 ke Output–GND. Amati bentuk gelombang output pada keempat frekuensi: 50 Hz, 500 Hz, 5 kHz, dan 50 kHz! Hitung konstanta waktu τ = RC dalam µs.",
+          warn: "Klik tombol 50Hz, 500Hz, 5kHz, dan 50kHz (tekan AUTO bila perlu) sampai keempat indikator hijau tercentang!",
+          fields: [{ lbl: "Konstanta Waktu τ = RC:", unit: "µs", exp: 82, tol: 2 }],
+          param: "τ Diferensiator",
+          guide: [
+            "Pastikan susunan papan RC: 'C → R (Diferensiator / HPF)'.",
+            "Pasang BNC–Dual Banana dari GEN OUT → (+) Input & (−) GND.",
+            "Pasang BNC–Capit Buaya: OSC CH1 → Input & GND, OSC CH2 → Output & GND (mode Y-T).",
+            "Atur Generator: SQR, 4 Vpp, OUT: ON. Klik berurutan 50Hz, 500Hz, 5kHz, dan 50kHz (lihat spike berubah jadi kotak!).",
+            "Hitung τ = 10 kΩ × 8.2 nF = 82 µs. Ketik 82 di BCL lalu klik Cek."
+          ],
+          auto: {
+            rcTopo: "hpf", gen: { on: true, wave: "SQUARE", freq: 5000, vpp: 4 },
+            scope: { mode: "YT", v1Idx: 6, v2Idx: 6, tIdx: 3 },
+            forceFreqs: ["50", "500", "5k", "50k"],
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "rc_out", neg: "rc_gnd" }
+            ]
+          }
+        },
+        {
+          id: "rc_int_sq",
+          short: "2. Int Kotak (4 Freq)",
+          tag: "Domain Frekuensi — Langkah 7",
+          board: "rc",
+          title: "Integrator (LPF) R = 10 kΩ, C = 8.2 nF — Uji 4 Frekuensi Kotak",
+          desc: "Ubah susunan menjadi 'R → C (Integrator / LPF)' dengan kabel & Generator tetap (SQR, 4 Vpp, OUT: ON). Uji kembali keempat frekuensi 50 Hz, 500 Hz, 5 kHz, dan 50 kHz untuk melihat kebalikan respon diferensiator (kotak di frekuensi rendah, segitiga teredam di frekuensi tinggi). Hitung frekuensi cut-off f₀ = 1/(2πRC) dalam kHz!",
+          warn: "Hitung f₀ = 1 / (2π × 82 µs) ≈ 1.94 kHz.",
+          fields: [{ lbl: "Frekuensi Cut-Off f₀:", unit: "kHz", exp: 1.94, tol: 0.06 }],
+          param: "f₀ Teoritis RC",
+          guide: [
+            "Klik tombol susunan 'R → C (Integrator / LPF)'.",
+            "Pastikan Generator SQR, 4 Vpp, OUT: ON. Klik 50Hz, 500Hz, 5kHz, dan 50kHz secara bergantian.",
+            "Ketik 1.94 (kHz) pada kotak BCL lalu klik Cek."
+          ],
+          auto: {
+            rcTopo: "lpf", gen: { on: true, wave: "SQUARE", freq: 5000, vpp: 4 },
+            scope: { mode: "YT", v1Idx: 6, v2Idx: 5, tIdx: 3 },
+            forceFreqs: ["50", "500", "5k", "50k"],
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "rc_out", neg: "rc_gnd" }
+            ]
+          }
+        },
+        {
+          id: "bode_f0",
+          short: "3. Bode Titik f₀",
+          tag: "Plot Bode HPF — Langkah 8–12",
+          board: "rc",
+          title: "Cari Frekuensi Cut-Off f₀ (Sinusoidal, Vo/Vi = 0.707 = −3 dB)",
+          desc: "Kembalikan susunan ke 'C → R (Diferensiator / HPF)'. Ubah bentuk sinyal Generator ke SINUSOIDAL (SIN, 4 Vpp, OUT: ON). Geser slider Sweep / ketik frekuensi di sekitar 1.94 kHz hingga layar Osiloskop menunjukkan Rasio Vo/Vi ≈ 0.707 (−3.0 dB)! Catat f₀ (kHz) dan Gain dalam dB.",
+          warn: "Lihat angka 'Rasio Vo/Vi' dan 'Gain (dB)' secara langsung pada panel pengukuran Osiloskop!",
+          fields: [
+            { lbl: "Frekuensi f₀:", unit: "kHz", exp: 1.94, tol: 0.08 },
+            { lbl: "Gain di f₀:", unit: "dB", exp: -3.01, tol: 0.35 }
+          ],
+          param: "Bode HPF (f₀)",
+          guide: [
+            "Klik susunan 'C → R (Diferensiator / HPF)'.",
+            "Pada Function Generator, klik 'SIN', 4 Vpp, OUT: ON.",
+            "Geser Sweep atau ketik 1941 di kotak Hz lalu tekan Enter. Terbaca Vo/Vi = 0.707 dan Gain = -3.01 dB.",
+            "Catat 1.94 dan -3.01 di BCL lalu klik Cek."
+          ],
+          auto: {
+            rcTopo: "hpf", gen: { on: true, wave: "SINE", freq: 1941, vpp: 4 },
+            scope: { mode: "YT", v1Idx: 6, v2Idx: 6, tIdx: 4 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "rc_out", neg: "rc_gnd" }
+            ]
+          }
+        },
+        {
+          id: "bode_01f0",
+          short: "4. Bode 0.1 f₀",
+          tag: "Plot Bode HPF — Langkah 11–13 (Zona Naik)",
+          board: "rc",
+          title: "Ukur Zona Naik HPF pada 0.1 f₀ (≈ 194 Hz)",
+          desc: "Atur frekuensi Generator Sinusoidal ke 1/10 f₀ (sekitar 194 Hz). Amati peredaman sinyal CH2 pada Osiloskop (tekan V2 − bila perlu agar gelombang kecil terlihat jelas). Catat Rasio Vo/Vi dan Gain dalam dB (seharusnya sekitar −20 dB/dekade!).",
+          warn: "Pada zona naik HPF, setiap turun 1 dekade (1/10 f₀), gain turun sekitar 20 dB!",
+          fields: [
+            { lbl: "Rasio Vo/Vi (0.1f₀):", unit: "×", exp: 0.10, tol: 0.015 },
+            { lbl: "Gain (0.1f₀):", unit: "dB", exp: -20.0, tol: 0.8 }
+          ],
+          param: "Bode HPF (0.1 f₀)",
+          guide: [
+            "Ketik 194 pada kotak frekuensi Generator (Hz) dan tekan Enter (SIN, OUT: ON).",
+            "Amati panel ukur Osiloskop: Vo/Vi ≈ 0.100 dan Gain ≈ -20.0 dB.",
+            "Ketik 0.10 dan -20.0 pada BCL lalu klik Cek."
+          ],
+          auto: {
+            rcTopo: "hpf", gen: { on: true, wave: "SINE", freq: 194, vpp: 4 },
+            scope: { mode: "YT", v1Idx: 6, v2Idx: 3, tIdx: 5 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "rc_out", neg: "rc_gnd" }
+            ]
+          }
+        },
+        {
+          id: "bode_10f0",
+          short: "5. Bode 10 f₀",
+          tag: "Plot Bode HPF — Langkah 11–13 (Zona Datar)",
+          board: "rc",
+          title: "Ukur Zona Datar HPF pada 10 f₀ (≈ 19.4 kHz)",
+          desc: "Sekarang atur frekuensi Generator Sinusoidal ke 10 × f₀ (sekitar 19400 Hz / 19.4 kHz). Amati CH2 hampir sama persis dengan CH1 (zona lolos / passband HPF). Catat Rasio Vo/Vi dan Gain dalam dB!",
+          warn: "Pada 10 f₀, gain HPF mendekati 1.00 (0.0 dB).",
+          fields: [
+            { lbl: "Rasio Vo/Vi (10f₀):", unit: "×", exp: 0.995, tol: 0.02 },
+            { lbl: "Gain (10f₀):", unit: "dB", exp: -0.04, tol: 0.25 }
+          ],
+          param: "Bode HPF (10 f₀)",
+          guide: [
+            "Ketik 19400 pada kotak frekuensi Generator (Hz) dan tekan Enter.",
+            "Amati panel ukur Osiloskop: Vo/Vi ≈ 0.995 dan Gain ≈ -0.04 dB (≈ 0 dB).",
+            "Ketik 0.995 dan -0.04 (atau 0) di BCL lalu klik Cek."
+          ],
+          auto: {
+            rcTopo: "hpf", gen: { on: true, wave: "SINE", freq: 19400, vpp: 4 },
+            scope: { mode: "YT", v1Idx: 6, v2Idx: 6, tIdx: 3 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "rc_out", neg: "rc_gnd" }
+            ]
+          }
+        },
+        {
+          id: "lissajous",
+          short: "6. Fasa Lissajous",
+          tag: "Metode Lissajous — Langkah 14 & 15",
+          board: "rc",
+          title: "Ukur Beda Fasa di f₀ dengan Metode Lissajous (Mode X-Y)",
+          desc: "Kembalikan frekuensi Generator ke f₀ ≈ 1941 Hz (SIN, 4 Vpp, OUT: ON) pada HPF. Tekan tombol 'X-Y (Liss)' pada Osiloskop untuk menampilkan kurva elips Lissajous! Amati perpotongan sumbu Y (B) terhadap puncak Y (A), dimana θ = arcsin(B/A). Catat rasio B/A dan beda fasa θ (derajat)!",
+          warn: "Pastikan Osiloskop sudah berada di mode 'X-Y (Liss)' agar gambar elips Lissajous tampil!",
+          fields: [
+            { lbl: "Rasio Lissajous (B/A):", unit: "", exp: 0.707, tol: 0.04 },
+            { lbl: "Beda Fasa θ di f₀:", unit: "°", exp: 45.0, tol: 2.5 }
+          ],
+          param: "Fasa Lissajous (f₀)",
+          guide: [
+            "Ketik 1941 Hz pada Function Generator (SIN, 4 Vpp, OUT: ON).",
+            "Tekan tombol 'X-Y (Liss)' pada Osiloskop → muncul elips miring dengan garis ukur B dan A.",
+            "Di frekuensi cut-off f₀, B/A = 0.707 sehingga θ = arcsin(0.707) = 45.0°.",
+            "Ketik 0.707 dan 45 pada BCL lalu klik Cek."
+          ],
+          auto: {
+            rcTopo: "hpf", gen: { on: true, wave: "SINE", freq: 1941, vpp: 4 },
+            scope: { mode: "XY", v1Idx: 5, v2Idx: 5, tIdx: 4 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "rc_in", neg: "rc_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "rc_out", neg: "rc_gnd" }
+            ]
+          }
+        },
+        {
+          id: "res_seri",
+          short: "7. Resonansi Seri",
+          tag: "Resonansi Seri RLC (Gambar 5-4) — Langkah 16 & 17",
+          board: "res_seri",
+          title: "Susun Gambar 5-4 (2.5 mH, 470 pF, 47 Ω) — Cari Vo Maksimum",
+          desc: "Pasang Function Generator (SIN, 1 Vpp, OUT: ON) ke terminal A (+) & GND (−). Pasang Osiloskop (mode Y-T) CH1 ke A–GND dan CH2 ke O (Vo)–GND. Sapu frekuensi Generator antara 80 kHz – 200 kHz sambil mengamati amplitudo CH2 (Vo) hingga mencapai MAKSIMUM LOKAL! Catat frekuensi resonansi f_r (kHz) dan Vo maksimum (Vpp).",
+          warn: "Petunjuk: f_r = 1 / (2π√(LC)). Gunakan slider Sweep lalu tombol Fine (−200Hz/+200Hz) untuk mencari puncak tepat!",
+          fields: [
+            { lbl: "Frekuensi f_r (Max):", unit: "kHz", exp: 146.8, tol: 2.5 },
+            { lbl: "Tegangan Vo Maks:", unit: "Vpp", exp: 0.37, tol: 0.04 }
+          ],
+          param: "Resonansi Seri (Vo max)",
+          guide: [
+            "Set Generator: SIN, 1 Vpp, OUT: ON. Sambungkan BNC–Dual Banana: GEN OUT → (+) A & (−) GND.",
+            "Set Osiloskop mode Y-T (tekan AUTO atau T/d ke 2 µs). Pasang CH1 → A & GND, CH2 → O (Vo) & GND.",
+            "Sapu frekuensi sekitar 146.8 kHz (ketik 146800 Hz atau geser Sweep) → terlihat puncak tajam Vo = 0.37 Vpp!",
+            "Catat 146.8 dan 0.37 di BCL lalu klik Cek."
+          ],
+          auto: {
+            gen: { on: true, wave: "SINE", freq: 146800, vpp: 1 },
+            scope: { mode: "YT", v1Idx: 3, v2Idx: 2, tIdx: 1 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "p_o", neg: "p_gnd" }
+            ]
+          }
+        },
+        {
+          id: "res_seri_v",
+          short: "8. Seri V_AB & V_BO",
+          tag: "Resonansi Seri RLC — Langkah 18 & 19",
+          board: "res_seri",
+          title: "Catat Tegangan Induktor (V_AB) & Kapasitor (V_BO) Saat Resonansi",
+          desc: "Pertahankan frekuensi tepat pada resonansi seri (≈ 146.8 kHz, Generator 1 Vpp ON). Amati panel ukur komponen 'V_AB (Induktor)' dan 'V_BO (Kapasitor)' di sisi kiri! Perhatikan fenomena faktor kualitas Q: tegangan pada L dan C jauh lebih besar daripada tegangan sumber 1 Vpp, namun saling meniadakan karena beda fasa 180°! Catat V_AB dan V_BO.",
+          warn: "V_AB ≈ V_BO ≈ Q × V_s ≈ 18.2 Vpp (jauh melampaui 1 Vpp sumber!).",
+          fields: [
+            { lbl: "Tegangan Induktor V_AB:", unit: "Vpp", exp: 18.16, tol: 0.8 },
+            { lbl: "Tegangan Kapasitor V_BO:", unit: "Vpp", exp: 18.16, tol: 0.8 }
+          ],
+          param: "Res. Seri V_AB & V_BO",
+          guide: [
+            "Pastikan rangkaian seri dari langkah 7 masih terpasang dan frekuensi tepat di 146.8 kHz (146800 Hz).",
+            "Baca panel 'Ukur Tegangan Komponen' di bawah Generator: V_AB ≈ 18.16 Vpp dan V_BO ≈ 18.16 Vpp.",
+            "Catat 18.16 dan 18.16 di BCL lalu klik Cek."
+          ],
+          auto: {
+            gen: { on: true, wave: "SINE", freq: 146800, vpp: 1 },
+            scope: { mode: "YT", v1Idx: 3, v2Idx: 2, tIdx: 1 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "p_o", neg: "p_gnd" }
+            ]
+          }
+        },
+        {
+          id: "res_par",
+          short: "9. Resonansi Paralel",
+          tag: "Resonansi Paralel LC (Gambar 5-5) — Langkah 20–22",
+          board: "res_par",
+          title: "Susun Gambar 5-5 (2.5 mH || 470 pF) — Cari Vo Minimum Lokal",
+          desc: "Pindah ke rangkaian Resonansi Paralel! Pasang Generator (SIN, 1 Vpp, OUT: ON) ke terminal VA (+) & GND (−), lalu Osiloskop (Y-T) CH1 ke VA–GND dan CH2 ke Vo–GND. Sapu frekuensi untuk menemukan LEMBAH / MINIMUM LOKAL pada Vo (saat tangki paralel LC berimpedansi sangat besar!). Catat f_r (kHz) dan tegangan tangki V_AB (= V_BO)!",
+          warn: "Kebalikan dari resonansi seri: pada resonansi paralel, Vo turun drastis ke ≈ 0 Vpp sementara hampir seluruh 1 Vpp jatuh di tangki LC!",
+          fields: [
+            { lbl: "Frekuensi f_r (Min):", unit: "kHz", exp: 146.8, tol: 2.5 },
+            { lbl: "Tegangan Tangki V_AB:", unit: "Vpp", exp: 1.00, tol: 0.08 }
+          ],
+          param: "Res. Paralel (Vo min)",
+          guide: [
+            "Pasang GEN OUT (SIN, 1 Vpp, OUT: ON) → (+) VA & (−) GND.",
+            "Pasang OSC CH1 → VA & GND, CH2 → Vo & GND (mode Y-T).",
+            "Sapu frekuensi sekitar 146.8 kHz → Vo anjlok menjadi ~0.00 Vpp dan V_AB = V_BO ≈ 1.00 Vpp!",
+            "Catat 146.8 dan 1.00 pada BCL lalu klik Cek."
+          ],
+          auto: {
+            gen: { on: true, wave: "SINE", freq: 146800, vpp: 1 },
+            scope: { mode: "YT", v1Idx: 3, v2Idx: 2, tIdx: 1 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "p_o", neg: "p_gnd" }
+            ]
+          }
+        },
+        {
+          id: "res_sp1",
+          short: "10. Seri-Paralel 1",
+          tag: "Paralel L dgn Seri L–C (Gambar 5-6) — Langkah 23–26",
+          board: "res_sp1",
+          title: "Resonansi Seri-Paralel 1 — Temukan f_min & f_max Lokal!",
+          desc: "Susun Gambar 5-6 (2.5 mH paralel dengan [2.5 mH seri 470 pF]): pasang Generator (SIN, 1 Vpp, OUT: ON) ke A–GND dan Osiloskop (Y-T) CH1 ke A–GND, CH2 ke Vo–GND. Rangkaian orde-3 ini memiliki DUA titik resonansi! Sapu frekuensi dari 80 kHz sampai 180 kHz untuk menemukan frekuensi Vo MINIMUM lokal (f_min) dan frekuensi Vo MAKSIMUM lokal (f_max)!",
+          warn: "Amati kurva respon & sinyal CH2 saat menyapu frekuensi: pertama kamu akan melewati lembah (f_min ≈ 103.8 kHz), lalu puncak (f_max ≈ 146.8 kHz)!",
+          fields: [
+            { lbl: "Frekuensi Vo Minimum:", unit: "kHz", exp: 103.8, tol: 2.5 },
+            { lbl: "Frekuensi Vo Maksimum:", unit: "kHz", exp: 146.8, tol: 2.5 }
+          ],
+          param: "Seri-Paralel 1 (f_min & f_max)",
+          guide: [
+            "Pasang GEN OUT (SIN, 1 Vpp, OUT: ON) → (+) A & (−) GND; OSC CH1 → A & GND; CH2 → Vo & GND.",
+            "Sapu frekuensi perlahan dari 90 kHz ke 160 kHz sambil memantau CH2 dan Kurva Respon di kanan.",
+            "Lembah minimum terjadi di f_min = 1/(2π√(2LC)) = 103.8 kHz; puncak maksimum di f_max = 1/(2π√(LC)) = 146.8 kHz!",
+            "Catat 103.8 dan 146.8 pada BCL lalu klik Cek."
+          ],
+          auto: {
+            gen: { on: true, wave: "SINE", freq: 103800, vpp: 1 },
+            scope: { mode: "YT", v1Idx: 3, v2Idx: 2, tIdx: 1 },
+            forceDualSweep: true,
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "p_o", neg: "p_gnd" }
+            ]
+          }
+        },
+        {
+          id: "res_sp2",
+          short: "11. Seri-Paralel 2",
+          tag: "Seri C dgn Paralel C–L (Gambar 5-7) — Langkah 27–30",
+          board: "res_sp2",
+          title: "Resonansi Seri-Paralel 2 — Temukan f_max & f_min Lokal!",
+          desc: "Susun Gambar 5-7 (470 pF seri dengan [470 pF paralel 2.5 mH]): pasang Generator (SIN, 1 Vpp, OUT: ON) ke A–GND dan Osiloskop (Y-T) CH1 ke A–GND, CH2 ke Vo–GND. Perhatikan sifat dualitasnya dibanding Gambar 5-6! Sapu frekuensi untuk menemukan f_max lokal (muncul lebih dulu!) dan f_min lokal!",
+          warn: "Kebalikan dari Gambar 5-6: puncak maksimum muncul lebih dulu di ≈ 103.8 kHz, lalu lembah minimum di ≈ 146.8 kHz!",
+          fields: [
+            { lbl: "Frekuensi Vo Maksimum:", unit: "kHz", exp: 103.8, tol: 2.5 },
+            { lbl: "Frekuensi Vo Minimum:", unit: "kHz", exp: 146.8, tol: 2.5 }
+          ],
+          param: "Seri-Paralel 2 (f_max & f_min)",
+          guide: [
+            "Pasang GEN OUT (SIN, 1 Vpp, OUT: ON) → (+) A & (−) GND; OSC CH1 → A & GND; CH2 → Vo & GND.",
+            "Sapu frekuensi dari 90 kHz ke 160 kHz: puncak maksimum terjadi di 103.8 kHz (~0.22 Vpp), lalu lembah minimum di 146.8 kHz (~0.00 Vpp).",
+            "Catat 103.8 dan 146.8 di BCL untuk menamatkan seluruh ujian Modul 5!"
+          ],
+          auto: {
+            gen: { on: true, wave: "SINE", freq: 103800, vpp: 1 },
+            scope: { mode: "YT", v1Idx: 3, v2Idx: 2, tIdx: 1 },
+            forceDualSweep: true,
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "p_a", neg: "p_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "p_o", neg: "p_gnd" }
+            ]
+          }
+        }
+      ];
+
+      // ============================================================
+      // 3. TERMINAL PAPAN UNTUK SETIAP PERCOBAAN
+      // ============================================================
+      const BOARDS = {
+        rc: {
+          title: "Rangkaian RC Domain Frekuensi (R = 10 kΩ, C = 8.2 nF)",
+          ports: [
+            { id: "rc_in",  x: 120, y: 125, color: "#EF4444", label: "Input (Vi / CH1)" },
+            { id: "rc_out", x: 560, y: 125, color: "#FDE047", label: "Output (Vo / CH2)" },
+            { id: "rc_gnd", x: 340, y: 285, color: "#1E293B", label: "GND (0V)" }
+          ]
+        },
+        res_seri: {
+          title: "Gambar 5-4: Rangkaian Resonansi Seri RLC (2.5 mH, 470 pF, 47 Ω)",
+          ports: [
+            { id: "p_a",   x: 130, y: 120, color: "#EF4444", label: "Terminal A (Input dari Gen 50Ω)" },
+            { id: "p_b",   x: 345, y: 120, color: "#2563EB", label: "Terminal B (Antara L & C)" },
+            { id: "p_o",   x: 560, y: 120, color: "#FDE047", label: "Terminal O (Vo / Atas 47Ω)" },
+            { id: "p_gnd", x: 345, y: 292, color: "#1E293B", label: "GND (Bawah 47Ω)" }
+          ]
+        },
+        res_par: {
+          title: "Gambar 5-5: Rangkaian Resonansi Paralel LC (2.5 mH || 470 pF, 47 Ω)",
+          ports: [
+            { id: "p_a",   x: 145, y: 150, color: "#EF4444", label: "Terminal VA (Input dari Gen 50Ω)" },
+            { id: "p_o",   x: 555, y: 150, color: "#FDE047", label: "Terminal Vo (Atas 47Ω)" },
+            { id: "p_gnd", x: 350, y: 292, color: "#1E293B", label: "GND (Bawah 47Ω)" }
+          ]
+        },
+        res_sp1: {
+          title: "Gambar 5-6: Resonansi Seri-Paralel 1 (L || [L seri C], 47 Ω)",
+          ports: [
+            { id: "p_a",   x: 120, y: 150, color: "#EF4444", label: "Terminal A (Input dari Gen 50Ω)" },
+            { id: "p_b",   x: 345, y: 102, color: "#2563EB", label: "Node B (Cabang Atas L–C)" },
+            { id: "p_o",   x: 575, y: 150, color: "#FDE047", label: "Terminal Vo (Atas 47Ω)" },
+            { id: "p_gnd", x: 345, y: 292, color: "#1E293B", label: "GND (Bawah 47Ω)" }
+          ]
+        },
+        res_sp2: {
+          title: "Gambar 5-7: Resonansi Seri-Paralel 2 (C seri [C || L], 47 Ω)",
+          ports: [
+            { id: "p_a",   x: 110, y: 150, color: "#EF4444", label: "Terminal A (Input dari Gen 50Ω)" },
+            { id: "p_b",   x: 280, y: 150, color: "#2563EB", label: "Node B (Antara C seri & Tangki)" },
+            { id: "p_o",   x: 575, y: 150, color: "#FDE047", label: "Terminal Vo (Atas 47Ω)" },
+            { id: "p_gnd", x: 345, y: 292, color: "#1E293B", label: "GND (Bawah 47Ω)" }
+          ]
+        }
+      };
+
+      const INST_PORTS = {
+        gen_bnc: { label: "GEN OUT", type: "bnc" },
+        osc_ch1: { label: "OSC CH1", type: "bnc" },
+        osc_ch2: { label: "OSC CH2", type: "bnc" }
+      };
+
+      const CABLES_META = {
+        "bnc-banana":    { name: "BNC–Dual Banana", color: "#EF4444", kind: "bnc_split" },
+        "bnc-alligator": { name: "BNC–Capit Buaya", color: "#F59E0B", kind: "bnc_split" },
+        "banana-blue":   { name: "Banana Biru",     color: "#2563EB", kind: "banana2" },
+        "banana-black":  { name: "Banana Hitam",    color: "#1E293B", kind: "banana2" }
+      };
+
+      // ============================================================
+      // 4. STATE APLIKASI
+      // ============================================================
+      const state = {
+        stepIdx: 0,
+        completed: {},
+        selectedCable: "bnc-banana",
+        pending: null,
+        cables: [],
+        rcTopo: "hpf", // hpf | lpf
+        gen: { on: false, wave: "SQUARE", freq: 50, vpp: 4.0 },
+        scope: { run: true, mode: "YT", cpl: "AC", v1Idx: 6, v2Idx: 6, tIdx: 6 },
+        freqVisited: new Set(),
+        dualSweepVisited: { low: false, high: false },
+        bodeRecorded: [], // { f, db, deg }
+        timerSec: 0
+      };
+
+      const $ = (s) => document.querySelector(s);
+      const stepNow = () => STEPS[state.stepIdx];
+
+      function portInfo(id) {
+        if (INST_PORTS[id]) return INST_PORTS[id];
+        const p = BOARDS[stepNow().board].ports.find((x) => x.id === id);
+        return p ? { label: p.label, type: "banana" } : { label: id, type: "banana" };
+      }
+
+      // ============================================================
+      // 5. NETLIST & SOLVER TRANSFER FUNCTION / PHASOR AKURAT
+      // ============================================================
+      function buildNet() {
+        const parent = {};
+        const find = (x) => { if (!(x in parent)) parent[x] = x; if (parent[x] !== x) parent[x] = find(parent[x]); return parent[x]; };
+        const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; };
+        const same = (a, b) => find(a) === find(b);
+        const used = new Set();
+
+        state.cables.forEach((c) => {
+          const m = CABLES_META[c.type];
+          if (m.kind === "banana2") { union(c.from, c.to); used.add(c.from); used.add(c.to); }
+          else { union(c.bnc + "_p", c.pos); union(c.bnc + "_n", c.neg); used.add(c.bnc); used.add(c.pos); used.add(c.neg); }
+        });
+        return { find, same, used };
+      }
+
+      function evalResonanceAt(boardKey, f, vEmf) {
+        const w = 2 * Math.PI * f;
+        const ZL = { re: RES_RL, im: w * RES_L };
+        const ZC = { re: 0, im: -1 / (w * RES_C) };
+        const ZG = { re: RES_RG, im: 0 };
+        const ZR = { re: RES_RO, im: 0 };
+        const Vs = { re: vEmf, im: 0 };
+
+        let Zblk, VabMag = 0, VboMag = 0;
+
+        if (boardKey === "res_seri") {
+          Zblk = Cx.add(ZL, ZC);
+          const Ztot = Cx.add(Cx.add(ZG, Zblk), ZR);
+          const I = Cx.div(Vs, Ztot);
+          const Va = Cx.mul(I, Cx.add(Zblk, ZR));
+          const Vo = Cx.mul(I, ZR);
+          VabMag = Cx.abs(Cx.mul(I, ZL));
+          VboMag = Cx.abs(Cx.mul(I, ZC));
+          return { Va, Vo, VabMag, VboMag };
+        }
+        else if (boardKey === "res_par") {
+          Zblk = Cx.par(ZL, ZC);
+          const Ztot = Cx.add(Cx.add(ZG, Zblk), ZR);
+          const I = Cx.div(Vs, Ztot);
+          const Va = Cx.mul(I, Cx.add(Zblk, ZR));
+          const Vo = Cx.mul(I, ZR);
+          const vTank = Cx.abs(Cx.mul(I, Zblk));
+          return { Va, Vo, VabMag: vTank, VboMag: vTank };
+        }
+        else if (boardKey === "res_sp1") {
+          const Ztop = Cx.add(ZL, ZC);
+          Zblk = Cx.par(Ztop, ZL);
+          const Ztot = Cx.add(Cx.add(ZG, Zblk), ZR);
+          const I = Cx.div(Vs, Ztot);
+          const Va = Cx.mul(I, Cx.add(Zblk, ZR));
+          const Vo = Cx.mul(I, ZR);
+          const Vblk = Cx.mul(I, Zblk);
+          const Itop = Cx.div(Vblk, Ztop);
+          VabMag = Cx.abs(Cx.mul(Itop, ZL));
+          VboMag = Cx.abs(Cx.mul(Itop, ZC));
+          return { Va, Vo, VabMag, VboMag };
+        }
+        else {
+          // res_sp2: C seri (C || L)
+          const Ztank = Cx.par(ZL, ZC);
+          Zblk = Cx.add(ZC, Ztank);
+          const Ztot = Cx.add(Cx.add(ZG, Zblk), ZR);
+          const I = Cx.div(Vs, Ztot);
+          const Va = Cx.mul(I, Cx.add(Zblk, ZR));
+          const Vo = Cx.mul(I, ZR);
+          VabMag = Cx.abs(Cx.mul(I, Ztank));
+          VboMag = Cx.abs(Cx.mul(I, ZC));
+          return { Va, Vo, VabMag, VboMag };
+        }
+      }
+
+      function evalRCTransfer(topo, f) {
+        const w = 2 * Math.PI * f;
+        const x = w * RC_TAU;
+        // H_LPF = 1 / (1 + jx), H_HPF = jx / (1 + jx)
+        const denom = { re: 1, im: x };
+        const H = topo === "hpf" ? Cx.div({ re: 0, im: x }, denom) : Cx.div({ re: 1, im: 0 }, denom);
+        return {
+          H,
+          mag: Cx.abs(H),
+          db: 20 * Math.log10(Math.max(1e-6, Cx.abs(H))),
+          phaseRad: Cx.ang(H),
+          phaseDeg: Cx.ang(H) * (180 / Math.PI)
+        };
+      }
+
+      function solveLiveCircuit() {
+        const net = buildNet();
+        const bKey = stepNow().board;
+        const gndId = bKey === "rc" ? "rc_gnd" : "p_gnd";
+        const inId  = bKey === "rc" ? "rc_in"  : "p_a";
+        const outId = bKey === "rc" ? "rc_out" : "p_o";
+
+        const genOk = state.gen.on && net.used.has("gen_bnc") && net.same("gen_bnc_p", inId) && net.same("gen_bnc_n", gndId);
+        const ch1Ok = net.used.has("osc_ch1") && net.same("osc_ch1_p", inId) && net.same("osc_ch1_n", gndId);
+        const ch2Ok = net.used.has("osc_ch2") && net.same("osc_ch2_p", outId) && net.same("osc_ch2_n", gndId);
+
+        let viVpp = 0, voVpp = 0, phaseRad = 0, vab = 0, vbo = 0;
+
+        if (genOk) {
+          if (bKey === "rc") {
+            viVpp = state.gen.vpp;
+            if (state.gen.wave === "SINE") {
+              const tr = evalRCTransfer(state.rcTopo, state.gen.freq);
+              voVpp = viVpp * tr.mag;
+              phaseRad = tr.phaseRad;
+            } else {
+              // Square wave peak-to-peak steady state
+              const halfT = 0.5 / state.gen.freq;
+              const eH = Math.exp(-halfT / RC_TAU);
+              const vCapPeak = (viVpp / 2) * (1 - eH) / (1 + eH);
+              voVpp = state.rcTopo === "lpf" ? (2 * vCapPeak) : (viVpp + 2 * vCapPeak);
+              phaseRad = 0;
+            }
+          } else {
+            const r = evalResonanceAt(bKey, state.gen.freq, state.gen.vpp);
+            viVpp = Cx.abs(r.Va);
+            voVpp = Cx.abs(r.Vo);
+            phaseRad = Cx.ang(r.Vo) - Cx.ang(r.Va);
+            vab = r.VabMag;
+            vbo = r.VboMag;
+          }
+        }
+
+        const ratio = (ch1Ok && ch2Ok && viVpp > 1e-6) ? (voVpp / viVpp) : 0;
+        const db = ratio > 1e-6 ? 20 * Math.log10(ratio) : -99;
+        const phaseDeg = phaseRad * (180 / Math.PI);
+        const lissBA = Math.abs(Math.sin(phaseRad));
+
+        // Track 4 frequencies for Steps 1 & 2
+        if (bKey === "rc" && genOk && ch1Ok && ch2Ok && state.gen.wave === "SQUARE" && Math.abs(state.gen.vpp - 4) <= 0.2) {
+          const s = stepNow();
+          const wantTopo = s.id === "rc_diff_sq" ? "hpf" : (s.id === "rc_int_sq" ? "lpf" : null);
+          if (wantTopo && state.rcTopo === wantTopo) {
+            const f = state.gen.freq;
+            if (Math.abs(f - 50) <= 5) state.freqVisited.add("50");
+            if (Math.abs(f - 500) <= 25) state.freqVisited.add("500");
+            if (Math.abs(f - 5000) <= 250) state.freqVisited.add("5k");
+            if (Math.abs(f - 50000) <= 2500) state.freqVisited.add("50k");
+          }
+        }
+
+        // Track dual resonance sweep for Steps 10 & 11
+        if ((bKey === "res_sp1" || bKey === "res_sp2") && genOk && ch2Ok && state.gen.wave === "SINE") {
+          if (Math.abs(state.gen.freq - 103800) <= 3500) state.dualSweepVisited.low = true;
+          if (Math.abs(state.gen.freq - 146800) <= 3500) state.dualSweepVisited.high = true;
+        }
+
+        return { net, genOk, ch1Ok, ch2Ok, viVpp, voVpp, ratio, db, phaseRad, phaseDeg, lissBA, vab, vbo };
+      }
+
+      // ============================================================
+      // 6. OSILOSKOP LIVE (MODE Y-T DAN MODE X-Y LISSAJOUS)
+      // ============================================================
+      let animPhase = 0;
+      function renderScopeAndPlots() {
+        const sim = solveLiveCircuit();
+
+        // Update measurement readouts
+        $("#m-ch1").textContent = sim.ch1Ok ? `${sim.viVpp.toFixed(2)} Vpp` : "0.00 Vpp";
+        $("#m-ch2").textContent = sim.ch2Ok ? `${sim.voVpp.toFixed(3)} Vpp` : "0.00 Vpp";
+        $("#m-ratio").textContent = (sim.ch1Ok && sim.ch2Ok && sim.genOk) ? sim.ratio.toFixed(3) : "—";
+        $("#m-db").textContent = (sim.ch1Ok && sim.ch2Ok && sim.genOk) ? `${sim.db.toFixed(2)} dB` : "— dB";
+        $("#m-phase").textContent = (sim.ch1Ok && sim.ch2Ok && sim.genOk && state.gen.wave === "SINE") ? `${sim.phaseDeg.toFixed(1)}°` : "—";
+        $("#m-ba").textContent = (sim.ch1Ok && sim.ch2Ok && sim.genOk && state.gen.wave === "SINE") ? sim.lissBA.toFixed(3) : "—";
+
+        // Update Resonance Component Readout
+        if (stepNow().board !== "rc") {
+          $("#rd-vab").textContent = `${sim.vab.toFixed(2)} Vpp`;
+          $("#rd-vbo").textContent = `${sim.vbo.toFixed(2)} Vpp`;
+          $("#rd-vo").textContent  = `${sim.voVpp.toFixed(3)} Vpp`;
+        }
+
+        renderLiveProgressTags();
+        drawOscilloscopeCanvas(sim);
+        drawBodeOrResPlot(sim);
+
+        if (state.scope.run) animPhase += 0.05;
+        requestAnimationFrame(renderScopeAndPlots);
+      }
+
+      function drawOscilloscopeCanvas(sim) {
+        const canvas = $("#scope-canvas");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width, H = canvas.height;
+        ctx.fillStyle = "#06131F";
+        ctx.fillRect(0, 0, W, H);
+
+        // Graticule 10 x 8
+        ctx.strokeStyle = "rgba(56,189,248,0.16)";
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 10; i++) { ctx.beginPath(); ctx.moveTo((W / 10) * i, 0); ctx.lineTo((W / 10) * i, H); ctx.stroke(); }
+        for (let j = 1; j < 8; j++) { ctx.beginPath(); ctx.moveTo(0, (H / 8) * j); ctx.lineTo(W, (H / 8) * j); ctx.stroke(); }
+        ctx.strokeStyle = "rgba(56,189,248,0.38)";
+        ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke();
+
+        const v1div = VDIVS[state.scope.v1Idx];
+        const v2div = VDIVS[state.scope.v2Idx];
+        const tdiv  = TDIVS[state.scope.tIdx];
+        const pxY = H / 8;
+        const pxX = W / 10;
+
+        if (state.scope.mode === "XY") {
+          // MODE X-Y (METODE LISSAJOUS!)
+          if (sim.genOk && sim.ch1Ok && sim.ch2Ok && state.scope.cpl !== "GND") {
+            const Ax = sim.viVpp / 2;
+            const Ay = sim.voVpp / 2;
+            ctx.strokeStyle = "#4ADE80";
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            const M = 260;
+            for (let i = 0; i <= M; i++) {
+              const ph = (i / M) * 2 * Math.PI;
+              const vx = Ax * Math.sin(ph);
+              const vy = Ay * Math.sin(ph + sim.phaseRad);
+              const x = W / 2 + (vx / v1div) * pxX;
+              const y = H / 2 - (vy / v2div) * pxY;
+              if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Draw visual guides for B (Y-intercept) and A (max Y)
+            const yTop = H / 2 - (Ay / v2div) * pxY;
+            const yInt = H / 2 - ((Ay * sim.lissBA) / v2div) * pxY;
+            ctx.save();
+            ctx.setLineDash([3, 3]);
+            ctx.strokeStyle = "#F472B6";
+            ctx.beginPath(); ctx.moveTo(W / 2 - 42, yTop); ctx.lineTo(W / 2 + 42, yTop); ctx.stroke();
+            ctx.strokeStyle = "#FBBF24";
+            ctx.beginPath(); ctx.moveTo(W / 2 - 22, yInt); ctx.lineTo(W / 2 + 22, yInt); ctx.stroke();
+            ctx.restore();
+
+            ctx.fillStyle = "#F472B6";
+            ctx.font = "bold 9.5px monospace";
+            ctx.fillText(`A (max)`, W / 2 + 44, Math.max(14, yTop + 3));
+            ctx.fillStyle = "#FBBF24";
+            ctx.fillText(`B (y0)`, W / 2 + 25, yInt + 3);
+          }
+
+          ctx.fillStyle = "rgba(6,19,31,0.82)";
+          ctx.fillRect(0, 0, W, 18);
+          ctx.fillStyle = "#4ADE80";
+          ctx.font = "bold 9.5px monospace";
+          ctx.fillText(`MODE X-Y LISSAJOUS  •  sin(θ) = B/A = ${sim.lissBA.toFixed(3)}`, 6, 12);
+        } else {
+          // MODE Y-T
+          const N = 260;
+          const totalT = 10 * tdiv;
+          const f = state.gen.freq;
+          const T = 1 / f;
+          const halfT = T / 2;
+
+          if (sim.genOk && state.scope.cpl !== "GND") {
+            const p1 = [], p2 = [];
+            for (let i = 0; i < N; i++) {
+              const t = (i / (N - 1)) * totalT;
+              let v1 = 0, v2 = 0;
+              if (state.gen.wave === "SINE") {
+                const ph = 2 * Math.PI * f * t + animPhase;
+                v1 = (sim.viVpp / 2) * Math.sin(ph);
+                v2 = (sim.voVpp / 2) * Math.sin(ph + sim.phaseRad);
+              } else {
+                // Exact RC Square-wave response (steady state)
+                const ph = ((t % T) + T) % T;
+                const posHalf = ph < halfT;
+                const tl = posHalf ? ph : ph - halfT;
+                const A = state.gen.vpp / 2;
+                const eH = Math.exp(-halfT / RC_TAU);
+                const vCapPk = A * (1 - eH) / (1 + eH);
+                v1 = posHalf ? A : -A;
+                const vc = posHalf ? (A + (-vCapPk - A) * Math.exp(-tl / RC_TAU)) : (-A + (vCapPk + A) * Math.exp(-tl / RC_TAU));
+                v2 = state.rcTopo === "lpf" ? vc : (v1 - vc);
+              }
+              p1.push(v1);
+              p2.push(v2);
+            }
+
+            const plot = (arr, vdiv, col) => {
+              ctx.strokeStyle = col;
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              for (let i = 0; i < N; i++) {
+                const x = (i / (N - 1)) * W;
+                const y = H / 2 - (arr[i] / vdiv) * pxY;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+              }
+              ctx.stroke();
+            };
+
+            if (sim.ch1Ok) plot(p1, v1div, "#38BDF8");
+            if (sim.ch2Ok) plot(p2, v2div, "#FBBF24");
+          }
+        }
+
+        // Bottom HUD
+        ctx.fillStyle = "rgba(6,19,31,0.82)";
+        ctx.fillRect(0, H - 17, W, 17);
+        ctx.font = "bold 9.5px monospace";
+        ctx.fillStyle = "#38BDF8";
+        ctx.fillText(`CH1:${fmtV(v1div)}`, 6, H - 5);
+        ctx.fillStyle = "#FBBF24";
+        ctx.fillText(`CH2:${fmtV(v2div)}`, 86, H - 5);
+        ctx.fillStyle = "#E2E8F0";
+        ctx.fillText(`T:${fmtT(tdiv)} ${state.scope.mode}`, 172, H - 5);
+      }
+
+      // ============================================================
+      // 7. LIVE BODE PLOTTER (STEPS 1-6) & RESONANCE CURVE (STEPS 7-11)
+      // ============================================================
+      function drawBodeOrResPlot(sim) {
+        const canvas = $("#plot-canvas");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width, H = canvas.height;
+        ctx.fillStyle = "#F8FAFC";
+        ctx.fillRect(0, 0, W, H);
+
+        const padL = 44, padR = 16, padT = 14, padB = 22;
+        const pW = W - padL - padR, pH = H - padT - padB;
+        const bKey = stepNow().board;
+
+        // Grid
+        ctx.strokeStyle = "#E2E8F0";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const y = padT + (pH / 4) * i;
+          ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+        }
+
+        if (bKey === "rc") {
+          $("#plot-title").textContent = `Grafik Bode ${state.rcTopo === "hpf" ? "HPF (Diferensiator)" : "LPF (Integrator)"} — Skala Logaritmik`;
+          const logMin = Math.log10(15), logMax = Math.log10(250000);
+          const xOf = (f) => padL + ((Math.log10(Math.max(15, Math.min(250000, f))) - logMin) / (logMax - logMin)) * pW;
+          const yOfDb = (db) => padT + ((0 - Math.max(-45, Math.min(2, db))) / 45) * pH;
+
+          // Decade vertical gridlines
+          [100, 1000, 10000, 100000].forEach((fd) => {
+            const x = xOf(fd);
+            ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + pH); ctx.stroke();
+            ctx.fillStyle = "#64748B"; ctx.font = "bold 9.5px sans-serif";
+            ctx.fillText(fd >= 1000 ? `${fd / 1000}k` : `${fd}`, x - 10, H - 6);
+          });
+
+          // Y labels (0 dB to -40 dB)
+          [0, -10, -20, -30, -40].forEach((db, i) => {
+            ctx.fillStyle = "#64748B"; ctx.font = "bold 9.5px monospace";
+            ctx.fillText(`${db}dB`, 4, padT + (pH / 4) * i + 3);
+          });
+
+          // Bode curve
+          ctx.strokeStyle = "#0284C7";
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          for (let i = 0; i <= 180; i++) {
+            const lf = logMin + (i / 180) * (logMax - logMin);
+            const f = Math.pow(10, lf);
+            const tr = evalRCTransfer(state.rcTopo, f);
+            const x = padL + (i / 180) * pW;
+            const y = yOfDb(tr.db);
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          // f0 dashed marker
+          const xf0 = xOf(RC_F0);
+          ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = "#94A3B8";
+          ctx.beginPath(); ctx.moveTo(xf0, padT); ctx.lineTo(xf0, padT + pH); ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = "#475569"; ctx.font = "bold 9px sans-serif";
+          ctx.fillText("f₀", xf0 + 3, padT + 10);
+
+          // Live red dot for current generator freq
+          const curTr = evalRCTransfer(state.rcTopo, state.gen.freq);
+          const cx = xOf(state.gen.freq), cy = yOfDb(curTr.db);
+          ctx.fillStyle = "#EF4444";
+          ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 1.5; ctx.stroke();
+        } else {
+          // Resonance Frequency Response |Vo|(f) from 70 kHz to 200 kHz
+          $("#plot-title").textContent = "Kurva Respon Frekuensi Resonansi |Vo| vs Frekuensi (70 – 200 kHz)";
+          const fMin = 70000, fMax = 200000;
+          const xOf = (f) => padL + ((Math.max(fMin, Math.min(fMax, f)) - fMin) / (fMax - fMin)) * pW;
+          const vMaxY = 0.45;
+          const yOfV = (v) => padT + pH - (Math.min(vMaxY, v) / vMaxY) * pH;
+
+          [80, 100, 120, 140, 160, 180, 200].forEach((fk) => {
+            const x = xOf(fk * 1000);
+            ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + pH); ctx.stroke();
+            ctx.fillStyle = "#64748B"; ctx.font = "bold 9.5px sans-serif";
+            ctx.fillText(`${fk}k`, x - 10, H - 6);
+          });
+
+          [0.45, 0.34, 0.22, 0.11, 0].forEach((v, i) => {
+            ctx.fillStyle = "#64748B"; ctx.font = "bold 9.5px monospace";
+            ctx.fillText(`${v.toFixed(2)}V`, 4, padT + (pH / 4) * i + 3);
+          });
+
+          // Draw theoretical curve smoothly
+          ctx.strokeStyle = "#059669";
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          for (let i = 0; i <= 260; i++) {
+            const f = fMin + (i / 260) * (fMax - fMin);
+            const r = evalResonanceAt(bKey, f, 1.0);
+            const x = padL + (i / 260) * pW;
+            const y = yOfV(Cx.abs(r.Vo));
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          // Live dot
+          const curR = evalResonanceAt(bKey, state.gen.freq, state.gen.vpp);
+          const cx = xOf(state.gen.freq), cy = yOfV(Cx.abs(curR.Vo));
+          ctx.fillStyle = "#EF4444";
+          ctx.beginPath(); ctx.arc(cx, cy, 5.5, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 1.5; ctx.stroke();
+        }
+      }
+
+      function fmtV(v) { return v < 1 ? `${Math.round(v * 1000)}mV` : `${v}V`; }
+      function fmtT(s) { return s < 1e-3 ? `${Math.round(s * 1e6)}µs` : `${(s * 1e3).toFixed(1).replace(/\.0$/, "")}ms`; }
+      function fmtFreq(f) {
+        if (f >= 1000) return `${(f / 1000).toFixed(f >= 10000 ? 1 : 2)} kHz`;
+        return `${f.toFixed(f < 100 ? 1 : 0)} Hz`;
+      }
+
+      // ============================================================
+      // 8. VALIDATOR LANGKAH UJIAN MODUL 5
+      // ============================================================
+      function validateStep() {
+        const s = stepNow();
+        const sim = solveLiveCircuit();
+        const checks = [];
+
+        if (s.id === "rc_diff_sq" || s.id === "rc_int_sq") {
+          const wantTopo = s.id === "rc_diff_sq" ? "hpf" : "lpf";
+          checks.push({ ok: state.rcTopo === wantTopo, msg: `Susunan RC diatur ke ${wantTopo === "hpf" ? "C → R (Diferensiator / HPF)" : "R → C (Integrator / LPF)"}.` });
+          checks.push({ ok: sim.genOk && state.gen.wave === "SQUARE" && Math.abs(state.gen.vpp - 4) <= 0.2, msg: "Generator Sinyal (SQR, 4 Vpp, OUT: ON) terhubung ke Input–GND." });
+          checks.push({ ok: sim.ch1Ok && sim.ch2Ok && state.scope.mode === "YT", msg: "Osiloskop (mode Y-T) terpasang pada CH1 (Input) dan CH2 (Output)." });
+          const all4 = ["50", "500", "5k", "50k"].every((k) => state.freqVisited.has(k));
+          checks.push({ ok: all4, msg: all4 ? "Keempat frekuensi (50 Hz, 500 Hz, 5 kHz, 50 kHz) telah diamati." : "Amati dulu seluruh 4 frekuensi: 50Hz, 500Hz, 5kHz, dan 50kHz!" });
+        }
+
+        else if (s.id === "bode_f0" || s.id === "bode_01f0" || s.id === "bode_10f0") {
+          const targetF = s.id === "bode_f0" ? 1941 : (s.id === "bode_01f0" ? 194 : 19400);
+          checks.push({ ok: state.rcTopo === "hpf", msg: "Susunan RC pada posisi Diferensiator / HPF (C → R)." });
+          checks.push({ ok: sim.genOk && state.gen.wave === "SINE", msg: "Generator Sinyal diatur ke SINUSOIDAL (SIN, OUT: ON) dan terhubung ke Input–GND." });
+          checks.push({ ok: sim.ch1Ok && sim.ch2Ok, msg: "Osiloskop mengukur Input (CH1) dan Output (CH2)." });
+          checks.push({ ok: Math.abs(state.gen.freq - targetF) <= targetF * 0.08, msg: `Frekuensi Generator berada di titik ukur (~${fmtFreq(targetF)}, saat ini ${fmtFreq(state.gen.freq)}).` });
+        }
+
+        else if (s.id === "lissajous") {
+          checks.push({ ok: state.rcTopo === "hpf" && sim.genOk && state.gen.wave === "SINE", msg: "HPF diberi sinyal Sinusoidal (OUT: ON) pada f₀." });
+          checks.push({ ok: Math.abs(state.gen.freq - 1941) <= 150, msg: `Frekuensi berada di cut-off f₀ ≈ 1.94 kHz (saat ini ${fmtFreq(state.gen.freq)}).` });
+          checks.push({ ok: sim.ch1Ok && sim.ch2Ok && state.scope.mode === "XY", msg: "Osiloskop berada di mode X-Y (Lissajous) dengan CH1 & CH2 terpasang." });
+        }
+
+        else if (s.id === "res_seri" || s.id === "res_seri_v") {
+          checks.push({ ok: sim.genOk && state.gen.wave === "SINE" && Math.abs(state.gen.vpp - 1) <= 0.15, msg: "Generator Sinyal (SIN, 1 Vpp, OUT: ON) terhubung ke terminal A–GND." });
+          checks.push({ ok: sim.ch1Ok && sim.ch2Ok && state.scope.mode === "YT", msg: "Osiloskop (mode Y-T) terpasang pada CH1 (A) dan CH2 (Vo)." });
+          checks.push({ ok: Math.abs(state.gen.freq - 146830) <= 3000, msg: `Frekuensi berada pada puncak resonansi seri (~146.8 kHz, saat ini ${fmtFreq(state.gen.freq)}).` });
+        }
+
+        else if (s.id === "res_par") {
+          checks.push({ ok: sim.genOk && state.gen.wave === "SINE" && Math.abs(state.gen.vpp - 1) <= 0.15, msg: "Generator Sinyal (SIN, 1 Vpp, OUT: ON) terhubung ke VA–GND." });
+          checks.push({ ok: sim.ch1Ok && sim.ch2Ok && state.scope.mode === "YT", msg: "Osiloskop (mode Y-T) terpasang pada CH1 (VA) dan CH2 (Vo)." });
+          checks.push({ ok: Math.abs(state.gen.freq - 146830) <= 3000, msg: `Frekuensi berada pada lembah resonansi paralel (~146.8 kHz, saat ini ${fmtFreq(state.gen.freq)}).` });
+        }
+
+        else if (s.id === "res_sp1" || s.id === "res_sp2") {
+          checks.push({ ok: sim.genOk && state.gen.wave === "SINE" && Math.abs(state.gen.vpp - 1) <= 0.15, msg: "Generator Sinyal (SIN, 1 Vpp, OUT: ON) terhubung ke A–GND." });
+          checks.push({ ok: sim.ch1Ok && sim.ch2Ok && state.scope.mode === "YT", msg: "Osiloskop (mode Y-T) terpasang pada CH1 (A) dan CH2 (Vo)." });
+          checks.push({ ok: state.dualSweepVisited.low && state.dualSweepVisited.high, msg: state.dualSweepVisited.low && state.dualSweepVisited.high ? "Kedua titik resonansi (~103.8 kHz dan ~146.8 kHz) telah disapu & diamati." : "Sapu frekuensi melewati kedua titik resonansi (~103.8 kHz dan ~146.8 kHz)!" });
+        }
+
+        // Validasi BCL
+        const rec = [];
+        s.fields.forEach((f, idx) => {
+          const raw = $(`#bcl-in-${idx + 1}`).value.trim().replace(",", ".");
+          const val = raw === "" ? NaN : parseFloat(raw);
+          const ok = !isNaN(val) && Math.abs(val - f.exp) <= f.tol;
+          checks.push({
+            ok,
+            msg: ok ? `${f.lbl} benar (${val} ${f.unit}).` : (isNaN(val) ? `Isi nilai ${f.lbl} (${f.unit}) pada kolom BCL.` : `${f.lbl} (${val} ${f.unit}) belum sesuai — periksa kembali hasil ukur/hitung!`)
+          });
+          if (ok) rec.push(`${val} ${f.unit}`);
+        });
+
+        const passed = checks.every((c) => c.ok);
+        showFeedback(passed ? "pass" : "fail", passed ? `🎉 BENAR! Langkah "${s.title}" selesai & tercatat di BCL.` : "Belum tepat — perbaiki poin ❌ lalu cek lagi:", checks);
+
+        if (passed) {
+          state.completed[s.id] = rec.join(" | ");
+          $("#btn-next").style.display = state.stepIdx < STEPS.length - 1 ? "inline-block" : "none";
+          renderStepStrip();
+          renderBCLTable();
+        }
+      }
+
+      function showFeedback(type, heading, checks = null, guide = null) {
+        const box = $("#feedback-box");
+        box.className = `feedback-box show ${type}`;
+        let html = `<strong>${heading}</strong>`;
+        if (checks) html += `<ul class="check-list">${checks.map((c) => `<li><span>${c.ok ? "✅" : "❌"}</span><span>${c.msg}</span></li>`).join("")}</ul>`;
+        if (guide) html += `<ol style="margin:6px 0 0 18px;display:flex;flex-direction:column;gap:3px;">${guide.map((g) => `<li>${g}</li>`).join("")}</ol>`;
+        box.innerHTML = html;
+      }
+
+      // ============================================================
+      // 9. RENDER SVG PAPAN RANGKAIAN (RC & 4 RANGKAIAN RESONANSI)
+      // ============================================================
+      function el(tag, attrs = {}, parent = null) {
+        const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+        if (parent) parent.appendChild(n);
+        return n;
+      }
+
+      function sText(p, x, y, txt, sz = 12, w = "700", col = "#0F172A", anc = "middle") {
+        const t = el("text", { x, y, "font-size": sz, "font-weight": w, fill: col, "text-anchor": anc }, p);
+        t.textContent = txt;
+        return t;
+      }
+
+      function drawResH(g, svg, x, y, w, lbl) {
+        el("rect", { x, y: y - 10, width: w, height: 20, rx: 3, fill: "#FEF08A" }, g);
+        sText(svg, x + w / 2, y - 16, lbl, 11.5, "800");
+      }
+
+      function drawResV(g, svg, x, y, h, lbl) {
+        el("rect", { x: x - 11, y, width: 22, height: h, rx: 3, fill: "#FEF08A" }, g);
+        sText(svg, x + 20, y + h / 2 + 4, lbl, 11.5, "800", "#0F172A", "start");
+      }
+
+      function drawCapH(g, svg, x1, x2, y, lbl) {
+        const m = (x1 + x2) / 2;
+        el("line", { x1, y1: y, x2: m - 6, y2: y }, g);
+        el("line", { x1: m - 6, y1: y - 15, x2: m - 6, y2: y + 15, "stroke-width": 3.4 }, g);
+        el("line", { x1: m + 6, y1: y - 15, x2: m + 6, y2: y + 15, "stroke-width": 3.4 }, g);
+        el("line", { x1: m + 6, y1: y, x2: x2, y2: y }, g);
+        sText(svg, m, y - 20, lbl, 11.5, "800");
+      }
+
+      function drawCapV(g, svg, x, y1, y2, lbl) {
+        const m = (y1 + y2) / 2;
+        el("line", { x1: x, y1: y1, x2: x, y2: m - 6 }, g);
+        el("line", { x1: x - 15, y1: m - 6, x2: x + 15, y2: m - 6, "stroke-width": 3.4 }, g);
+        el("line", { x1: x - 15, y1: m + 6, x2: x + 15, y2: m + 6, "stroke-width": 3.4 }, g);
+        el("line", { x1: x, y1: m + 6, x2: x, y2: y2 }, g);
+        sText(svg, x + 22, m + 4, lbl, 11.5, "800", "#0F172A", "start");
+      }
+
+      function drawIndH(g, svg, x1, x2, y, lbl) {
+        const m = (x1 + x2) / 2;
+        el("line", { x1, y1: y, x2: m - 28, y2: y }, g);
+        el("path", { d: `M ${m - 28} ${y} C ${m - 28} ${y - 16} ${m - 14} ${y - 16} ${m - 14} ${y} C ${m - 14} ${y - 16} ${m} ${y - 16} ${m} ${y} C ${m} ${y - 16} ${m + 14} ${y - 16} ${m + 14} ${y} C ${m + 14} ${y - 16} ${m + 28} ${y - 16} ${m + 28} ${y}` }, g);
+        el("line", { x1: m + 28, y1: y, x2: x2, y2: y }, g);
+        sText(svg, m, y - 19, lbl, 11.5, "800");
+      }
+
+      function drawGndSym(g, x, y) {
+        el("line", { x1: x - 12, y1: y, x2: x + 12, y2: y }, g);
+        el("line", { x1: x - 8,  y1: y + 5, x2: x + 8,  y2: y + 5 }, g);
+        el("line", { x1: x - 4,  y1: y + 10, x2: x + 4, y2: y + 10 }, g);
+      }
+
+      function renderBoard() {
+        const svg = $("#kit-svg");
+        svg.innerHTML = "";
+        const bKey = stepNow().board;
+        const board = BOARDS[bKey];
+        $("#board-title").textContent = board.title;
+        $("#rc-topo-bar").style.display = bKey === "rc" ? "flex" : "none";
+        $("#res-probe-card").style.display = bKey === "rc" ? "none" : "block";
+
+        const defs = el("defs", {}, svg);
+        const bg = el("linearGradient", { id: "m5Yel", x1: "0%", y1: "0%", x2: "0%", y2: "100%" }, defs);
+        el("stop", { offset: "0%", "stop-color": "#FEF9C3" }, bg);
+        el("stop", { offset: "100%", "stop-color": "#FDE047" }, bg);
+
+        el("rect", { x: 10, y: 10, width: 700, height: 325, rx: 14, fill: "#CBD5E1", stroke: "#94A3B8", "stroke-width": 2.5 }, svg);
+        el("rect", { x: 22, y: 22, width: 676, height: 301, rx: 8, fill: "url(#m5Yel)", stroke: "#CA8A04", "stroke-width": 1.4 }, svg);
+
+        const g = el("g", { stroke: "#1E293B", "stroke-width": 2.5, fill: "none", "stroke-linecap": "round" }, svg);
+
+        if (bKey === "rc") {
+          sText(svg, 360, 52, state.rcTopo === "hpf" ? "RANGKAIAN DIFERENSIATOR / HIGH-PASS FILTER (HPF)" : "RANGKAIAN INTEGRATOR / LOW-PASS FILTER (LPF)", 14, "800");
+          // Top path Input (120,125) -> Output (560,125)
+          if (state.rcTopo === "hpf") {
+            drawCapH(g, svg, 120, 440, 125, "C = 8.2 nF");
+            el("line", { x1: 440, y1: 125, x2: 560, y2: 125 }, g);
+            el("line", { x1: 440, y1: 125, x2: 440, y2: 170 }, g);
+            drawResV(g, svg, 440, 170, 74, "R = 10 kΩ");
+            el("line", { x1: 440, y1: 244, x2: 440, y2: 285 }, g);
+          } else {
+            el("line", { x1: 120, y1: 125, x2: 245, y2: 125 }, g);
+            drawResH(g, svg, 245, 125, 86, "R = 10 kΩ");
+            el("line", { x1: 331, y1: 125, x2: 560, y2: 125 }, g);
+            drawCapV(g, svg, 440, 125, 285, "C = 8.2 nF");
+          }
+          // Bottom GND rail
+          el("line", { x1: 120, y1: 285, x2: 560, y2: 285 }, g);
+          drawGndSym(g, 340, 298);
+          sText(svg, 120, 102, "Input (CH1 / Gen)", 12, "800", "#DC2626");
+          sText(svg, 560, 102, "Output (CH2 / Vo)", 12, "800", "#B45309");
+          sText(svg, 340, 268, "GND", 11.5, "800");
+        }
+
+        else if (bKey === "res_seri") {
+          sText(svg, 360, 48, "RESONANSI SERI RLC — GAMBAR 5-4 (Gen 50Ω → A)", 14, "800");
+          drawIndH(g, svg, 130, 345, 120, "L = 2.5 mH");
+          drawCapH(g, svg, 345, 560, 120, "C = 470 pF");
+          el("line", { x1: 560, y1: 120, x2: 560, y2: 168 }, g);
+          drawResV(g, svg, 560, 168, 76, "47 Ω");
+          el("line", { x1: 560, y1: 244, x2: 560, y2: 292 }, g);
+          el("line", { x1: 130, y1: 292, x2: 560, y2: 292 }, g);
+          drawGndSym(g, 345, 304);
+          sText(svg, 130, 96, "A (Gen+ / CH1)", 11.5, "800", "#DC2626");
+          sText(svg, 345, 96, "B", 12, "800", "#1D4ED8");
+          sText(svg, 560, 96, "O (Vo / CH2)", 11.5, "800", "#B45309");
+        }
+
+        else if (bKey === "res_par") {
+          sText(svg, 360, 48, "RESONANSI PARALEL LC — GAMBAR 5-5 (Gen 50Ω → VA)", 14, "800");
+          el("line", { x1: 145, y1: 150, x2: 225, y2: 150 }, g);
+          el("line", { x1: 225, y1: 108, x2: 225, y2: 192 }, g);
+          drawIndH(g, svg, 225, 445, 108, "L = 2.5 mH");
+          drawCapH(g, svg, 225, 445, 192, "C = 470 pF");
+          el("line", { x1: 445, y1: 108, x2: 445, y2: 192 }, g);
+          el("line", { x1: 445, y1: 150, x2: 555, y2: 150 }, g);
+          el("line", { x1: 555, y1: 150, x2: 555, y2: 185 }, g);
+          drawResV(g, svg, 555, 185, 70, "47 Ω");
+          el("line", { x1: 555, y1: 255, x2: 555, y2: 292 }, g);
+          el("line", { x1: 145, y1: 292, x2: 555, y2: 292 }, g);
+          drawGndSym(g, 350, 304);
+          sText(svg, 145, 126, "VA (Gen+ / CH1)", 11.5, "800", "#DC2626");
+          sText(svg, 555, 126, "Vo (CH2)", 11.5, "800", "#B45309");
+        }
+
+        else if (bKey === "res_sp1") {
+          sText(svg, 360, 48, "RESONANSI SERI-PARALEL 1 — GAMBAR 5-6 (L || [L + C])", 14, "800");
+          el("line", { x1: 120, y1: 150, x2: 185, y2: 150 }, g);
+          el("line", { x1: 185, y1: 102, x2: 185, y2: 202 }, g);
+          drawIndH(g, svg, 185, 345, 102, "2.5 mH");
+          drawCapH(g, svg, 345, 505, 102, "470 pF");
+          drawIndH(g, svg, 185, 505, 202, "2.5 mH");
+          el("line", { x1: 505, y1: 102, x2: 505, y2: 202 }, g);
+          el("line", { x1: 505, y1: 150, x2: 575, y2: 150 }, g);
+          el("line", { x1: 575, y1: 150, x2: 575, y2: 185 }, g);
+          drawResV(g, svg, 575, 185, 70, "47 Ω");
+          el("line", { x1: 575, y1: 255, x2: 575, y2: 292 }, g);
+          el("line", { x1: 120, y1: 292, x2: 575, y2: 292 }, g);
+          drawGndSym(g, 345, 304);
+          sText(svg, 120, 126, "A (Gen+ / CH1)", 11.5, "800", "#DC2626");
+          sText(svg, 575, 126, "Vo (CH2)", 11.5, "800", "#B45309");
+        }
+
+        else if (bKey === "res_sp2") {
+          sText(svg, 360, 48, "RESONANSI SERI-PARALEL 2 — GAMBAR 5-7 (C seri [C || L])", 14, "800");
+          drawCapH(g, svg, 110, 280, 150, "470 pF");
+          el("line", { x1: 280, y1: 150, x2: 320, y2: 150 }, g);
+          el("line", { x1: 320, y1: 104, x2: 320, y2: 196 }, g);
+          drawCapH(g, svg, 320, 505, 104, "470 pF");
+          drawIndH(g, svg, 320, 505, 196, "2.5 mH");
+          el("line", { x1: 505, y1: 104, x2: 505, y2: 196 }, g);
+          el("line", { x1: 505, y1: 150, x2: 575, y2: 150 }, g);
+          el("line", { x1: 575, y1: 150, x2: 575, y2: 185 }, g);
+          drawResV(g, svg, 575, 185, 70, "47 Ω");
+          el("line", { x1: 575, y1: 255, x2: 575, y2: 292 }, g);
+          el("line", { x1: 110, y1: 292, x2: 575, y2: 292 }, g);
+          drawGndSym(g, 345, 304);
+          sText(svg, 110, 126, "A (Gen+ / CH1)", 11.5, "800", "#DC2626");
+          sText(svg, 575, 126, "Vo (CH2)", 11.5, "800", "#B45309");
+        }
+
+        // Clickable Terminals
+        const req = getReqPortType();
+        board.ports.forEach((p) => {
+          const pg = el("g", { class: "svg-port", "data-port": p.id }, svg);
+          const isPicked = state.pending && (state.pending.first === p.id || state.pending.bnc === p.id || state.pending.pos === p.id);
+          el("title", {}, pg).textContent = `${p.label} [BANANA]`;
+
+          if (isPicked) el("circle", { cx: p.x, cy: p.y, r: 16, fill: "rgba(2,132,199,0.28)", stroke: "#0284C7", "stroke-width": 2.5 }, pg);
+          else if (req === "banana") el("circle", { cx: p.x, cy: p.y, r: 13.5, fill: "none", stroke: "rgba(2,132,199,0.45)", "stroke-width": 1.6 }, pg);
+
+          el("circle", { cx: p.x, cy: p.y, r: 10.5, fill: p.color, stroke: "#1E293B", "stroke-width": 1.6, class: "svg-ring" }, pg);
+          el("circle", { cx: p.x, cy: p.y, r: 5.8, fill: "#E2E8F0", stroke: "#475569", "stroke-width": 1 }, pg);
+          el("circle", { cx: p.x, cy: p.y, r: 2.8, fill: "#0F172A" }, pg);
+          pg.addEventListener("click", () => handlePortClick(p.id));
+        });
+      }
+
+      // ============================================================
+      // 10. OVERLAY KABEL & PORT INTERACTION
+      // ============================================================
+      function getReqPortType() {
+        const m = CABLES_META[state.selectedCable];
+        if (m.kind === "bnc_split") return !state.pending ? "bnc" : "banana";
+        return "banana";
+      }
+
+      function handlePortClick(pid) {
+        const info = portInfo(pid);
+        const req = getReqPortType();
+        const m = CABLES_META[state.selectedCable];
+        if (info.type !== req) {
+          $("#wire-hint").textContent = `Port ini bertipe ${info.type.toUpperCase()} — pilih port ${req.toUpperCase()}!`;
+          return;
+        }
+        if (m.kind === "banana2") {
+          if (!state.pending) state.pending = { first: pid };
+          else {
+            if (state.pending.first !== pid) state.cables.push({ type: state.selectedCable, from: state.pending.first, to: pid });
+            state.pending = null;
+          }
+        } else {
+          if (!state.pending) state.pending = { bnc: pid, pos: null };
+          else if (!state.pending.pos) state.pending.pos = pid;
+          else {
+            if (state.pending.pos !== pid) {
+              state.cables.push({ type: state.selectedCable, bnc: state.pending.bnc, pos: state.pending.pos, neg: pid });
+              state.pending = null;
+            }
+          }
+        }
+        updateAll();
+      }
+
+      function getPortCenter(pid) {
+        const cr = $("#bench-container").getBoundingClientRect();
+        const he = document.querySelector(`.jack-wrap[data-port="${pid}"] .port-jack`);
+        if (he) { const r = he.getBoundingClientRect(); return { x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top }; }
+        const se = document.querySelector(`#kit-svg .svg-port[data-port="${pid}"]`);
+        if (se) { const r = se.getBoundingClientRect(); return { x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top }; }
+        return null;
+      }
+
+      function renderCablesOverlay() {
+        const ov = $("#cable-overlay");
+        const rect = $("#bench-container").getBoundingClientRect();
+        ov.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+        ov.innerHTML = "";
+
+        state.cables.forEach((c, idx) => {
+          const m = CABLES_META[c.type];
+          const g = el("g", { class: "cable-group" }, ov);
+          el("title", {}, g).textContent = `Klik untuk melepas ${m.name}`;
+
+          if (m.kind === "banana2") {
+            const p1 = getPortCenter(c.from), p2 = getPortCenter(c.to);
+            if (!p1 || !p2) return;
+            const sag = Math.min(82, 22 + Math.hypot(p2.x - p1.x, p2.y - p1.y) * 0.13);
+            const d = `M ${p1.x} ${p1.y} Q ${(p1.x + p2.x) / 2} ${Math.max(p1.y, p2.y) + sag} ${p2.x} ${p2.y}`;
+            el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 16, class: "cable-hit" }, g);
+            el("path", { d, fill: "none", stroke: "rgba(15,23,42,0.18)", "stroke-width": 6, "stroke-linecap": "round", transform: "translate(0,3)" }, g);
+            el("path", { d, fill: "none", stroke: m.color, "stroke-width": 4, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("circle", { cx: p1.x, cy: p1.y, r: 5.2, fill: m.color, stroke: "#FFF", "stroke-width": 1.5 }, g);
+            el("circle", { cx: p2.x, cy: p2.y, r: 5.2, fill: m.color, stroke: "#FFF", "stroke-width": 1.5 }, g);
+          } else {
+            const pb = getPortCenter(c.bnc), pp = getPortCenter(c.pos), pn = getPortCenter(c.neg);
+            if (!pb || !pp || !pn) return;
+            const sx = pb.x + (Math.min(pp.x, pn.x) - pb.x) * 0.56;
+            const sy = (pb.y + (pp.y + pn.y) / 2) / 2 + 20;
+            const d1 = `M ${pb.x} ${pb.y} Q ${(pb.x + sx) / 2} ${Math.max(pb.y, sy) + 20} ${sx} ${sy}`;
+            const d2 = `M ${sx} ${sy} Q ${(sx + pp.x) / 2} ${Math.min(sy, pp.y) - 20} ${pp.x} ${pp.y}`;
+            const d3 = `M ${sx} ${sy} Q ${(sx + pn.x) / 2} ${Math.max(sy, pn.y) + 20} ${pn.x} ${pn.y}`;
+            [d1, d2, d3].forEach((d) => el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 14, class: "cable-hit" }, g));
+            el("path", { d: d1, fill: "none", stroke: "#334155", "stroke-width": 5.5, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("path", { d: d2, fill: "none", stroke: m.color, "stroke-width": 3.6, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("path", { d: d3, fill: "none", stroke: "#1E293B", "stroke-width": 3.6, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("rect", { x: sx - 8, y: sy - 6, width: 16, height: 12, rx: 3, fill: "#0F172A", stroke: "#94A3B8", "stroke-width": 1.2 }, g);
+            el("circle", { cx: pb.x, cy: pb.y, r: 6, fill: "#475569", stroke: "#FFF", "stroke-width": 1.5 }, g);
+            el("circle", { cx: pp.x, cy: pp.y, r: 5.2, fill: m.color, stroke: "#FFF", "stroke-width": 1.4 }, g);
+            el("circle", { cx: pn.x, cy: pn.y, r: 5.2, fill: "#1E293B", stroke: "#FFF", "stroke-width": 1.4 }, g);
+          }
+
+          g.addEventListener("click", (e) => {
+            e.stopPropagation();
+            state.cables.splice(idx, 1);
+            updateAll();
+          });
+        });
+      }
+
+      // ============================================================
+      // 11. UI SYNC, PROGRESS TAGS & STEP LOADING
+      // ============================================================
+      function renderLiveProgressTags() {
+        const box = $("#live-progress");
+        const s = stepNow();
+        if (s.id === "rc_diff_sq" || s.id === "rc_int_sq") {
+          box.innerHTML = ["50", "500", "5k", "50k"].map((k) => {
+            const ok = state.freqVisited.has(k);
+            return `<span class="prog-tag ${ok ? "ok" : ""}">${ok ? "✓" : "○"} ${k}Hz</span>`;
+          }).join("");
+        } else if (s.id === "res_sp1" || s.id === "res_sp2") {
+          box.innerHTML = `
+            <span class="prog-tag ${state.dualSweepVisited.low ? "ok" : ""}">${state.dualSweepVisited.low ? "✓" : "○"} Titik Resonansi Bawah (~103.8 kHz)</span>
+            <span class="prog-tag ${state.dualSweepVisited.high ? "ok" : ""}">${state.dualSweepVisited.high ? "✓" : "○"} Titik Resonansi Atas (~146.8 kHz)</span>
+          `;
+        } else {
+          box.innerHTML = "";
+        }
+      }
+
+      function renderStepStrip() {
+        const strip = $("#step-strip");
+        strip.innerHTML = "";
+        STEPS.forEach((s, i) => {
+          const b = document.createElement("button");
+          b.className = `step-chip ${i === state.stepIdx ? "active" : ""} ${state.completed[s.id] ? "done" : ""}`;
+          b.textContent = (state.completed[s.id] ? "✓ " : "") + s.short;
+          b.addEventListener("click", () => loadStep(i));
+          strip.appendChild(b);
+        });
+        $("#score-pill").textContent = `Selesai: ${Object.keys(state.completed).length} / ${STEPS.length}`;
+      }
+
+      function loadStep(idx) {
+        const prevBoard = stepNow().board;
+        state.stepIdx = idx;
+        const s = stepNow();
+        if (s.board !== prevBoard) {
+          state.cables = [];
+          state.pending = null;
+        }
+        state.freqVisited = new Set();
+        state.dualSweepVisited = { low: false, high: false };
+
+        $("#m-tag").textContent = s.tag;
+        $("#m-title").textContent = s.title;
+        $("#m-desc").textContent = s.desc;
+        $("#m-warn").textContent = s.warn || "";
+        $("#m-warn").style.display = s.warn ? "inline-block" : "none";
+
+        $("#bcl-lbl-1").textContent = s.fields[0].lbl;
+        $("#bcl-unit-1").textContent = s.fields[0].unit;
+        $("#bcl-in-1").value = "";
+
+        if (s.fields.length > 1) {
+          $("#bcl-row-2").style.display = "flex";
+          $("#bcl-lbl-2").textContent = s.fields[1].lbl;
+          $("#bcl-unit-2").textContent = s.fields[1].unit;
+          $("#bcl-in-2").value = "";
+        } else {
+          $("#bcl-row-2").style.display = "none";
+        }
+
+        $("#feedback-box").className = "feedback-box";
+        $("#btn-next").style.display = state.completed[s.id] && idx < STEPS.length - 1 ? "inline-block" : "none";
+        renderStepStrip();
+        updateAll();
+      }
+
+      function autoScaleTimebase() {
+        // Choose T/div so ~2-4 periods fit nicely on the 10-div screen
+        const targetTdiv = (2.5 / state.gen.freq) / 10;
+        let best = 0, bestDiff = Infinity;
+        TDIVS.forEach((td, i) => {
+          const d = Math.abs(Math.log10(td) - Math.log10(targetTdiv));
+          if (d < bestDiff) { bestDiff = d; best = i; }
+        });
+        state.scope.tIdx = best;
+      }
+
+      function setGenFreq(hz, doAutoTime = true) {
+        state.gen.freq = Math.max(10, Math.min(250000, hz));
+        if (doAutoTime) autoScaleTimebase();
+        updateAll();
+      }
+
+      function updateAll() {
+        // Scope UI
+        $("#sc-run").textContent = state.scope.run ? "RUN" : "STOP";
+        $("#sc-run").className = `hw-btn ${state.scope.run ? "on" : "stop"}`;
+        $("#sc-yt").classList.toggle("active", state.scope.mode === "YT");
+        $("#sc-xy").classList.toggle("active", state.scope.mode === "XY");
+        $("#sc-cpl").textContent = `CPL: ${state.scope.cpl}`;
+
+        // Gen UI
+        const wLbl = state.gen.wave === "SQUARE" ? "SQR" : "SIN";
+        $("#gen-disp").textContent = `${wLbl} • ${fmtFreq(state.gen.freq)} • ${state.gen.vpp.toFixed(1)} Vpp`;
+        $("#gen-freq-num").value = Math.round(state.gen.freq * 10) / 10;
+        $("#gen-log-slider").value = Math.log10(state.gen.freq).toFixed(3);
+        $("#gen-out").textContent = state.gen.on ? "OUT: ON" : "OUT: OFF";
+        $("#gen-out").className = `hw-btn ${state.gen.on ? "on" : ""}`;
+        $("#gen-led").className = `led ${state.gen.on ? "green" : ""}`;
+        document.querySelectorAll("[data-wave]").forEach((b) => b.classList.toggle("active", b.dataset.wave === state.gen.wave));
+        document.querySelectorAll("[data-vpp]").forEach((b) => b.classList.toggle("active", parseFloat(b.dataset.vpp) === state.gen.vpp));
+
+        // RC Topology buttons
+        document.querySelectorAll("[data-rctopo]").forEach((b) => b.classList.toggle("active", b.dataset.rctopo === state.rcTopo));
+
+        // Status badge
+        const sim = solveLiveCircuit();
+        $("#status-badge").textContent = sim.genOk ? `Aktif @ ${fmtFreq(state.gen.freq)}` : "Generator Belum Terhubung / OFF";
+
+        // Jacks & wire hint
+        const req = getReqPortType();
+        document.querySelectorAll(".jack-wrap").forEach((jw) => {
+          const pid = jw.dataset.port;
+          const jk = jw.querySelector(".port-jack");
+          const isPicked = state.pending && (state.pending.first === pid || state.pending.bnc === pid || state.pending.pos === pid);
+          jk.classList.toggle("selected-port", Boolean(isPicked));
+          jk.classList.toggle("match-hint", jw.dataset.ptype === req && !isPicked);
+        });
+
+        const m = CABLES_META[state.selectedCable];
+        if (!state.pending) {
+          $("#wire-hint").textContent = m.kind === "bnc_split"
+            ? `Mode ${m.name}: klik port BNC dulu → (+) Merah → (−) Hitam/GND.`
+            : `Mode ${m.name}: klik terminal Banana pertama.`;
+        } else if (m.kind === "bnc_split") {
+          $("#wire-hint").textContent = !state.pending.pos
+            ? `BNC di ${portInfo(state.pending.bnc).label} → klik terminal (+) Merah.`
+            : `Ujung (+) di ${portInfo(state.pending.pos).label} → klik terminal (−) GND.`;
+        } else {
+          $("#wire-hint").textContent = `Dari ${portInfo(state.pending.first).label} → klik terminal tujuan.`;
+        }
+
+        renderBoard();
+        renderCableList();
+        requestAnimationFrame(renderCablesOverlay);
+      }
+
+      function renderCableList() {
+        const list = $("#cable-list");
+        $("#cable-count-badge").textContent = `${state.cables.length} kabel`;
+        list.innerHTML = "";
+        if (!state.cables.length) { list.innerHTML = `<div style="font-size:0.74rem;color:#94A3B8;">Belum ada kabel terpasang.</div>`; return; }
+        state.cables.forEach((c, idx) => {
+          const m = CABLES_META[c.type];
+          const desc = m.kind === "bnc_split"
+            ? `${portInfo(c.bnc).label} → (+)${portInfo(c.pos).label} / (−)${portInfo(c.neg).label}`
+            : `${portInfo(c.from).label} ↔ ${portInfo(c.to).label}`;
+          const row = document.createElement("div");
+          row.className = "cable-row";
+          row.innerHTML = `<span><strong style="color:${m.color}">●</strong> ${desc}</span><button class="cable-del">Lepas</button>`;
+          row.querySelector("button").addEventListener("click", () => { state.cables.splice(idx, 1); updateAll(); });
+          list.appendChild(row);
+        });
+      }
+
+      function renderBCLTable() {
+        const tb = $("#bcl-tbody");
+        if (!Object.keys(state.completed).length) {
+          tb.innerHTML = `<tr><td colspan="4" style="color:#94A3B8;text-align:center;">Belum ada data tercatat.</td></tr>`;
+          return;
+        }
+        tb.innerHTML = STEPS.filter((s) => state.completed[s.id]).map((s) =>
+          `<tr><td>${s.short}</td><td>${s.param}</td><td><strong>${state.completed[s.id]}</strong></td><td style="color:#059669;font-weight:700;">✓ Valid</td></tr>`
+        ).join("");
+      }
+
+      // ============================================================
+      // 12. EVENT LISTENERS
+      // ============================================================
+      document.querySelectorAll(".cable-btn").forEach((b) => b.addEventListener("click", () => {
+        document.querySelectorAll(".cable-btn").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        state.selectedCable = b.dataset.cable;
+        state.pending = null;
+        updateAll();
+      }));
+
+      document.querySelectorAll(".jack-wrap").forEach((jw) => jw.addEventListener("click", () => handlePortClick(jw.dataset.port)));
+
+      // Scope Controls
+      $("#sc-run").addEventListener("click", () => { state.scope.run = !state.scope.run; updateAll(); });
+      $("#sc-yt").addEventListener("click", () => { state.scope.mode = "YT"; updateAll(); });
+      $("#sc-xy").addEventListener("click", () => { state.scope.mode = "XY"; updateAll(); });
+      $("#sc-v1-m").addEventListener("click", () => { state.scope.v1Idx = Math.max(0, state.scope.v1Idx - 1); });
+      $("#sc-v1-p").addEventListener("click", () => { state.scope.v1Idx = Math.min(VDIVS.length - 1, state.scope.v1Idx + 1); });
+      $("#sc-v2-m").addEventListener("click", () => { state.scope.v2Idx = Math.max(0, state.scope.v2Idx - 1); });
+      $("#sc-v2-p").addEventListener("click", () => { state.scope.v2Idx = Math.min(VDIVS.length - 1, state.scope.v2Idx + 1); });
+      $("#sc-t-m").addEventListener("click", () => { state.scope.tIdx = Math.max(0, state.scope.tIdx - 1); });
+      $("#sc-t-p").addEventListener("click", () => { state.scope.tIdx = Math.min(TDIVS.length - 1, state.scope.tIdx + 1); });
+      $("#sc-cpl").addEventListener("click", () => { const o = ["AC", "DC", "GND"]; state.scope.cpl = o[(o.indexOf(state.scope.cpl) + 1) % 3]; updateAll(); });
+      $("#sc-auto").addEventListener("click", () => {
+        const sim = solveLiveCircuit();
+        autoScaleTimebase();
+        const pickV = (vpp) => {
+          const target = Math.max(0.02, vpp / 4.5);
+          let idx = VDIVS.findIndex((v) => v >= target);
+          return idx === -1 ? VDIVS.length - 1 : idx;
+        };
+        if (sim.viVpp > 0) state.scope.v1Idx = pickV(sim.viVpp);
+        if (sim.voVpp > 0) state.scope.v2Idx = pickV(sim.voVpp);
+        updateAll();
+      });
+
+      // Generator Controls
+      $("#gen-out").addEventListener("click", () => { state.gen.on = !state.gen.on; updateAll(); });
+      document.querySelectorAll("[data-wave]").forEach((b) => b.addEventListener("click", () => { state.gen.wave = b.dataset.wave; updateAll(); }));
+      document.querySelectorAll("[data-vpp]").forEach((b) => b.addEventListener("click", () => { state.gen.vpp = parseFloat(b.dataset.vpp); updateAll(); }));
+      document.querySelectorAll("[data-fset]").forEach((b) => b.addEventListener("click", () => setGenFreq(parseFloat(b.dataset.fset), true)));
+      document.querySelectorAll("[data-fmul]").forEach((b) => b.addEventListener("click", () => setGenFreq(state.gen.freq * parseFloat(b.dataset.fmul), true)));
+      document.querySelectorAll("[data-fadd]").forEach((b) => b.addEventListener("click", () => setGenFreq(state.gen.freq + parseFloat(b.dataset.fadd), true)));
+      $("#gen-log-slider").addEventListener("input", (e) => setGenFreq(Math.pow(10, parseFloat(e.target.value)), true));
+      $("#gen-freq-num").addEventListener("change", (e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) setGenFreq(v, true); });
+
+      // RC Topology
+      document.querySelectorAll("[data-rctopo]").forEach((b) => b.addEventListener("click", () => {
+        state.rcTopo = b.dataset.rctopo;
+        state.freqVisited = new Set();
+        updateAll();
+      }));
+
+      // Cable Actions
+      $("#btn-undo").addEventListener("click", () => { state.cables.pop(); state.pending = null; updateAll(); });
+      $("#btn-clear").addEventListener("click", () => { state.cables = []; state.pending = null; updateAll(); });
+
+      // Mission Controls
+      $("#btn-check").addEventListener("click", validateStep);
+      $("#bcl-in-1").addEventListener("keydown", (e) => { if (e.key === "Enter") validateStep(); });
+      $("#bcl-in-2").addEventListener("keydown", (e) => { if (e.key === "Enter") validateStep(); });
+
+      $("#btn-hint").addEventListener("click", () => {
+        const s = stepNow();
+        showFeedback("hint", `Panduan Cara Benar — ${s.title}:`, null, s.guide);
+      });
+
+      $("#btn-auto").addEventListener("click", () => {
+        const s = stepNow();
+        const a = s.auto;
+        if (a.rcTopo) state.rcTopo = a.rcTopo;
+        state.gen = { ...a.gen };
+        state.scope = { ...state.scope, ...a.scope, run: true };
+        state.cables = a.cables.map((c) => ({ ...c }));
+        state.pending = null;
+        if (a.forceFreqs) a.forceFreqs.forEach((f) => state.freqVisited.add(f));
+        if (a.forceDualSweep) state.dualSweepVisited = { low: true, high: true };
+        s.fields.forEach((f, idx) => { $(`#bcl-in-${idx + 1}`).value = f.exp; });
+        updateAll();
+        showFeedback("hint", "Demo rangkaian & pengaturan alat yang benar telah dipasang! Amati kurva Osiloskop, grafik Bode/Resonansi, dan nilai ukurnya, lalu klik 'Cek Langkah Ini'.");
+      });
+
+      $("#btn-next").addEventListener("click", () => { if (state.stepIdx < STEPS.length - 1) loadStep(state.stepIdx + 1); });
+
+      $("#btn-reset-exam").addEventListener("click", () => {
+        state.completed = {};
+        state.cables = [];
+        state.pending = null;
+        state.gen = { on: false, wave: "SQUARE", freq: 50, vpp: 4.0 };
+        state.timerSec = 0;
+        renderBCLTable();
+        loadStep(0);
+      });
+
+      window.addEventListener("resize", () => requestAnimationFrame(renderCablesOverlay));
+      window.addEventListener("keydown", (e) => { if (e.key === "Escape" && state.pending) { state.pending = null; updateAll(); } });
+
+      setInterval(() => {
+        state.timerSec++;
+        const m = String(Math.floor(state.timerSec / 60)).padStart(2, "0");
+        const s = String(state.timerSec % 60).padStart(2, "0");
+        $("#timer-pill").textContent = `⏱ ${m}:${s}`;
+      }, 1000);
+
+      loadStep(0);
+      renderScopeAndPlots();
+    })();
+  </script>
+</body>
+</html>
