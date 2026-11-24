@@ -1,0 +1,2682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulasi Ujian Praktek Elektronika — Thevenin, Norton, Superposisi & Resiprositas</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-soft: #F1F5F9;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #475569;
+      --accent: #0284C7;
+      --accent-soft: #E0F2FE;
+      --ok: #059669;
+      --ok-soft: #D1FAE5;
+      --warn: #D97706;
+      --warn-soft: #FEF3C7;
+      --err: #DC2626;
+      --err-soft: #FFE4E6;
+      --shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --ease: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 14px;
+    }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Top Header & Exam Bar */
+    .topbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand h1 { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; }
+    .brand p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .exam-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .pill.timer { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; font-variant-numeric: tabular-nums; }
+    .pill.score { background: var(--ok-soft); border-color: #A7F3D0; color: #065F46; }
+
+    /* Step Progress Strip */
+    .step-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 2px 0;
+    }
+
+    .step-chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--ease);
+    }
+
+    .step-chip:hover { border-color: #94A3B8; }
+    .step-chip.active { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
+    .step-chip.done { background: var(--ok-soft); color: #065F46; border-color: #6EE7B7; }
+    .step-chip.done.active { background: #047857; color: #FFFFFF; border-color: #047857; }
+
+    /* Mission Instruction Card */
+    .mission-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .mission-card { grid-template-columns: 1fr; }
+    }
+
+    .mission-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--accent-soft);
+      color: #0369A1;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .mission-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+    .mission-desc { font-size: 0.86rem; color: #334155; }
+    .mission-warn {
+      margin-top: 8px;
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: #9A3412;
+      background: #FFEDD5;
+      border: 1px solid #FDBA74;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .mission-action-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .bcl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bcl-row label { font-size: 0.8rem; font-weight: 700; color: var(--text); }
+
+    .bcl-input {
+      flex: 1;
+      min-width: 110px;
+      padding: 7px 10px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      background: #FFFFFF;
+    }
+
+    .bcl-unit { font-size: 0.82rem; font-weight: 800; color: var(--text-muted); }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--ease);
+      background: #FFFFFF;
+      color: var(--text);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    .btn-primary:hover { background: #0369A1; }
+    .btn-success { background: var(--ok); border-color: var(--ok); color: #FFFFFF; }
+    .btn-success:hover { background: #047857; }
+    .btn-warn { background: var(--warn-soft); border-color: #FCD34D; color: #92400E; }
+    .btn-danger { background: var(--err-soft); border-color: #FDA4AF; color: #BE123C; }
+
+    /* Feedback Panel */
+    .feedback-box {
+      grid-column: 1 / -1;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.83rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; }
+    .feedback-box.pass { background: var(--ok-soft); border: 1px solid #6EE7B7; color: #065F46; }
+    .feedback-box.fail { background: var(--err-soft); border: 1px solid #FDA4AF; color: #9F1239; }
+    .feedback-box.hint { background: var(--warn-soft); border: 1px solid #FCD34D; color: #78350F; }
+
+    .check-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+    .check-list li { display: flex; align-items: baseline; gap: 6px; font-weight: 600; }
+
+    /* Safety Alarm */
+    .alarm-banner {
+      display: none;
+      background: #DC2626;
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      animation: alarmBlink 0.9s infinite alternate;
+    }
+
+    .alarm-banner.show { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+    @keyframes alarmBlink {
+      from { background: #DC2626; }
+      to { background: #991B1B; }
+    }
+
+    /* Cable Toolbar */
+    .cable-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cable-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+    .cable-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid var(--border);
+      background: #FFFFFF;
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--ease);
+    }
+
+    .cable-btn.active { border-color: var(--accent); background: var(--accent-soft); color: #0369A1; }
+
+    .dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); display: inline-block; }
+    .dot-split { width: 13px; height: 13px; border-radius: 50%; background: linear-gradient(135deg,#EF4444 50%,#1E293B 50%); border: 1px solid rgba(0,0,0,0.25); }
+
+    .wire-hint {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #0369A1;
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    /* MAIN BENCH WORKSPACE: Left Instruments + Right Kit Board */
+    .bench-container {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .bench-grid {
+      display: grid;
+      grid-template-columns: 440px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 1120px) {
+      .bench-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Overlay SVG for Real Cables Across Instruments & Kit */
+    #cable-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #cable-overlay .cable-hit {
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+
+    #cable-overlay .cable-group:hover .cable-vis {
+      filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.85));
+      opacity: 0.82;
+    }
+
+    /* REALISTIC LAB INSTRUMENTS */
+    .instrument-rack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .inst-panel {
+      background: #1E293B;
+      color: #F8FAFC;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 10px rgba(15,23,42,0.16);
+    }
+
+    .inst-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 5px;
+    }
+
+    .inst-name { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; color: #CBD5E1; text-transform: uppercase; }
+    .inst-model { font-size: 0.68rem; color: #94A3B8; font-weight: 600; }
+
+    .led {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #475569;
+      margin-right: 4px;
+    }
+
+    .led.on-green { background: #22C55E; box-shadow: 0 0 8px #22C55E; }
+    .led.on-red { background: #EF4444; box-shadow: 0 0 8px #EF4444; }
+    .led.on-amber { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+
+    /* Digital LCD / 7-Segment Screens */
+    .lcd-screen {
+      background: #0B192C;
+      border: 2px solid #0F172A;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: "Courier New", Consolas, monospace;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    .lcd-dmm {
+      background: #C7D8B6;
+      color: #142214;
+      border: 2px solid #475569;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-family: "Courier New", Consolas, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.22);
+    }
+
+    .lcd-dmm .val { font-size: 1.45rem; font-weight: 900; letter-spacing: 0.04em; }
+    .lcd-dmm .mode-tag { font-size: 0.72rem; font-weight: 800; }
+    .lcd-dmm.err-state { background: #FECACA; color: #7F1D1D; }
+
+    /* Tactile Hardware Buttons */
+    .hw-btn {
+      background: #334155;
+      color: #F1F5F9;
+      border: 1px solid #475569;
+      border-bottom: 2px solid #0F172A;
+      border-radius: 6px;
+      padding: 4px 7px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .hw-btn:hover { background: #475569; }
+    .hw-btn:active { transform: translateY(1px); border-bottom-width: 1px; }
+    .hw-btn.active { background: #0284C7; border-color: #38BDF8; color: #FFFFFF; }
+    .hw-btn.out-on { background: #16A34A; border-color: #4ADE80; color: #FFFFFF; }
+    .hw-btn.out-off { background: #475569; color: #CBD5E1; }
+
+    /* PSU Dual Channel Layout */
+    .psu-channels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .psu-ch {
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 9px;
+      padding: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .psu-readout {
+      color: #4ADE80;
+      font-size: 1.15rem;
+      font-weight: 900;
+      text-align: right;
+      letter-spacing: 0.05em;
+    }
+
+    .psu-readout.off { color: #475569; }
+    .psu-readout.short { color: #F87171; }
+
+    .mini-controls {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .mini-controls input[type="range"] {
+      width: 100%;
+      accent-color: #38BDF8;
+      cursor: pointer;
+    }
+
+    /* Port Jacks inside HTML Instruments */
+    .jack-strip {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-top: 6px;
+      border-top: 1px dashed #334155;
+      margin-top: 4px;
+    }
+
+    .jack-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
+    .jack-wrap span {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #CBD5E1;
+    }
+
+    .port-jack {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid #94A3B8;
+      background: radial-gradient(circle, #0F172A 32%, #CBD5E1 36%, #CBD5E1 64%, #64748B 68%);
+      position: relative;
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+
+    .port-jack.red { border-color: #EF4444; }
+    .port-jack.black { border-color: #0F172A; box-shadow: 0 0 0 1.5px #64748B; }
+    .port-jack.yellow { border-color: #FACC15; }
+    .port-jack.bnc {
+      border-color: #94A3B8;
+      background: radial-gradient(circle, #D97706 20%, #FFFFFF 24%, #FFFFFF 55%, #64748B 60%);
+      border-radius: 50%;
+    }
+    .port-jack.bnc::before, .port-jack.bnc::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: #CBD5E1;
+      transform: translateY(-50%);
+    }
+    .port-jack.bnc::before { left: -5px; }
+    .port-jack.bnc::after { right: -5px; }
+
+    .port-jack:hover { transform: scale(1.16); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.55); }
+    .port-jack.match-hint { box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.45); }
+    .port-jack.selected-port { box-shadow: 0 0 0 4px #38BDF8; transform: scale(1.18); }
+
+    /* Oscilloscope Canvas & Controls */
+    .scope-wrap {
+      display: grid;
+      grid-template-columns: 1fr 125px;
+      gap: 8px;
+      align-items: start;
+    }
+
+    canvas#scope-canvas {
+      width: 100%;
+      height: 128px;
+      background: #06131F;
+      border: 2px solid #0F172A;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .scope-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .scope-mini-row { display: flex; gap: 3px; }
+    .scope-mini-row .hw-btn { flex: 1; padding: 3px 4px; font-size: 0.65rem; }
+
+    /* Right Side: Kit Board + Controls + BCL Table */
+    .kit-side {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .kit-board-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .kit-board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .kit-board-title { font-size: 0.88rem; font-weight: 800; color: var(--text); }
+
+    svg#kit-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+    }
+
+    .svg-port { cursor: pointer; }
+    .svg-port:hover .svg-ring { stroke: #0284C7; stroke-width: 3.2; }
+
+    /* Kit Potentiometer Controls */
+    .kit-knobs {
+      margin-top: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+
+    .knob-group { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px; }
+    .knob-group input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+    .knob-val {
+      font-family: "Courier New", monospace;
+      font-weight: 800;
+      background: var(--surface-soft);
+      padding: 2px 7px;
+      border-radius: 6px;
+      min-width: 74px;
+      text-align: center;
+    }
+
+    /* Bottom BCL & Cable Drawer */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 960px) {
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    .sub-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .sub-card h3 { font-size: 0.86rem; font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between; }
+
+    table.bcl-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    table.bcl-table th, table.bcl-table td {
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      text-align: left;
+    }
+
+    table.bcl-table th { background: var(--surface-soft); font-weight: 700; color: var(--text-muted); }
+
+    .cable-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .cable-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.76rem;
+    }
+
+    .cable-del {
+      border: none;
+      background: var(--err-soft);
+      color: #BE123C;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <h1>Simulasi Ujian Praktek Rangkaian Elektrik</h1>
+        <p>Theorema Thevenin, Norton, Superposisi &amp; Resiprositas — Praktik Merangkai &amp; Mengoperasikan Alat Lab</p>
+      </div>
+      <div class="exam-meta">
+        <span id="timer-pill" class="pill timer">⏱ 00:00</span>
+        <span id="score-pill" class="pill score">Selesai: 0 / 12</span>
+        <button id="btn-reset-exam" class="btn">Ulangi Ujian</button>
+      </div>
+    </header>
+
+    <!-- STEP NAVIGATION -->
+    <nav id="step-strip" class="step-strip" aria-label="Daftar Langkah Ujian"></nav>
+
+    <!-- SAFETY ALARM -->
+    <div id="alarm-banner" class="alarm-banner">
+      <span id="alarm-text"></span>
+      <button id="btn-alarm-clear" class="btn" style="padding:4px 10px;">Lepas Kabel Terakhir</button>
+    </div>
+
+    <!-- EXAM MISSION PANEL -->
+    <section class="mission-card">
+      <div>
+        <span id="m-tag" class="mission-tag">Percobaan 1</span>
+        <h2 id="m-title" class="mission-title">Judul Langkah</h2>
+        <p id="m-desc" class="mission-desc"></p>
+        <div id="m-warn" class="mission-warn" style="display:none;"></div>
+      </div>
+
+      <div class="mission-action-box">
+        <div class="bcl-row">
+          <label for="bcl-input" id="bcl-label">Catat di BCL:</label>
+          <input id="bcl-input" class="bcl-input" type="text" placeholder="Ketik angka..." autocomplete="off" />
+          <span id="bcl-unit" class="bcl-unit">mA</span>
+        </div>
+        <div class="btn-row">
+          <button id="btn-check" class="btn btn-primary">✓ Cek Langkah Ini</button>
+          <button id="btn-hint" class="btn btn-warn">💡 Minta Cara Benar</button>
+          <button id="btn-auto" class="btn">⚡ Demo Pasang Benar</button>
+          <button id="btn-next" class="btn btn-success" style="display:none;">Lanjut Langkah →</button>
+        </div>
+      </div>
+
+      <div id="feedback-box" class="feedback-box"></div>
+    </section>
+
+    <!-- CABLE SELECTION BAR -->
+    <section class="cable-bar">
+      <div class="cable-pills">
+        <strong style="font-size:0.76rem;color:#475569;text-transform:uppercase;">Kabel:</strong>
+        <button class="cable-btn active" data-cable="banana-red"><span class="dot" style="background:#EF4444"></span> Banana Merah</button>
+        <button class="cable-btn" data-cable="banana-black"><span class="dot" style="background:#1E293B"></span> Banana Hitam</button>
+        <button class="cable-btn" data-cable="banana-blue"><span class="dot" style="background:#2563EB"></span> Banana Biru (Jumper)</button>
+        <button class="cable-btn" data-cable="bnc-banana"><span class="dot-split"></span> BNC to Dual Banana</button>
+        <button class="cable-btn" data-cable="bnc-alligator"><span class="dot-split" style="background:linear-gradient(135deg,#F59E0B 50%,#1E293B 50%)"></span> BNC to Capit Buaya</button>
+        <button class="cable-btn" data-cable="bnc-bnc"><span class="dot" style="background:#64748B"></span> BNC to BNC</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="wire-hint" class="wire-hint">Klik port pertama untuk memasang kabel.</span>
+        <button id="btn-undo" class="btn">Undo</button>
+        <button id="btn-clear" class="btn btn-danger">Lepas Semua Kabel</button>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE LAB BENCH (INSTRUMENTS + KIT BOARD + LIVE CABLES SVG OVERLAY) -->
+    <main id="bench-container" class="bench-container">
+      <svg id="cable-overlay"></svg>
+
+      <div class="bench-grid">
+        <!-- LEFT: REALISTIC INSTRUMENT RACK -->
+        <aside class="instrument-rack">
+          <!-- 1. DUAL DC POWER SUPPLY -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="psu-led" class="led"></span>DC Power Supply (Dual CH)</span>
+              <span class="inst-model">GPC-3030D</span>
+            </div>
+            <div class="psu-channels">
+              <!-- CH1 -->
+              <div class="psu-ch">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:0.7rem;font-weight:800;color:#38BDF8;">CH1 (V1 / Utama)</span>
+                  <button id="psu1-out-btn" class="hw-btn out-off">OUT: OFF</button>
+                </div>
+                <div class="lcd-screen">
+                  <div id="psu1-disp" class="psu-readout off">00.0 V</div>
+                </div>
+                <div class="mini-controls">
+                  <button class="hw-btn" data-psu="1" data-dv="-5">-5</button>
+                  <button class="hw-btn" data-psu="1" data-dv="-1">-1</button>
+                  <button class="hw-btn" data-psu="1" data-dv="1">+1</button>
+                  <button class="hw-btn" data-psu="1" data-dv="5">+5</button>
+                  <button class="hw-btn" data-psu="1" data-set="20">20V</button>
+                  <button class="hw-btn" data-psu="1" data-set="12">12V</button>
+                  <button class="hw-btn" data-psu="1" data-set="8">8V</button>
+                </div>
+                <div class="mini-controls">
+                  <input id="psu1-slider" type="range" min="0" max="24" step="0.5" value="0" />
+                </div>
+                <div class="jack-strip">
+                  <div class="jack-wrap" data-port="psu1_pos" data-ptype="banana" title="PSU CH1 (+) Merah">
+                    <div class="port-jack red"></div><span>CH1 +</span>
+                  </div>
+                  <div class="jack-wrap" data-port="psu1_neg" data-ptype="banana" title="PSU CH1 (-) Hitam">
+                    <div class="port-jack black"></div><span>CH1 −</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CH2 -->
+              <div class="psu-ch">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:0.7rem;font-weight:800;color:#FBBF24;">CH2 (V2)</span>
+                  <button id="psu2-out-btn" class="hw-btn out-off">OUT: OFF</button>
+                </div>
+                <div class="lcd-screen">
+                  <div id="psu2-disp" class="psu-readout off">00.0 V</div>
+                </div>
+                <div class="mini-controls">
+                  <button class="hw-btn" data-psu="2" data-dv="-5">-5</button>
+                  <button class="hw-btn" data-psu="2" data-dv="-1">-1</button>
+                  <button class="hw-btn" data-psu="2" data-dv="1">+1</button>
+                  <button class="hw-btn" data-psu="2" data-dv="5">+5</button>
+                  <button class="hw-btn" data-psu="2" data-set="6">6V</button>
+                  <button class="hw-btn" data-psu="2" data-set="12">12V</button>
+                  <button class="hw-btn" data-psu="2" data-set="0">0V</button>
+                </div>
+                <div class="mini-controls">
+                  <input id="psu2-slider" type="range" min="0" max="24" step="0.5" value="0" />
+                </div>
+                <div class="jack-strip">
+                  <div class="jack-wrap" data-port="psu2_pos" data-ptype="banana" title="PSU CH2 (+) Merah">
+                    <div class="port-jack red"></div><span>CH2 +</span>
+                  </div>
+                  <div class="jack-wrap" data-port="psu2_neg" data-ptype="banana" title="PSU CH2 (-) Hitam">
+                    <div class="port-jack black"></div><span>CH2 −</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. DIGITAL MULTIMETER -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="dmm-led" class="led on-green"></span>Digital Multimeter</span>
+              <span class="inst-model">SANWA / FLUKE BENCH</span>
+            </div>
+            <div id="dmm-lcd" class="lcd-dmm">
+              <span id="dmm-mode-lbl" class="mode-tag">DC V</span>
+              <span id="dmm-val" class="val">0.00 V</span>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;">
+              <button class="hw-btn" data-dmm="OFF">OFF</button>
+              <button class="hw-btn active" data-dmm="DCV">DC V</button>
+              <button class="hw-btn" data-dmm="ACV">AC V</button>
+              <button class="hw-btn" data-dmm="OHM">Ω (Ohm)</button>
+              <button class="hw-btn" data-dmm="MA">mA (DC)</button>
+            </div>
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="dmm_ma" data-ptype="banana" title="DMM Jack mA (Fused — khusus mode mA!)">
+                <div class="port-jack yellow"></div><span>mA (Arus)</span>
+              </div>
+              <div class="jack-wrap" data-port="dmm_v" data-ptype="banana" title="DMM Jack V / Ω (khusus mode Volt & Ohm)">
+                <div class="port-jack red"></div><span>V / Ω</span>
+              </div>
+              <div class="jack-wrap" data-port="dmm_com" data-ptype="banana" title="DMM Jack COM (Hitam / Negatif)">
+                <div class="port-jack black"></div><span>COM (−)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. DIGITAL OSCILLOSCOPE 2-CH -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="scope-led" class="led on-green"></span>Digital Oscilloscope 2-CH</span>
+              <span class="inst-model">TDS-2012B</span>
+            </div>
+            <div class="scope-wrap">
+              <canvas id="scope-canvas" width="280" height="128"></canvas>
+              <div class="scope-btns">
+                <div class="scope-mini-row">
+                  <button id="sc-run" class="hw-btn out-on">RUN</button>
+                  <button id="sc-auto" class="hw-btn">AUTO</button>
+                </div>
+                <div class="scope-mini-row">
+                  <button id="sc-ch1" class="hw-btn active">CH1</button>
+                  <button id="sc-ch2" class="hw-btn active">CH2</button>
+                </div>
+                <div class="scope-mini-row">
+                  <button id="sc-cpl" class="hw-btn">CPL: DC</button>
+                </div>
+                <div class="scope-mini-row">
+                  <button id="sc-vdiv-m" class="hw-btn">V/d −</button>
+                  <button id="sc-vdiv-p" class="hw-btn">V/d +</button>
+                </div>
+                <div class="scope-mini-row">
+                  <button id="sc-tdiv-m" class="hw-btn">T/d −</button>
+                  <button id="sc-tdiv-p" class="hw-btn">T/d +</button>
+                </div>
+              </div>
+            </div>
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="osc_ch1" data-ptype="bnc" title="Osiloskop CH1 (BNC)">
+                <div class="port-jack bnc"></div><span>CH1 (BNC)</span>
+              </div>
+              <div class="jack-wrap" data-port="osc_ch2" data-ptype="bnc" title="Osiloskop CH2 (BNC)">
+                <div class="port-jack bnc"></div><span>CH2 (BNC)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. FUNCTION / SIGNAL GENERATOR -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="gen-led" class="led"></span>Function / Signal Generator</span>
+              <span class="inst-model">AFG-2105</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div class="lcd-screen" style="flex:1;color:#38BDF8;font-size:0.86rem;font-weight:800;">
+                <span id="gen-disp">SINE • 1.0 kHz • 4.0 Vpp</span>
+              </div>
+              <button id="gen-out-btn" class="hw-btn out-off">OUT: OFF</button>
+            </div>
+            <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;align-items:center;">
+              <button class="hw-btn active" data-wave="SINE">SINE</button>
+              <button class="hw-btn" data-wave="SQUARE">SQR</button>
+              <button class="hw-btn" data-wave="TRI">TRI</button>
+              <button class="hw-btn" data-fstep="-1">Freq −</button>
+              <button class="hw-btn" data-fstep="1">Freq +</button>
+              <button class="hw-btn" data-astep="-1">Vpp −</button>
+              <button class="hw-btn" data-astep="1">Vpp +</button>
+            </div>
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="gen_bnc" data-ptype="bnc" title="Signal Generator Output (BNC 50Ω)">
+                <div class="port-jack bnc"></div><span>OUTPUT 50Ω (BNC)</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: INTERACTIVE KIT BOARD -->
+        <section class="kit-side">
+          <div class="kit-board-card">
+            <div class="kit-board-header">
+              <span id="kit-title" class="kit-board-title">Kit Theorema Thevenin &amp; Norton</span>
+              <span style="font-size:0.75rem;color:#64748B;font-weight:600;">Klik terminal untuk pasang kabel • Klik kabel untuk melepas</span>
+            </div>
+            <svg id="kit-svg" viewBox="0 0 720 470" xmlns="http://www.w3.org/2000/svg"></svg>
+
+            <!-- Knobs khusus Kit Thevenin & Norton -->
+            <div id="kit-knobs" class="kit-knobs">
+              <div class="knob-group">
+                <strong>POT R_T (C–D):</strong>
+                <input id="knob-pot" type="range" min="0.2" max="5.0" step="0.1" value="2.5" />
+                <span id="knob-pot-val" class="knob-val">2.50 kΩ</span>
+              </div>
+              <div class="knob-group">
+                <strong>POT Sumber Arus (E–F):</strong>
+                <input id="knob-isrc" type="range" min="1.00" max="12.00" step="0.01" value="5.00" />
+                <span id="knob-isrc-val" class="knob-val">5.00 mA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM: BCL DATA TABLE & ACTIVE CABLE LIST -->
+          <div class="bottom-grid">
+            <div class="sub-card">
+              <h3><span>Buku Catatan Laboratorium (BCL)</span><span style="font-size:0.72rem;color:#64748B;">Otomatis tercatat saat lulus langkah</span></h3>
+              <div style="max-height:185px;overflow-y:auto;">
+                <table class="bcl-table">
+                  <thead>
+                    <tr>
+                      <th>Langkah</th>
+                      <th>Parameter</th>
+                      <th>Hasil Kamu</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bcl-tbody">
+                    <tr><td colspan="4" style="color:#94A3B8;text-align:center;">Belum ada data tercatat.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="sub-card">
+              <h3><span>Kabel Terpasang</span><span id="cable-count-badge" style="color:#0284C7;">0 kabel</span></h3>
+              <div id="cable-list" class="cable-list"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      // ============================================================
+      // 1. KONSTANTA FISIKA RANGKAIAN (AKURAT SESUAI MODUL)
+      // ============================================================
+      // Rangkaian N: V_T = 0.4 * V_AB (saat 20V => 8.00V), R_T = 1.20 kOhm => I_N = 6.67 mA
+      const RN_GAIN = 0.4;
+      const RN_RT = 1.20; // kOhm
+      const LOAD_VALS = { load_r0: 0, load_r1: 2.0, load_r2: 2.0, load_r3: 3.3 }; // kOhm
+
+      // Superposisi (Gambar 2-14): R1=33k, R2=1.5k, R3=1.5k, R4=2.2k
+      const SUP_R = { R1: 33.0, R2: 1.5, R3: 1.5, R4: 2.2 };
+
+      // Resiprositas (Gambar 2-15): R1=1.5k, R2=33k, R3=1.5k, R4=220k, R5=2.2k
+      const RES_R = { R1: 1.5, R2: 33.0, R3: 1.5, R4: 220.0, R5: 2.2 };
+
+      // ============================================================
+      // 2. DEFINISI 12 LANGKAH UJIAN PRAKTEK (SESUAI LEMBAR MODUL)
+      // ============================================================
+      const EXAM_STEPS = [
+        {
+          id: "th1_i",
+          short: "1. Thevenin I_R1",
+          tag: "Teorema Thevenin (Rangkaian 1) — Langkah 4",
+          kit: "thevenin",
+          title: "Ukur Arus Beban R1 Secara Langsung (Gambar 2-8)",
+          desc: "Atur DC Power Supply CH1 = 20.0 V (Output ON) dan hubungkan ke terminal A (+) dan B (−) pada Rangkaian N. Pada cabang C–D, pasang mA-meter (mode mA, pakai jack mA & COM!) secara SERI dengan beban R1 (2 kΩ). Catat arus yang mengalir melalui R1.",
+          warn: "Perhatian: Untuk mengukur arus (mA), kabel merah WAJIB masuk ke jack mA (kuning), bukan V/Ω!",
+          bclLabel: "Arus I melalui R1:",
+          bclUnit: "mA",
+          paramName: "I_R1 (Langsung)",
+          expectedVal: 2.50,
+          tol: 0.08,
+          guide: [
+            "Set DC Supply CH1 ke 20.0 V lalu tekan tombol OUT hingga menyala hijau (OUT: ON).",
+            "Pasang kabel Banana Merah: CH1 + → A (Rangkaian N), Banana Hitam: CH1 − → B (Rangkaian N).",
+            "Pada Multimeter, klik mode mA (DC).",
+            "Pasang seri cabang C–D: C → DMM jack mA, DMM COM → Common Beban (kuning), dan Beban R1 (2KΩ) → D.",
+            "Baca angka di layar DMM (2.50 mA), ketik 2.50 di kotak BCL lalu klik Cek."
+          ],
+          auto: {
+            psu1: { v: 20, on: true }, psu2: { v: 0, on: false }, dmm: "MA",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "rn_a" },
+              { type: "banana-black", from: "psu1_neg", to: "rn_b" },
+              { type: "banana-red", from: "rn_c", to: "dmm_ma" },
+              { type: "banana-blue", from: "dmm_com", to: "load_com" },
+              { type: "banana-black", from: "load_r1", to: "rn_d" }
+            ]
+          }
+        },
+        {
+          id: "th1_vt",
+          short: "2. Ukur V_T",
+          tag: "Teorema Thevenin (Rangkaian 1) — Langkah 5",
+          kit: "thevenin",
+          title: "Ukur Tegangan Open-Circuit Thevenin V_T (Gambar 2-9)",
+          desc: "Lepaskan beban R1 dan mA-meter sehingga cabang C–D terbuka (open circuit). Pastikan tegangan sumber A–B tetap 20.0 V (ON). Ukur tegangan open-circuit pada C–D menggunakan Voltmeter (mode DC V, jack V/Ω & COM) secara paralel. Catat sebagai V_T.",
+          warn: "Jangan lupa pindahkan probe merah Multimeter dari jack mA kembali ke jack V/Ω!",
+          bclLabel: "Tegangan V_T:",
+          bclUnit: "V",
+          paramName: "V_T (Open Circuit)",
+          expectedVal: 8.00,
+          tol: 0.15,
+          guide: [
+            "Pastikan CH1 = 20.0 V (OUT: ON) terpasang pada A (+) dan B (−).",
+            "Lepas beban R1 dari C–D sehingga C–D tidak dibebani.",
+            "Tekan mode DC V pada Multimeter.",
+            "Pasang kabel dari DMM jack V/Ω → C dan DMM COM → D.",
+            "Catat hasil bacaan V_T (8.00 V) di kolom BCL."
+          ],
+          auto: {
+            psu1: { v: 20, on: true }, psu2: { v: 0, on: false }, dmm: "DCV",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "rn_a" },
+              { type: "banana-black", from: "psu1_neg", to: "rn_b" },
+              { type: "banana-red", from: "dmm_v", to: "rn_c" },
+              { type: "banana-black", from: "dmm_com", to: "rn_d" }
+            ]
+          }
+        },
+        {
+          id: "th1_rt",
+          short: "3. Ukur R_T",
+          tag: "Teorema Thevenin (Rangkaian 1) — Langkah 6",
+          kit: "thevenin",
+          title: "Ukur Resistansi Thevenin R_T (Gambar 2-10)",
+          desc: "Lepaskan sumber tegangan 20 V dari terminal A–B, lalu hubung-singkatkan terminal A dan B dengan kabel jumper! Ukur resistansi pada terminal C–D menggunakan Ohmmeter (mode Ω, jack V/Ω & COM). Catat nilai R_T dalam kΩ.",
+          warn: "BAHAYA! Jangan hubung-singkatkan A–B sebelum kabel Power Supply dilepas dari A–B!",
+          bclLabel: "Resistansi R_T:",
+          bclUnit: "kΩ",
+          paramName: "R_T (Ohmmeter)",
+          expectedVal: 1.20,
+          tol: 0.08,
+          guide: [
+            "Matikan OUT CH1 dan LEPAS semua kabel Power Supply dari terminal A dan B.",
+            "Pasang kabel jumper (Banana Biru/Hitam) langsung antara terminal A dan B (short circuit).",
+            "Tekan mode Ω (Ohm) pada Multimeter.",
+            "Hubungkan DMM jack V/Ω → C dan DMM COM → D.",
+            "Catat bacaan R_T = 1.20 kΩ di kolom BCL."
+          ],
+          auto: {
+            psu1: { v: 0, on: false }, psu2: { v: 0, on: false }, dmm: "OHM",
+            cables: [
+              { type: "banana-blue", from: "rn_a", to: "rn_b" },
+              { type: "banana-red", from: "dmm_v", to: "rn_c" },
+              { type: "banana-black", from: "dmm_com", to: "rn_d" }
+            ]
+          }
+        },
+        {
+          id: "th1_calc",
+          short: "4. Ukur R1 & Hitung I",
+          tag: "Teorema Thevenin (Rangkaian 1) — Langkah 7 & 8",
+          kit: "thevenin",
+          title: "Ukur Resistansi R1 dan Hitung I = V_T / (R_T + R1)",
+          desc: "Lepas kabel dari Rangkaian N. Ukur nilai resistansi beban R1 (2 kΩ) secara langsung dengan Ohmmeter (jack V/Ω ke Common Beban dan COM ke terminal R1). Kemudian hitung arus teoritis I = V_T / (R_T + R1) menggunakan V_T = 8.00 V dan R_T = 1.20 kΩ, lalu masukkan hasilnya!",
+          warn: "Ukur R1 dalam keadaan lepas dari sumber tegangan.",
+          bclLabel: "Hasil Hitung I = V_T/(R_T+R1):",
+          bclUnit: "mA",
+          paramName: "I_R1 (Teoritis)",
+          expectedVal: 2.50,
+          tol: 0.08,
+          guide: [
+            "Lepas semua kabel lama terlebih dahulu.",
+            "Set Multimeter ke mode Ω (Ohm).",
+            "Hubungkan DMM jack V/Ω → Common Beban (kuning) dan DMM COM → terminal R1 (2KΩ). Terbaca 2.00 kΩ.",
+            "Hitung I = 8.00 V / (1.20 kΩ + 2.00 kΩ) = 8.00 / 3.20 = 2.50 mA.",
+            "Ketik 2.50 pada kolom BCL lalu klik Cek."
+          ],
+          auto: {
+            psu1: { v: 0, on: false }, psu2: { v: 0, on: false }, dmm: "OHM",
+            cables: [
+              { type: "banana-red", from: "dmm_v", to: "load_com" },
+              { type: "banana-black", from: "dmm_com", to: "load_r1" }
+            ]
+          }
+        },
+        {
+          id: "th2_eq",
+          short: "5. Pengganti Thevenin",
+          tag: "Teorema Thevenin (Rangkaian 2) — Langkah 12 & 13",
+          kit: "thevenin",
+          title: "Susun Rangkaian Pengganti Thevenin (Gambar 2-11)",
+          desc: "Susun rangkaian pengganti Thevenin tanpa Rangkaian N: Atur PSU CH1 = 8.0 V (= V_T, Output ON) dan atur POT R_T (C–D) pada kit = 1.20 kΩ (= R_T). Rangkai seri: PSU CH1 (+) → POT C → POT D → mA-meter (mode mA, jack mA & COM) → beban R1 (2 kΩ) → PSU CH1 (−). Catat arus I!",
+          warn: "Geser slider POT R_T (C–D) di bawah papan kit tepat ke 1.20 kΩ.",
+          bclLabel: "Arus I (Pengganti Thevenin):",
+          bclUnit: "mA",
+          paramName: "I_R1 (Thevenin 2)",
+          expectedVal: 2.50,
+          tol: 0.1,
+          guide: [
+            "Atur DC Supply CH1 ke 8.0 V dan aktifkan OUT: ON.",
+            "Atur slider 'POT R_T (C–D)' di bawah kit tepat ke 1.20 kΩ.",
+            "Set Multimeter ke mode mA (DC).",
+            "Rangkai seri: CH1 + → POT C, POT D → DMM mA, DMM COM → Common Beban, dan R1 (2KΩ) → CH1 −.",
+            "Arus yang terbaca harus sama dengan langkah 1 yaitu 2.50 mA!"
+          ],
+          auto: {
+            psu1: { v: 8, on: true }, psu2: { v: 0, on: false }, dmm: "MA", potCD: 1.2,
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "pot_c" },
+              { type: "banana-blue", from: "pot_d", to: "dmm_ma" },
+              { type: "banana-blue", from: "dmm_com", to: "load_com" },
+              { type: "banana-black", from: "load_r1", to: "psu1_neg" }
+            ]
+          }
+        },
+        {
+          id: "nor_in",
+          short: "6. Ukur Arus I_N",
+          tag: "Teorema Norton — Langkah 17",
+          kit: "thevenin",
+          title: "Mencari Arus Hubung-Singkat Norton I_N (Gambar 2-12)",
+          desc: "Pasang kembali sumber tegangan DC CH1 = 20.0 V (Output ON) pada terminal A (+) dan B (−) Rangkaian N. Ukur arus hubung-singkat pada cabang C–D dengan memasang mA-meter (mode mA, jack mA & COM) langsung pada C dan D. Catat sebagai I_N!",
+          warn: "Pastikan polaritas mA (+) ke C dan COM (−) ke D agar arus terbaca positif.",
+          bclLabel: "Arus Norton I_N:",
+          bclUnit: "mA",
+          paramName: "I_N (Short Circuit)",
+          expectedVal: 6.67,
+          tol: 0.12,
+          guide: [
+            "Set DC Supply CH1 = 20.0 V (OUT: ON) dan hubungkan CH1 + → A, CH1 − → B.",
+            "Set Multimeter ke mode mA (DC).",
+            "Pasang langsung DMM jack mA → C dan DMM COM → D (tanpa resistor beban).",
+            "Baca I_N = 6.67 mA di layar Multimeter dan masukkan ke BCL."
+          ],
+          auto: {
+            psu1: { v: 20, on: true }, psu2: { v: 0, on: false }, dmm: "MA",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "rn_a" },
+              { type: "banana-black", from: "psu1_neg", to: "rn_b" },
+              { type: "banana-red", from: "rn_c", to: "dmm_ma" },
+              { type: "banana-black", from: "rn_d", to: "dmm_com" }
+            ]
+          }
+        },
+        {
+          id: "nor_eq",
+          short: "7. Pengganti Norton",
+          tag: "Teorema Norton — Langkah 18 & 19",
+          kit: "thevenin",
+          title: "Susun Rangkaian Pengganti Norton (Gambar 2-13)",
+          desc: "Lepas PSU dari A–B lalu hubung-singkatkan A–B agar Rangkaian N berfungsi sebagai R_N = R_T (1.20 kΩ). Atur Sumber Arus E–F pada kit menjadi I_N = 6.67 mA. Hubungkan paralel: E → C, F → D, serta cabang seri mA-meter + beban R1 (2 kΩ) pada C–D. Catat arus melalui R1!",
+          warn: "A–B wajib di-short (dan bebas dari PSU), lalu atur slider Sumber Arus (E–F) ke 6.67 mA.",
+          bclLabel: "Arus I_R1 (Norton):",
+          bclUnit: "mA",
+          paramName: "I_R1 (Norton)",
+          expectedVal: 2.50,
+          tol: 0.1,
+          guide: [
+            "Matikan & lepas semua kabel PSU. Pasang jumper hubung-singkat antara A dan B.",
+            "Geser slider 'POT Sumber Arus (E–F)' ke 6.67 mA.",
+            "Hubungkan paralel sumber arus ke Rangkaian N: E → C dan F → D.",
+            "Set Multimeter mode mA, lalu pasang cabang beban paralel terhadap C–D: C → DMM mA, DMM COM → Common Beban, R1 (2KΩ) → D.",
+            "Baca arus I_R1 = 2.50 mA (membuktikan ekivalensi Thevenin & Norton!)."
+          ],
+          auto: {
+            psu1: { v: 0, on: false }, psu2: { v: 0, on: false }, dmm: "MA", isrc: 6.67,
+            cables: [
+              { type: "banana-blue", from: "rn_a", to: "rn_b" },
+              { type: "banana-red", from: "isrc_e", to: "rn_c" },
+              { type: "banana-black", from: "isrc_f", to: "rn_d" },
+              { type: "banana-red", from: "rn_c", to: "dmm_ma" },
+              { type: "banana-blue", from: "dmm_com", to: "load_com" },
+              { type: "banana-black", from: "load_r1", to: "rn_d" }
+            ]
+          }
+        },
+        {
+          id: "sup_1",
+          short: "8. Superposisi V1=12V",
+          tag: "Teorema Superposisi — Langkah 22–24",
+          kit: "superposisi",
+          title: "Superposisi Kasus 1: V1 = 12 V, V2 = 0 V (Short)",
+          desc: "Gunakan Kit Superposisi (R1=33kΩ, R2=1.5kΩ, R3=1.5kΩ, R4=2.2kΩ). Pasang PSU CH1 = 12.0 V (ON) pada port V1 (+ dan −). Lepaskan sumber V2 lalu hubung-singkatkan port V2+ dan V2− dengan kabel jumper! Pasang mA-meter (mode mA, jack mA & COM) pada celah ukur I4 (seri dengan R4). Catat arus I4'!",
+          warn: "INGAT PERINGATAN MODUL: Jangan menghubung-singkatkan sumber tegangan! Pasang jumper short hanya di titik V2+ dan V2− rangkaian (tanpa PSU CH2).",
+          bclLabel: "Arus I4' (V1=12V, V2=0V):",
+          bclUnit: "mA",
+          paramName: "I4' (V1 aktif)",
+          expectedVal: 0.10,
+          tol: 0.03,
+          guide: [
+            "Atur PSU CH1 = 12.0 V (OUT: ON). Hubungkan CH1 + → V1+ dan CH1 − → V1−.",
+            "Pastikan PSU CH2 tidak tersambung ke V2, lalu pasang kabel jumper antara V2+ dan V2−.",
+            "Set Multimeter ke mode mA (DC).",
+            "Pasang DMM jack mA → I4_in (atas) dan DMM COM → I4_out (bawah, atas R4).",
+            "Catat I4' = 0.10 mA pada kolom BCL."
+          ],
+          auto: {
+            psu1: { v: 12, on: true }, psu2: { v: 0, on: false }, dmm: "MA",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "sup_v1p" },
+              { type: "banana-black", from: "psu1_neg", to: "sup_v1n" },
+              { type: "banana-blue", from: "sup_v2p", to: "sup_v2n" },
+              { type: "banana-red", from: "sup_i4a", to: "dmm_ma" },
+              { type: "banana-black", from: "dmm_com", to: "sup_i4b" }
+            ]
+          }
+        },
+        {
+          id: "sup_2",
+          short: "9. Superposisi V2=6V",
+          tag: "Teorema Superposisi — Langkah 25–26",
+          kit: "superposisi",
+          title: "Superposisi Kasus 2: V1 = 0 V (Short), V2 = 6 V",
+          desc: "Sekarang lepaskan PSU CH1 dari V1 dan hubung-singkatkan terminal V1+ dan V1− dengan kabel jumper! Lepas jumper pada V2, lalu pasang PSU CH2 = 6.0 V (Output ON) pada terminal V2+ dan V2−. Ukur arus I4'' pada celah ukur I4 dengan mA-meter!",
+          warn: "Pastikan kabel PSU CH1 sudah dilepas sebelum V1+ dan V1− dihubung-singkatkan!",
+          bclLabel: "Arus I4'' (V1=0V, V2=6V):",
+          bclUnit: "mA",
+          paramName: "I4'' (V2 aktif)",
+          expectedVal: 1.12,
+          tol: 0.05,
+          guide: [
+            "Lepas kabel PSU CH1 dari V1+, V1− lalu pasang kabel jumper short antara V1+ dan V1−.",
+            "Lepas jumper lama di V2. Set PSU CH2 = 6.0 V (OUT: ON) dan hubungkan CH2 + → V2+, CH2 − → V2−.",
+            "Pastikan DMM di mode mA terpasang di I4_in (mA) dan I4_out (COM).",
+            "Catat bacaan I4'' = 1.12 mA pada kolom BCL."
+          ],
+          auto: {
+            psu1: { v: 0, on: false }, psu2: { v: 6, on: true }, dmm: "MA",
+            cables: [
+              { type: "banana-blue", from: "sup_v1p", to: "sup_v1n" },
+              { type: "banana-red", from: "psu2_pos", to: "sup_v2p" },
+              { type: "banana-black", from: "psu2_neg", to: "sup_v2n" },
+              { type: "banana-red", from: "sup_i4a", to: "dmm_ma" },
+              { type: "banana-black", from: "dmm_com", to: "sup_i4b" }
+            ]
+          }
+        },
+        {
+          id: "sup_3",
+          short: "10. Superposisi Total",
+          tag: "Teorema Superposisi — Langkah 27–28",
+          kit: "superposisi",
+          title: "Superposisi Kasus 3: V1 = 12 V & V2 = 6 V Aktif Bersamaan",
+          desc: "Lepaskan semua jumper short! Aktifkan kedua sumber secara bersamaan: PSU CH1 = 12.0 V (ON) pada V1 dan PSU CH2 = 6.0 V (ON) pada V2. Ukur arus total I4 melalui R4 dengan mA-meter dan buktikan I4 = I4' + I4''!",
+          warn: "Periksa kembali bahwa tidak ada jumper short tertinggal di V1 maupun V2.",
+          bclLabel: "Arus Total I4 (V1=12V, V2=6V):",
+          bclUnit: "mA",
+          paramName: "I4 Total (0.10+1.12)",
+          expectedVal: 1.22,
+          tol: 0.05,
+          guide: [
+            "Lepas jumper short pada V1.",
+            "Set PSU CH1 = 12.0 V (OUT: ON) → pasang ke V1+ dan V1−.",
+            "Set PSU CH2 = 6.0 V (OUT: ON) → pasang ke V2+ dan V2−.",
+            "Pastikan DMM (mode mA) terpasang di celah I4_in (mA) dan I4_out (COM).",
+            "Terbaca 1.22 mA (= 0.10 + 1.12 mA). Catat di BCL!"
+          ],
+          auto: {
+            psu1: { v: 12, on: true }, psu2: { v: 6, on: true }, dmm: "MA",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "sup_v1p" },
+              { type: "banana-black", from: "psu1_neg", to: "sup_v1n" },
+              { type: "banana-red", from: "psu2_pos", to: "sup_v2p" },
+              { type: "banana-black", from: "psu2_neg", to: "sup_v2n" },
+              { type: "banana-red", from: "sup_i4a", to: "dmm_ma" },
+              { type: "banana-black", from: "dmm_com", to: "sup_i4b" }
+            ]
+          }
+        },
+        {
+          id: "res_1",
+          short: "11. Resiprositas a-b→c-d",
+          tag: "Teorema Resiprositas — Langkah 29 & 30",
+          kit: "resiprositas",
+          title: "Pasang V = 12 V pada a–b, Ukur Arus pada c–d (Gambar 2-15)",
+          desc: "Gunakan Kit Resiprositas (R1=1.5kΩ, R2=33kΩ, R3=1.5kΩ, R4=220kΩ, R5=2.2kΩ). Pasang PSU CH1 = 12.0 V (Output ON) pada terminal a (+) dan b (−). Ukur arus melalui c–d dengan memasang milli Ammeter (mode mA, jack mA & COM) pada c dan d. Perhatikan polaritas milli Ammeter!",
+          warn: "Perhatikan polaritas: jack mA (+) ke c dan COM (−) ke d agar arus terbaca positif.",
+          bclLabel: "Arus I_cd:",
+          bclUnit: "mA",
+          paramName: "I_cd (V_ab=12V)",
+          expectedVal: 2.22,
+          tol: 0.06,
+          guide: [
+            "Atur PSU CH1 = 12.0 V (OUT: ON). Hubungkan CH1 + → a dan CH1 − → b.",
+            "Set Multimeter ke mode mA (DC).",
+            "Pasang DMM jack mA → c dan DMM COM → d.",
+            "Catat arus I_cd = 2.22 mA pada kolom BCL."
+          ],
+          auto: {
+            psu1: { v: 12, on: true }, psu2: { v: 0, on: false }, dmm: "MA",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "res_a" },
+              { type: "banana-black", from: "psu1_neg", to: "res_b" },
+              { type: "banana-red", from: "res_c", to: "dmm_ma" },
+              { type: "banana-black", from: "res_d", to: "dmm_com" }
+            ]
+          }
+        },
+        {
+          id: "res_2",
+          short: "12. Resiprositas c-d→a-b",
+          tag: "Teorema Resiprositas — Langkah 31 & 32",
+          kit: "resiprositas",
+          title: "Pindahkan V = 12 V ke c–d, Ukur Arus pada a–b",
+          desc: "Tukar posisi sumber dan alat ukur! Pindahkan PSU CH1 = 12.0 V (Output ON) ke terminal c (+) dan d (−). Lalu pindahkan milli Ammeter (mode mA, jack mA & COM) ke terminal a (mA) dan b (COM). Catat arus I_ab dan buktikan Teorema Resiprositas (I_ab = I_cd)!",
+          warn: "Pastikan polaritas mA (+) ke a dan COM (−) ke b.",
+          bclLabel: "Arus I_ab:",
+          bclUnit: "mA",
+          paramName: "I_ab (V_cd=12V)",
+          expectedVal: 2.22,
+          tol: 0.06,
+          guide: [
+            "Lepas kabel sebelumnya. Pastikan PSU CH1 = 12.0 V (OUT: ON).",
+            "Hubungkan CH1 + → c dan CH1 − → d.",
+            "Set Multimeter mode mA, lalu hubungkan DMM jack mA → a dan DMM COM → b.",
+            "Hasil terbaca 2.22 mA — sama persis dengan I_cd! Catat di BCL untuk menyelesaikan ujian."
+          ],
+          auto: {
+            psu1: { v: 12, on: true }, psu2: { v: 0, on: false }, dmm: "MA",
+            cables: [
+              { type: "banana-red", from: "psu1_pos", to: "res_c" },
+              { type: "banana-black", from: "psu1_neg", to: "res_d" },
+              { type: "banana-red", from: "res_a", to: "dmm_ma" },
+              { type: "banana-black", from: "res_b", to: "dmm_com" }
+            ]
+          }
+        }
+      ];
+
+      // ============================================================
+      // 3. DEFINISI TERMINAL PADA MASING-MASING KIT
+      // ============================================================
+      const KIT_DATA = {
+        thevenin: {
+          title: "Kit Theorema Thevenin & Norton",
+          ports: [
+            { id: "pot_c",    x: 245, y: 112, color: "#FDE047", label: "POT C" },
+            { id: "pot_d",    x: 245, y: 168, color: "#10B981", label: "POT D" },
+            { id: "isrc_e",   x: 245, y: 242, color: "#FDE047", label: "Sumber Arus E (+)" },
+            { id: "isrc_f",   x: 245, y: 312, color: "#10B981", label: "Sumber Arus F (−)" },
+            { id: "rn_a",     x: 452, y: 112, color: "#EF4444", label: "Rangkaian N — A" },
+            { id: "rn_b",     x: 590, y: 112, color: "#1E293B", label: "Rangkaian N — B" },
+            { id: "rn_c",     x: 452, y: 238, color: "#FDE047", label: "Rangkaian N — C" },
+            { id: "rn_d",     x: 590, y: 238, color: "#10B981", label: "Rangkaian N — D" },
+            { id: "load_com", x: 520, y: 298, color: "#FDE047", label: "Common Beban" },
+            { id: "load_r0",  x: 418, y: 422, color: "#1E293B", label: "Beban Short (0Ω)" },
+            { id: "load_r1",  x: 486, y: 422, color: "#1E293B", label: "Beban R1 (2KΩ)" },
+            { id: "load_r2",  x: 554, y: 422, color: "#1E293B", label: "Beban R2 (2KΩ)" },
+            { id: "load_r3",  x: 622, y: 422, color: "#1E293B", label: "Beban R3 (3.3KΩ)" }
+          ],
+          shorts: [["load_com", "load_r0"]]
+        },
+        superposisi: {
+          title: "Kit Teorema Superposisi (Gambar 2-14)",
+          ports: [
+            { id: "sup_v1p", x: 112, y: 145, color: "#EF4444", label: "Port V1 (+)" },
+            { id: "sup_v1n", x: 112, y: 372, color: "#1E293B", label: "Port V1 (−)" },
+            { id: "sup_x",   x: 345, y: 145, color: "#2563EB", label: "Node Tengah (R1–R2–R3)" },
+            { id: "sup_v2p", x: 345, y: 292, color: "#EF4444", label: "Port V2 (+)" },
+            { id: "sup_v2n", x: 345, y: 372, color: "#1E293B", label: "Port V2 (−)" },
+            { id: "sup_i4a", x: 585, y: 145, color: "#FDE047", label: "Celah I4 Atas (dari R3)" },
+            { id: "sup_i4b", x: 585, y: 218, color: "#10B981", label: "Celah I4 Bawah (ke R4)" },
+            { id: "sup_gnd", x: 585, y: 372, color: "#1E293B", label: "Rel Bawah (GND)" }
+          ],
+          shorts: [["sup_v1n", "sup_v2n"], ["sup_v2n", "sup_gnd"]]
+        },
+        resiprositas: {
+          title: "Kit Teorema Resiprositas (Gambar 2-15)",
+          ports: [
+            { id: "res_a",  x: 92,  y: 155, color: "#EF4444", label: "Port a (+)" },
+            { id: "res_b",  x: 92,  y: 365, color: "#1E293B", label: "Port b (−)" },
+            { id: "res_n1", x: 280, y: 155, color: "#2563EB", label: "Node 1 (R1–R2–R3)" },
+            { id: "res_n2", x: 465, y: 155, color: "#2563EB", label: "Node 2 (R3–R4–R5)" },
+            { id: "res_c",  x: 635, y: 155, color: "#FDE047", label: "Port c (+)" },
+            { id: "res_d",  x: 635, y: 365, color: "#10B981", label: "Port d (−)" }
+          ],
+          shorts: [["res_b", "res_d"]]
+        }
+      };
+
+      const PORT_META = {
+        psu1_pos: { label: "PSU CH1 (+)", type: "banana" },
+        psu1_neg: { label: "PSU CH1 (−)", type: "banana" },
+        psu2_pos: { label: "PSU CH2 (+)", type: "banana" },
+        psu2_neg: { label: "PSU CH2 (−)", type: "banana" },
+        dmm_ma:   { label: "DMM mA", type: "banana" },
+        dmm_v:    { label: "DMM V/Ω", type: "banana" },
+        dmm_com:  { label: "DMM COM", type: "banana" },
+        osc_ch1:  { label: "OSC CH1", type: "bnc" },
+        osc_ch2:  { label: "OSC CH2", type: "bnc" },
+        gen_bnc:  { label: "GEN OUT", type: "bnc" }
+      };
+
+      const CABLES_META = {
+        "banana-red":    { name: "Banana Merah",  color: "#EF4444", kind: "banana2" },
+        "banana-black":  { name: "Banana Hitam",  color: "#1E293B", kind: "banana2" },
+        "banana-blue":   { name: "Banana Biru",   color: "#2563EB", kind: "banana2" },
+        "bnc-banana":    { name: "BNC–Banana",    color: "#EF4444", kind: "bnc_split" },
+        "bnc-alligator": { name: "BNC–Buaya",     color: "#F59E0B", kind: "bnc_split" },
+        "bnc-bnc":       { name: "BNC–BNC",       color: "#64748B", kind: "bnc2" }
+      };
+
+      // ============================================================
+      // 4. STATE APLIKASI & INSTRUMEN
+      // ============================================================
+      const state = {
+        stepIdx: 0,
+        completed: {}, // { stepId: { val, unit } }
+        selectedCable: "banana-red",
+        pending: null,
+        cables: [],
+        psu1: { v: 0, on: false },
+        psu2: { v: 0, on: false },
+        dmm: "DCV", // OFF, DCV, ACV, OHM, MA
+        potCD: 2.5,
+        isrc: 5.0,
+        gen: { on: false, wave: "SINE", freqIdx: 2, vpp: 4.0 },
+        scope: { run: true, ch1: true, ch2: true, cpl: "DC", vdivIdx: 2, tdivIdx: 2 },
+        timerSec: 0,
+        liveReading: { display: "0.00 V", num: 0, unit: "V", err: false, alarm: "" }
+      };
+
+      const FREQS = [100, 500, 1000, 2000, 5000, 10000];
+      const VDIVS = [0.5, 1, 2, 5, 10];
+      const TDIVS = [0.1, 0.25, 0.5, 1, 2]; // ms/div
+
+      const $ = (s) => document.querySelector(s);
+      const currentStep = () => EXAM_STEPS[state.stepIdx];
+
+      function portInfo(id) {
+        if (PORT_META[id]) return PORT_META[id];
+        const kit = KIT_DATA[currentStep().kit];
+        const p = kit.ports.find((x) => x.id === id);
+        return p ? { label: p.label, type: "banana" } : { label: id, type: "banana" };
+      }
+
+      // ============================================================
+      // 5. NETLIST (UNION-FIND) & MESIN SIMULASI FISIKA REAL-TIME
+      // ============================================================
+      function buildNetlist(cables = state.cables) {
+        const kit = KIT_DATA[currentStep().kit];
+        const parent = {};
+        const find = (x) => {
+          if (!(x in parent)) parent[x] = x;
+          if (parent[x] !== x) parent[x] = find(parent[x]);
+          return parent[x];
+        };
+        const union = (a, b) => {
+          const ra = find(a), rb = find(b);
+          if (ra !== rb) parent[ra] = rb;
+        };
+        const same = (a, b) => find(a) === find(b);
+
+        kit.shorts.forEach(([a, b]) => union(a, b));
+        const used = new Set();
+
+        cables.forEach((c) => {
+          const m = CABLES_META[c.type];
+          if (m.kind === "banana2") {
+            union(c.from, c.to);
+            used.add(c.from); used.add(c.to);
+          } else if (m.kind === "bnc2") {
+            union(c.from + "_p", c.to + "_p");
+            union(c.from + "_n", c.to + "_n");
+            used.add(c.from); used.add(c.to);
+          } else if (m.kind === "bnc_split") {
+            union(c.bnc + "_p", c.pos);
+            union(c.bnc + "_n", c.neg);
+            used.add(c.bnc); used.add(c.pos); used.add(c.neg);
+          }
+        });
+
+        return { find, same, used };
+      }
+
+      // Helper: Cek apakah 2 port dihubungkan ke PSU aktif (mengembalikan voltase bertanda atau null)
+      function getAppliedVoltage(net, pPos, pNeg) {
+        if (state.psu1.on) {
+          if (net.same(pPos, "psu1_pos") && net.same(pNeg, "psu1_neg")) return { v: state.psu1.v, src: 1 };
+          if (net.same(pPos, "psu1_neg") && net.same(pNeg, "psu1_pos")) return { v: -state.psu1.v, src: 1 };
+        }
+        if (state.psu2.on) {
+          if (net.same(pPos, "psu2_pos") && net.same(pNeg, "psu2_neg")) return { v: state.psu2.v, src: 2 };
+          if (net.same(pPos, "psu2_neg") && net.same(pNeg, "psu2_pos")) return { v: -state.psu2.v, src: 2 };
+        }
+        return null;
+      }
+
+      function hasAnyPsuAttached(net, p1, p2) {
+        const psuPorts = ["psu1_pos", "psu1_neg", "psu2_pos", "psu2_neg"];
+        return psuPorts.some((pp) => net.used.has(pp) && (net.same(p1, pp) || net.same(p2, pp)));
+      }
+
+      // Helper generik: cek rantai seri komponen antara startNode dan endNode
+      // elems: array of { id, a, b, polar }
+      // Return { ok: true, polarity: 1|-1 } jika rantai valid
+      function matchSeriesChain(net, startNode, endNode, elems) {
+        if (net.same(startNode, endNode)) return { ok: false };
+        // Pastikan tidak ada elemen yang ujungnya sendiri ter-short
+        for (const e of elems) {
+          if (net.same(e.a, e.b)) return { ok: false };
+        }
+        const permute = (arr) => {
+          if (arr.length <= 1) return [arr];
+          const res = [];
+          for (let i = 0; i < arr.length; i++) {
+            const rest = permute([...arr.slice(0, i), ...arr.slice(i + 1)]);
+            rest.forEach((r) => res.push([arr[i], ...r]));
+          }
+          return res;
+        };
+
+        for (const order of permute(elems)) {
+          // Coba semua orientasi bitmask 2^k
+          const total = 1 << order.length;
+          for (let mask = 0; mask < total; mask++) {
+            let valid = true;
+            let pol = 1;
+            const visitedNets = new Set([net.find(startNode)]);
+            let curNode = startNode;
+
+            for (let i = 0; i < order.length; i++) {
+              const flip = Boolean(mask & (1 << i));
+              const inPin = flip ? order[i].b : order[i].a;
+              const outPin = flip ? order[i].a : order[i].b;
+              if (order[i].polar && flip) pol = -1;
+              if (!net.same(curNode, inPin)) { valid = false; break; }
+              const outRoot = net.find(outPin);
+              if (i < order.length - 1 && visitedNets.has(outRoot)) { valid = false; break; }
+              visitedNets.add(outRoot);
+              curNode = outPin;
+            }
+            if (valid && net.same(curNode, endNode)) {
+              return { ok: true, polarity: pol };
+            }
+          }
+        }
+        return { ok: false };
+      }
+
+      function computeCircuitPhysics() {
+        const net = buildNetlist();
+        const kit = currentStep().kit;
+        let alarm = "";
+
+        // 1. Cek Hubung Singkat PSU!
+        const psu1Short = state.psu1.on && net.same("psu1_pos", "psu1_neg");
+        const psu2Short = state.psu2.on && net.same("psu2_pos", "psu2_neg");
+        if (psu1Short) alarm = "⚠ BAHAYA SHORT CIRCUIT! PSU CH1 (+) dan (−) terhubung singkat! Lepas PSU sebelum memasang jumper short!";
+        else if (psu2Short) alarm = "⚠ BAHAYA SHORT CIRCUIT! PSU CH2 (+) dan (−) terhubung singkat! Lepas PSU sebelum memasang jumper short!";
+
+        // 2. Cek Jack DMM vs Mode DMM
+        const dmmMode = state.dmm;
+        const maPlugged = net.used.has("dmm_ma");
+        const vPlugged = net.used.has("dmm_v");
+        const comPlugged = net.used.has("dmm_com");
+
+        if (dmmMode === "OFF") {
+          return { display: "OFF", num: null, unit: "", err: false, alarm, net };
+        }
+
+        if (dmmMode === "MA" && !maPlugged && vPlugged) {
+          return { display: "ERR JACK", num: null, unit: "", err: true, alarm: alarm || "Salah Jack DMM! Mode mA wajib memakai jack mA (kuning), bukan jack V/Ω.", net };
+        }
+        if ((dmmMode === "DCV" || dmmMode === "ACV" || dmmMode === "OHM") && maPlugged && !vPlugged) {
+          return { display: "ERR JACK", num: null, unit: "", err: true, alarm: alarm || "Salah Jack DMM! Mode Volt/Ohm wajib memakai jack V/Ω (merah), bukan jack mA.", net };
+        }
+
+        // Cek DMM mA dipasang paralel langsung ke PSU aktif (Fuse Blown!)
+        if (dmmMode === "MA" && maPlugged && comPlugged) {
+          if (getAppliedVoltage(net, "dmm_ma", "dmm_com")) {
+            return { display: "FUSE!", num: null, unit: "", err: true, alarm: "⚠ FUSE PUTUS! Jangan memasang mA-meter langsung paralel ke sumber tegangan tanpa beban seri!", net };
+          }
+        }
+
+        const dmmActive = comPlugged && (dmmMode === "MA" ? maPlugged : vPlugged);
+        if (!dmmActive) {
+          const def = dmmMode === "OHM" ? "O.L" : (dmmMode === "MA" ? "0.00 mA" : "0.00 V");
+          return { display: def, num: 0, unit: dmmMode === "MA" ? "mA" : (dmmMode === "OHM" ? "kΩ" : "V"), err: false, alarm, net };
+        }
+
+        // ============================================================
+        // SIMULASI KIT THEVENIN & NORTON
+        // ============================================================
+        if (kit === "thevenin") {
+          const vAB = getAppliedVoltage(net, "rn_a", "rn_b");
+          const abShort = net.same("rn_a", "rn_b") && !hasAnyPsuAttached(net, "rn_a", "rn_b");
+
+          // --- MODE OHMMETER ---
+          if (dmmMode === "OHM") {
+            // Cek apakah ada PSU menyala di node yang diukur
+            if ((vAB && (net.same("dmm_v", "rn_c") || net.same("dmm_v", "rn_d"))) ||
+                (state.psu1.on && (net.same("dmm_v", "psu1_pos") || net.same("dmm_com", "psu1_pos")))) {
+              return { display: "LIVE V!", num: null, unit: "", err: true, alarm: "⚠ Jangan mengukur resistansi (Ω) saat Power Supply masih menyala/tersambung!", net };
+            }
+            // Ukur R_T pada C-D dengan A-B di-short
+            if ((net.same("dmm_v", "rn_c") && net.same("dmm_com", "rn_d")) ||
+                (net.same("dmm_v", "rn_d") && net.same("dmm_com", "rn_c"))) {
+              if (abShort) {
+                return { display: `${RN_RT.toFixed(2)} kΩ`, num: RN_RT, unit: "kΩ", err: false, alarm, net };
+              }
+              return { display: "1.85 kΩ", num: 1.85, unit: "kΩ", err: false, alarm, net }; // A-B belum di-short!
+            }
+            // Ukur POT C-D
+            if ((net.same("dmm_v", "pot_c") && net.same("dmm_com", "pot_d")) ||
+                (net.same("dmm_v", "pot_d") && net.same("dmm_com", "pot_c"))) {
+              return { display: `${state.potCD.toFixed(2)} kΩ`, num: state.potCD, unit: "kΩ", err: false, alarm, net };
+            }
+            // Ukur Bank Beban (R1, R2, R3, R0)
+            for (const [lid, rval] of Object.entries(LOAD_VALS)) {
+              if ((net.same("dmm_v", "load_com") && net.same("dmm_com", lid)) ||
+                  (net.same("dmm_v", lid) && net.same("dmm_com", "load_com"))) {
+                return { display: `${rval.toFixed(2)} kΩ`, num: rval, unit: "kΩ", err: false, alarm, net };
+              }
+            }
+            return { display: "O.L", num: Infinity, unit: "kΩ", err: false, alarm, net };
+          }
+
+          // --- MODE VOLTMETER (DC V) ---
+          if (dmmMode === "DCV") {
+            // Cek pengukuran langsung PSU
+            const directV = getAppliedVoltage(net, "dmm_v", "dmm_com");
+            if (directV) return { display: `${directV.v.toFixed(2)} V`, num: directV.v, unit: "V", err: false, alarm, net };
+
+            // Ukur V_T open circuit pada C-D
+            if (vAB) {
+              const vt = vAB.v * RN_GAIN;
+              if (net.same("dmm_v", "rn_c") && net.same("dmm_com", "rn_d")) {
+                return { display: `${vt.toFixed(2)} V`, num: vt, unit: "V", err: false, alarm, net };
+              }
+              if (net.same("dmm_v", "rn_d") && net.same("dmm_com", "rn_c")) {
+                return { display: `${(-vt).toFixed(2)} V`, num: -vt, unit: "V", err: false, alarm, net };
+              }
+            }
+            return { display: "0.00 V", num: 0, unit: "V", err: false, alarm, net };
+          }
+
+          // --- MODE MILLIAMMETER (mA) ---
+          if (dmmMode === "MA") {
+            const dmmEl = { id: "dmm", a: "dmm_ma", b: "dmm_com", polar: true };
+
+            // Kasus A: Rangkaian N dicatu PSU di A-B
+            if (vAB) {
+              const vt = vAB.v * RN_GAIN;
+              // 1) Short circuit I_N langsung di C-D
+              if (net.same("rn_c", "dmm_ma") && net.same("rn_d", "dmm_com")) {
+                const iN = vt / RN_RT;
+                return { display: `${iN.toFixed(2)} mA`, num: iN, unit: "mA", err: false, alarm, net, tag: "norton_in" };
+              }
+              if (net.same("rn_c", "dmm_com") && net.same("rn_d", "dmm_ma")) {
+                const iN = -vt / RN_RT;
+                return { display: `${iN.toFixed(2)} mA`, num: iN, unit: "mA", err: false, alarm, net, tag: "norton_in_rev" };
+              }
+              // 2) Seri mA-meter + Beban R_i di C-D (Gambar 2-8)
+              for (const [lid, rval] of Object.entries(LOAD_VALS)) {
+                if (lid === "load_r0") continue;
+                const loadEl = { id: lid, a: "load_com", b: lid, polar: false };
+                const m = matchSeriesChain(net, "rn_c", "rn_d", [dmmEl, loadEl]);
+                if (m.ok) {
+                  const iVal = (vt / (RN_RT + rval)) * m.polarity;
+                  return { display: `${iVal.toFixed(2)} mA`, num: iVal, unit: "mA", err: false, alarm, net, loadId: lid, polarity: m.polarity, tag: "th1_load" };
+                }
+              }
+            }
+
+            // Kasus B: Rangkaian Pengganti Thevenin 2 (PSU + POT C-D + mA + Beban R_i)
+            for (const ch of [1, 2]) {
+              const psu = ch === 1 ? state.psu1 : state.psu2;
+              if (!psu.on) continue;
+              const pPos = ch === 1 ? "psu1_pos" : "psu2_pos";
+              const pNeg = ch === 1 ? "psu1_neg" : "psu2_neg";
+              const potEl = { id: "pot", a: "pot_c", b: "pot_d", polar: false };
+
+              // Dengan beban R1/R2/R3
+              for (const [lid, rval] of Object.entries(LOAD_VALS)) {
+                if (lid === "load_r0") continue;
+                const loadEl = { id: lid, a: "load_com", b: lid, polar: false };
+                const m = matchSeriesChain(net, pPos, pNeg, [potEl, dmmEl, loadEl]);
+                if (m.ok) {
+                  const iVal = (psu.v / (state.potCD + rval)) * m.polarity;
+                  return { display: `${iVal.toFixed(2)} mA`, num: iVal, unit: "mA", err: false, alarm, net, loadId: lid, polarity: m.polarity, tag: "th2_eq" };
+                }
+              }
+              // Dengan R=0 (hanya POT + mA)
+              const mShort = matchSeriesChain(net, pPos, pNeg, [potEl, dmmEl]);
+              if (mShort.ok) {
+                const iVal = (psu.v / state.potCD) * mShort.polarity;
+                return { display: `${iVal.toFixed(2)} mA`, num: iVal, unit: "mA", err: false, alarm, net, loadId: "load_r0", polarity: mShort.polarity, tag: "th2_eq" };
+              }
+            }
+
+            // Kasus C: Rangkaian Pengganti Norton (Sumber Arus E-F || Rangkaian N [A-B short] || [mA + R_i])
+            const srcToCD = net.same("isrc_e", "rn_c") && net.same("isrc_f", "rn_d");
+            const srcToCDRev = net.same("isrc_e", "rn_d") && net.same("isrc_f", "rn_c");
+            if (abShort && (srcToCD || srcToCDRev)) {
+              const sign = srcToCD ? 1 : -1;
+              for (const [lid, rval] of Object.entries(LOAD_VALS)) {
+                if (lid === "load_r0") continue;
+                const loadEl = { id: lid, a: "load_com", b: lid, polar: false };
+                const m = matchSeriesChain(net, "rn_c", "rn_d", [dmmEl, loadEl]);
+                if (m.ok) {
+                  const iVal = state.isrc * (RN_RT / (RN_RT + rval)) * m.polarity * sign;
+                  return { display: `${iVal.toFixed(2)} mA`, num: iVal, unit: "mA", err: false, alarm, net, loadId: lid, polarity: m.polarity * sign, tag: "norton_eq" };
+                }
+              }
+            }
+
+            // Kasus D: Kalibrasi langsung Sumber Arus E-F dengan mA-meter
+            if (net.same("isrc_e", "dmm_ma") && net.same("isrc_f", "dmm_com")) {
+              return { display: `${state.isrc.toFixed(2)} mA`, num: state.isrc, unit: "mA", err: false, alarm, net, tag: "isrc_cal" };
+            }
+            if (net.same("isrc_e", "dmm_com") && net.same("isrc_f", "dmm_ma")) {
+              return { display: `${(-state.isrc).toFixed(2)} mA`, num: -state.isrc, unit: "mA", err: false, alarm, net, tag: "isrc_cal" };
+            }
+
+            return { display: "0.00 mA", num: 0, unit: "mA", err: false, alarm, net };
+          }
+        }
+
+        // ============================================================
+        // SIMULASI KIT SUPERPOSISI (GAMBAR 2-14)
+        // ============================================================
+        if (kit === "superposisi") {
+          const v1Obj = getAppliedVoltage(net, "sup_v1p", "sup_v1n");
+          const v2Obj = getAppliedVoltage(net, "sup_v2p", "sup_v2n");
+          const v1Short = net.same("sup_v1p", "sup_v1n") && !hasAnyPsuAttached(net, "sup_v1p", "sup_v1n");
+          const v2Short = net.same("sup_v2p", "sup_v2n") && !hasAnyPsuAttached(net, "sup_v2p", "sup_v2n");
+
+          const v1Conn = Boolean(v1Obj || v1Short);
+          const v2Conn = Boolean(v2Obj || v2Short);
+          const V1 = v1Obj ? v1Obj.v : 0;
+          const V2 = v2Obj ? v2Obj.v : 0;
+
+          // Cek apakah celah I4 tertutup (oleh mA-meter atau kabel jumper)
+          const i4ByDmmPos = dmmMode === "MA" && net.same("sup_i4a", "dmm_ma") && net.same("sup_i4b", "dmm_com");
+          const i4ByDmmNeg = dmmMode === "MA" && net.same("sup_i4a", "dmm_com") && net.same("sup_i4b", "dmm_ma");
+          const i4Closed = i4ByDmmPos || i4ByDmmNeg || net.same("sup_i4a", "sup_i4b");
+
+          // Solusi nodal eksak di Node X:
+          let Gtot = 0, Inode = 0;
+          if (v1Conn) { Gtot += 1 / SUP_R.R1; Inode += V1 / SUP_R.R1; }
+          if (v2Conn) { Gtot += 1 / SUP_R.R2; Inode += V2 / SUP_R.R2; }
+          if (i4Closed) { Gtot += 1 / (SUP_R.R3 + SUP_R.R4); }
+
+          const Vx = Gtot > 0 ? Inode / Gtot : 0;
+          const I4 = i4Closed ? Vx / (SUP_R.R3 + SUP_R.R4) : 0; // mA
+          const VR1 = v1Conn ? (V1 - Vx) : 0;
+
+          if (dmmMode === "MA") {
+            if (i4ByDmmPos) return { display: `${I4.toFixed(2)} mA`, num: I4, unit: "mA", err: false, alarm, net, v1Obj, v2Obj, v1Short, v2Short, pol: 1 };
+            if (i4ByDmmNeg) return { display: `${(-I4).toFixed(2)} mA`, num: -I4, unit: "mA", err: false, alarm, net, v1Obj, v2Obj, v1Short, v2Short, pol: -1 };
+            return { display: "0.00 mA", num: 0, unit: "mA", err: false, alarm, net, v1Obj, v2Obj, v1Short, v2Short };
+          }
+          if (dmmMode === "DCV") {
+            if (net.same("dmm_v", "sup_v1p") && net.same("dmm_com", "sup_x")) return { display: `${VR1.toFixed(2)} V`, num: VR1, unit: "V", err: false, alarm, net };
+            if (net.same("dmm_v", "sup_x") && net.same("dmm_com", "sup_v1p")) return { display: `${(-VR1).toFixed(2)} V`, num: -VR1, unit: "V", err: false, alarm, net };
+            return { display: "0.00 V", num: 0, unit: "V", err: false, alarm, net };
+          }
+          return { display: dmmMode === "OHM" ? "O.L" : "0.00 V", num: 0, unit: "V", err: false, alarm, net };
+        }
+
+        // ============================================================
+        // SIMULASI KIT RESIPROSITAS (GAMBAR 2-15)
+        // ============================================================
+        if (kit === "resiprositas") {
+          const vAB = getAppliedVoltage(net, "res_a", "res_b");
+          const vCD = getAppliedVoltage(net, "res_c", "res_d");
+
+          if (dmmMode === "MA") {
+            // Eksitasi di a-b, ukur mA di c-d
+            if (vAB && !vCD) {
+              const cdPos = net.same("res_c", "dmm_ma") && net.same("res_d", "dmm_com");
+              const cdNeg = net.same("res_c", "dmm_com") && net.same("res_d", "dmm_ma");
+              if (cdPos || cdNeg) {
+                const Rp2 = (RES_R.R4 * RES_R.R5) / (RES_R.R4 + RES_R.R5);
+                const Rright1 = RES_R.R3 + Rp2;
+                const Rp1 = (RES_R.R2 * Rright1) / (RES_R.R2 + Rright1);
+                const Iin = vAB.v / (RES_R.R1 + Rp1);
+                const Vn1 = Iin * Rp1;
+                const Vn2 = (Vn1 / Rright1) * Rp2;
+                const Icd = (Vn2 / RES_R.R5) * (cdPos ? 1 : -1);
+                return { display: `${Icd.toFixed(2)} mA`, num: Icd, unit: "mA", err: false, alarm, net, dir: "ab_to_cd", pol: cdPos ? 1 : -1, vSrc: vAB.v };
+              }
+            }
+            // Eksitasi di c-d, ukur mA di a-b
+            if (vCD && !vAB) {
+              const abPos = net.same("res_a", "dmm_ma") && net.same("res_b", "dmm_com");
+              const abNeg = net.same("res_a", "dmm_com") && net.same("res_b", "dmm_ma");
+              if (abPos || abNeg) {
+                const Rp1 = (RES_R.R2 * RES_R.R1) / (RES_R.R2 + RES_R.R1);
+                const Rleft2 = RES_R.R3 + Rp1;
+                const Rp2 = (RES_R.R4 * Rleft2) / (RES_R.R4 + Rleft2);
+                const Iin = vCD.v / (RES_R.R5 + Rp2);
+                const Vn2 = Iin * Rp2;
+                const Vn1 = (Vn2 / Rleft2) * Rp1;
+                const Iab = (Vn1 / RES_R.R1) * (abPos ? 1 : -1);
+                return { display: `${Iab.toFixed(2)} mA`, num: Iab, unit: "mA", err: false, alarm, net, dir: "cd_to_ab", pol: abPos ? 1 : -1, vSrc: vCD.v };
+              }
+            }
+            return { display: "0.00 mA", num: 0, unit: "mA", err: false, alarm, net };
+          }
+          return { display: dmmMode === "OHM" ? "O.L" : "0.00 V", num: 0, unit: "V", err: false, alarm, net };
+        }
+
+        return { display: "0.00", num: 0, unit: "", err: false, alarm, net };
+      }
+
+      // ============================================================
+      // 6. VALIDATOR SETIAP LANGKAH UJIAN
+      // ============================================================
+      function validateCurrentStep() {
+        const step = currentStep();
+        const phys = computeCircuitPhysics();
+        const net = phys.net;
+        const checks = [];
+
+        const rawIn = $("#bcl-input").value.trim().replace(",", ".");
+        const userVal = rawIn === "" ? NaN : parseFloat(rawIn);
+
+        if (phys.alarm) {
+          checks.push({ ok: false, msg: phys.alarm });
+        }
+
+        if (step.id === "th1_i") {
+          const vAB = getAppliedVoltage(net, "rn_a", "rn_b");
+          checks.push({ ok: Boolean(vAB && Math.abs(vAB.v - 20) <= 0.5), msg: vAB && Math.abs(vAB.v - 20) <= 0.5 ? "Sumber DC 20.0 V (ON) terpasang benar pada A (+) dan B (−)." : "Pasang DC Supply 20.0 V (Output ON) pada A (+) dan B (−)." });
+          checks.push({ ok: state.dmm === "MA" && !phys.err, msg: state.dmm === "MA" && !phys.err ? "Multimeter diatur ke mode mA dengan jack mA & COM." : "Set Multimeter ke mode mA (DC) dan pastikan probe merah di jack mA." });
+          const okSeries = phys.tag === "th1_load" && phys.loadId === "load_r1";
+          checks.push({ ok: okSeries && phys.polarity === 1, msg: okSeries ? (phys.polarity === 1 ? "mA-meter terpasang seri dengan R1 (2 kΩ) pada cabang C–D." : "Rangkaian seri benar, tetapi polaritas mA-meter terbalik (terbaca negatif).") : "Rangkai cabang C–D: mA-meter SERI dengan beban R1 (2 kΩ)." });
+        }
+
+        else if (step.id === "th1_vt") {
+          const vAB = getAppliedVoltage(net, "rn_a", "rn_b");
+          checks.push({ ok: Boolean(vAB && Math.abs(vAB.v - 20) <= 0.5), msg: vAB && Math.abs(vAB.v - 20) <= 0.5 ? "Sumber DC 20.0 V (ON) tetap terpasang pada A–B." : "Pastikan sumber DC 20.0 V (ON) tetap terpasang pada A (+) dan B (−)." });
+          const noLoad = !net.used.has("load_com") && !net.used.has("load_r1");
+          checks.push({ ok: noLoad, msg: noLoad ? "Cabang C–D dalam kondisi open-circuit (tanpa beban)." : "Lepaskan kabel beban R1 agar C–D terbuka (open circuit)." });
+          const dmmOk = state.dmm === "DCV" && !phys.err && net.same("dmm_v", "rn_c") && net.same("dmm_com", "rn_d");
+          checks.push({ ok: dmmOk, msg: dmmOk ? "Voltmeter (mode DC V, jack V/Ω & COM) terpasang paralel pada C–D." : "Atur DMM ke mode DC V, pakai jack V/Ω → C dan COM → D." });
+        }
+
+        else if (step.id === "th1_rt") {
+          const noPsu = !hasAnyPsuAttached(net, "rn_a", "rn_b");
+          checks.push({ ok: noPsu, msg: noPsu ? "Sumber tegangan telah dilepas dari terminal A–B." : "Lepaskan kabel Power Supply dari terminal A–B terlebih dahulu!" });
+          const abShort = net.same("rn_a", "rn_b") && noPsu;
+          checks.push({ ok: abShort, msg: abShort ? "Terminal A dan B terhubung singkat (short circuit)." : "Hubung-singkatkan terminal A dan B dengan kabel jumper." });
+          const ohmOk = state.dmm === "OHM" && !phys.err && ((net.same("dmm_v", "rn_c") && net.same("dmm_com", "rn_d")) || (net.same("dmm_v", "rn_d") && net.same("dmm_com", "rn_c")));
+          checks.push({ ok: ohmOk, msg: ohmOk ? "Ohmmeter (mode Ω, jack V/Ω & COM) terpasang pada C–D." : "Set DMM ke mode Ω dan hubungkan jack V/Ω & COM ke terminal C–D." });
+        }
+
+        else if (step.id === "th1_calc") {
+          const r1Ok = state.dmm === "OHM" && !phys.err && ((net.same("dmm_v", "load_com") && net.same("dmm_com", "load_r1")) || (net.same("dmm_v", "load_r1") && net.same("dmm_com", "load_com")));
+          checks.push({ ok: r1Ok, msg: r1Ok ? "Resistansi R1 (2.00 kΩ) terukur dengan Ohmmeter." : "Ukur resistansi R1 dengan DMM mode Ω (jack V/Ω & COM ke Common Beban dan R1)." });
+        }
+
+        else if (step.id === "th2_eq") {
+          const psuOk = state.psu1.on && Math.abs(state.psu1.v - 8.0) <= 0.2;
+          checks.push({ ok: psuOk, msg: psuOk ? "Sumber DC CH1 diatur ke V_T = 8.0 V (OUT: ON)." : "Atur PSU CH1 tepat ke 8.0 V (= V_T) dan nyalakan OUT: ON." });
+          const potOk = Math.abs(state.potCD - 1.2) <= 0.1;
+          checks.push({ ok: potOk, msg: potOk ? "POT R_T (C–D) diatur tepat ke 1.20 kΩ." : `POT R_T masih ${state.potCD.toFixed(2)} kΩ — geser slider ke 1.20 kΩ.` });
+          const loopOk = phys.tag === "th2_eq" && phys.loadId === "load_r1" && phys.polarity === 1;
+          checks.push({ ok: loopOk, msg: loopOk ? "Rangkaian seri PSU → POT → mA-meter → R1 tersusun benar." : "Susun loop seri: CH1 (+) → POT (C–D) → DMM (mode mA, jack mA & COM) → R1 (2 kΩ) → CH1 (−)." });
+        }
+
+        else if (step.id === "nor_in") {
+          const vAB = getAppliedVoltage(net, "rn_a", "rn_b");
+          checks.push({ ok: Boolean(vAB && Math.abs(vAB.v - 20) <= 0.5), msg: vAB && Math.abs(vAB.v - 20) <= 0.5 ? "Sumber DC 20.0 V (ON) terpasang pada A–B." : "Pasang DC Supply 20.0 V (ON) pada A (+) dan B (−)." });
+          const scOk = phys.tag === "norton_in" && state.dmm === "MA" && !phys.err;
+          checks.push({ ok: scOk, msg: scOk ? "mA-meter langsung mengukur arus hubung-singkat pada C–D." : (phys.tag === "norton_in_rev" ? "Polaritas mA-meter terbalik! Hubungkan mA ke C dan COM ke D." : "Set DMM ke mode mA, lalu pasang langsung jack mA → C dan COM → D.") });
+        }
+
+        else if (step.id === "nor_eq") {
+          const noPsu = !hasAnyPsuAttached(net, "rn_a", "rn_b");
+          const abShort = net.same("rn_a", "rn_b") && noPsu;
+          checks.push({ ok: abShort, msg: abShort ? "A–B dihubung singkat (bebas PSU) sehingga R_N = R_T." : "Lepas PSU dari A–B dan hubung-singkatkan A dengan B." });
+          const iOk = Math.abs(state.isrc - 6.67) <= 0.12;
+          checks.push({ ok: iOk, msg: iOk ? "Sumber Arus E–F diatur ke I_N = 6.67 mA." : `Sumber arus E–F masih ${state.isrc.toFixed(2)} mA — atur slider ke 6.67 mA.` });
+          const loopOk = phys.tag === "norton_eq" && phys.loadId === "load_r1" && phys.polarity === 1;
+          checks.push({ ok: loopOk, msg: loopOk ? "Sumber Arus E–F, Rangkaian N (C–D), dan cabang mA-meter + R1 tersambung paralel benar." : "Hubungkan paralel E→C, F→D, serta pasang mA-meter seri R1 (2 kΩ) antara C dan D." });
+        }
+
+        else if (step.id === "sup_1") {
+          const v1Ok = Boolean(phys.v1Obj && Math.abs(phys.v1Obj.v - 12) <= 0.5);
+          checks.push({ ok: v1Ok, msg: v1Ok ? "Sumber V1 = 12.0 V (ON) terpasang pada V1+ dan V1−." : "Pasang PSU CH1 = 12.0 V (ON) ke port V1+ dan V1−." });
+          checks.push({ ok: Boolean(phys.v2Short), msg: phys.v2Short ? "V2 dilepas dari PSU dan dihubung-singkatkan dengan jumper." : "Lepas PSU dari V2 lalu hubung-singkatkan V2+ dan V2− dengan kabel jumper." });
+          const maOk = state.dmm === "MA" && !phys.err && phys.pol === 1;
+          checks.push({ ok: maOk, msg: maOk ? "mA-meter terpasang benar pada celah ukur I4." : "Pasang DMM (mode mA, jack mA → I4 atas, COM → I4 bawah)." });
+        }
+
+        else if (step.id === "sup_2") {
+          checks.push({ ok: Boolean(phys.v1Short), msg: phys.v1Short ? "V1 dilepas dari PSU dan dihubung-singkatkan dengan jumper." : "Lepas PSU dari V1 lalu hubung-singkatkan V1+ dan V1− dengan kabel jumper." });
+          const v2Ok = Boolean(phys.v2Obj && Math.abs(phys.v2Obj.v - 6) <= 0.3);
+          checks.push({ ok: v2Ok, msg: v2Ok ? "Sumber V2 = 6.0 V (ON) terpasang pada V2+ dan V2−." : "Pasang PSU CH2 = 6.0 V (ON) ke port V2+ dan V2−." });
+          const maOk = state.dmm === "MA" && !phys.err && phys.pol === 1;
+          checks.push({ ok: maOk, msg: maOk ? "mA-meter terpasang benar pada celah ukur I4." : "Pasang DMM (mode mA, jack mA → I4 atas, COM → I4 bawah)." });
+        }
+
+        else if (step.id === "sup_3") {
+          const v1Ok = Boolean(phys.v1Obj && Math.abs(phys.v1Obj.v - 12) <= 0.5);
+          const v2Ok = Boolean(phys.v2Obj && Math.abs(phys.v2Obj.v - 6) <= 0.3);
+          checks.push({ ok: v1Ok, msg: v1Ok ? "Sumber V1 = 12.0 V (ON) terpasang benar." : "Pasang PSU CH1 = 12.0 V (ON) pada V1+ dan V1− (tanpa jumper short)." });
+          checks.push({ ok: v2Ok, msg: v2Ok ? "Sumber V2 = 6.0 V (ON) terpasang benar." : "Pasang PSU CH2 = 6.0 V (ON) pada V2+ dan V2− (tanpa jumper short)." });
+          const maOk = state.dmm === "MA" && !phys.err && phys.pol === 1;
+          checks.push({ ok: maOk, msg: maOk ? "mA-meter terpasang benar pada celah ukur I4." : "Pasang DMM (mode mA, jack mA → I4 atas, COM → I4 bawah)." });
+        }
+
+        else if (step.id === "res_1") {
+          const srcOk = phys.dir === "ab_to_cd" && Math.abs(phys.vSrc - 12) <= 0.5;
+          checks.push({ ok: srcOk, msg: srcOk ? "Sumber 12.0 V terpasang pada a–b dan mA-meter pada c–d." : "Pasang PSU 12.0 V (ON) pada a (+) & b (−), lalu DMM (mode mA) pada c & d." });
+          if (srcOk) {
+            checks.push({ ok: phys.pol === 1, msg: phys.pol === 1 ? "Polaritas milli Ammeter tepat (arus positif)." : "Polaritas milli Ammeter terbalik (terbaca negatif)! Tukar jack mA ke c dan COM ke d." });
+          }
+        }
+
+        else if (step.id === "res_2") {
+          const srcOk = phys.dir === "cd_to_ab" && Math.abs(phys.vSrc - 12) <= 0.5;
+          checks.push({ ok: srcOk, msg: srcOk ? "Sumber 12.0 V dipindahkan ke c–d dan mA-meter ke a–b." : "Pindahkan PSU 12.0 V (ON) ke c (+) & d (−), lalu DMM (mode mA) ke a & b." });
+          if (srcOk) {
+            checks.push({ ok: phys.pol === 1, msg: phys.pol === 1 ? "Polaritas milli Ammeter tepat (I_ab = I_cd = 2.22 mA)." : "Polaritas milli Ammeter terbalik! Tukar jack mA ke a dan COM ke b." });
+          }
+        }
+
+        // Validasi Catatan BCL
+        const valOk = !isNaN(userVal) && Math.abs(userVal - step.expectedVal) <= step.tol;
+        checks.push({
+          ok: valOk,
+          msg: valOk
+            ? `Catatan BCL benar (${userVal.toFixed(2)} ${step.bclUnit}).`
+            : isNaN(userVal)
+              ? `Isi nilai hasil pengukuran/perhitungan (${step.bclUnit}) di kotak Catat di BCL.`
+              : `Nilai BCL (${userVal} ${step.bclUnit}) belum sesuai dengan bacaan rangkaian yang benar.`
+        });
+
+        const allPass = checks.every((c) => c.ok);
+        showFeedback(allPass ? "pass" : "fail", allPass
+          ? `🎉 BENAR! Langkah "${step.title}" berhasil dikerjakan dan dicatat ke BCL.`
+          : "Belum tepat — periksa poin yang masih merah (❌) lalu coba cek lagi:", checks);
+
+        if (allPass) {
+          state.completed[step.id] = { val: userVal.toFixed(2), unit: step.bclUnit };
+          $("#btn-next").style.display = state.stepIdx < EXAM_STEPS.length - 1 ? "inline-block" : "none";
+          renderStepStrip();
+          renderBCLTable();
+        }
+      }
+
+      function showFeedback(type, heading, checks = null, guideLines = null) {
+        const box = $("#feedback-box");
+        box.className = `feedback-box show ${type}`;
+        let html = `<strong>${heading}</strong>`;
+        if (checks) {
+          html += `<ul class="check-list">${checks.map((c) => `<li><span>${c.ok ? "✅" : "❌"}</span><span>${c.msg}</span></li>`).join("")}</ul>`;
+        }
+        if (guideLines) {
+          html += `<ol style="margin:6px 0 0 18px;display:flex;flex-direction:column;gap:3px;">${guideLines.map((g) => `<li>${g}</li>`).join("")}</ol>`;
+        }
+        box.innerHTML = html;
+      }
+
+      // ============================================================
+      // 7. RENDER PAPAN KIT SVG (THEVENIN, SUPERPOSISI, RESIPROSITAS)
+      // ============================================================
+      function el(tag, attrs = {}, parent = null) {
+        const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+        if (parent) parent.appendChild(n);
+        return n;
+      }
+
+      function sText(parent, x, y, txt, size = 12, weight = "700", color = "#0F172A", anchor = "middle") {
+        const t = el("text", { x, y, "font-size": size, "font-weight": weight, fill: color, "text-anchor": anchor }, parent);
+        t.textContent = txt;
+        return t;
+      }
+
+      function renderKitBoard() {
+        const svg = $("#kit-svg");
+        svg.innerHTML = "";
+        const kitKey = currentStep().kit;
+        const kit = KIT_DATA[kitKey];
+        $("#kit-title").textContent = kit.title;
+        $("#kit-knobs").style.display = kitKey === "thevenin" ? "flex" : "none";
+
+        // Board Frame & Yellow PCB Base
+        const defs = el("defs", {}, svg);
+        const bg = el("linearGradient", { id: "kitYellow", x1: "0%", y1: "0%", x2: "0%", y2: "100%" }, defs);
+        el("stop", { offset: "0%", "stop-color": "#FDE047" }, bg);
+        el("stop", { offset: "100%", "stop-color": "#EAB308" }, bg);
+
+        el("rect", { x: 8, y: 8, width: 704, height: 454, rx: 14, fill: "#CBD5E1", stroke: "#94A3B8", "stroke-width": 3 }, svg);
+        el("rect", { x: 22, y: 22, width: 676, height: 426, rx: 8, fill: "url(#kitYellow)", stroke: "#CA8A04", "stroke-width": 1.6 }, svg);
+        sText(svg, 360, 56, kit.title.toUpperCase(), 17, "800", "#1E293B");
+
+        const g = el("g", { stroke: "#1E293B", "stroke-width": 2.4, fill: "none", "stroke-linecap": "round" }, svg);
+
+        if (kitKey === "thevenin") {
+          // POT C-D
+          el("rect", { x: 78, y: 92, width: 112, height: 96, rx: 8, fill: "rgba(255,255,255,0.22)" }, g);
+          el("circle", { cx: 134, cy: 134, r: 22, fill: "#CBD5E1", stroke: "#334155", "stroke-width": 2 }, g);
+          el("line", { x1: 134, y1: 134, x2: 148, y2: 120, stroke: "#0F172A", "stroke-width": 3 }, g);
+          sText(svg, 134, 174, `POT (${state.potCD.toFixed(2)} kΩ)`, 11, "800");
+          el("line", { x1: 190, y1: 112, x2: 245, y2: 112 }, g);
+          el("line", { x1: 190, y1: 168, x2: 245, y2: 168 }, g);
+          sText(svg, 266, 117, "C", 13, "800");
+          sText(svg, 266, 173, "D", 13, "800");
+
+          // Sumber Arus 2N1613 (E-F)
+          el("rect", { x: 78, y: 215, width: 112, height: 126, rx: 8, fill: "rgba(255,255,255,0.22)" }, g);
+          sText(svg, 134, 244, "Sumber Arus", 12, "800");
+          sText(svg, 134, 261, "2N1613 + Zener", 10, "700", "#334155");
+          el("circle", { cx: 134, cy: 294, r: 18, fill: "#1E293B", stroke: "#475569", "stroke-width": 2 }, g);
+          sText(svg, 134, 298, "I_N", 10, "800", "#FDE047");
+          sText(svg, 134, 330, `${state.isrc.toFixed(2)} mA`, 11.5, "800", "#0369A1");
+          el("line", { x1: 190, y1: 242, x2: 245, y2: 242 }, g);
+          el("line", { x1: 190, y1: 312, x2: 245, y2: 312 }, g);
+          sText(svg, 266, 247, "E", 13, "800");
+          sText(svg, 266, 317, "F", 13, "800");
+
+          // Rangkaian N
+          el("rect", { x: 432, y: 134, width: 178, height: 82, rx: 6, fill: "rgba(255,255,255,0.28)" }, g);
+          sText(svg, 521, 172, "Rangkaian N", 15, "800");
+          sText(svg, 521, 192, "(Black Box)", 11, "600", "#475569");
+          el("line", { x1: 452, y1: 112, x2: 452, y2: 134 }, g);
+          el("line", { x1: 590, y1: 112, x2: 590, y2: 134 }, g);
+          el("line", { x1: 452, y1: 216, x2: 452, y2: 238 }, g);
+          el("line", { x1: 590, y1: 216, x2: 590, y2: 238 }, g);
+          sText(svg, 428, 117, "A", 14, "800", "#B91C1C");
+          sText(svg, 612, 117, "B", 14, "800");
+          sText(svg, 428, 243, "C", 14, "800");
+          sText(svg, 612, 243, "D", 14, "800");
+
+          // Bank Beban Kanan Bawah
+          el("line", { x1: 520, y1: 298, x2: 520, y2: 326 }, g);
+          el("line", { x1: 418, y1: 326, x2: 622, y2: 326 }, g);
+          el("line", { x1: 418, y1: 326, x2: 418, y2: 422 }, g);
+          sText(svg, 418, 376, "0Ω", 11, "800");
+          [[486, "R1", "2KΩ"], [554, "R2", "2KΩ"], [622, "R3", "3K3Ω"]].forEach(([x, rname, rval]) => {
+            el("line", { x1: x, y1: 326, x2: x, y2: 344 }, g);
+            el("rect", { x: x - 13, y: 344, width: 26, height: 52, fill: "#FEF08A" }, g);
+            el("line", { x1: x, y1: 396, x2: x, y2: 422 }, g);
+            sText(svg, x, 366, rname, 10, "800", "#0284C7");
+            sText(svg, x, 381, rval, 9.5, "800");
+          });
+          sText(svg, 520, 282, "Common Beban", 11, "800");
+        }
+
+        else if (kitKey === "superposisi") {
+          // Top rail: V1+ -> R1 -> Node X -> R3 -> I4a
+          el("line", { x1: 112, y1: 145, x2: 185, y2: 145 }, g);
+          drawBoxR(g, svg, 185, 145, 86, "R1 = 33 kΩ", true);
+          el("line", { x1: 271, y1: 145, x2: 420, y2: 145 }, g);
+          drawBoxR(g, svg, 420, 145, 86, "R3 = 1.5 kΩ", true);
+          el("line", { x1: 506, y1: 145, x2: 585, y2: 145 }, g);
+
+          // Middle leg: Node X -> R2 -> V2+
+          el("line", { x1: 345, y1: 145, x2: 345, y2: 185 }, g);
+          drawBoxR(g, svg, 345, 185, 74, "R2 = 1.5 kΩ", false);
+          el("line", { x1: 345, y1: 259, x2: 345, y2: 292 }, g);
+
+          // Right leg: I4b -> R4 -> GND (with dashed gap between I4a and I4b for mA meter)
+          el("line", { x1: 585, y1: 158, x2: 585, y2: 205, stroke: "#0284C7", "stroke-dasharray": "5,4" }, g);
+          sText(svg, 636, 185, "Pasang mA", 11, "800", "#0369A1");
+          sText(svg, 636, 199, "(Ukur I4)", 10, "700", "#0369A1");
+          el("line", { x1: 585, y1: 218, x2: 585, y2: 252 }, g);
+          drawBoxR(g, svg, 585, 252, 82, "R4 = 2.2 kΩ", false);
+          el("line", { x1: 585, y1: 334, x2: 585, y2: 372 }, g);
+
+          // Bottom rail
+          el("line", { x1: 112, y1: 372, x2: 585, y2: 372 }, g);
+
+          // Labels port V1 & V2
+          sText(svg, 74, 150, "V1+", 13, "800", "#B91C1C");
+          sText(svg, 74, 377, "V1−", 13, "800");
+          sText(svg, 304, 297, "V2+", 13, "800", "#B91C1C");
+          sText(svg, 304, 377, "V2−", 13, "800");
+          sText(svg, 345, 124, "Node X", 11, "800", "#1D4ED8");
+        }
+
+        else if (kitKey === "resiprositas") {
+          // Top ladder: a -> R1 -> N1 -> R3 -> N2 -> R5 -> c
+          el("line", { x1: 92, y1: 155, x2: 142, y2: 155 }, g);
+          drawBoxR(g, svg, 142, 155, 86, "R1 = 1.5 kΩ", true);
+          el("line", { x1: 228, y1: 155, x2: 330, y2: 155 }, g);
+          drawBoxR(g, svg, 330, 155, 86, "R3 = 1.5 kΩ", true);
+          el("line", { x1: 416, y1: 155, x2: 510, y2: 155 }, g);
+          drawBoxR(g, svg, 510, 155, 84, "R5 = 2.2 kΩ", true);
+          el("line", { x1: 594, y1: 155, x2: 635, y2: 155 }, g);
+
+          // Shunt R2 & R4
+          el("line", { x1: 280, y1: 155, x2: 280, y2: 215 }, g);
+          drawBoxR(g, svg, 280, 215, 92, "R2 = 33 kΩ", false);
+          el("line", { x1: 280, y1: 307, x2: 280, y2: 365 }, g);
+
+          el("line", { x1: 465, y1: 155, x2: 465, y2: 215 }, g);
+          drawBoxR(g, svg, 465, 215, 92, "R4 = 220 kΩ", false);
+          el("line", { x1: 465, y1: 307, x2: 465, y2: 365 }, g);
+
+          // Bottom rail b -> d
+          el("line", { x1: 92, y1: 365, x2: 635, y2: 365 }, g);
+
+          // Port Labels
+          sText(svg, 64, 160, "a", 16, "800", "#B91C1C");
+          sText(svg, 64, 370, "b", 16, "800");
+          sText(svg, 662, 160, "c", 16, "800", "#B45309");
+          sText(svg, 662, 370, "d", 16, "800", "#047857");
+        }
+
+        // Render Semua Terminal Banana pada Kit SVG
+        const reqType = getRequiredPortType();
+        kit.ports.forEach((p) => {
+          const pg = el("g", { class: "svg-port", "data-port": p.id }, svg);
+          const isPicked = state.pending && (state.pending.first === p.id || state.pending.bnc === p.id || state.pending.pos === p.id);
+          el("title", {}, pg).textContent = `${p.label} [BANANA]`;
+
+          if (isPicked) {
+            el("circle", { cx: p.x, cy: p.y, r: 17, fill: "rgba(2,132,199,0.28)", stroke: "#0284C7", "stroke-width": 2.6 }, pg);
+          } else if (reqType === "banana") {
+            el("circle", { cx: p.x, cy: p.y, r: 14, fill: "none", stroke: "rgba(2,132,199,0.45)", "stroke-width": 1.6 }, pg);
+          }
+          el("circle", { cx: p.x, cy: p.y, r: 11.5, fill: p.color, stroke: "#1E293B", "stroke-width": 1.6, class: "svg-ring" }, pg);
+          el("circle", { cx: p.x, cy: p.y, r: 6.5, fill: "#E2E8F0", stroke: "#475569", "stroke-width": 1 }, pg);
+          el("circle", { cx: p.x, cy: p.y, r: 3.2, fill: "#0F172A" }, pg);
+          pg.addEventListener("click", () => handlePortClick(p.id));
+        });
+      }
+
+      function drawBoxR(g, svg, x, y, len, lbl, horiz) {
+        if (horiz) {
+          el("rect", { x, y: y - 12, width: len, height: 24, rx: 3, fill: "#FEF08A" }, g);
+          sText(svg, x + len / 2, y - 18, lbl, 11.5, "800");
+        } else {
+          el("rect", { x: x - 12, y, width: 24, height: len, rx: 3, fill: "#FEF08A" }, g);
+          sText(svg, x + 18, y + len / 2 + 4, lbl, 11, "800", "#0F172A", "start");
+        }
+      }
+
+      // ============================================================
+      // 8. OVERLAY KABEL REALISTIS (MENGHUBUNGKAN HTML JACK <-> SVG PORT)
+      // ============================================================
+      function getPortCenter(portId) {
+        const containerRect = $("#bench-container").getBoundingClientRect();
+        // Cek di HTML Instrument Rack dulu
+        const htmlEl = document.querySelector(`.jack-wrap[data-port="${portId}"] .port-jack`);
+        if (htmlEl) {
+          const r = htmlEl.getBoundingClientRect();
+          return { x: r.left + r.width / 2 - containerRect.left, y: r.top + r.height / 2 - containerRect.top };
+        }
+        // Cek di SVG Kit Board
+        const svgEl = document.querySelector(`#kit-svg .svg-port[data-port="${portId}"]`);
+        if (svgEl) {
+          const r = svgEl.getBoundingClientRect();
+          return { x: r.left + r.width / 2 - containerRect.left, y: r.top + r.height / 2 - containerRect.top };
+        }
+        return null;
+      }
+
+      function renderCablesOverlay() {
+        const overlay = $("#cable-overlay");
+        const rect = $("#bench-container").getBoundingClientRect();
+        overlay.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+        overlay.innerHTML = "";
+
+        state.cables.forEach((c, idx) => {
+          const meta = CABLES_META[c.type];
+          const g = el("g", { class: "cable-group" }, overlay);
+          el("title", {}, g).textContent = `Klik untuk melepas ${meta.name}`;
+
+          if (meta.kind === "banana2" || meta.kind === "bnc2") {
+            const p1 = getPortCenter(c.from);
+            const p2 = getPortCenter(c.to);
+            if (!p1 || !p2) return;
+            const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            const sag = Math.min(95, 26 + dist * 0.14);
+            const mx = (p1.x + p2.x) / 2;
+            const my = Math.max(p1.y, p2.y) + sag;
+            const d = `M ${p1.x} ${p1.y} Q ${mx} ${my} ${p2.x} ${p2.y}`;
+
+            el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 16, class: "cable-hit" }, g);
+            el("path", { d, fill: "none", stroke: "rgba(15,23,42,0.2)", "stroke-width": 6.5, "stroke-linecap": "round", transform: "translate(0,3)" }, g);
+            el("path", { d, fill: "none", stroke: meta.color, "stroke-width": meta.kind === "bnc2" ? 5 : 4, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("circle", { cx: p1.x, cy: p1.y, r: 5.5, fill: meta.color, stroke: "#FFFFFF", "stroke-width": 1.6 }, g);
+            el("circle", { cx: p2.x, cy: p2.y, r: 5.5, fill: meta.color, stroke: "#FFFFFF", "stroke-width": 1.6 }, g);
+          } else if (meta.kind === "bnc_split") {
+            const pb = getPortCenter(c.bnc), pp = getPortCenter(c.pos), pn = getPortCenter(c.neg);
+            if (!pb || !pp || !pn) return;
+            const sx = pb.x + (Math.min(pp.x, pn.x) - pb.x) * 0.55;
+            const sy = (pb.y + (pp.y + pn.y) / 2) / 2 + 24;
+            const d1 = `M ${pb.x} ${pb.y} Q ${(pb.x + sx) / 2} ${Math.max(pb.y, sy) + 20} ${sx} ${sy}`;
+            const d2 = `M ${sx} ${sy} Q ${(sx + pp.x) / 2} ${Math.min(sy, pp.y) - 20} ${pp.x} ${pp.y}`;
+            const d3 = `M ${sx} ${sy} Q ${(sx + pn.x) / 2} ${Math.max(sy, pn.y) + 22} ${pn.x} ${pn.y}`;
+            [d1, d2, d3].forEach((d) => el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 14, class: "cable-hit" }, g));
+            el("path", { d: d1, fill: "none", stroke: "#334155", "stroke-width": 5.5, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("path", { d: d2, fill: "none", stroke: meta.color, "stroke-width": 3.8, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("path", { d: d3, fill: "none", stroke: "#1E293B", "stroke-width": 3.8, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("rect", { x: sx - 8, y: sy - 6, width: 16, height: 12, rx: 3, fill: "#0F172A", stroke: "#94A3B8", "stroke-width": 1.3 }, g);
+            el("circle", { cx: pb.x, cy: pb.y, r: 6.5, fill: "#475569", stroke: "#FFFFFF", "stroke-width": 1.6 }, g);
+            el("circle", { cx: pp.x, cy: pp.y, r: 5.5, fill: meta.color, stroke: "#FFFFFF", "stroke-width": 1.5 }, g);
+            el("circle", { cx: pn.x, cy: pn.y, r: 5.5, fill: "#1E293B", stroke: "#FFFFFF", "stroke-width": 1.5 }, g);
+          }
+
+          g.addEventListener("click", (e) => {
+            e.stopPropagation();
+            state.cables.splice(idx, 1);
+            updateAll();
+          });
+        });
+      }
+
+      // ============================================================
+      // 9. INTERAKSI PEMASANGAN KABEL
+      // ============================================================
+      function getRequiredPortType() {
+        const m = CABLES_META[state.selectedCable];
+        if (m.kind === "bnc2") return "bnc";
+        if (m.kind === "bnc_split") return !state.pending ? "bnc" : "banana";
+        return "banana";
+      }
+
+      function handlePortClick(portId) {
+        const info = portInfo(portId);
+        const req = getRequiredPortType();
+        const m = CABLES_META[state.selectedCable];
+
+        if (info.type !== req) {
+          $("#wire-hint").textContent = `Port ini bertipe ${info.type.toUpperCase()} — pilih port ${req.toUpperCase()}!`;
+          return;
+        }
+
+        if (m.kind === "banana2" || m.kind === "bnc2") {
+          if (!state.pending) {
+            state.pending = { first: portId };
+          } else {
+            if (state.pending.first !== portId) {
+              state.cables.push({ type: state.selectedCable, from: state.pending.first, to: portId });
+            }
+            state.pending = null;
+          }
+        } else {
+          if (!state.pending) {
+            state.pending = { bnc: portId, pos: null };
+          } else if (!state.pending.pos) {
+            state.pending.pos = portId;
+          } else {
+            if (state.pending.pos !== portId) {
+              state.cables.push({ type: state.selectedCable, bnc: state.pending.bnc, pos: state.pending.pos, neg: portId });
+              state.pending = null;
+            }
+          }
+        }
+        updateAll();
+      }
+
+      // ============================================================
+      // 10. OSILOSKOP LIVE CANVAS (DC & AC SIGNAL GENERATOR)
+      // ============================================================
+      let scopePhase = 0;
+      function getScopeSignal(ch) {
+        const net = buildNetlist();
+        const port = ch === 1 ? "osc_ch1" : "osc_ch2";
+        if (!net.used.has(port)) return { type: "none", dc: 0, amp: 0, freq: 1000 };
+
+        // Terhubung ke Signal Generator?
+        if (state.gen.on && (net.same(port + "_p", "gen_bnc_p") || net.same(port + "_p", "gen_bnc"))) {
+          return { type: state.gen.wave, dc: 0, amp: state.gen.vpp / 2, freq: FREQS[state.gen.freqIdx] };
+        }
+        // Terhubung ke PSU atau node DC?
+        const vDirect = getAppliedVoltage(net, port + "_p", port + "_n");
+        if (vDirect) return { type: "DC", dc: vDirect.v, amp: 0, freq: 0 };
+
+        if (currentStep().kit === "thevenin") {
+          const vAB = getAppliedVoltage(net, "rn_a", "rn_b");
+          if (vAB && net.same(port + "_p", "rn_c") && net.same(port + "_n", "rn_d")) {
+            return { type: "DC", dc: vAB.v * RN_GAIN, amp: 0, freq: 0 };
+          }
+        }
+        return { type: "DC", dc: 0, amp: 0, freq: 0 };
+      }
+
+      function drawOscilloscope() {
+        const canvas = $("#scope-canvas");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width, H = canvas.height;
+        ctx.fillStyle = "#06131F";
+        ctx.fillRect(0, 0, W, H);
+
+        // Graticule 8x10
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.16)";
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 10; i++) {
+          ctx.beginPath(); ctx.moveTo((W / 10) * i, 0); ctx.lineTo((W / 10) * i, H); ctx.stroke();
+        }
+        for (let j = 1; j < 8; j++) {
+          ctx.beginPath(); ctx.moveTo(0, (H / 8) * j); ctx.lineTo(W, (H / 8) * j); ctx.stroke();
+        }
+        // Center cross
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+        ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke();
+
+        const vdiv = VDIVS[state.scope.vdivIdx];
+        const tdivMs = TDIVS[state.scope.tdivIdx];
+        const pxPerDivY = H / 8;
+
+        const plotChannel = (ch, color) => {
+          if ((ch === 1 && !state.scope.ch1) || (ch === 2 && !state.scope.ch2)) return;
+          const sig = getScopeSignal(ch);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let x = 0; x <= W; x++) {
+            const tSec = ((x / W) * 10 * tdivMs) / 1000;
+            let v = 0;
+            if (state.scope.cpl !== "GND") {
+              if (sig.type === "DC") {
+                v = state.scope.cpl === "DC" ? sig.dc : 0;
+              } else if (sig.type !== "none") {
+                const ph = 2 * Math.PI * sig.freq * tSec + scopePhase;
+                if (sig.type === "SINE") v = sig.amp * Math.sin(ph);
+                else if (sig.type === "SQUARE") v = Math.sin(ph) >= 0 ? sig.amp : -sig.amp;
+                else v = (2 * sig.amp / Math.PI) * Math.asin(Math.sin(ph));
+              }
+            }
+            const y = H / 2 - (v / vdiv) * pxPerDivY;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        };
+
+        plotChannel(1, "#38BDF8");
+        plotChannel(2, "#FBBF24");
+
+        // Info HUD
+        ctx.fillStyle = "#E2E8F0";
+        ctx.font = "bold 9.5px monospace";
+        ctx.fillText(`V/div:${vdiv}V  T/div:${tdivMs}ms  ${state.scope.cpl}`, 6, H - 6);
+        if (!state.scope.run) {
+          ctx.fillStyle = "#F87171";
+          ctx.fillText("STOP", W - 34, 13);
+        }
+
+        if (state.scope.run) scopePhase += 0.08;
+        requestAnimationFrame(drawOscilloscope);
+      }
+
+      // ============================================================
+      // 11. RENDER UI & UPDATE SEMUA KOMPONEN
+      // ============================================================
+      function renderStepStrip() {
+        const strip = $("#step-strip");
+        strip.innerHTML = "";
+        EXAM_STEPS.forEach((s, i) => {
+          const btn = document.createElement("button");
+          btn.className = `step-chip ${i === state.stepIdx ? "active" : ""} ${state.completed[s.id] ? "done" : ""}`;
+          btn.textContent = (state.completed[s.id] ? "✓ " : "") + s.short;
+          btn.addEventListener("click", () => loadStep(i));
+          strip.appendChild(btn);
+        });
+        $("#score-pill").textContent = `Selesai: ${Object.keys(state.completed).length} / ${EXAM_STEPS.length}`;
+      }
+
+      function loadStep(idx) {
+        const prevKit = currentStep().kit;
+        state.stepIdx = idx;
+        const step = currentStep();
+        if (step.kit !== prevKit) {
+          state.cables = [];
+          state.pending = null;
+        }
+        $("#m-tag").textContent = step.tag;
+        $("#m-title").textContent = step.title;
+        $("#m-desc").textContent = step.desc;
+        if (step.warn) {
+          $("#m-warn").textContent = step.warn;
+          $("#m-warn").style.display = "inline-block";
+        } else {
+          $("#m-warn").style.display = "none";
+        }
+        $("#bcl-label").textContent = step.bclLabel;
+        $("#bcl-unit").textContent = step.bclUnit;
+        $("#bcl-input").value = state.completed[step.id] ? state.completed[step.id].val : "";
+        $("#feedback-box").className = "feedback-box";
+        $("#btn-next").style.display = state.completed[step.id] && idx < EXAM_STEPS.length - 1 ? "inline-block" : "none";
+        renderStepStrip();
+        updateAll();
+      }
+
+      function renderInstrumentsUI() {
+        // PSU 1 & 2
+        const net = buildNetlist();
+        const s1 = state.psu1.on && net.same("psu1_pos", "psu1_neg");
+        const s2 = state.psu2.on && net.same("psu2_pos", "psu2_neg");
+
+        $("#psu1-disp").textContent = s1 ? "OCP SHORT!" : `${state.psu1.v.toFixed(1).padStart(4, "0")} V`;
+        $("#psu1-disp").className = `psu-readout ${s1 ? "short" : (state.psu1.on ? "" : "off")}`;
+        $("#psu1-out-btn").textContent = state.psu1.on ? "OUT: ON" : "OUT: OFF";
+        $("#psu1-out-btn").className = `hw-btn ${state.psu1.on ? "out-on" : "out-off"}`;
+        $("#psu1-slider").value = state.psu1.v;
+
+        $("#psu2-disp").textContent = s2 ? "OCP SHORT!" : `${state.psu2.v.toFixed(1).padStart(4, "0")} V`;
+        $("#psu2-disp").className = `psu-readout ${s2 ? "short" : (state.psu2.on ? "" : "off")}`;
+        $("#psu2-out-btn").textContent = state.psu2.on ? "OUT: ON" : "OUT: OFF";
+        $("#psu2-out-btn").className = `hw-btn ${state.psu2.on ? "out-on" : "out-off"}`;
+        $("#psu2-slider").value = state.psu2.v;
+
+        $("#psu-led").className = `led ${(s1 || s2) ? "on-red" : ((state.psu1.on || state.psu2.on) ? "on-green" : "")}`;
+
+        // DMM
+        const phys = computeCircuitPhysics();
+        state.liveReading = phys;
+        $("#dmm-mode-lbl").textContent = state.dmm;
+        $("#dmm-val").textContent = phys.display;
+        $("#dmm-lcd").className = `lcd-dmm ${phys.err ? "err-state" : ""}`;
+        $("#dmm-led").className = `led ${state.dmm === "OFF" ? "" : (phys.err ? "on-red" : "on-green")}`;
+        document.querySelectorAll("[data-dmm]").forEach((b) => b.classList.toggle("active", b.dataset.dmm === state.dmm));
+
+        // Safety Alarm Banner
+        const alarm = $("#alarm-banner");
+        if (phys.alarm) {
+          $("#alarm-text").textContent = phys.alarm;
+          alarm.classList.add("show");
+        } else {
+          alarm.classList.remove("show");
+        }
+
+        // Signal Gen
+        const f = FREQS[state.gen.freqIdx];
+        const fStr = f >= 1000 ? `${(f / 1000).toFixed(1)} kHz` : `${f} Hz`;
+        $("#gen-disp").textContent = `${state.gen.wave} • ${fStr} • ${state.gen.vpp.toFixed(1)} Vpp`;
+        $("#gen-out-btn").textContent = state.gen.on ? "OUT: ON" : "OUT: OFF";
+        $("#gen-out-btn").className = `hw-btn ${state.gen.on ? "out-on" : "out-off"}`;
+        $("#gen-led").className = `led ${state.gen.on ? "on-green" : ""}`;
+
+        // Knobs
+        $("#knob-pot").value = state.potCD;
+        $("#knob-pot-val").textContent = `${state.potCD.toFixed(2)} kΩ`;
+        $("#knob-isrc").value = state.isrc;
+        $("#knob-isrc-val").textContent = `${state.isrc.toFixed(2)} mA`;
+
+        // Highlight matching HTML jacks
+        const req = getRequiredPortType();
+        document.querySelectorAll(".jack-wrap").forEach((jw) => {
+          const pid = jw.dataset.port;
+          const jack = jw.querySelector(".port-jack");
+          const isPicked = state.pending && (state.pending.first === pid || state.pending.bnc === pid || state.pending.pos === pid);
+          jack.classList.toggle("selected-port", Boolean(isPicked));
+          jack.classList.toggle("match-hint", jw.dataset.ptype === req && !isPicked);
+        });
+
+        // Wire Hint
+        const m = CABLES_META[state.selectedCable];
+        if (!state.pending) {
+          $("#wire-hint").textContent = m.kind === "bnc_split"
+            ? `Mode ${m.name}: klik port BNC dulu, lalu Banana (+), lalu Banana (−).`
+            : `Mode ${m.name}: klik port ${req.toUpperCase()} pertama.`;
+        } else if (m.kind === "bnc_split") {
+          $("#wire-hint").textContent = !state.pending.pos
+            ? `BNC di ${portInfo(state.pending.bnc).label} → klik Banana untuk Merah (+).`
+            : `Ujung (+) di ${portInfo(state.pending.pos).label} → klik Banana untuk Hitam (−).`;
+        } else {
+          $("#wire-hint").textContent = `Dari ${portInfo(state.pending.first).label} → klik port tujuan.`;
+        }
+      }
+
+      function renderCableList() {
+        const list = $("#cable-list");
+        $("#cable-count-badge").textContent = `${state.cables.length} kabel`;
+        list.innerHTML = "";
+        if (state.cables.length === 0) {
+          list.innerHTML = `<div style="font-size:0.76rem;color:#94A3B8;">Belum ada kabel terpasang.</div>`;
+          return;
+        }
+        state.cables.forEach((c, idx) => {
+          const m = CABLES_META[c.type];
+          const desc = m.kind === "bnc_split"
+            ? `${portInfo(c.bnc).label} → (+)${portInfo(c.pos).label} / (−)${portInfo(c.neg).label}`
+            : `${portInfo(c.from).label} ↔ ${portInfo(c.to).label}`;
+          const row = document.createElement("div");
+          row.className = "cable-row";
+          row.innerHTML = `<span><strong style="color:${m.color}">●</strong> ${desc}</span><button class="cable-del">Lepas</button>`;
+          row.querySelector("button").addEventListener("click", () => {
+            state.cables.splice(idx, 1);
+            updateAll();
+          });
+          list.appendChild(row);
+        });
+      }
+
+      function renderBCLTable() {
+        const tbody = $("#bcl-tbody");
+        const keys = Object.keys(state.completed);
+        if (keys.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="color:#94A3B8;text-align:center;">Belum ada data tercatat.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = EXAM_STEPS.filter((s) => state.completed[s.id]).map((s) => {
+          const rec = state.completed[s.id];
+          return `<tr><td>${s.short}</td><td>${s.paramName}</td><td><strong>${rec.val} ${rec.unit}</strong></td><td style="color:#059669;font-weight:700;">✓ Valid</td></tr>`;
+        }).join("");
+      }
+
+      function updateAll() {
+        renderKitBoard();
+        renderInstrumentsUI();
+        renderCableList();
+        requestAnimationFrame(renderCablesOverlay);
+      }
+
+      // ============================================================
+      // 12. EVENT LISTENERS
+      // ============================================================
+      document.querySelectorAll(".cable-btn").forEach((b) => {
+        b.addEventListener("click", () => {
+          document.querySelectorAll(".cable-btn").forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          state.selectedCable = b.dataset.cable;
+          state.pending = null;
+          updateAll();
+        });
+      });
+
+      document.querySelectorAll(".jack-wrap").forEach((jw) => {
+        jw.addEventListener("click", () => handlePortClick(jw.dataset.port));
+      });
+
+      // PSU Controls
+      $("#psu1-out-btn").addEventListener("click", () => { state.psu1.on = !state.psu1.on; updateAll(); });
+      $("#psu2-out-btn").addEventListener("click", () => { state.psu2.on = !state.psu2.on; updateAll(); });
+      $("#psu1-slider").addEventListener("input", (e) => { state.psu1.v = parseFloat(e.target.value); updateAll(); });
+      $("#psu2-slider").addEventListener("input", (e) => { state.psu2.v = parseFloat(e.target.value); updateAll(); });
+
+      document.querySelectorAll("[data-psu]").forEach((b) => {
+        b.addEventListener("click", () => {
+          const ch = b.dataset.psu === "1" ? state.psu1 : state.psu2;
+          if (b.dataset.set !== undefined) ch.v = parseFloat(b.dataset.set);
+          else ch.v = Math.max(0, Math.min(24, ch.v + parseFloat(b.dataset.dv)));
+          updateAll();
+        });
+      });
+
+      // DMM Controls
+      document.querySelectorAll("[data-dmm]").forEach((b) => {
+        b.addEventListener("click", () => { state.dmm = b.dataset.dmm; updateAll(); });
+      });
+
+      // Oscilloscope Controls
+      $("#sc-run").addEventListener("click", () => {
+        state.scope.run = !state.scope.run;
+        $("#sc-run").textContent = state.scope.run ? "RUN" : "STOP";
+        $("#sc-run").className = `hw-btn ${state.scope.run ? "out-on" : "out-off"}`;
+      });
+      $("#sc-ch1").addEventListener("click", () => { state.scope.ch1 = !state.scope.ch1; $("#sc-ch1").classList.toggle("active", state.scope.ch1); });
+      $("#sc-ch2").addEventListener("click", () => { state.scope.ch2 = !state.scope.ch2; $("#sc-ch2").classList.toggle("active", state.scope.ch2); });
+      $("#sc-cpl").addEventListener("click", () => {
+        const order = ["DC", "AC", "GND"];
+        state.scope.cpl = order[(order.indexOf(state.scope.cpl) + 1) % 3];
+        $("#sc-cpl").textContent = `CPL: ${state.scope.cpl}`;
+      });
+      $("#sc-vdiv-m").addEventListener("click", () => { state.scope.vdivIdx = Math.max(0, state.scope.vdivIdx - 1); });
+      $("#sc-vdiv-p").addEventListener("click", () => { state.scope.vdivIdx = Math.min(VDIVS.length - 1, state.scope.vdivIdx + 1); });
+      $("#sc-tdiv-m").addEventListener("click", () => { state.scope.tdivIdx = Math.max(0, state.scope.tdivIdx - 1); });
+      $("#sc-tdiv-p").addEventListener("click", () => { state.scope.tdivIdx = Math.min(TDIVS.length - 1, state.scope.tdivIdx + 1); });
+      $("#sc-auto").addEventListener("click", () => { state.scope.vdivIdx = 2; state.scope.tdivIdx = 2; state.scope.cpl = "DC"; $("#sc-cpl").textContent = "CPL: DC"; });
+
+      // Signal Gen Controls
+      $("#gen-out-btn").addEventListener("click", () => { state.gen.on = !state.gen.on; updateAll(); });
+      document.querySelectorAll("[data-wave]").forEach((b) => {
+        b.addEventListener("click", () => {
+          document.querySelectorAll("[data-wave]").forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          state.gen.wave = b.dataset.wave;
+          updateAll();
+        });
+      });
+      document.querySelectorAll("[data-fstep]").forEach((b) => {
+        b.addEventListener("click", () => {
+          state.gen.freqIdx = Math.max(0, Math.min(FREQS.length - 1, state.gen.freqIdx + parseInt(b.dataset.fstep, 10)));
+          updateAll();
+        });
+      });
+      document.querySelectorAll("[data-astep]").forEach((b) => {
+        b.addEventListener("click", () => {
+          state.gen.vpp = Math.max(1, Math.min(12, state.gen.vpp + parseInt(b.dataset.astep, 10)));
+          updateAll();
+        });
+      });
+
+      // Kit Potentiometers
+      $("#knob-pot").addEventListener("input", (e) => { state.potCD = parseFloat(e.target.value); updateAll(); });
+      $("#knob-isrc").addEventListener("input", (e) => { state.isrc = parseFloat(e.target.value); updateAll(); });
+
+      // Cable Actions
+      $("#btn-undo").addEventListener("click", () => { state.cables.pop(); state.pending = null; updateAll(); });
+      $("#btn-clear").addEventListener("click", () => { state.cables = []; state.pending = null; updateAll(); });
+      $("#btn-alarm-clear").addEventListener("click", () => { state.cables.pop(); state.pending = null; updateAll(); });
+
+      // Mission Controls
+      $("#btn-check").addEventListener("click", validateCurrentStep);
+      $("#bcl-input").addEventListener("keydown", (e) => { if (e.key === "Enter") validateCurrentStep(); });
+
+      $("#btn-hint").addEventListener("click", () => {
+        const s = currentStep();
+        showFeedback("hint", `Panduan Cara Benar — ${s.title}:`, null, s.guide);
+      });
+
+      $("#btn-auto").addEventListener("click", () => {
+        const s = currentStep();
+        const a = s.auto;
+        state.psu1 = { ...a.psu1 };
+        state.psu2 = { ...a.psu2 };
+        state.dmm = a.dmm;
+        if (a.potCD !== undefined) state.potCD = a.potCD;
+        if (a.isrc !== undefined) state.isrc = a.isrc;
+        state.cables = a.cables.map((c) => ({ ...c }));
+        state.pending = null;
+        $("#bcl-input").value = s.expectedVal.toFixed(2);
+        updateAll();
+        showFeedback("hint", "Demo rangkaian benar telah dipasang! Perhatikan susunan kabel, jack alat, dan pengaturan tombolnya, lalu klik 'Cek Langkah Ini' atau coba rangkai ulang sendiri.");
+      });
+
+      $("#btn-next").addEventListener("click", () => {
+        if (state.stepIdx < EXAM_STEPS.length - 1) loadStep(state.stepIdx + 1);
+      });
+
+      $("#btn-reset-exam").addEventListener("click", () => {
+        state.completed = {};
+        state.cables = [];
+        state.pending = null;
+        state.psu1 = { v: 0, on: false };
+        state.psu2 = { v: 0, on: false };
+        state.dmm = "DCV";
+        state.potCD = 2.5;
+        state.isrc = 5.0;
+        state.timerSec = 0;
+        renderBCLTable();
+        loadStep(0);
+      });
+
+      window.addEventListener("resize", () => requestAnimationFrame(renderCablesOverlay));
+      window.addEventListener("keydown", (e) => { if (e.key === "Escape" && state.pending) { state.pending = null; updateAll(); } });
+
+      // Exam Timer
+      setInterval(() => {
+        state.timerSec++;
+        const m = String(Math.floor(state.timerSec / 60)).padStart(2, "0");
+        const s = String(state.timerSec % 60).padStart(2, "0");
+        $("#timer-pill").textContent = `⏱ ${m}:${s}`;
+      }, 1000);
+
+      // Init
+      loadStep(0);
+      drawOscilloscope();
+    })();
+  </script>
+</body>
+</html>
