@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulasi Ujian Praktek Modul 3 — Transien RC, RLC, Diferensiator & Integrator</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-soft: #F1F5F9;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #475569;
+      --accent: #0284C7;
+      --accent-soft: #E0F2FE;
+      --ok: #059669;
+      --ok-soft: #D1FAE5;
+      --warn: #D97706;
+      --warn-soft: #FEF3C7;
+      --err: #DC2626;
+      --err-soft: #FFE4E6;
+      --shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --ease: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 14px;
+    }
+
+    .app {
+      max-width: 1460px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Top Header */
+    .topbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand h1 { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; }
+    .brand p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .exam-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .pill {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .pill.timer { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; font-variant-numeric: tabular-nums; }
+    .pill.score { background: var(--ok-soft); border-color: #A7F3D0; color: #065F46; }
+
+    /* Step Strip */
+    .step-strip { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; }
+
+    .step-chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--ease);
+    }
+
+    .step-chip:hover { border-color: #94A3B8; }
+    .step-chip.active { background: var(--accent); color: #FFFFFF; border-color: var(--accent); }
+    .step-chip.done { background: var(--ok-soft); color: #065F46; border-color: #6EE7B7; }
+    .step-chip.done.active { background: #047857; color: #FFFFFF; border-color: #047857; }
+
+    /* Mission Card */
+    .mission-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 1000px) { .mission-card { grid-template-columns: 1fr; } }
+
+    .mission-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--accent-soft);
+      color: #0369A1;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .mission-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+    .mission-desc { font-size: 0.85rem; color: #334155; }
+
+    .mission-warn {
+      margin-top: 8px;
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: #9A3412;
+      background: #FFEDD5;
+      border: 1px solid #FDBA74;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .live-progress {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .prog-tag {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .prog-tag.ok { background: var(--ok-soft); border-color: #6EE7B7; color: #065F46; }
+
+    .mission-action-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .bcl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .bcl-row label { font-size: 0.8rem; font-weight: 700; }
+
+    .bcl-input, .bcl-select {
+      flex: 1;
+      min-width: 120px;
+      padding: 7px 10px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text);
+      background: #FFFFFF;
+    }
+
+    .bcl-unit { font-size: 0.82rem; font-weight: 800; color: var(--text-muted); }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 12px;
+      font-size: 0.79rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--ease);
+      background: #FFFFFF;
+      color: var(--text);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    .btn-primary:hover { background: #0369A1; }
+    .btn-success { background: var(--ok); border-color: var(--ok); color: #FFFFFF; }
+    .btn-warn { background: var(--warn-soft); border-color: #FCD34D; color: #92400E; }
+    .btn-danger { background: var(--err-soft); border-color: #FDA4AF; color: #BE123C; }
+
+    /* Feedback Box */
+    .feedback-box {
+      grid-column: 1 / -1;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.83rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; }
+    .feedback-box.pass { background: var(--ok-soft); border: 1px solid #6EE7B7; color: #065F46; }
+    .feedback-box.fail { background: var(--err-soft); border: 1px solid #FDA4AF; color: #9F1239; }
+    .feedback-box.hint { background: var(--warn-soft); border: 1px solid #FCD34D; color: #78350F; }
+    .check-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+    .check-list li { display: flex; align-items: baseline; gap: 6px; font-weight: 600; }
+
+    /* Cable Toolbar */
+    .cable-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cable-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+    .cable-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid var(--border);
+      background: #FFFFFF;
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--ease);
+    }
+
+    .cable-btn.active { border-color: var(--accent); background: var(--accent-soft); color: #0369A1; }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); display: inline-block; }
+    .dot-split { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg,#EF4444 50%,#1E293B 50%); border: 1px solid rgba(0,0,0,0.25); }
+
+    .wire-hint {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0369A1;
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    /* MAIN LAB BENCH */
+    .bench-container {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .bench-grid {
+      display: grid;
+      grid-template-columns: 490px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 1180px) { .bench-grid { grid-template-columns: 1fr; } }
+
+    #cable-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #cable-overlay .cable-hit { pointer-events: stroke; cursor: pointer; }
+    #cable-overlay .cable-group:hover .cable-vis { filter: drop-shadow(0 0 6px rgba(239,68,68,0.85)); opacity: 0.8; }
+
+    /* REALISTIC LAB INSTRUMENTS */
+    .instrument-rack { display: flex; flex-direction: column; gap: 10px; }
+
+    .inst-panel {
+      background: #1E293B;
+      color: #F8FAFC;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 10px rgba(15,23,42,0.16);
+    }
+
+    .inst-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 5px;
+    }
+
+    .inst-name { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.05em; color: #CBD5E1; text-transform: uppercase; }
+    .inst-model { font-size: 0.67rem; color: #94A3B8; font-weight: 600; }
+
+    .led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #475569; margin-right: 5px; }
+    .led.green { background: #22C55E; box-shadow: 0 0 8px #22C55E; }
+    .led.red { background: #EF4444; box-shadow: 0 0 8px #EF4444; }
+    .led.amber { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+
+    .hw-btn {
+      background: #334155;
+      color: #F1F5F9;
+      border: 1px solid #475569;
+      border-bottom: 2px solid #0F172A;
+      border-radius: 6px;
+      padding: 4px 7px;
+      font-size: 0.69rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .hw-btn:hover { background: #475569; }
+    .hw-btn:active { transform: translateY(1px); }
+    .hw-btn.active { background: #0284C7; border-color: #38BDF8; color: #FFFFFF; }
+    .hw-btn.on { background: #16A34A; border-color: #4ADE80; color: #FFFFFF; }
+    .hw-btn.stop { background: #DC2626; border-color: #FCA5A5; color: #FFFFFF; }
+
+    /* OSCILLOSCOPE FULL INTERACTIVE FACEPLATE */
+    .scope-top {
+      display: grid;
+      grid-template-columns: 1fr 142px;
+      gap: 8px;
+      align-items: start;
+    }
+
+    canvas#scope-canvas {
+      width: 100%;
+      height: 196px;
+      background: #06131F;
+      border: 2px solid #0F172A;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .scope-ctrl-col { display: flex; flex-direction: column; gap: 5px; }
+    .scope-row { display: flex; gap: 4px; }
+    .scope-row .hw-btn { flex: 1; padding: 4px 3px; font-size: 0.66rem; }
+
+    .scope-sliders {
+      margin-top: 7px;
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      font-size: 0.69rem;
+    }
+
+    .sc-sl { display: flex; flex-direction: column; gap: 2px; }
+    .sc-sl label { display: flex; justify-content: space-between; color: #94A3B8; font-weight: 700; }
+    .sc-sl input[type="range"] { width: 100%; accent-color: #38BDF8; cursor: pointer; }
+
+    /* Compact Row for PSU + Gen + DMM */
+    .inst-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .lcd-dark {
+      background: #0B192C;
+      border: 2px solid #0F172A;
+      border-radius: 7px;
+      padding: 5px 8px;
+      font-family: "Courier New", Consolas, monospace;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .lcd-dmm {
+      background: #C7D8B6;
+      color: #142214;
+      border: 2px solid #475569;
+      border-radius: 7px;
+      padding: 5px 8px;
+      font-family: "Courier New", Consolas, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .lcd-dmm.err { background: #FECACA; color: #7F1D1D; }
+
+    /* Jack Ports inside Instruments */
+    .jack-strip {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-top: 6px;
+      border-top: 1px dashed #334155;
+      margin-top: 6px;
+    }
+
+    .jack-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+    }
+
+    .jack-wrap span { font-size: 0.64rem; font-weight: 800; color: #CBD5E1; }
+
+    .port-jack {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid #94A3B8;
+      background: radial-gradient(circle, #0F172A 32%, #CBD5E1 36%, #CBD5E1 64%, #64748B 68%);
+      position: relative;
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+
+    .port-jack.red { border-color: #EF4444; }
+    .port-jack.black { border-color: #0F172A; box-shadow: 0 0 0 1.5px #64748B; }
+    .port-jack.yellow { border-color: #FACC15; }
+    .port-jack.bnc {
+      border-color: #94A3B8;
+      background: radial-gradient(circle, #D97706 20%, #FFFFFF 24%, #FFFFFF 55%, #64748B 60%);
+    }
+    .port-jack.bnc::before, .port-jack.bnc::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: #CBD5E1;
+      transform: translateY(-50%);
+    }
+    .port-jack.bnc::before { left: -5px; }
+    .port-jack.bnc::after { right: -5px; }
+
+    .port-jack:hover { transform: scale(1.16); box-shadow: 0 0 0 3px rgba(56,189,248,0.55); }
+    .port-jack.match-hint { box-shadow: 0 0 0 3px rgba(56,189,248,0.42); }
+    .port-jack.selected-port { box-shadow: 0 0 0 4px #38BDF8; transform: scale(1.18); }
+
+    /* RIGHT SIDE: BOARD + CONTROLS + BCL */
+    .board-side { display: flex; flex-direction: column; gap: 12px; }
+
+    .board-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .board-title { font-size: 0.88rem; font-weight: 800; }
+
+    svg#kit-svg { width: 100%; height: auto; display: block; user-select: none; }
+    .svg-port { cursor: pointer; }
+    .svg-port:hover .svg-ring { stroke: #0284C7; stroke-width: 3.2; }
+
+    /* Breadboard / Rvar Hardware Controls */
+    .hw-control-bar {
+      margin-top: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.79rem;
+    }
+
+    .ctrl-cluster { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .ctrl-cluster strong { color: #334155; font-size: 0.76rem; }
+
+    .opt-btn {
+      border: 1.5px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      padding: 4px 9px;
+      border-radius: 7px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .opt-btn.active { border-color: var(--accent); background: var(--accent-soft); color: #0369A1; }
+
+    .discharge-btn {
+      border: 1.5px solid #F59E0B;
+      background: #FEF3C7;
+      color: #92400E;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .discharge-btn:hover { background: #FDE68A; }
+
+    .rvar-val {
+      font-family: "Courier New", monospace;
+      font-weight: 900;
+      background: #0F172A;
+      color: #38BDF8;
+      padding: 4px 10px;
+      border-radius: 7px;
+      font-size: 0.88rem;
+      min-width: 92px;
+      text-align: center;
+    }
+
+    /* Bottom Grid */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 960px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    .sub-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .sub-card h3 { font-size: 0.84rem; font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between; }
+
+    table.bcl-table { width: 100%; border-collapse: collapse; font-size: 0.77rem; }
+    table.bcl-table th, table.bcl-table td { border: 1px solid var(--border); padding: 5px 8px; text-align: left; }
+    table.bcl-table th { background: var(--surface-soft); color: var(--text-muted); }
+
+    .cable-list { display: flex; flex-direction: column; gap: 5px; max-height: 175px; overflow-y: auto; }
+    .cable-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.75rem; }
+    .cable-del { border: none; background: var(--err-soft); color: #BE123C; font-size: 0.71rem; font-weight: 700; padding: 3px 7px; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <h1>Simulasi Ujian Praktek Modul 3 — Gejala Transien Orde 1 &amp; 2, Diferensiator &amp; Integrator</h1>
+        <p>Operasikan Osiloskop (Mode ROLL / Y-T, Cursor, Run/Stop, Coupling), Signal Generator, Power Supply, DMM, Breadboard &amp; Kit RL/RC</p>
+      </div>
+      <div class="exam-meta">
+        <span id="timer-pill" class="pill timer">⏱ 00:00</span>
+        <span id="score-pill" class="pill score">Selesai: 0 / 12</span>
+        <button id="btn-reset-exam" class="btn">Ulangi Ujian</button>
+      </div>
+    </header>
+
+    <!-- STEP STRIP -->
+    <nav id="step-strip" class="step-strip"></nav>
+
+    <!-- MISSION PANEL -->
+    <section class="mission-card">
+      <div>
+        <span id="m-tag" class="mission-tag">Percobaan 1</span>
+        <h2 id="m-title" class="mission-title">Judul Langkah</h2>
+        <p id="m-desc" class="mission-desc"></p>
+        <div id="m-warn" class="mission-warn" style="display:none;"></div>
+        <div id="live-progress" class="live-progress"></div>
+      </div>
+
+      <div class="mission-action-box">
+        <div class="bcl-row">
+          <label for="bcl-input" id="bcl-label">Catat di BCL:</label>
+          <input id="bcl-input" class="bcl-input" type="text" placeholder="Ketik angka..." autocomplete="off" />
+          <select id="bcl-select" class="bcl-select" style="display:none;">
+            <option value="">-- Pilih Kondisi Gelombang --</option>
+            <option value="underdamped">Underdamped (Berosilasi / Overshoot)</option>
+            <option value="critically">Critically Damped (Cepat tanpa Osilasi)</option>
+            <option value="overdamped">Overdamped (Lambat tanpa Osilasi)</option>
+          </select>
+          <span id="bcl-unit" class="bcl-unit">ms</span>
+        </div>
+        <div class="btn-row">
+          <button id="btn-check" class="btn btn-primary">✓ Cek Langkah Ini</button>
+          <button id="btn-hint" class="btn btn-warn">💡 Minta Cara Benar</button>
+          <button id="btn-auto" class="btn">⚡ Demo Pasang Benar</button>
+          <button id="btn-next" class="btn btn-success" style="display:none;">Lanjut Langkah →</button>
+        </div>
+      </div>
+
+      <div id="feedback-box" class="feedback-box"></div>
+    </section>
+
+    <!-- CABLE BAR -->
+    <section class="cable-bar">
+      <div class="cable-pills">
+        <strong style="font-size:0.75rem;color:#475569;text-transform:uppercase;">Kabel:</strong>
+        <button class="cable-btn active" data-cable="banana-buaya-red"><span class="dot" style="background:#EF4444"></span> Banana–Buaya Merah</button>
+        <button class="cable-btn" data-cable="banana-buaya-black"><span class="dot" style="background:#1E293B"></span> Banana–Buaya Hitam</button>
+        <button class="cable-btn" data-cable="banana-blue"><span class="dot" style="background:#2563EB"></span> Banana–Banana Biru</button>
+        <button class="cable-btn" data-cable="bnc-alligator"><span class="dot-split" style="background:linear-gradient(135deg,#F59E0B 50%,#1E293B 50%)"></span> BNC–Capit Buaya (Probe)</button>
+        <button class="cable-btn" data-cable="bnc-banana"><span class="dot-split"></span> BNC–Dual Banana</button>
+        <button class="cable-btn" data-cable="bnc-bnc"><span class="dot" style="background:#64748B"></span> BNC–BNC</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="wire-hint" class="wire-hint">Klik port pertama untuk memasang kabel.</span>
+        <button id="btn-undo" class="btn">Undo</button>
+        <button id="btn-clear" class="btn btn-danger">Lepas Semua Kabel</button>
+      </div>
+    </section>
+
+    <!-- MAIN WORKSPACE -->
+    <main id="bench-container" class="bench-container">
+      <svg id="cable-overlay"></svg>
+
+      <div class="bench-grid">
+        <!-- LEFT: INTERACTIVE BENCH INSTRUMENTS -->
+        <aside class="instrument-rack">
+          <!-- 1. DIGITAL OSCILLOSCOPE (WITH ROLL, Y-T, RUN/STOP, H-POS, CURSORS, DC/AC, CAL) -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="sc-led" class="led green"></span>Digital Storage Oscilloscope (2-CH)</span>
+              <span class="inst-model">GW-INSTEK / TEKTRONIX</span>
+            </div>
+
+            <div class="scope-top">
+              <canvas id="scope-canvas" width="320" height="196"></canvas>
+
+              <div class="scope-ctrl-col">
+                <div class="scope-row">
+                  <button id="sc-run" class="hw-btn on">RUN</button>
+                  <button id="sc-auto" class="hw-btn">AUTO</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-mode-yt" class="hw-btn active">Y-T</button>
+                  <button id="sc-mode-roll" class="hw-btn">ROLL</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-ch1-cpl" class="hw-btn active">CH1: DC</button>
+                  <button id="sc-ch2-cpl" class="hw-btn active">CH2: DC</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-v1-m" class="hw-btn">V1 −</button>
+                  <button id="sc-v1-p" class="hw-btn">V1 +</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-v2-m" class="hw-btn">V2 −</button>
+                  <button id="sc-v2-p" class="hw-btn">V2 +</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-t-m" class="hw-btn">T/d −</button>
+                  <button id="sc-t-p" class="hw-btn">T/d +</button>
+                </div>
+                <div class="scope-row">
+                  <button id="sc-cursor" class="hw-btn">CURSOR</button>
+                  <button id="sc-cal" class="hw-btn">CAL ✓</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scope-sliders">
+              <div class="sc-sl">
+                <label><span>H-POS (Scroll)</span><span id="hpos-lbl">0%</span></label>
+                <input id="sc-hpos" type="range" min="0" max="100" value="100" />
+              </div>
+              <div class="sc-sl">
+                <label><span>Cursor A / B</span><span id="cur-dt-lbl">OFF</span></label>
+                <div style="display:flex;gap:4px;">
+                  <input id="sc-cur-a" type="range" min="5" max="95" value="25" />
+                  <input id="sc-cur-b" type="range" min="5" max="95" value="55" />
+                </div>
+              </div>
+            </div>
+
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="osc_ch1" data-ptype="bnc" title="Osiloskop CH1 (BNC — Biru)">
+                <div class="port-jack bnc"></div><span style="color:#38BDF8;">CH1 (BNC)</span>
+              </div>
+              <div class="jack-wrap" data-port="osc_ch2" data-ptype="bnc" title="Osiloskop CH2 (BNC — Kuning)">
+                <div class="port-jack bnc"></div><span style="color:#FBBF24;">CH2 (BNC)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. DC POWER SUPPLY + FUNCTION GENERATOR -->
+          <div class="inst-two-col">
+            <!-- DC POWER SUPPLY -->
+            <div class="inst-panel">
+              <div class="inst-head">
+                <span class="inst-name"><span id="psu-led" class="led"></span>DC Supply</span>
+                <button id="psu-out" class="hw-btn">OUT: OFF</button>
+              </div>
+              <div id="psu-disp" class="lcd-dark" style="color:#4ADE80;font-size:1.15rem;">00.0 V</div>
+              <div style="display:flex;gap:3px;margin-top:6px;flex-wrap:wrap;">
+                <button class="hw-btn" data-psuv="2">2V</button>
+                <button class="hw-btn" data-psuv="4">4V</button>
+                <button class="hw-btn" data-psuv="5">5V</button>
+                <button class="hw-btn" data-psud="-0.5">-0.5</button>
+                <button class="hw-btn" data-psud="0.5">+0.5</button>
+              </div>
+              <div class="jack-strip">
+                <div class="jack-wrap" data-port="psu_pos" data-ptype="banana" title="DC Power Supply (+)">
+                  <div class="port-jack red"></div><span>+V</span>
+                </div>
+                <div class="jack-wrap" data-port="psu_neg" data-ptype="banana" title="DC Power Supply (GND / −)">
+                  <div class="port-jack black"></div><span>GND (−)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- FUNCTION GENERATOR -->
+            <div class="inst-panel">
+              <div class="inst-head">
+                <span class="inst-name"><span id="gen-led" class="led"></span>Func. Gen</span>
+                <button id="gen-out" class="hw-btn">OUT: OFF</button>
+              </div>
+              <div id="gen-disp" class="lcd-dark" style="color:#38BDF8;font-size:0.78rem;text-align:center;">SQR • 1kHz • 2Vpp</div>
+              <div style="display:flex;gap:3px;margin-top:6px;flex-wrap:wrap;">
+                <button class="hw-btn" data-wave="SINE">SIN</button>
+                <button class="hw-btn active" data-wave="SQUARE">SQR</button>
+                <button class="hw-btn" data-wave="TRI">TRI</button>
+                <button class="hw-btn" data-fset="500">500Hz</button>
+                <button class="hw-btn" data-fset="1000">1kHz</button>
+                <button class="hw-btn" data-vset="2">2Vpp</button>
+                <button class="hw-btn" data-vset="4">4Vpp</button>
+              </div>
+              <div class="jack-strip">
+                <div class="jack-wrap" data-port="gen_bnc" data-ptype="bnc" title="Function Generator Output 50Ω (BNC)">
+                  <div class="port-jack bnc"></div><span>OUT 50Ω (BNC)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. DIGITAL MULTIMETER -->
+          <div class="inst-panel">
+            <div class="inst-head">
+              <span class="inst-name"><span id="dmm-led" class="led green"></span>Digital Multimeter</span>
+              <span class="inst-model">Ukur R_L Induktor / R / DC V</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;">
+              <div id="dmm-lcd" class="lcd-dmm">
+                <span id="dmm-mode-lbl" style="font-size:0.7rem;font-weight:800;">OHM</span>
+                <span id="dmm-val" style="font-size:1.2rem;font-weight:900;">O.L</span>
+              </div>
+              <div style="display:flex;gap:4px;">
+                <button class="hw-btn" data-dmm="OFF">OFF</button>
+                <button class="hw-btn" data-dmm="DCV">DCV</button>
+                <button class="hw-btn active" data-dmm="OHM">Ω</button>
+              </div>
+            </div>
+            <div class="jack-strip">
+              <div class="jack-wrap" data-port="dmm_v" data-ptype="banana" title="DMM Jack V / Ω (Merah)">
+                <div class="port-jack red"></div><span>V / Ω</span>
+              </div>
+              <div class="jack-wrap" data-port="dmm_com" data-ptype="banana" title="DMM Jack COM (Hitam)">
+                <div class="port-jack black"></div><span>COM (−)</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: BREADBOARD / KIT RL-RC + CONTROLS + BCL -->
+        <section class="board-side">
+          <div class="board-card">
+            <div class="board-head">
+              <span id="board-title" class="board-title">Breadboard Rangkaian RC (Gambar 3-4)</span>
+              <span id="vc-live-badge" class="pill" style="font-size:0.74rem;">V_C saat ini: 0.00 V</span>
+            </div>
+
+            <svg id="kit-svg" viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg"></svg>
+
+            <!-- CONTROLS FOR BREADBOARD (Percobaan 1, 2, Diferensiator, Integrator) -->
+            <div id="bb-controls" class="hw-control-bar">
+              <div class="ctrl-cluster">
+                <strong>Susunan:</strong>
+                <button class="opt-btn active" data-bbtopo="rc_int">R → C (RC / Integrator)</button>
+                <button class="opt-btn" data-bbtopo="diff">C → R (Diferensiator)</button>
+              </div>
+              <div class="ctrl-cluster">
+                <strong>R:</strong>
+                <button class="opt-btn active" data-bbr="R1">R1 (100 kΩ)</button>
+                <button class="opt-btn" data-bbr="R2">R2 (220 Ω)</button>
+              </div>
+              <div class="ctrl-cluster">
+                <strong>C:</strong>
+                <button class="opt-btn active" data-bbc="C1">C1 (82 nF)</button>
+                <button class="opt-btn" data-bbc="C2">C2 (1 µF)</button>
+              </div>
+              <button id="btn-discharge" class="discharge-btn">⚡ Short Kaki Kapasitor (Kosongkan C)</button>
+            </div>
+
+            <!-- CONTROLS FOR KIT RL & RC + Rvar (Percobaan 3) -->
+            <div id="rvar-controls" class="hw-control-bar" style="display:none;">
+              <div class="ctrl-cluster" style="flex:1;min-width:260px;">
+                <strong>Blok Resistor Variabel (Rvar):</strong>
+                <input id="rvar-slider" type="range" min="10" max="2500" step="2" value="50" style="flex:1;accent-color:#0284C7;cursor:pointer;" />
+                <span id="rvar-disp" class="rvar-val">50 Ω</span>
+              </div>
+              <div class="ctrl-cluster">
+                <button class="opt-btn" data-rvar="50">50 Ω</button>
+                <button class="opt-btn" data-rvar="100">100 Ω</button>
+                <button class="opt-btn" data-rvar="1004">~1004 Ω</button>
+                <button class="opt-btn" data-rvar="2000">2 kΩ</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM: BCL + CABLE LIST -->
+          <div class="bottom-grid">
+            <div class="sub-card">
+              <h3><span>Buku Catatan Laboratorium (BCL)</span><span style="font-size:0.71rem;color:#64748B;">Tabel 3-2 &amp; Hasil Pengamatan</span></h3>
+              <div style="max-height:175px;overflow-y:auto;">
+                <table class="bcl-table">
+                  <thead>
+                    <tr>
+                      <th>Langkah</th>
+                      <th>Parameter</th>
+                      <th>Hasil Kamu</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bcl-tbody">
+                    <tr><td colspan="4" style="color:#94A3B8;text-align:center;">Belum ada data tercatat.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="sub-card">
+              <h3><span>Kabel Terpasang</span><span id="cable-count-badge" style="color:#0284C7;">0 kabel</span></h3>
+              <div id="cable-list" class="cable-list"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      // ============================================================
+      // 1. PARAMETER KOMPONEN SESUAI TABEL 3-1 & GAMBAR MODUL 3
+      // ============================================================
+      const BB_R = { R1: 100e3, R2: 220 };
+      const BB_C = { C1: 82e-9, C2: 1e-6 };
+      const KIT_L = 2.5e-3;       // 2.5 mH
+      const KIT_RL_INT = 50;      // ~50 ohm resistansi internal induktor
+      const GEN_RG = 50;          // 50 ohm resistansi internal generator
+      const KIT_C8N2 = 8.2e-9;    // 8.2 nF
+
+      const VDIVS = [0.01, 0.02, 0.05, 0.2, 0.5, 1, 2, 5]; // V/div
+      const TDIVS = [10e-6, 25e-6, 50e-6, 200e-6, 500e-6, 1e-3, 5e-3, 20e-3, 100e-3, 250e-3]; // s/div
+
+      // ============================================================
+      // 2. 12 LANGKAH UJIAN PRAKTEK MODUL 3 (PERCOBAAN 1, 2, 3, DIF, INT)
+      // ============================================================
+      const STEPS = [
+        {
+          id: "p1_setup",
+          short: "1. Setup RC & ROLL",
+          tag: "Percobaan 1 — Langkah 3–10",
+          board: "breadboard",
+          title: "Kosongkan Kapasitor, Kalibrasi & Siapkan Osiloskop Mode ROLL",
+          desc: "Pasang R1 (100 kΩ) dan C1 (82 nF) pada Breadboard (susunan R → C). Kosongkan kapasitor terlebih dahulu dengan tombol 'Short Kaki Kapasitor'. Tekan 'CAL ✓' pada Osiloskop untuk cek kalibrasi, ubah time-base ke mode ROLL, atur CH1 (kopling DC) ke Input–GND dan CH2 (kopling DC) ke Node Tengah (V_C)–GND. Siapkan DC Supply 5.0 V (OUT masih OFF / belum disambung). Hitung konstanta waktu τ = R1 × C1!",
+          warn: "Langkah 8: Siapkan Power Supply 5V DC, namun JANGAN dinyalakan/disambungkan dulu ke input pada tahap persiapan ini.",
+          bclType: "number", bclLabel: "Hitung τ (R1–C1):", bclUnit: "ms", paramName: "τ Teoritis R1–C1",
+          expected: 8.2, tol: 0.25,
+          guide: [
+            "Pastikan di bawah Breadboard terpilih: Susunan 'R → C', R1 (100 kΩ), dan C1 (82 nF).",
+            "Klik tombol kuning '⚡ Short Kaki Kapasitor (Kosongkan C)'.",
+            "Pada Osiloskop: klik 'CAL ✓', pilih mode 'ROLL', pastikan CH1: DC dan CH2: DC.",
+            "Pilih kabel 'BNC–Capit Buaya': hubungkan CH1 ke Input (+) & GND (−), lalu CH2 ke V_C (+) & GND (−).",
+            "Atur DC Supply ke 5.0 V tetapi biarkan OUT: OFF.",
+            "Hitung τ = 100 kΩ × 82 nF = 8.2 ms, ketik 8.2 di BCL lalu klik Cek."
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R1", c: "C1", discharge: true },
+            psu: { v: 5, on: false }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            scope: { mode: "ROLL", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 6, v2Idx: 6, tIdx: 6 },
+            cables: [
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "p1_r1c1",
+          short: "2. Transien R1–C1",
+          tag: "Percobaan 1 — Langkah 11 & 12",
+          board: "breadboard",
+          title: "Uji Pengisian & Pengosongan Muatan (R1 = 100 kΩ, C1 = 82 nF)",
+          desc: "Hubungkan DC Supply (5.0 V) ke Breadboard dengan kabel Banana–Buaya Merah (+V → Input) dan Hitam (GND → GND). Nyalakan OUT: ON dan amati kurva naik di CH2 hingga steady state (~5 V), lalu matikan OUT: OFF untuk mengamati kurva turun hingga 0 V. Setelah itu tekan tombol RUN/STOP hingga STOP, geser H-POS / aktifkan CURSOR untuk mengukur τ!",
+          warn: "Pastikan kamu mengamati PENGISIAN (ON sampai ~5V) lalu PENGOSONGAN (OFF sampai ~0V), kemudian tekan RUN → STOP!",
+          bclType: "number", bclLabel: "Konstanta Waktu τ (R1–C1):", bclUnit: "ms", paramName: "τ Ukur R1–C1",
+          expected: 8.2, tol: 0.8,
+          guide: [
+            "Pasang kabel Banana–Buaya Merah: PSU +V → Input, dan Hitam: PSU GND → GND.",
+            "Atur T/div ke 5 ms/div (mode ROLL) dan klik RUN jika masih STOP.",
+            "Nyalakan PSU OUT: ON (5.0 V) → tunggu kurva kuning CH2 naik mantap di 5 V.",
+            "Matikan PSU OUT: OFF → tunggu kurva kuning CH2 turun kembali ke 0 V.",
+            "Tekan tombol RUN agar menjadi STOP, aktifkan CURSOR untuk melihat τ = 8.2 ms, lalu catat 8.2 di BCL."
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R1", c: "C1", discharge: false },
+            psu: { v: 5, on: false }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            scope: { mode: "ROLL", run: false, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 6, v2Idx: 6, tIdx: 6, cursor: true },
+            forceTransient: true,
+            cables: [
+              { type: "banana-buaya-red", from: "psu_pos", to: "bb_in" },
+              { type: "banana-buaya-black", from: "psu_neg", to: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "p1_r1c2",
+          short: "3. Variasi R1–C2",
+          tag: "Percobaan 1 — Langkah 14",
+          board: "breadboard",
+          title: "Ulangi Transien untuk Variasi R1 (100 kΩ) & C2 (1 µF)",
+          desc: "Ganti kapasitor di breadboard menjadi C2 (1 µF) dengan R1 (100 kΩ). Kosongkan kapasitor, atur T/div lebih besar (misal 100 ms/div) pada mode ROLL. Lakukan siklus Pengisian (PSU 5V ON hingga ~5V) dan Pengosongan (OFF hingga ~0V), lalu tekan STOP dan catat konstanta waktu τ!",
+          warn: "Nilai τ sekarang lebih besar (100 ms), jadi naikkan T/div agar seluruh kurva muatan muat di layar.",
+          bclType: "number", bclLabel: "Konstanta Waktu τ (R1–C2):", bclUnit: "ms", paramName: "τ Ukur R1–C2",
+          expected: 100, tol: 8,
+          guide: [
+            "Klik R1 (100 kΩ) dan C2 (1 µF) di bawah Breadboard, lalu klik 'Short Kaki Kapasitor'.",
+            "Pastikan Osiloskop di mode ROLL, klik RUN, dan naikkan T/div ke 100 ms/div.",
+            "Nyalakan PSU 5.0 V (OUT: ON) hingga V_C mencapai ~5 V, lalu matikan (OUT: OFF) hingga ~0 V.",
+            "Tekan RUN → STOP untuk membekukan gelombang dan catat τ = 100 ms."
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R1", c: "C2", discharge: false },
+            psu: { v: 5, on: false }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            scope: { mode: "ROLL", run: false, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 6, v2Idx: 6, tIdx: 8, cursor: true },
+            forceTransient: true,
+            cables: [
+              { type: "banana-buaya-red", from: "psu_pos", to: "bb_in" },
+              { type: "banana-buaya-black", from: "psu_neg", to: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "p1_r2c2",
+          short: "4. Variasi R2–C2",
+          tag: "Percobaan 1 — Langkah 15",
+          board: "breadboard",
+          title: "Ulangi Transien untuk Variasi R2 (220 Ω) & C2 (1 µF)",
+          desc: "Ganti resistor di breadboard menjadi R2 (220 Ω) dan pertahankan C2 (1 µF). Perkecil T/div Osiloskop (misal 200 µs/div) agar transien cepat ini terlihat jelas. Lakukan pengisian (5V ON) dan pengosongan (OFF), tekan STOP, lalu catat τ dalam satuan ms!",
+          warn: "Hati-hati satuan! R2 × C2 = 220 Ω × 1 µF = 220 µs = 0.22 ms.",
+          bclType: "number", bclLabel: "Konstanta Waktu τ (R2–C2):", bclUnit: "ms", paramName: "τ Ukur R2–C2",
+          expected: 0.22, tol: 0.04,
+          guide: [
+            "Pilih R2 (220 Ω) dan C2 (1 µF) pada panel Breadboard.",
+            "Turunkan T/div Osiloskop ke 200 µs/div pada mode ROLL dan pastikan RUN aktif.",
+            "Nyalakan PSU 5.0 V (ON) hingga V_C penuh ~5 V, lalu matikan (OFF) hingga ~0 V.",
+            "Tekan STOP dan masukkan τ = 0.22 ms pada BCL."
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R2", c: "C2", discharge: false },
+            psu: { v: 5, on: false }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            scope: { mode: "ROLL", run: false, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 6, v2Idx: 6, tIdx: 3, cursor: true },
+            forceTransient: true,
+            cables: [
+              { type: "banana-buaya-red", from: "psu_pos", to: "bb_in" },
+              { type: "banana-buaya-black", from: "psu_neg", to: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "p2_4v",
+          short: "5. Percobaan 2 (4V)",
+          tag: "Percobaan 2 — Langkah 18 & 19",
+          board: "breadboard",
+          title: "Ubah Tegangan Sumber DC Menjadi 4 V — Ukur V_mantap",
+          desc: "Gunakan rangkaian RC (R1 = 100 kΩ, C2 = 1 µF). Ubah tegangan DC Power Supply dari 5 V menjadi 4.0 V lalu nyalakan OUT: ON. Amati kurva pengisian CH2 di Osiloskop (mode ROLL, kopling DC) hingga mencapai keadaan mantap (steady state). Catat tegangan mantap pada kapasitor!",
+          warn: "Perhatikan: mengubah tegangan sumber mengubah nilai V_mantap, tetapi TIDAK mengubah konstanta waktu τ.",
+          bclType: "number", bclLabel: "Tegangan Mantap V_C (4V):", bclUnit: "V", paramName: "V_mantap (Vs=4V)",
+          expected: 4.0, tol: 0.15,
+          guide: [
+            "Pilih R1 (100 kΩ) dan C2 (1 µF), susunan R → C.",
+            "Pada DC Supply, tekan tombol '4V' lalu aktifkan OUT: ON.",
+            "Pastikan kabel PSU (+V → Input, GND → GND) dan Probe CH2 (V_C & GND) terpasang dengan kopling DC.",
+            "Tunggu kurva naik ke keadaan mantap 4.00 V (terlihat di layar & badge V_C), lalu catat 4.0 di BCL."
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R1", c: "C2", discharge: false },
+            psu: { v: 4, on: true }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            scope: { mode: "ROLL", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 6, v2Idx: 6, tIdx: 8 },
+            setVc: 4.0,
+            cables: [
+              { type: "banana-buaya-red", from: "psu_pos", to: "bb_in" },
+              { type: "banana-buaya-black", from: "psu_neg", to: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "p2_2v",
+          short: "6. Percobaan 2 (2V)",
+          tag: "Percobaan 2 — Langkah 20",
+          board: "breadboard",
+          title: "Ubah Tegangan Sumber DC Menjadi 2 V — Bandingkan V_mantap",
+          desc: "Sekarang ubah tegangan DC Power Supply menjadi 2.0 V (OUT: ON). Amati tegangan keadaan mantap pada kapasitor di CH2 Osiloskop dan catat nilainya di BCL!",
+          warn: "Pastikan Osiloskop tetap berjalan (RUN) agar perubahan dari 4 V ke 2 V langsung terbaca.",
+          bclType: "number", bclLabel: "Tegangan Mantap V_C (2V):", bclUnit: "V", paramName: "V_mantap (Vs=2V)",
+          expected: 2.0, tol: 0.15,
+          guide: [
+            "Pada DC Supply, tekan tombol '2V' dengan OUT: ON.",
+            "Tunggu V_C turun dan stabil di 2.00 V.",
+            "Catat 2.0 pada kolom BCL lalu klik Cek."
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R1", c: "C2", discharge: false },
+            psu: { v: 2, on: true }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            scope: { mode: "ROLL", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 5, v2Idx: 5, tIdx: 8 },
+            setVc: 2.0,
+            cables: [
+              { type: "banana-buaya-red", from: "psu_pos", to: "bb_in" },
+              { type: "banana-buaya-black", from: "psu_neg", to: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "p3_rl",
+          short: "7. Ukur R_L Induktor",
+          tag: "Percobaan 3 — Langkah 22",
+          board: "rcrl",
+          title: "Ukur Resistansi Internal Induktor (R_L) pada Kit RL & RC",
+          desc: "Pindah ke KIT Rangkaian RL & RC! Sebelum merangkai RLC orde 2, ukur dulu resistansi internal R_L dari induktor 2,5 mH menggunakan Digital Multimeter (mode Ω, jack V/Ω & COM) pada kedua ujung induktor (terminal merah 2,5 mH dan terminal kuning OUT). Pastikan Function Generator OFF/tidak tersambung!",
+          warn: "Jangan mengukur Ω ketika sumber tegangan/sinyal terpasang pada induktor!",
+          bclType: "number", bclLabel: "Resistansi Internal R_L:", bclUnit: "Ω", paramName: "R_L Induktor 2.5mH",
+          expected: 50, tol: 2,
+          guide: [
+            "Set Multimeter ke mode Ω.",
+            "Gunakan kabel Banana (Merah/Biru/Hitam): hubungkan DMM jack V/Ω → terminal merah 2,5mH, dan DMM COM → terminal kuning OUT (sebelah kanan 2,5mH).",
+            "Baca layar DMM: terbaca 50.0 Ω. Ketik 50 pada BCL lalu klik Cek."
+          ],
+          auto: {
+            psu: { v: 0, on: false }, gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+            dmm: "OHM", rvar: 50,
+            scope: { mode: "YT", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 4, v2Idx: 4, tIdx: 1 },
+            cables: [
+              { type: "banana-buaya-red", from: "dmm_v", to: "l2m5_in" },
+              { type: "banana-buaya-black", from: "dmm_com", to: "l2m5_out" }
+            ]
+          }
+        },
+        {
+          id: "p3_under",
+          short: "8. RLC Underdamped",
+          tag: "Percobaan 3 — Langkah 21, 23–25",
+          board: "rcrl",
+          title: "Rangkaian Transien Orde 2 (Gambar 3-6) — Kondisi Rvar = 50 Ω",
+          desc: "Susun rangkaian RLC seri pada Kit RL & RC + Blok Rvar: Function Generator (Gel. Kotak/SQR, 1 kHz, 2 Vpp, OUT: ON) → Rvar (50 Ω) → Induktor 2,5 mH → Bus OUT → Kapasitor 8,2 nF → GND. Ubah Osiloskop ke mode Y-T! Pasang CH1 pada V_C (OUT & GND) dan CH2 pada output Generator (sisi input Rvar & GND). Amati bentuk gelombang di CH1!",
+          warn: "Ingat Langkah 23: CH1 di posisi V_C (kapasitor 8,2 nF), CH2 di output Function Generator, dan Osiloskop di mode Y-T (T/div ~25–50 µs).",
+          bclType: "select", bclLabel: "Bentuk Gelombang CH1:", bclUnit: "", paramName: "Respon RLC (50 Ω)",
+          expected: "underdamped",
+          guide: [
+            "Lepas kabel DMM dulu. Atur Function Generator: SQR, 1kHz, 2Vpp, OUT: ON.",
+            "Set Blok Rvar ke 50 Ω.",
+            "Hubungkan BNC–Dual Banana dari GEN OUT → (+) ke Rvar-A, (−) ke GND kit.",
+            "Pasang jumper Banana: Rvar-B → 2,5mH (merah), lalu 8n2F (merah) → GND kit.",
+            "Atur Osiloskop ke mode Y-T, T/div 25 µs/div (atau tekan AUTO). Pasang BNC–Dual Banana: CH1 → (+) OUT & (−) GND; CH2 → (+) Rvar-A & (−) GND.",
+            "Di layar CH1 terlihat osilasi/overshoot jelas (Gambar 3-7) → pilih 'Underdamped' lalu klik Cek!"
+          ],
+          auto: {
+            psu: { v: 0, on: false }, gen: { on: true, wave: "SQUARE", freq: 1000, vpp: 2 },
+            dmm: "OFF", rvar: 50,
+            scope: { mode: "YT", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 4, v2Idx: 4, tIdx: 1 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rvar_a", neg: "gnd_l" },
+              { type: "banana-blue", from: "rvar_b", to: "l2m5_in" },
+              { type: "banana-buaya-black", from: "c8n2_in", to: "gnd_l" },
+              { type: "bnc-banana", bnc: "osc_ch1", pos: "out_mid", neg: "gnd_c" },
+              { type: "bnc-banana", bnc: "osc_ch2", pos: "rvar_a", neg: "gnd_r" }
+            ]
+          }
+        },
+        {
+          id: "p3_over",
+          short: "9. RLC Overdamped",
+          tag: "Percobaan 3 — Langkah 26",
+          board: "rcrl",
+          title: "Ubah Rvar Menjadi 2 kΩ — Amati Bentuk Gelombang",
+          desc: "Dengan rangkaian RLC yang sama, ubah nilai Blok Rvar menjadi sekitar 2000 Ω (2 kΩ). Amati perubahan respon transien pada CH1 Osiloskop (apakah masih berosilasi atau naik lambat tanpa overshoot?) lalu pilih jenis redamannya!",
+          warn: "Perhatikan hilangnya puncak overshoot dan melambatnya rise-time di layar CH1.",
+          bclType: "select", bclLabel: "Bentuk Gelombang CH1:", bclUnit: "", paramName: "Respon RLC (2 kΩ)",
+          expected: "overdamped",
+          guide: [
+            "Pertahankan seluruh kabel RLC dari langkah sebelumnya.",
+            "Klik tombol '2 kΩ' (atau geser slider Rvar ke 2000 Ω).",
+            "Amati kurva CH1 naik perlahan tanpa osilasi → pilih 'Overdamped' lalu klik Cek."
+          ],
+          auto: {
+            psu: { v: 0, on: false }, gen: { on: true, wave: "SQUARE", freq: 1000, vpp: 2 },
+            dmm: "OFF", rvar: 2000,
+            scope: { mode: "YT", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 4, v2Idx: 4, tIdx: 1 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rvar_a", neg: "gnd_l" },
+              { type: "banana-blue", from: "rvar_b", to: "l2m5_in" },
+              { type: "banana-buaya-black", from: "c8n2_in", to: "gnd_l" },
+              { type: "bnc-banana", bnc: "osc_ch1", pos: "out_mid", neg: "gnd_c" },
+              { type: "bnc-banana", bnc: "osc_ch2", pos: "rvar_a", neg: "gnd_r" }
+            ]
+          }
+        },
+        {
+          id: "p3_crit",
+          short: "10. Critically Damped",
+          tag: "Percobaan 3 — Langkah 27",
+          board: "rcrl",
+          title: "Cari Nilai Rvar untuk Kondisi 'Critically Damped'",
+          desc: "Geser slider Rvar perlahan sambil mengamati CH1 Osiloskop hingga tepat berada pada batas antara underdamped dan overdamped (respon tercepat tanpa overshoot — Critically Damped!). Ingat R_total = R_G (50 Ω) + R_L (50 Ω) + Rvar = 2√(L/C). Catat nilai Rvar (Ω) di BCL!",
+          warn: "Petunjuk rumus: R_crit_total = 2√(2.5 mH / 8.2 nF) ≈ 1104 Ω. Kurangi dengan R_G + R_L = 100 Ω!",
+          bclType: "number", bclLabel: "Nilai Rvar Critically Damped:", bclUnit: "Ω", paramName: "Rvar Critically Damped",
+          expected: 1004, tol: 85,
+          guide: [
+            "Hitung R_total_crit = 2 × √(2.5×10⁻³ / 8.2×10⁻⁹) ≈ 1104 Ω.",
+            "Karena R_G = 50 Ω dan R_L = 50 Ω, maka Rvar = 1104 − 100 = 1004 Ω.",
+            "Geser slider Rvar ke sekitar 1004 Ω (atau klik '~1004 Ω'), amati kurva CH1 naik paling cepat tanpa overshoot.",
+            "Masukkan 1004 pada BCL lalu klik Cek."
+          ],
+          auto: {
+            psu: { v: 0, on: false }, gen: { on: true, wave: "SQUARE", freq: 1000, vpp: 2 },
+            dmm: "OFF", rvar: 1004,
+            scope: { mode: "YT", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 4, v2Idx: 4, tIdx: 1 },
+            cables: [
+              { type: "bnc-banana", bnc: "gen_bnc", pos: "rvar_a", neg: "gnd_l" },
+              { type: "banana-blue", from: "rvar_b", to: "l2m5_in" },
+              { type: "banana-buaya-black", from: "c8n2_in", to: "gnd_l" },
+              { type: "bnc-banana", bnc: "osc_ch1", pos: "out_mid", neg: "gnd_c" },
+              { type: "bnc-banana", bnc: "osc_ch2", pos: "rvar_a", neg: "gnd_r" }
+            ]
+          }
+        },
+        {
+          id: "diff_rc",
+          short: "11. Diferensiator",
+          tag: "Rangkaian Diferensiator — Langkah 28–33",
+          board: "breadboard",
+          title: "Buat Rangkaian Diferensiator RC (Gambar 3-8) di Breadboard",
+          desc: "Ubah susunan Breadboard ke 'C → R (Diferensiator)' dengan C = C2 (1 µF) dan R = R1 (100 kΩ). Atur Function Generator: gelombang segi empat (SQR), 4 Vpp, 500 Hz, OUT: ON dan hubungkan ke Input–GND breadboard. Ukur Input di CH1 dan Output (tegangan pada R) di CH2 Osiloskop (mode Y-T). Hitung & catat konstanta waktu RC!",
+          warn: "Gunakan kabel BNC–Capit Buaya dari Function Generator dan Osiloskop ke pin jumper breadboard.",
+          bclType: "number", bclLabel: "Konstanta Waktu RC:", bclUnit: "ms", paramName: "τ Diferensiator",
+          expected: 100, tol: 2,
+          guide: [
+            "Di panel bawah Breadboard, pilih Susunan: 'C → R (Diferensiator)', R1 (100 kΩ), C2 (1 µF).",
+            "Atur Function Generator: SQR, 500Hz, 4Vpp, lalu tekan OUT: ON.",
+            "Sambungkan BNC–Capit Buaya dari GEN OUT → (+) Input & (−) GND breadboard.",
+            "Atur Osiloskop mode Y-T, T/div 500 µs/div. Pasang CH1 → Input & GND, CH2 → Output (tengah) & GND.",
+            "Hitung τ = R × C = 100 kΩ × 1 µF = 100 ms. Ketik 100 di BCL lalu klik Cek."
+          ],
+          auto: {
+            bb: { topo: "diff", r: "R1", c: "C2", discharge: false },
+            psu: { v: 0, on: false }, gen: { on: true, wave: "SQUARE", freq: 500, vpp: 4 },
+            scope: { mode: "YT", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 5, v2Idx: 5, tIdx: 4 },
+            cables: [
+              { type: "bnc-alligator", bnc: "gen_bnc", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        },
+        {
+          id: "int_rc",
+          short: "12. Integrator (SQR & TRI)",
+          tag: "Rangkaian Integrator — Langkah 34–40",
+          board: "breadboard",
+          title: "Buat Rangkaian Integrator RC (Gambar 3-9) — Input Kotak & Segitiga",
+          desc: "Ubah susunan Breadboard ke 'R → C (RC / Integrator)' dengan R = R1 (100 kΩ) dan C = C2 (1 µF). Beri input Function Generator 4 Vpp, 500 Hz (OUT: ON). Amati dulu gelombang SQR (output CH2 menjadi gelombang SEGITIGA! Perkecil V2 ke 10 mV/div atau tekan AUTO agar terlihat jelas!), lalu sesuai Langkah 40 ubah input menjadi TRI (output menjadi parabolik!). Catat τ = RC di BCL!",
+          warn: "Karena τ = 100 ms ≫ T/2 (1 ms), amplitudo output integrator sekitar 20 mVpp — kecilkan V2 (V/div CH2) ke 10 mV/div atau klik AUTO! Jangan lupa uji SQR lalu TRI!",
+          bclType: "number", bclLabel: "Konstanta Waktu RC:", bclUnit: "ms", paramName: "τ Integrator (SQR & TRI)",
+          expected: 100, tol: 2,
+          guide: [
+            "Pilih Susunan Breadboard: 'R → C (RC / Integrator)', R1 (100 kΩ), C2 (1 µF).",
+            "Pastikan GEN OUT (4 Vpp, 500 Hz, OUT: ON) terhubung ke Input–GND, CH1 ke Input–GND, CH2 ke Output–GND.",
+            "Tekan 'AUTO' pada Osiloskop (atau kecilkan V2 ke 10 mV/div) untuk melihat gelombang segitiga murni saat input SQR.",
+            "Sesuai Langkah 40, klik tombol 'TRI' pada Function Generator dan amati output berubah menjadi gelombang parabolik halus!",
+            "Ketik 100 (ms) pada BCL lalu klik Cek untuk menamatkan seluruh ujian!"
+          ],
+          auto: {
+            bb: { topo: "rc_int", r: "R1", c: "C2", discharge: false },
+            psu: { v: 0, on: false }, gen: { on: true, wave: "TRI", freq: 500, vpp: 4 },
+            scope: { mode: "YT", run: true, ch1Cpl: "DC", ch2Cpl: "DC", cal: true, v1Idx: 5, v2Idx: 0, tIdx: 4 },
+            forceIntWaves: true,
+            cables: [
+              { type: "bnc-alligator", bnc: "gen_bnc", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch1", pos: "bb_in", neg: "bb_gnd" },
+              { type: "bnc-alligator", bnc: "osc_ch2", pos: "bb_mid", neg: "bb_gnd" }
+            ]
+          }
+        }
+      ];
+
+      // ============================================================
+      // 3. DEFINISI TERMINAL BOARD & INSTRUMEN
+      // ============================================================
+      const BOARDS = {
+        breadboard: {
+          title: "Breadboard Rangkaian RC / Diferensiator / Integrator",
+          ports: [
+            { id: "bb_in",  x: 195, y: 158, color: "#EF4444", label: "Jumper Input" },
+            { id: "bb_mid", x: 382, y: 158, color: "#FDE047", label: "Jumper Node Tengah (CH2 / V_C / Out)" },
+            { id: "bb_gnd", x: 525, y: 318, color: "#1E293B", label: "Jumper GND" }
+          ],
+          shorts: []
+        },
+        rcrl: {
+          title: "KIT Rangkaian RL & RC + Blok Resistor Variabel (Rvar)",
+          ports: [
+            // Blok Rvar (Kiri Atas)
+            { id: "rvar_a",   x: 122, y: 108, color: "#EF4444", label: "Rvar Terminal A" },
+            { id: "rvar_b",   x: 248, y: 108, color: "#2563EB", label: "Rvar Terminal B" },
+            // Kit RL & RC (Kiri reaktif)
+            { id: "c100_in",  x: 125, y: 205, color: "#EF4444", label: "Input 100nF (Merah)" },
+            { id: "c100_out", x: 245, y: 205, color: "#FDE047", label: "Bus OUT (100nF)" },
+            { id: "c8n2_in",  x: 125, y: 270, color: "#EF4444", label: "Input 8n2F (Merah)" },
+            { id: "c8n2_out", x: 245, y: 270, color: "#FDE047", label: "Bus OUT (8n2F)" },
+            { id: "l2m5_in",  x: 125, y: 335, color: "#EF4444", label: "Input 2,5mH (Merah)" },
+            { id: "l2m5_out", x: 245, y: 335, color: "#FDE047", label: "Bus OUT (2,5mH)" },
+            // Tengah OUT
+            { id: "out_mid",  x: 355, y: 270, color: "#FDE047", label: "Terminal OUT (Tengah)" },
+            // Kanan resistif
+            { id: "r1k_in",   x: 465, y: 205, color: "#FDE047", label: "Bus OUT (1KΩ)" },
+            { id: "r1k_out",  x: 585, y: 205, color: "#EF4444", label: "Terminal 1KΩ (Merah)" },
+            { id: "r10k_in",  x: 465, y: 270, color: "#FDE047", label: "Bus OUT (10KΩ)" },
+            { id: "r10k_out", x: 585, y: 270, color: "#EF4444", label: "Terminal 10KΩ (Merah)" },
+            { id: "r100k_in", x: 465, y: 335, color: "#FDE047", label: "Bus OUT (100KΩ)" },
+            { id: "r100k_out",x: 585, y: 335, color: "#EF4444", label: "Terminal 100KΩ (Merah)" },
+            // GND Rail
+            { id: "gnd_l",    x: 125, y: 400, color: "#1E293B", label: "GND Kiri" },
+            { id: "gnd_c",    x: 355, y: 400, color: "#1E293B", label: "GND Tengah" },
+            { id: "gnd_r",    x: 585, y: 400, color: "#1E293B", label: "GND Kanan" }
+          ],
+          shorts: [
+            ["c100_out", "c8n2_out"], ["c8n2_out", "l2m5_out"],
+            ["c8n2_out", "out_mid"], ["out_mid", "r10k_in"],
+            ["r1k_in", "r10k_in"], ["r10k_in", "r100k_in"],
+            ["gnd_l", "gnd_c"], ["gnd_c", "gnd_r"]
+          ]
+        }
+      };
+
+      const INST_PORTS = {
+        psu_pos: { label: "DC Supply (+V)", type: "banana" },
+        psu_neg: { label: "DC Supply (GND)", type: "banana" },
+        gen_bnc: { label: "Func. Gen OUT", type: "bnc" },
+        osc_ch1: { label: "OSC CH1", type: "bnc" },
+        osc_ch2: { label: "OSC CH2", type: "bnc" },
+        dmm_v:   { label: "DMM V/Ω", type: "banana" },
+        dmm_com: { label: "DMM COM", type: "banana" }
+      };
+
+      const CABLES_META = {
+        "banana-buaya-red":   { name: "Banana–Buaya Merah", color: "#EF4444", kind: "banana2", clip: true },
+        "banana-buaya-black": { name: "Banana–Buaya Hitam", color: "#1E293B", kind: "banana2", clip: true },
+        "banana-blue":        { name: "Banana–Banana Biru", color: "#2563EB", kind: "banana2", clip: false },
+        "bnc-alligator":      { name: "BNC–Capit Buaya",    color: "#F59E0B", kind: "bnc_split", clip: true },
+        "bnc-banana":         { name: "BNC–Dual Banana",    color: "#EF4444", kind: "bnc_split", clip: false },
+        "bnc-bnc":            { name: "BNC–BNC",            color: "#64748B", kind: "bnc2", clip: false }
+      };
+
+      // ============================================================
+      // 4. STATE APLIKASI & BUFFER TRANSIEN REAL-TIME
+      // ============================================================
+      const ROLL_LEN = 600;
+      const state = {
+        stepIdx: 0,
+        completed: {},
+        selectedCable: "banana-buaya-red",
+        pending: null,
+        cables: [],
+        bb: { topo: "rc_int", r: "R1", c: "C1", vc: 1.4, dischargedFlag: false },
+        rvar: 50,
+        psu: { v: 0, on: false },
+        gen: { on: false, wave: "SQUARE", freq: 1000, vpp: 2 },
+        dmm: "OHM",
+        scope: {
+          mode: "ROLL", // ROLL | YT
+          run: true,
+          ch1Cpl: "DC", // DC | AC | GND
+          ch2Cpl: "DC",
+          v1Idx: 6, // 2 V/div
+          v2Idx: 6, // 2 V/div
+          tIdx: 6,  // 5 ms/div
+          hpos: 100,
+          cursorOn: false,
+          curA: 25,
+          curB: 55,
+          calChecked: false
+        },
+        rollBuf1: new Array(ROLL_LEN).fill(0),
+        rollBuf2: new Array(ROLL_LEN).fill(0),
+        rollTimeStep: 0.0005, // simulated seconds per sample
+        transientTrack: { charged: false, discharged: false },
+        intWaveTrack: { sqr: false, tri: false },
+        timerSec: 0
+      };
+
+      const $ = (s) => document.querySelector(s);
+      const stepNow = () => STEPS[state.stepIdx];
+
+      function portInfo(id) {
+        if (INST_PORTS[id]) return INST_PORTS[id];
+        const p = BOARDS[stepNow().board].ports.find((x) => x.id === id);
+        return p ? { label: p.label, type: "banana" } : { label: id, type: "banana" };
+      }
+
+      // ============================================================
+      // 5. NETLIST UNION-FIND
+      // ============================================================
+      function buildNet() {
+        const board = BOARDS[stepNow().board];
+        const parent = {};
+        const find = (x) => { if (!(x in parent)) parent[x] = x; if (parent[x] !== x) parent[x] = find(parent[x]); return parent[x]; };
+        const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; };
+        const same = (a, b) => find(a) === find(b);
+
+        board.shorts.forEach(([a, b]) => union(a, b));
+        const used = new Set();
+
+        state.cables.forEach((c) => {
+          const m = CABLES_META[c.type];
+          if (m.kind === "banana2") { union(c.from, c.to); used.add(c.from); used.add(c.to); }
+          else if (m.kind === "bnc2") { union(c.from + "_p", c.to + "_p"); union(c.from + "_n", c.to + "_n"); used.add(c.from); used.add(c.to); }
+          else if (m.kind === "bnc_split") { union(c.bnc + "_p", c.pos); union(c.bnc + "_n", c.neg); used.add(c.bnc); used.add(c.pos); used.add(c.neg); }
+        });
+        return { find, same, used };
+      }
+
+      function isConnectedTo(net, bncId, posTarget, negTarget) {
+        return net.used.has(bncId) && net.same(bncId + "_p", posTarget) && net.same(bncId + "_n", negTarget);
+      }
+
+      function isPsuOnBreadboard(net) {
+        return net.used.has("psu_pos") && net.used.has("psu_neg") &&
+               net.same("psu_pos", "bb_in") && net.same("psu_neg", "bb_gnd");
+      }
+
+      function isGenOnBreadboard(net) {
+        return isConnectedTo(net, "gen_bnc", "bb_in", "bb_gnd");
+      }
+
+      function isRLCWired(net) {
+        if (stepNow().board !== "rcrl") return false;
+        // Gen -> Rvar -> 2.5mH -> OUT -> 8.2nF -> GND
+        const genGnd = net.used.has("gen_bnc") && net.same("gen_bnc_n", "gnd_c");
+        const rvarPath1 = net.same("gen_bnc_p", "rvar_a") && net.same("rvar_b", "l2m5_in");
+        const rvarPath2 = net.same("gen_bnc_p", "rvar_b") && net.same("rvar_a", "l2m5_in");
+        const capToGnd = net.same("c8n2_in", "gnd_c");
+        return genGnd && (rvarPath1 || rvarPath2) && capToGnd && !net.same("rvar_a", "rvar_b");
+      }
+
+      // ============================================================
+      // 6. SIMULASI MULTIMETER (KHUSUSNYA UKUR R_L INDUKTOR & V_C)
+      // ============================================================
+      function updateDMM(net) {
+        const lcd = $("#dmm-lcd");
+        $("#dmm-mode-lbl").textContent = state.dmm;
+        lcd.classList.remove("err");
+
+        if (state.dmm === "OFF") { $("#dmm-val").textContent = "OFF"; return; }
+        const plugged = net.used.has("dmm_v") && net.used.has("dmm_com");
+        if (!plugged) { $("#dmm-val").textContent = state.dmm === "OHM" ? "O.L" : "0.00 V"; return; }
+
+        if (state.dmm === "OHM") {
+          if (state.psu.on || state.gen.on) {
+            if (stepNow().board === "rcrl" && isRLCWired(net)) {
+              lcd.classList.add("err");
+              $("#dmm-val").textContent = "LIVE!";
+              return;
+            }
+          }
+          if (stepNow().board === "rcrl") {
+            const onL = (net.same("dmm_v", "l2m5_in") && net.same("dmm_com", "out_mid")) ||
+                        (net.same("dmm_v", "out_mid") && net.same("dmm_com", "l2m5_in"));
+            if (onL) { $("#dmm-val").textContent = `${KIT_RL_INT.toFixed(1)} Ω`; return; }
+
+            const onRvar = (net.same("dmm_v", "rvar_a") && net.same("dmm_com", "rvar_b")) ||
+                           (net.same("dmm_v", "rvar_b") && net.same("dmm_com", "rvar_a"));
+            if (onRvar) { $("#dmm-val").textContent = `${state.rvar.toFixed(0)} Ω`; return; }
+
+            const rMap = [["r1k_out", "1.00 kΩ"], ["r10k_out", "10.0 kΩ"], ["r100k_out", "100 kΩ"]];
+            for (const [pin, txt] of rMap) {
+              if ((net.same("dmm_v", pin) && net.same("dmm_com", "out_mid")) ||
+                  (net.same("dmm_v", "out_mid") && net.same("dmm_com", pin))) {
+                $("#dmm-val").textContent = txt; return;
+              }
+            }
+          } else {
+            const onR = (net.same("dmm_v", "bb_in") && net.same("dmm_com", "bb_mid")) ||
+                        (net.same("dmm_v", "bb_mid") && net.same("dmm_com", "bb_in"));
+            if (onR && state.bb.topo === "rc_int") {
+              const rv = BB_R[state.bb.r];
+              $("#dmm-val").textContent = rv >= 1000 ? `${(rv / 1000).toFixed(1)} kΩ` : `${rv} Ω`;
+              return;
+            }
+          }
+          $("#dmm-val").textContent = "O.L";
+        } else if (state.dmm === "DCV") {
+          if (stepNow().board === "breadboard") {
+            if (net.same("dmm_v", "bb_mid") && net.same("dmm_com", "bb_gnd")) {
+              $("#dmm-val").textContent = `${state.bb.vc.toFixed(2)} V`; return;
+            }
+            if (isPsuOnBreadboard(net) && state.psu.on && net.same("dmm_v", "bb_in") && net.same("dmm_com", "bb_gnd")) {
+              $("#dmm-val").textContent = `${state.psu.v.toFixed(2)} V`; return;
+            }
+          }
+          $("#dmm-val").textContent = "0.00 V";
+        }
+      }
+
+      // ============================================================
+      // 7. SIMULASI FISIKA GELOMBANG REAL-TIME (ROLL + Y-T + RLC + DIF + INT)
+      // ============================================================
+      function evalRLCStep(t, Rtot) {
+        if (t <= 0) return 0;
+        const alpha = Rtot / (2 * KIT_L);
+        const w0 = 1 / Math.sqrt(KIT_L * KIT_C8N2);
+        const zeta = alpha / w0;
+        if (zeta < 0.985) {
+          const wd = w0 * Math.sqrt(1 - zeta * zeta);
+          return 1 - Math.exp(-alpha * t) * (Math.cos(wd * t) + (alpha / wd) * Math.sin(wd * t));
+        } else if (zeta <= 1.015) {
+          return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
+        } else {
+          const sq = Math.sqrt(alpha * alpha - w0 * w0);
+          const s1 = -alpha + sq, s2 = -alpha - sq;
+          return 1 + (s2 * Math.exp(s1 * t) - s1 * Math.exp(s2 * t)) / (s1 - s2);
+        }
+      }
+
+      // Exact periodic response for Breadboard RC (Diff / Int) with Square / Tri / Sine input
+      function computeBBWaveformsYT(tArray) {
+        const f = state.gen.freq;
+        const T = 1 / f;
+        const halfT = T / 2;
+        const A = state.gen.vpp / 2;
+        const R = BB_R[state.bb.r];
+        const C = BB_C[state.bb.c];
+        const tau = R * C;
+        const wave = state.gen.wave;
+
+        const vinArr = [];
+        const voutArr = [];
+
+        for (let i = 0; i < tArray.length; i++) {
+          const t = tArray[i];
+          const phase = ((t % T) + T) % T;
+          let vin = 0, vc = 0;
+
+          if (wave === "SQUARE") {
+            const posHalf = phase < halfT;
+            const tl = posHalf ? phase : phase - halfT;
+            vin = posHalf ? A : -A;
+            // Exact steady-state capacitor voltage for symmetric square wave:
+            const eHalf = Math.exp(-halfT / tau);
+            const vPeak = A * (1 - eHalf) / (1 + eHalf);
+            if (posHalf) vc = A + (-vPeak - A) * Math.exp(-tl / tau);
+            else vc = -A + (vPeak + A) * Math.exp(-tl / tau);
+          } else if (wave === "TRI") {
+            // Symmetric triangle wave from -A to +A
+            const u = phase / T;
+            if (u < 0.25) vin = 4 * A * u;
+            else if (u < 0.75) vin = 2 * A - 4 * A * u;
+            else vin = -4 * A + 4 * A * u;
+
+            // Fourier 5-harmonic exact RC low-pass filter response (ultra clean & exact!)
+            vc = 0;
+            for (let n = 1; n <= 9; n += 2) {
+              const wn = 2 * Math.PI * n * f;
+              const sign = ((n - 1) / 2) % 2 === 0 ? 1 : -1;
+              const an = (8 * A / (Math.PI * Math.PI * n * n)) * sign;
+              const mag = 1 / Math.sqrt(1 + (wn * tau) * (wn * tau));
+              const phi = -Math.atan(wn * tau);
+              vc += an * mag * Math.sin(wn * phase + phi);
+            }
+          } else {
+            // SINE
+            const w = 2 * Math.PI * f;
+            vin = A * Math.sin(w * phase);
+            const mag = 1 / Math.sqrt(1 + (w * tau) * (w * tau));
+            const phi = -Math.atan(w * tau);
+            vc = A * mag * Math.sin(w * phase + phi);
+          }
+
+          vinArr.push(vin);
+          voutArr.push(state.bb.topo === "rc_int" ? vc : (vin - vc));
+        }
+        return { vinArr, voutArr };
+      }
+
+      let lastFrameTs = performance.now();
+      function tickOscilloscope(now) {
+        const dtReal = Math.min(0.05, (now - lastFrameTs) / 1000);
+        lastFrameTs = now;
+
+        const net = buildNet();
+        const boardKey = stepNow().board;
+        const tdiv = TDIVS[state.scope.tIdx];
+
+        // 1. Update Breadboard RC DC state (for ROLL mode & live V_C badge)
+        if (boardKey === "breadboard") {
+          const R = BB_R[state.bb.r];
+          const C = BB_C[state.bb.c];
+          const tau = R * C;
+          const psuConn = isPsuOnBreadboard(net);
+          const vTarget = (psuConn && state.psu.on) ? state.psu.v : 0;
+
+          // Advance simulated time synced to screen T/div (10 div = 3.2 real seconds)
+          const simRate = (10 * tdiv) / 3.2;
+          const dtSim = dtReal * simRate;
+
+          if (state.scope.run) {
+            if (psuConn && state.bb.topo === "rc_int") {
+              // Real exponential charging/discharging through R
+              const alpha = 1 - Math.exp(-dtSim / tau);
+              state.bb.vc += (vTarget - state.bb.vc) * alpha;
+            } else if (!psuConn && !isGenOnBreadboard(net)) {
+              // Very slow leak if open-circuit
+              state.bb.vc *= Math.exp(-dtReal * 0.01);
+            }
+
+            // Track transient observations for Percobaan 1
+            if (psuConn && state.psu.v >= 4.5) {
+              if (state.psu.on && state.bb.vc >= 4.55) state.transientTrack.charged = true;
+              if (!state.psu.on && state.transientTrack.charged && state.bb.vc <= 0.45) state.transientTrack.discharged = true;
+            }
+          }
+
+          // Track Integrator wave tests (Step 12)
+          if (state.bb.topo === "rc_int" && isGenOnBreadboard(net) && state.gen.on && state.gen.freq === 500 && state.gen.vpp === 4) {
+            if (state.gen.wave === "SQUARE") state.intWaveTrack.sqr = true;
+            if (state.gen.wave === "TRI") state.intWaveTrack.tri = true;
+          }
+
+          // Push to ROLL buffer if running
+          if (state.scope.mode === "ROLL" && state.scope.run) {
+            state.rollTimeStep = (10 * tdiv) / 180; // 180 samples visible per screen width
+            const ch1Conn = isConnectedTo(net, "osc_ch1", "bb_in", "bb_gnd");
+            const ch2Conn = isConnectedTo(net, "osc_ch2", "bb_mid", "bb_gnd");
+            const v1 = ch1Conn ? ((psuConn && state.psu.on) ? state.psu.v : 0) : 0;
+            const v2 = ch2Conn ? state.bb.vc : 0;
+            state.rollBuf1.shift(); state.rollBuf1.push(v1);
+            state.rollBuf2.shift(); state.rollBuf2.push(v2);
+          }
+
+          $("#vc-live-badge").textContent = `V_C saat ini: ${state.bb.vc.toFixed(2)} V (τ = ${(tau * 1000).toFixed(2)} ms)`;
+        } else {
+          const Rtot = GEN_RG + KIT_RL_INT + state.rvar;
+          const Rcrit = 2 * Math.sqrt(KIT_L / KIT_C8N2);
+          const zeta = Rtot / Rcrit;
+          const regime = zeta < 0.96 ? "Underdamped" : (zeta <= 1.04 ? "Critically Damped" : "Overdamped");
+          $("#vc-live-badge").textContent = `R_tot = ${Rtot} Ω • ζ = ${zeta.toFixed(2)} (${regime})`;
+        }
+
+        updateDMM(net);
+        renderLiveProgressTags();
+        drawOscilloscopeScreen(net);
+
+        requestAnimationFrame(tickOscilloscope);
+      }
+
+      function drawOscilloscopeScreen(net) {
+        const canvas = $("#scope-canvas");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width, H = canvas.height;
+        ctx.fillStyle = "#06131F";
+        ctx.fillRect(0, 0, W, H);
+
+        // Graticule 10 x 8
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.15)";
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 10; i++) { ctx.beginPath(); ctx.moveTo((W / 10) * i, 0); ctx.lineTo((W / 10) * i, H); ctx.stroke(); }
+        for (let j = 1; j < 8; j++) { ctx.beginPath(); ctx.moveTo(0, (H / 8) * j); ctx.lineTo(W, (H / 8) * j); ctx.stroke(); }
+
+        const v1div = VDIVS[state.scope.v1Idx];
+        const v2div = VDIVS[state.scope.v2Idx];
+        const tdiv = TDIVS[state.scope.tIdx];
+        const pxY = H / 8;
+
+        // Baseline: in ROLL DC mode place 0V at 6.5 div down so 0..5V uses full screen nicely; in Y-T center at H/2
+        const y0 = state.scope.mode === "ROLL" ? H * 0.78 : H * 0.5;
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.38)";
+        ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke();
+
+        const N = 180;
+        let ch1Pts = new Array(N).fill(0);
+        let ch2Pts = new Array(N).fill(0);
+
+        if (state.scope.mode === "ROLL") {
+          const maxStart = ROLL_LEN - N;
+          const startIdx = Math.round((state.scope.hpos / 100) * maxStart);
+          for (let i = 0; i < N; i++) {
+            ch1Pts[i] = state.rollBuf1[startIdx + i];
+            ch2Pts[i] = state.rollBuf2[startIdx + i];
+          }
+        } else {
+          // Mode Y-T (Trigger pada rising edge di x = 1.5 div)
+          const totalT = 10 * tdiv;
+          const tShift = ((state.scope.hpos - 50) / 100) * totalT;
+          const trigOffset = 1.5 * tdiv;
+          const tArr = [];
+          for (let i = 0; i < N; i++) tArr.push((i / (N - 1)) * totalT - trigOffset + tShift);
+
+          if (stepNow().board === "rcrl") {
+            const wired = isRLCWired(net);
+            const ch1Ok = isConnectedTo(net, "osc_ch1", "out_mid", "gnd_c");
+            const ch2Ok = net.used.has("osc_ch2") && net.same("osc_ch2_p", "gen_bnc_p") && net.same("osc_ch2_n", "gnd_c");
+
+            if (state.gen.on && wired) {
+              const f = state.gen.freq;
+              const T = 1 / f;
+              const halfT = T / 2;
+              const A = state.gen.vpp / 2;
+              const Rtot = GEN_RG + KIT_RL_INT + state.rvar;
+
+              for (let i = 0; i < N; i++) {
+                const t = tArr[i];
+                const ph = ((t % T) + T) % T;
+                const isHigh = ph < halfT;
+                const tl = isHigh ? ph : ph - halfT;
+                const vin = isHigh ? A : -A;
+                const stepVal = evalRLCStep(tl, Rtot);
+                const vc = isHigh ? (-A + 2 * A * stepVal) : (A - 2 * A * stepVal);
+
+                ch1Pts[i] = ch1Ok ? vc : 0;
+                ch2Pts[i] = ch2Ok ? vin : 0;
+              }
+            }
+          } else {
+            // Breadboard Y-T (Diferensiator / Integrator / AC RC)
+            const genConn = isGenOnBreadboard(net);
+            const ch1Ok = isConnectedTo(net, "osc_ch1", "bb_in", "bb_gnd");
+            const ch2Ok = isConnectedTo(net, "osc_ch2", "bb_mid", "bb_gnd");
+            if (genConn && state.gen.on) {
+              const { vinArr, voutArr } = computeBBWaveformsYT(tArr);
+              for (let i = 0; i < N; i++) {
+                ch1Pts[i] = ch1Ok ? vinArr[i] : 0;
+                ch2Pts[i] = ch2Ok ? voutArr[i] : 0;
+              }
+            } else if (isPsuOnBreadboard(net) && state.psu.on) {
+              for (let i = 0; i < N; i++) {
+                ch1Pts[i] = ch1Ok ? state.psu.v : 0;
+                ch2Pts[i] = ch2Ok ? state.bb.vc : 0;
+              }
+            }
+          }
+        }
+
+        // Apply Coupling (DC / AC / GND)
+        const applyCpl = (arr, cpl) => {
+          if (cpl === "GND") return arr.map(() => 0);
+          if (cpl === "AC") {
+            const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+            return arr.map((v) => v - mean);
+          }
+          return arr;
+        };
+
+        const d1 = applyCpl(ch1Pts, state.scope.ch1Cpl);
+        const d2 = applyCpl(ch2Pts, state.scope.ch2Cpl);
+
+        // Plot CH1 (Cyan) & CH2 (Amber/Yellow)
+        const drawTrace = (pts, vdiv, color) => {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i < N; i++) {
+            const x = (i / (N - 1)) * W;
+            const y = y0 - (pts[i] / vdiv) * pxY;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        };
+
+        drawTrace(d1, v1div, "#38BDF8");
+        drawTrace(d2, v2div, "#FBBF24");
+
+        // Cursors A & B
+        if (state.scope.cursorOn) {
+          const xA = (state.scope.curA / 100) * W;
+          const xB = (state.scope.curB / 100) * W;
+          ctx.save();
+          ctx.setLineDash([4, 3]);
+          ctx.strokeStyle = "#4ADE80";
+          ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.moveTo(xA, 0); ctx.lineTo(xA, H); ctx.stroke();
+          ctx.strokeStyle = "#F472B6";
+          ctx.beginPath(); ctx.moveTo(xB, 0); ctx.lineTo(xB, H); ctx.stroke();
+          ctx.restore();
+
+          const dtSec = (Math.abs(state.scope.curB - state.scope.curA) / 100) * (10 * tdiv);
+          const idxA = Math.min(N - 1, Math.round((state.scope.curA / 100) * (N - 1)));
+          const idxB = Math.min(N - 1, Math.round((state.scope.curB / 100) * (N - 1)));
+          const vA = d2[idxA], vB = d2[idxB];
+          const dtTxt = formatTime(dtSec);
+          $("#cur-dt-lbl").textContent = `Δt=${dtTxt}`;
+
+          ctx.fillStyle = "rgba(15,23,42,0.84)";
+          ctx.fillRect(W - 142, 4, 138, 34);
+          ctx.fillStyle = "#4ADE80";
+          ctx.font = "bold 9.5px monospace";
+          ctx.fillText(`Δt: ${dtTxt}`, W - 136, 16);
+          ctx.fillStyle = "#FBBF24";
+          ctx.fillText(`CH2: ${vA.toFixed(2)}V → ${vB.toFixed(2)}V`, W - 136, 30);
+        } else {
+          $("#cur-dt-lbl").textContent = "OFF";
+        }
+
+        // Bottom HUD
+        ctx.fillStyle = "rgba(6,19,31,0.78)";
+        ctx.fillRect(0, H - 18, W, 18);
+        ctx.font = "bold 9.5px monospace";
+        ctx.fillStyle = "#38BDF8";
+        ctx.fillText(`CH1:${fmtVdiv(v1div)} ${state.scope.ch1Cpl}`, 5, H - 5);
+        ctx.fillStyle = "#FBBF24";
+        ctx.fillText(`CH2:${fmtVdiv(v2div)} ${state.scope.ch2Cpl}`, 112, H - 5);
+        ctx.fillStyle = "#E2E8F0";
+        ctx.fillText(`T:${formatTime(tdiv)} ${state.scope.mode}`, 215, H - 5);
+
+        // Top-left Run/Stop & CAL badge
+        ctx.fillStyle = state.scope.run ? "#22C55E" : "#EF4444";
+        ctx.fillText(state.scope.run ? "● RUN" : "■ STOP", 6, 13);
+        if (state.scope.calChecked) {
+          ctx.fillStyle = "#4ADE80";
+          ctx.fillText("CAL OK", 56, 13);
+        }
+      }
+
+      function fmtVdiv(v) { return v < 1 ? `${Math.round(v * 1000)}mV` : `${v}V`; }
+      function formatTime(s) {
+        if (s < 1e-3) return `${(s * 1e6).toFixed(0)}µs`;
+        if (s < 1) return `${(s * 1e3).toFixed(2).replace(/\.00$/, "")}ms`;
+        return `${s.toFixed(2)}s`;
+      }
+
+      // ============================================================
+      // 8. VALIDATOR LANGKAH UJIAN
+      // ============================================================
+      function validateStep() {
+        const s = stepNow();
+        const net = buildNet();
+        const checks = [];
+
+        const rawVal = s.bclType === "select" ? $("#bcl-select").value : $("#bcl-input").value.trim().replace(",", ".");
+        const numVal = s.bclType === "number" ? parseFloat(rawVal) : NaN;
+
+        const ch1BB = isConnectedTo(net, "osc_ch1", "bb_in", "bb_gnd");
+        const ch2BB = isConnectedTo(net, "osc_ch2", "bb_mid", "bb_gnd");
+        const psuBB = isPsuOnBreadboard(net);
+        const genBB = isGenOnBreadboard(net);
+
+        if (s.id === "p1_setup") {
+          checks.push({ ok: state.bb.topo === "rc_int" && state.bb.r === "R1" && state.bb.c === "C1", msg: "Breadboard terpasang R1 (100 kΩ) dan C1 (82 nF) dengan susunan R → C." });
+          checks.push({ ok: state.bb.dischargedFlag && state.bb.vc < 0.05, msg: "Kapasitor sudah dikosongkan dengan menekan 'Short Kaki Kapasitor'." });
+          checks.push({ ok: state.scope.calChecked && state.scope.mode === "ROLL", msg: "Kalibrasi Osiloskop (CAL ✓) diperiksa dan time-base diset ke mode ROLL." });
+          checks.push({ ok: ch1BB && ch2BB && state.scope.ch1Cpl === "DC" && state.scope.ch2Cpl === "DC", msg: "CH1 (DC) terpasang di Input–GND dan CH2 (DC) terpasang di V_C–GND." });
+          checks.push({ ok: Math.abs(state.psu.v - 5) <= 0.1 && !state.psu.on, msg: "DC Supply disiapkan 5.0 V dengan OUT masih OFF (belum memberi tegangan ke input)." });
+        }
+
+        else if (s.id === "p1_r1c1" || s.id === "p1_r1c2" || s.id === "p1_r2c2") {
+          const reqR = s.id === "p1_r2c2" ? "R2" : "R1";
+          const reqC = s.id === "p1_r1c1" ? "C1" : "C2";
+          checks.push({ ok: state.bb.topo === "rc_int" && state.bb.r === reqR && state.bb.c === reqC, msg: `Komponen Breadboard tepat: ${reqR} & ${reqC} (susunan R → C).` });
+          checks.push({ ok: psuBB && Math.abs(state.psu.v - 5) <= 0.1, msg: "DC Supply (5.0 V) terpasang dengan kabel Banana–Buaya ke Input & GND." });
+          checks.push({ ok: ch2BB && state.scope.mode === "ROLL" && state.scope.ch2Cpl === "DC", msg: "Osiloskop CH2 (DC) mengukur V_C pada mode ROLL." });
+          checks.push({ ok: state.transientTrack.charged && state.transientTrack.discharged, msg: state.transientTrack.charged && state.transientTrack.discharged ? "Siklus transien Pengisian (ON → ~5V) & Pengosongan (OFF → ~0V) telah diamati." : "Lakukan siklus lengkap: nyalakan PSU OUT: ON sampai V_C ≈ 5V, lalu matikan OUT: OFF sampai V_C ≈ 0V." });
+          checks.push({ ok: !state.scope.run, msg: !state.scope.run ? "Osiloskop dihentikan (STOP) untuk mengamati & mengukur plot transien." : "Tekan tombol RUN agar menjadi STOP setelah kurva terekam!" });
+        }
+
+        else if (s.id === "p2_4v" || s.id === "p2_2v") {
+          const targetV = s.id === "p2_4v" ? 4.0 : 2.0;
+          checks.push({ ok: state.bb.topo === "rc_int" && state.bb.r === "R1" && state.bb.c === "C2", msg: "Breadboard terpasang rangkaian RC (R1 = 100 kΩ, C2 = 1 µF)." });
+          checks.push({ ok: psuBB && state.psu.on && Math.abs(state.psu.v - targetV) <= 0.1, msg: `DC Supply diatur ke ${targetV.toFixed(1)} V (OUT: ON) dan tersambung ke Input–GND.` });
+          checks.push({ ok: ch2BB && state.scope.ch2Cpl === "DC", msg: "CH2 Osiloskop (kopling DC) mengukur V_C." });
+          checks.push({ ok: Math.abs(state.bb.vc - targetV) <= 0.2, msg: Math.abs(state.bb.vc - targetV) <= 0.2 ? `Kapasitor telah mencapai tegangan mantap (${state.bb.vc.toFixed(2)} V).` : `Tunggu V_C stabil mendekati ${targetV.toFixed(1)} V (pastikan Osiloskop RUN).` });
+        }
+
+        else if (s.id === "p3_rl") {
+          const onL = (net.same("dmm_v", "l2m5_in") && net.same("dmm_com", "out_mid")) ||
+                      (net.same("dmm_v", "out_mid") && net.same("dmm_com", "l2m5_in"));
+          checks.push({ ok: !state.gen.on && !state.psu.on, msg: "Sumber sinyal & DC dalam keadaan mati (aman untuk mengukur Ω)." });
+          checks.push({ ok: state.dmm === "OHM" && onL, msg: "Multimeter (mode Ω, jack V/Ω & COM) mengukur induktor 2,5 mH pada Kit RL & RC." });
+        }
+
+        else if (s.id === "p3_under" || s.id === "p3_over" || s.id === "p3_crit") {
+          checks.push({ ok: isRLCWired(net), msg: "Rangkaian RLC seri (Gen → Rvar → 2,5 mH → 8,2 nF → GND) tersusun benar pada Kit RL & RC." });
+          checks.push({ ok: state.gen.on && state.gen.wave === "SQUARE" && state.gen.freq === 1000 && Math.abs(state.gen.vpp - 2) <= 0.2, msg: "Function Generator diatur: Gel. Kotak (SQR), 1 kHz, 2 Vpp, OUT: ON." });
+          const ch1Ok = isConnectedTo(net, "osc_ch1", "out_mid", "gnd_c");
+          const ch2Ok = net.used.has("osc_ch2") && net.same("osc_ch2_p", "gen_bnc_p") && net.same("osc_ch2_n", "gnd_c");
+          checks.push({ ok: state.scope.mode === "YT" && ch1Ok && ch2Ok, msg: "Osiloskop mode Y-T dengan CH1 pada V_C (OUT–GND) dan CH2 pada output Generator." });
+
+          if (s.id === "p3_under") {
+            checks.push({ ok: state.rvar >= 35 && state.rvar <= 120, msg: `Rvar diset sekitar 50–100 Ω (saat ini ${state.rvar} Ω) sehingga terlihat gelombang Underdamped.` });
+          } else if (s.id === "p3_over") {
+            checks.push({ ok: state.rvar >= 1800 && state.rvar <= 2200, msg: `Rvar diset sekitar 2 kΩ (saat ini ${state.rvar} Ω) sehingga terlihat gelombang Overdamped.` });
+          } else {
+            checks.push({ ok: state.rvar >= 920 && state.rvar <= 1085, msg: `Rvar diatur tepat ke kondisi Critically Damped (~1004 Ω, saat ini ${state.rvar} Ω).` });
+          }
+        }
+
+        else if (s.id === "diff_rc") {
+          checks.push({ ok: state.bb.topo === "diff" && state.bb.r === "R1" && state.bb.c === "C2", msg: "Breadboard disusun C → R (Diferensiator) dengan C = 1 µF dan R = 100 kΩ." });
+          checks.push({ ok: genBB && state.gen.on && state.gen.wave === "SQUARE" && state.gen.freq === 500 && state.gen.vpp === 4, msg: "Function Generator (SQR, 500 Hz, 4 Vpp, OUT: ON) terhubung ke Input–GND." });
+          checks.push({ ok: state.scope.mode === "YT" && ch1BB && ch2BB, msg: "Osiloskop (mode Y-T) mengukur Input di CH1 dan Output (R) di CH2." });
+        }
+
+        else if (s.id === "int_rc") {
+          checks.push({ ok: state.bb.topo === "rc_int" && state.bb.r === "R1" && state.bb.c === "C2", msg: "Breadboard disusun R → C (Integrator) dengan R = 100 kΩ dan C = 1 µF." });
+          checks.push({ ok: genBB && state.gen.on && state.gen.freq === 500 && state.gen.vpp === 4, msg: "Function Generator (500 Hz, 4 Vpp, OUT: ON) terhubung ke Input–GND." });
+          checks.push({ ok: state.scope.mode === "YT" && ch1BB && ch2BB, msg: "Osiloskop (mode Y-T) mengukur Input di CH1 dan Output (C) di CH2." });
+          checks.push({ ok: state.intWaveTrack.sqr && state.intWaveTrack.tri, msg: state.intWaveTrack.sqr && state.intWaveTrack.tri ? "Kedua bentuk input SQR (→ segitiga) dan TRI (→ parabolik, Langkah 40) telah diamati!" : "Amati gelombang input SQR dulu, lalu klik TRI (Langkah 40) pada Function Generator!" });
+        }
+
+        // Validasi BCL
+        let bclOk = false;
+        if (s.bclType === "select") {
+          bclOk = rawVal === s.expected;
+          checks.push({ ok: bclOk, msg: bclOk ? `Identifikasi bentuk gelombang tepat (${rawVal}).` : "Pilih jenis bentuk gelombang CH1 yang sesuai di kotak BCL." });
+        } else {
+          bclOk = !isNaN(numVal) && Math.abs(numVal - s.expected) <= s.tol;
+          checks.push({
+            ok: bclOk,
+            msg: bclOk ? `Catatan BCL benar (${numVal} ${s.bclUnit}).` : (isNaN(numVal) ? `Masukkan angka hasil (${s.bclUnit}) pada kotak BCL.` : `Nilai BCL (${numVal} ${s.bclUnit}) belum tepat — periksa kembali perhitungan/pengukuranmu.`)
+          });
+        }
+
+        const passed = checks.every((c) => c.ok);
+        showFeedback(passed ? "pass" : "fail", passed ? `🎉 BENAR! Langkah "${s.title}" selesai dan tercatat di BCL.` : "Belum tepat — perbaiki poin bertanda ❌ lalu cek lagi:", checks);
+
+        if (passed) {
+          state.completed[s.id] = { val: s.bclType === "select" ? rawVal.toUpperCase() : numVal, unit: s.bclUnit };
+          $("#btn-next").style.display = state.stepIdx < STEPS.length - 1 ? "inline-block" : "none";
+          renderStepStrip();
+          renderBCLTable();
+        }
+      }
+
+      function showFeedback(type, heading, checks = null, guide = null) {
+        const box = $("#feedback-box");
+        box.className = `feedback-box show ${type}`;
+        let html = `<strong>${heading}</strong>`;
+        if (checks) html += `<ul class="check-list">${checks.map((c) => `<li><span>${c.ok ? "✅" : "❌"}</span><span>${c.msg}</span></li>`).join("")}</ul>`;
+        if (guide) html += `<ol style="margin:6px 0 0 18px;display:flex;flex-direction:column;gap:3px;">${guide.map((g) => `<li>${g}</li>`).join("")}</ol>`;
+        box.innerHTML = html;
+      }
+
+      // ============================================================
+      // 9. RENDER PAPAN BREADBOARD & KIT RL/RC
+      // ============================================================
+      function el(tag, attrs = {}, parent = null) {
+        const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+        if (parent) parent.appendChild(n);
+        return n;
+      }
+
+      function sText(p, x, y, txt, sz = 12, w = "700", col = "#0F172A", anc = "middle") {
+        const t = el("text", { x, y, "font-size": sz, "font-weight": w, fill: col, "text-anchor": anc }, p);
+        t.textContent = txt;
+        return t;
+      }
+
+      function renderBoard() {
+        const svg = $("#kit-svg");
+        svg.innerHTML = "";
+        const bKey = stepNow().board;
+        const board = BOARDS[bKey];
+        $("#board-title").textContent = board.title;
+        $("#bb-controls").style.display = bKey === "breadboard" ? "flex" : "none";
+        $("#rvar-controls").style.display = bKey === "rcrl" ? "flex" : "none";
+
+        if (bKey === "breadboard") drawBreadboardSVG(svg);
+        else drawKitRCRLSVG(svg);
+
+        // Render clickable terminals
+        const req = getReqPortType();
+        board.ports.forEach((p) => {
+          const pg = el("g", { class: "svg-port", "data-port": p.id }, svg);
+          const isPicked = state.pending && (state.pending.first === p.id || state.pending.bnc === p.id || state.pending.pos === p.id);
+          el("title", {}, pg).textContent = `${p.label} [BANANA / JUMPER]`;
+
+          if (isPicked) el("circle", { cx: p.x, cy: p.y, r: 17, fill: "rgba(2,132,199,0.28)", stroke: "#0284C7", "stroke-width": 2.6 }, pg);
+          else if (req === "banana") el("circle", { cx: p.x, cy: p.y, r: 14, fill: "none", stroke: "rgba(2,132,199,0.45)", "stroke-width": 1.6 }, pg);
+
+          el("circle", { cx: p.x, cy: p.y, r: 11, fill: p.color, stroke: "#1E293B", "stroke-width": 1.6, class: "svg-ring" }, pg);
+          el("circle", { cx: p.x, cy: p.y, r: 6, fill: "#E2E8F0", stroke: "#475569", "stroke-width": 1 }, pg);
+          el("circle", { cx: p.x, cy: p.y, r: 3, fill: "#0F172A" }, pg);
+          pg.addEventListener("click", () => handlePortClick(p.id));
+        });
+      }
+
+      function drawBreadboardSVG(svg) {
+        // White Plastic Breadboard Body
+        el("rect", { x: 18, y: 20, width: 684, height: 400, rx: 14, fill: "#F8FAFC", stroke: "#CBD5E1", "stroke-width": 3 }, svg);
+        // Top & Bottom Power Rails
+        el("rect", { x: 34, y: 36, width: 652, height: 48, rx: 6, fill: "#FFFFFF", stroke: "#E2E8F0", "stroke-width": 1.5 }, svg);
+        el("line", { x1: 48, y1: 48, x2: 672, y2: 48, stroke: "#EF4444", "stroke-width": 1.8 }, svg);
+        el("line", { x1: 48, y1: 72, x2: 672, y2: 72, stroke: "#2563EB", "stroke-width": 1.8 }, svg);
+
+        el("rect", { x: 34, y: 356, width: 652, height: 48, rx: 6, fill: "#FFFFFF", stroke: "#E2E8F0", "stroke-width": 1.5 }, svg);
+        el("line", { x1: 48, y1: 368, x2: 672, y2: 368, stroke: "#EF4444", "stroke-width": 1.8 }, svg);
+        el("line", { x1: 48, y1: 392, x2: 672, y2: 392, stroke: "#2563EB", "stroke-width": 1.8 }, svg);
+
+        // Center DIP Channel & Tie-point Grid
+        el("rect", { x: 34, y: 98, width: 652, height: 244, rx: 6, fill: "#FFFFFF", stroke: "#E2E8F0", "stroke-width": 1.5 }, svg);
+        el("rect", { x: 34, y: 214, width: 652, height: 14, fill: "#E2E8F0" }, svg);
+
+        for (let col = 0; col < 24; col++) {
+          const x = 66 + col * 25.5;
+          for (let r = 0; r < 5; r++) {
+            el("rect", { x: x - 3, y: 112 + r * 20, width: 6, height: 6, rx: 1, fill: "#94A3B8" }, svg);
+            el("rect", { x: x - 3, y: 238 + r * 20, width: 6, height: 6, rx: 1, fill: "#94A3B8" }, svg);
+          }
+        }
+
+        // Visual indicator "Satu Nodal" like Gambar 3-4
+        el("line", { x1: 117, y1: 115, x2: 117, y2: 198, stroke: "#EF4444", "stroke-width": 2.2, "stroke-dasharray": "4,3" }, svg);
+        sText(svg, 117, 108, "satu Nodal", 10.5, "800", "#DC2626");
+
+        // Highlight active nodal columns (Input=195, Mid=382, GND=525)
+        el("rect", { x: 183, y: 106, width: 24, height: 102, rx: 6, fill: "rgba(239,68,68,0.12)", stroke: "#FCA5A5" }, svg);
+        el("rect", { x: 370, y: 106, width: 24, height: 102, rx: 6, fill: "rgba(234,179,8,0.18)", stroke: "#FCD34D" }, svg);
+        el("rect", { x: 513, y: 232, width: 24, height: 102, rx: 6, fill: "rgba(30,41,59,0.12)", stroke: "#94A3B8" }, svg);
+
+        // Draw Components mounted on Breadboard!
+        const isRC = state.bb.topo === "rc_int";
+        const rTxt = state.bb.r === "R1" ? "R1 = 100 kΩ" : "R2 = 220 Ω";
+        const cTxt = state.bb.c === "C1" ? "C1 = 82 nF" : "C2 = 1 µF";
+        const bands = state.bb.r === "R1" ? ["#78350F", "#0F172A", "#EAB308"] : ["#DC2626", "#DC2626", "#78350F"];
+
+        // Lead wire from Input (195,188) to Mid (382,188)
+        el("line", { x1: 195, y1: 188, x2: 382, y2: 188, stroke: "#475569", "stroke-width": 3.5 }, svg);
+        // Lead wire from Mid (382,188) across DIP channel to GND column (525,270)
+        el("polyline", { points: "382,188 382,272 525,272", fill: "none", stroke: "#475569", "stroke-width": 3.5 }, svg);
+
+        if (isRC) {
+          // Horizontal Resistor (Input -> Mid)
+          drawRealResistor(svg, 288, 188, bands, rTxt);
+          // Shunt Capacitor (Mid -> GND)
+          drawRealCapacitor(svg, 454, 272, state.bb.c === "C2", cTxt);
+        } else {
+          // Differentiator: Horizontal Capacitor (Input -> Mid), Shunt Resistor (Mid -> GND)
+          drawRealCapacitor(svg, 288, 188, state.bb.c === "C2", cTxt);
+          drawRealResistor(svg, 454, 272, bands, rTxt);
+        }
+
+        // Clear Pin Labels
+        sText(svg, 195, 134, "INPUT (CH1)", 12, "800", "#DC2626");
+        sText(svg, 382, 134, isRC ? "CH2 / V_C (OUT)" : "CH2 / V_R (OUT)", 12, "800", "#B45309");
+        sText(svg, 525, 348, "GND", 12, "800", "#0F172A");
+
+        // Schematic mini-badge in bottom-left
+        el("rect", { x: 46, y: 248, width: 222, height: 78, rx: 8, fill: "#F8FAFC", stroke: "#CBD5E1" }, svg);
+        sText(svg, 157, 268, isRC ? "Topologi: R → C (RC / Integrator)" : "Topologi: C → R (Diferensiator)", 11, "800", "#0284C7");
+        sText(svg, 157, 288, `${rTxt}  •  ${cTxt}`, 11.5, "800", "#0F172A");
+        const tauMs = BB_R[state.bb.r] * BB_C[state.bb.c] * 1000;
+        sText(svg, 157, 308, `τ = R × C = ${tauMs >= 1 ? tauMs.toFixed(1) : tauMs.toFixed(3)} ms`, 11, "700", "#059669");
+      }
+
+      function drawRealResistor(svg, cx, cy, bands, label) {
+        el("rect", { x: cx - 36, y: cy - 12, width: 72, height: 24, rx: 10, fill: "#E7C697", stroke: "#92400E", "stroke-width": 1.6 }, svg);
+        el("rect", { x: cx - 22, y: cy - 12, width: 7, height: 24, fill: bands[0] }, svg);
+        el("rect", { x: cx - 9,  y: cy - 12, width: 7, height: 24, fill: bands[1] }, svg);
+        el("rect", { x: cx + 4,  y: cy - 12, width: 7, height: 24, fill: bands[2] }, svg);
+        el("rect", { x: cx + 20, y: cy - 12, width: 5, height: 24, fill: "#D97706" }, svg);
+        sText(svg, cx, cy - 19, label, 11.5, "800", "#0F172A");
+      }
+
+      function drawRealCapacitor(svg, cx, cy, isElco, label) {
+        if (isElco) {
+          el("circle", { cx, cy, r: 21, fill: "#1E293B", stroke: "#475569", "stroke-width": 2 }, svg);
+          el("circle", { cx, cy, r: 14, fill: "#CBD5E1", stroke: "#64748B", "stroke-width": 1.4 }, svg);
+          el("line", { x1: cx - 8, y1: cy, x2: cx + 8, y2: cy, stroke: "#475569", "stroke-width": 1.6 }, svg);
+          el("line", { x1: cx, y1: cy - 8, x2: cx, y2: cy + 8, stroke: "#475569", "stroke-width": 1.6 }, svg);
+        } else {
+          el("ellipse", { cx, cy, rx: 22, ry: 15, fill: "#F59E0B", stroke: "#B45309", "stroke-width": 1.8 }, svg);
+          sText(svg, cx, cy + 4, "823", 10, "800", "#451A03");
+        }
+        sText(svg, cx, cy + 34, label, 11.5, "800", "#0F172A");
+      }
+
+      function drawKitRCRLSVG(svg) {
+        const defs = el("defs", {}, svg);
+        const bg = el("linearGradient", { id: "kYel", x1: "0%", y1: "0%", x2: "0%", y2: "100%" }, defs);
+        el("stop", { offset: "0%", "stop-color": "#FDE047" }, bg);
+        el("stop", { offset: "100%", "stop-color": "#EAB308" }, bg);
+
+        // 1. Blok Rvar (Top Strip)
+        el("rect", { x: 18, y: 14, width: 684, height: 120, rx: 12, fill: "#FFFFFF", stroke: "#CBD5E1", "stroke-width": 2.2 }, svg);
+        sText(svg, 40, 38, "BLOK RESISTOR VARIABEL (Rvar — Dekade)", 12.5, "800", "#0284C7", "start");
+        el("line", { x1: 122, y1: 108, x2: 155, y2: 108, stroke: "#1E293B", "stroke-width": 2.5 }, svg);
+        el("rect", { x: 155, y: 95, width: 60, height: 26, rx: 4, fill: "#E0F2FE", stroke: "#0284C7", "stroke-width": 2 }, svg);
+        el("line", { x1: 215, y1: 108, x2: 248, y2: 108, stroke: "#1E293B", "stroke-width": 2.5 }, svg);
+        el("line", { x1: 162, y1: 126, x2: 208, y2: 88, stroke: "#0284C7", "stroke-width": 2.2 }, svg);
+        sText(svg, 185, 80, `Rvar = ${state.rvar} Ω`, 12.5, "800", "#0369A1");
+        sText(svg, 122, 90, "A", 11, "800", "#DC2626");
+        sText(svg, 248, 90, "B", 11, "800", "#1D4ED8");
+
+        // Diagram mini Gambar 3-6 di kanan blok Rvar
+        el("rect", { x: 315, y: 26, width: 370, height: 96, rx: 8, fill: "#F8FAFC", stroke: "#E2E8F0" }, svg);
+        sText(svg, 500, 46, "Target Gambar 3-6 (Transien Orde 2)", 11.5, "800", "#1E293B");
+        sText(svg, 500, 66, "Gen (SQR 1kHz 2Vpp) → Rvar → 2,5mH → OUT → 8n2F → GND", 10.5, "700", "#334155");
+        sText(svg, 500, 86, "CH1 Osiloskop: V_C (OUT & GND)  |  CH2: Output Gen", 10.5, "700", "#0284C7");
+        sText(svg, 500, 106, "R_G = 50 Ω • R_L(2,5mH) = 50 Ω • R_crit_tot ≈ 1104 Ω", 10, "700", "#059669");
+
+        // 2. Papan Kuning Kit RL & RC
+        el("rect", { x: 18, y: 146, width: 684, height: 284, rx: 14, fill: "#CBD5E1", stroke: "#94A3B8", "stroke-width": 2.5 }, svg);
+        el("rect", { x: 30, y: 158, width: 660, height: 260, rx: 8, fill: "url(#kYel)", stroke: "#CA8A04", "stroke-width": 1.5 }, svg);
+        sText(svg, 360, 182, "RANGKAIAN RL & RC", 16, "800", "#1E293B");
+
+        const g = el("g", { stroke: "#1E293B", "stroke-width": 2.4, fill: "none", "stroke-linecap": "round" }, svg);
+
+        // 100nF
+        el("line", { x1: 125, y1: 205, x2: 178, y2: 205 }, g);
+        el("line", { x1: 178, y1: 192, x2: 178, y2: 218, "stroke-width": 3.4 }, g);
+        el("line", { x1: 190, y1: 192, x2: 190, y2: 218, "stroke-width": 3.4 }, g);
+        el("line", { x1: 190, y1: 205, x2: 245, y2: 205 }, g);
+        sText(svg, 184, 186, "100nF", 11.5, "800");
+
+        // 8n2F
+        el("line", { x1: 125, y1: 270, x2: 178, y2: 270 }, g);
+        el("line", { x1: 178, y1: 257, x2: 178, y2: 283, "stroke-width": 3.4 }, g);
+        el("line", { x1: 190, y1: 257, x2: 190, y2: 283, "stroke-width": 3.4 }, g);
+        el("line", { x1: 190, y1: 270, x2: 245, y2: 270 }, g);
+        sText(svg, 184, 251, "8n2F", 11.5, "800");
+
+        // 2,5mH Inductor
+        el("line", { x1: 125, y1: 335, x2: 158, y2: 335 }, g);
+        el("path", { d: "M 158 335 C 158 320 171 320 171 335 C 171 320 184 320 184 335 C 184 320 197 320 197 335 C 197 320 210 320 210 335" }, g);
+        el("line", { x1: 210, y1: 335, x2: 245, y2: 335 }, g);
+        sText(svg, 184, 315, "2,5mH (R_L~50Ω)", 11, "800");
+
+        // Bus OUT
+        el("line", { x1: 245, y1: 205, x2: 245, y2: 335 }, g);
+        el("line", { x1: 245, y1: 270, x2: 465, y2: 270 }, g);
+        el("line", { x1: 465, y1: 205, x2: 465, y2: 335 }, g);
+        sText(svg, 355, 250, "OUT", 13, "800");
+
+        // Resistors right
+        [[205, "1KΩ"], [270, "10KΩ"], [335, "100KΩ"]].forEach(([y, lbl]) => {
+          el("line", { x1: 465, y1: y, x2: 498, y2: y }, g);
+          el("rect", { x: 498, y: y - 9, width: 54, height: 18, fill: "#FEF08A" }, g);
+          el("line", { x1: 552, y1: y, x2: 585, y2: y }, g);
+          sText(svg, 525, y - 14, lbl, 11.5, "800");
+        });
+
+        // GND Rail
+        el("line", { x1: 125, y1: 400, x2: 585, y2: 400 }, g);
+        sText(svg, 355, 384, "GND", 11.5, "800");
+      }
+
+      // ============================================================
+      // 10. CABLE OVERLAY & PORT INTERACTION
+      // ============================================================
+      function getReqPortType() {
+        const m = CABLES_META[state.selectedCable];
+        if (m.kind === "bnc2") return "bnc";
+        if (m.kind === "bnc_split") return !state.pending ? "bnc" : "banana";
+        return "banana";
+      }
+
+      function handlePortClick(pid) {
+        const info = portInfo(pid);
+        const req = getReqPortType();
+        const m = CABLES_META[state.selectedCable];
+        if (info.type !== req) {
+          $("#wire-hint").textContent = `Port ini bertipe ${info.type.toUpperCase()} — pilih port ${req.toUpperCase()}!`;
+          return;
+        }
+        if (m.kind === "banana2" || m.kind === "bnc2") {
+          if (!state.pending) state.pending = { first: pid };
+          else {
+            if (state.pending.first !== pid) state.cables.push({ type: state.selectedCable, from: state.pending.first, to: pid });
+            state.pending = null;
+          }
+        } else {
+          if (!state.pending) state.pending = { bnc: pid, pos: null };
+          else if (!state.pending.pos) state.pending.pos = pid;
+          else {
+            if (state.pending.pos !== pid) {
+              state.cables.push({ type: state.selectedCable, bnc: state.pending.bnc, pos: state.pending.pos, neg: pid });
+              state.pending = null;
+            }
+          }
+        }
+        updateUI();
+      }
+
+      function getPortCenter(pid) {
+        const cr = $("#bench-container").getBoundingClientRect();
+        const he = document.querySelector(`.jack-wrap[data-port="${pid}"] .port-jack`);
+        if (he) { const r = he.getBoundingClientRect(); return { x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top }; }
+        const se = document.querySelector(`#kit-svg .svg-port[data-port="${pid}"]`);
+        if (se) { const r = se.getBoundingClientRect(); return { x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top }; }
+        return null;
+      }
+
+      function renderCablesOverlay() {
+        const ov = $("#cable-overlay");
+        const rect = $("#bench-container").getBoundingClientRect();
+        ov.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+        ov.innerHTML = "";
+
+        state.cables.forEach((c, idx) => {
+          const m = CABLES_META[c.type];
+          const g = el("g", { class: "cable-group" }, ov);
+          el("title", {}, g).textContent = `Klik untuk melepas ${m.name}`;
+
+          if (m.kind === "banana2" || m.kind === "bnc2") {
+            const p1 = getPortCenter(c.from), p2 = getPortCenter(c.to);
+            if (!p1 || !p2) return;
+            const sag = Math.min(88, 24 + Math.hypot(p2.x - p1.x, p2.y - p1.y) * 0.13);
+            const d = `M ${p1.x} ${p1.y} Q ${(p1.x + p2.x) / 2} ${Math.max(p1.y, p2.y) + sag} ${p2.x} ${p2.y}`;
+            el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 16, class: "cable-hit" }, g);
+            el("path", { d, fill: "none", stroke: "rgba(15,23,42,0.18)", "stroke-width": 6, "stroke-linecap": "round", transform: "translate(0,3)" }, g);
+            el("path", { d, fill: "none", stroke: m.color, "stroke-width": 4, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("circle", { cx: p1.x, cy: p1.y, r: 5.5, fill: m.color, stroke: "#FFF", "stroke-width": 1.5 }, g);
+            el("circle", { cx: p2.x, cy: p2.y, r: 5.5, fill: m.color, stroke: "#FFF", "stroke-width": 1.5 }, g);
+          } else {
+            const pb = getPortCenter(c.bnc), pp = getPortCenter(c.pos), pn = getPortCenter(c.neg);
+            if (!pb || !pp || !pn) return;
+            const sx = pb.x + (Math.min(pp.x, pn.x) - pb.x) * 0.56;
+            const sy = (pb.y + (pp.y + pn.y) / 2) / 2 + 22;
+            const d1 = `M ${pb.x} ${pb.y} Q ${(pb.x + sx) / 2} ${Math.max(pb.y, sy) + 20} ${sx} ${sy}`;
+            const d2 = `M ${sx} ${sy} Q ${(sx + pp.x) / 2} ${Math.min(sy, pp.y) - 20} ${pp.x} ${pp.y}`;
+            const d3 = `M ${sx} ${sy} Q ${(sx + pn.x) / 2} ${Math.max(sy, pn.y) + 20} ${pn.x} ${pn.y}`;
+            [d1, d2, d3].forEach((d) => el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 14, class: "cable-hit" }, g));
+            el("path", { d: d1, fill: "none", stroke: "#334155", "stroke-width": 5.5, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("path", { d: d2, fill: "none", stroke: m.color, "stroke-width": 3.6, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("path", { d: d3, fill: "none", stroke: "#1E293B", "stroke-width": 3.6, "stroke-linecap": "round", class: "cable-vis" }, g);
+            el("rect", { x: sx - 8, y: sy - 6, width: 16, height: 12, rx: 3, fill: "#0F172A", stroke: "#94A3B8", "stroke-width": 1.2 }, g);
+            el("circle", { cx: pb.x, cy: pb.y, r: 6, fill: "#475569", stroke: "#FFF", "stroke-width": 1.5 }, g);
+            el("circle", { cx: pp.x, cy: pp.y, r: 5.5, fill: m.color, stroke: "#FFF", "stroke-width": 1.4 }, g);
+            el("circle", { cx: pn.x, cy: pn.y, r: 5.5, fill: "#1E293B", stroke: "#FFF", "stroke-width": 1.4 }, g);
+          }
+
+          g.addEventListener("click", (e) => {
+            e.stopPropagation();
+            state.cables.splice(idx, 1);
+            updateUI();
+          });
+        });
+      }
+
+      // ============================================================
+      // 11. UI UPDATES, STEP LOADING & LIVE PROGRESS TAGS
+      // ============================================================
+      function renderLiveProgressTags() {
+        const box = $("#live-progress");
+        const s = stepNow();
+        if (s.id === "p1_r1c1" || s.id === "p1_r1c2" || s.id === "p1_r2c2") {
+          box.innerHTML = `
+            <span class="prog-tag ${state.transientTrack.charged ? "ok" : ""}">${state.transientTrack.charged ? "✓" : "○"} Pengisian (~5V)</span>
+            <span class="prog-tag ${state.transientTrack.discharged ? "ok" : ""}">${state.transientTrack.discharged ? "✓" : "○"} Pengosongan (~0V)</span>
+            <span class="prog-tag ${!state.scope.run ? "ok" : ""}">${!state.scope.run ? "✓" : "○"} Osiloskop STOP</span>
+          `;
+        } else if (s.id === "int_rc") {
+          box.innerHTML = `
+            <span class="prog-tag ${state.intWaveTrack.sqr ? "ok" : ""}">${state.intWaveTrack.sqr ? "✓" : "○"} Input Kotak (SQR) Diamati</span>
+            <span class="prog-tag ${state.intWaveTrack.tri ? "ok" : ""}">${state.intWaveTrack.tri ? "✓" : "○"} Input Segitiga (TRI) Diamati</span>
+          `;
+        } else {
+          box.innerHTML = "";
+        }
+      }
+
+      function renderStepStrip() {
+        const strip = $("#step-strip");
+        strip.innerHTML = "";
+        STEPS.forEach((s, i) => {
+          const b = document.createElement("button");
+          b.className = `step-chip ${i === state.stepIdx ? "active" : ""} ${state.completed[s.id] ? "done" : ""}`;
+          b.textContent = (state.completed[s.id] ? "✓ " : "") + s.short;
+          b.addEventListener("click", () => loadStep(i));
+          strip.appendChild(b);
+        });
+        $("#score-pill").textContent = `Selesai: ${Object.keys(state.completed).length} / ${STEPS.length}`;
+      }
+
+      function loadStep(idx) {
+        const prevBoard = stepNow().board;
+        state.stepIdx = idx;
+        const s = stepNow();
+        if (s.board !== prevBoard) {
+          state.cables = [];
+          state.pending = null;
+        }
+        state.transientTrack = { charged: false, discharged: false };
+        state.intWaveTrack = { sqr: false, tri: false };
+
+        $("#m-tag").textContent = s.tag;
+        $("#m-title").textContent = s.title;
+        $("#m-desc").textContent = s.desc;
+        $("#m-warn").textContent = s.warn || "";
+        $("#m-warn").style.display = s.warn ? "inline-block" : "none";
+        $("#bcl-label").textContent = s.bclLabel;
+        $("#bcl-unit").textContent = s.bclUnit;
+
+        if (s.bclType === "select") {
+          $("#bcl-input").style.display = "none";
+          $("#bcl-select").style.display = "block";
+          $("#bcl-select").value = state.completed[s.id] ? state.completed[s.id].val.toLowerCase() : "";
+        } else {
+          $("#bcl-input").style.display = "block";
+          $("#bcl-select").style.display = "none";
+          $("#bcl-input").value = state.completed[s.id] ? state.completed[s.id].val : "";
+        }
+
+        $("#feedback-box").className = "feedback-box";
+        $("#btn-next").style.display = state.completed[s.id] && idx < STEPS.length - 1 ? "inline-block" : "none";
+        renderStepStrip();
+        updateUI();
+      }
+
+      function updateUI() {
+        // Scope buttons
+        $("#sc-run").textContent = state.scope.run ? "RUN" : "STOP";
+        $("#sc-run").className = `hw-btn ${state.scope.run ? "on" : "stop"}`;
+        $("#sc-led").className = `led ${state.scope.run ? "green" : "red"}`;
+        $("#sc-mode-yt").classList.toggle("active", state.scope.mode === "YT");
+        $("#sc-mode-roll").classList.toggle("active", state.scope.mode === "ROLL");
+        $("#sc-ch1-cpl").textContent = `CH1: ${state.scope.ch1Cpl}`;
+        $("#sc-ch2-cpl").textContent = `CH2: ${state.scope.ch2Cpl}`;
+        $("#sc-cursor").classList.toggle("active", state.scope.cursorOn);
+        $("#sc-cal").classList.toggle("on", state.scope.calChecked);
+        $("#sc-hpos").value = state.scope.hpos;
+        $("#hpos-lbl").textContent = `${state.scope.hpos}%`;
+
+        // PSU
+        $("#psu-disp").textContent = `${state.psu.v.toFixed(1).padStart(4, "0")} V`;
+        $("#psu-disp").style.color = state.psu.on ? "#4ADE80" : "#475569";
+        $("#psu-out").textContent = state.psu.on ? "OUT: ON" : "OUT: OFF";
+        $("#psu-out").className = `hw-btn ${state.psu.on ? "on" : ""}`;
+        $("#psu-led").className = `led ${state.psu.on ? "green" : ""}`;
+
+        // Gen
+        const fTxt = state.gen.freq >= 1000 ? `${state.gen.freq / 1000}kHz` : `${state.gen.freq}Hz`;
+        $("#gen-disp").textContent = `${state.gen.wave === "SQUARE" ? "SQR" : state.gen.wave} • ${fTxt} • ${state.gen.vpp}Vpp`;
+        $("#gen-out").textContent = state.gen.on ? "OUT: ON" : "OUT: OFF";
+        $("#gen-out").className = `hw-btn ${state.gen.on ? "on" : ""}`;
+        $("#gen-led").className = `led ${state.gen.on ? "green" : ""}`;
+        document.querySelectorAll("[data-wave]").forEach((b) => b.classList.toggle("active", b.dataset.wave === state.gen.wave));
+
+        // DMM
+        document.querySelectorAll("[data-dmm]").forEach((b) => b.classList.toggle("active", b.dataset.dmm === state.dmm));
+
+        // Breadboard buttons & Rvar
+        document.querySelectorAll("[data-bbtopo]").forEach((b) => b.classList.toggle("active", b.dataset.bbtopo === state.bb.topo));
+        document.querySelectorAll("[data-bbr]").forEach((b) => b.classList.toggle("active", b.dataset.bbr === state.bb.r));
+        document.querySelectorAll("[data-bbc]").forEach((b) => b.classList.toggle("active", b.dataset.bbc === state.bb.c));
+        $("#rvar-slider").value = state.rvar;
+        $("#rvar-disp").textContent = `${state.rvar} Ω`;
+
+        // Highlight matching jacks
+        const req = getReqPortType();
+        document.querySelectorAll(".jack-wrap").forEach((jw) => {
+          const pid = jw.dataset.port;
+          const jk = jw.querySelector(".port-jack");
+          const isPicked = state.pending && (state.pending.first === pid || state.pending.bnc === pid || state.pending.pos === pid);
+          jk.classList.toggle("selected-port", Boolean(isPicked));
+          jk.classList.toggle("match-hint", jw.dataset.ptype === req && !isPicked);
+        });
+
+        // Wire hint
+        const m = CABLES_META[state.selectedCable];
+        if (!state.pending) {
+          $("#wire-hint").textContent = m.kind === "bnc_split"
+            ? `Mode ${m.name}: klik port BNC dulu → lalu (+) Merah → lalu (−) Hitam.`
+            : `Mode ${m.name}: klik port ${req.toUpperCase()} pertama.`;
+        } else if (m.kind === "bnc_split") {
+          $("#wire-hint").textContent = !state.pending.pos
+            ? `BNC di ${portInfo(state.pending.bnc).label} → klik terminal (+) Merah.`
+            : `Ujung (+) di ${portInfo(state.pending.pos).label} → klik terminal (−) Hitam / GND.`;
+        } else {
+          $("#wire-hint").textContent = `Dari ${portInfo(state.pending.first).label} → klik terminal tujuan.`;
+        }
+
+        renderBoard();
+        renderCableList();
+        requestAnimationFrame(renderCablesOverlay);
+      }
+
+      function renderCableList() {
+        const list = $("#cable-list");
+        $("#cable-count-badge").textContent = `${state.cables.length} kabel`;
+        list.innerHTML = "";
+        if (!state.cables.length) {
+          list.innerHTML = `<div style="font-size:0.75rem;color:#94A3B8;">Belum ada kabel terpasang.</div>`;
+          return;
+        }
+        state.cables.forEach((c, idx) => {
+          const m = CABLES_META[c.type];
+          const desc = m.kind === "bnc_split"
+            ? `${portInfo(c.bnc).label} → (+)${portInfo(c.pos).label} / (−)${portInfo(c.neg).label}`
+            : `${portInfo(c.from).label} ↔ ${portInfo(c.to).label}`;
+          const row = document.createElement("div");
+          row.className = "cable-row";
+          row.innerHTML = `<span><strong style="color:${m.color}">●</strong> ${desc}</span><button class="cable-del">Lepas</button>`;
+          row.querySelector("button").addEventListener("click", () => { state.cables.splice(idx, 1); updateUI(); });
+          list.appendChild(row);
+        });
+      }
+
+      function renderBCLTable() {
+        const tb = $("#bcl-tbody");
+        const keys = Object.keys(state.completed);
+        if (!keys.length) { tb.innerHTML = `<tr><td colspan="4" style="color:#94A3B8;text-align:center;">Belum ada data tercatat.</td></tr>`; return; }
+        tb.innerHTML = STEPS.filter((s) => state.completed[s.id]).map((s) => {
+          const r = state.completed[s.id];
+          return `<tr><td>${s.short}</td><td>${s.paramName}</td><td><strong>${r.val} ${r.unit}</strong></td><td style="color:#059669;font-weight:700;">✓ Valid</td></tr>`;
+        }).join("");
+      }
+
+      // ============================================================
+      // 12. EVENT LISTENERS
+      // ============================================================
+      document.querySelectorAll(".cable-btn").forEach((b) => {
+        b.addEventListener("click", () => {
+          document.querySelectorAll(".cable-btn").forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          state.selectedCable = b.dataset.cable;
+          state.pending = null;
+          updateUI();
+        });
+      });
+
+      document.querySelectorAll(".jack-wrap").forEach((jw) => jw.addEventListener("click", () => handlePortClick(jw.dataset.port)));
+
+      // Oscilloscope controls
+      $("#sc-run").addEventListener("click", () => { state.scope.run = !state.scope.run; updateUI(); });
+      $("#sc-mode-yt").addEventListener("click", () => { state.scope.mode = "YT"; state.scope.hpos = 50; updateUI(); });
+      $("#sc-mode-roll").addEventListener("click", () => { state.scope.mode = "ROLL"; state.scope.hpos = 100; updateUI(); });
+      $("#sc-ch1-cpl").addEventListener("click", () => {
+        const o = ["DC", "AC", "GND"];
+        state.scope.ch1Cpl = o[(o.indexOf(state.scope.ch1Cpl) + 1) % 3];
+        updateUI();
+      });
+      $("#sc-ch2-cpl").addEventListener("click", () => {
+        const o = ["DC", "AC", "GND"];
+        state.scope.ch2Cpl = o[(o.indexOf(state.scope.ch2Cpl) + 1) % 3];
+        updateUI();
+      });
+      $("#sc-v1-m").addEventListener("click", () => { state.scope.v1Idx = Math.max(0, state.scope.v1Idx - 1); });
+      $("#sc-v1-p").addEventListener("click", () => { state.scope.v1Idx = Math.min(VDIVS.length - 1, state.scope.v1Idx + 1); });
+      $("#sc-v2-m").addEventListener("click", () => { state.scope.v2Idx = Math.max(0, state.scope.v2Idx - 1); });
+      $("#sc-v2-p").addEventListener("click", () => { state.scope.v2Idx = Math.min(VDIVS.length - 1, state.scope.v2Idx + 1); });
+      $("#sc-t-m").addEventListener("click", () => { state.scope.tIdx = Math.max(0, state.scope.tIdx - 1); });
+      $("#sc-t-p").addEventListener("click", () => { state.scope.tIdx = Math.min(TDIVS.length - 1, state.scope.tIdx + 1); });
+      $("#sc-cursor").addEventListener("click", () => { state.scope.cursorOn = !state.scope.cursorOn; updateUI(); });
+      $("#sc-cal").addEventListener("click", () => { state.scope.calChecked = true; updateUI(); });
+      $("#sc-hpos").addEventListener("input", (e) => { state.scope.hpos = parseInt(e.target.value, 10); $("#hpos-lbl").textContent = `${state.scope.hpos}%`; });
+      $("#sc-cur-a").addEventListener("input", (e) => { state.scope.curA = parseInt(e.target.value, 10); });
+      $("#sc-cur-b").addEventListener("input", (e) => { state.scope.curB = parseInt(e.target.value, 10); });
+
+      $("#sc-auto").addEventListener("click", () => {
+        if (stepNow().board === "rcrl") {
+          state.scope.mode = "YT"; state.scope.v1Idx = 4; state.scope.v2Idx = 4; state.scope.tIdx = 1; state.scope.hpos = 50;
+        } else if (state.gen.on && isGenOnBreadboard(buildNet())) {
+          state.scope.mode = "YT"; state.scope.v1Idx = 5;
+          // Auto zoom CH2 for integrator (~20 mVpp) vs differentiator (~4 Vpp)
+          state.scope.v2Idx = state.bb.topo === "rc_int" ? 0 : 5;
+          state.scope.tIdx = 4; state.scope.hpos = 50;
+        } else {
+          state.scope.mode = "ROLL"; state.scope.v1Idx = 6; state.scope.v2Idx = 6;
+          const tau = BB_R[state.bb.r] * BB_C[state.bb.c];
+          state.scope.tIdx = tau >= 0.05 ? 8 : (tau >= 0.002 ? 6 : 3);
+          state.scope.hpos = 100;
+        }
+        updateUI();
+      });
+
+      // PSU controls
+      $("#psu-out").addEventListener("click", () => { state.psu.on = !state.psu.on; updateUI(); });
+      document.querySelectorAll("[data-psuv]").forEach((b) => b.addEventListener("click", () => { state.psu.v = parseFloat(b.dataset.psuv); updateUI(); }));
+      document.querySelectorAll("[data-psud]").forEach((b) => b.addEventListener("click", () => { state.psu.v = Math.max(0, Math.min(12, state.psu.v + parseFloat(b.dataset.psud))); updateUI(); }));
+
+      // Gen controls
+      $("#gen-out").addEventListener("click", () => { state.gen.on = !state.gen.on; updateUI(); });
+      document.querySelectorAll("[data-wave]").forEach((b) => b.addEventListener("click", () => { state.gen.wave = b.dataset.wave; updateUI(); }));
+      document.querySelectorAll("[data-fset]").forEach((b) => b.addEventListener("click", () => { state.gen.freq = parseInt(b.dataset.fset, 10); updateUI(); }));
+      document.querySelectorAll("[data-vset]").forEach((b) => b.addEventListener("click", () => { state.gen.vpp = parseFloat(b.dataset.vset); updateUI(); }));
+
+      // DMM
+      document.querySelectorAll("[data-dmm]").forEach((b) => b.addEventListener("click", () => { state.dmm = b.dataset.dmm; updateUI(); }));
+
+      // Breadboard controls
+      document.querySelectorAll("[data-bbtopo]").forEach((b) => b.addEventListener("click", () => { state.bb.topo = b.dataset.bbtopo; updateUI(); }));
+      document.querySelectorAll("[data-bbr]").forEach((b) => b.addEventListener("click", () => { state.bb.r = b.dataset.bbr; state.transientTrack = { charged: false, discharged: false }; updateUI(); }));
+      document.querySelectorAll("[data-bbc]").forEach((b) => b.addEventListener("click", () => { state.bb.c = b.dataset.bbc; state.transientTrack = { charged: false, discharged: false }; updateUI(); }));
+      $("#btn-discharge").addEventListener("click", () => {
+        state.bb.vc = 0;
+        state.bb.dischargedFlag = true;
+        state.rollBuf2.fill(0);
+        updateUI();
+      });
+
+      // Rvar controls
+      $("#rvar-slider").addEventListener("input", (e) => { state.rvar = parseInt(e.target.value, 10); updateUI(); });
+      document.querySelectorAll("[data-rvar]").forEach((b) => b.addEventListener("click", () => { state.rvar = parseInt(b.dataset.rvar, 10); updateUI(); }));
+
+      // Cable actions
+      $("#btn-undo").addEventListener("click", () => { state.cables.pop(); state.pending = null; updateUI(); });
+      $("#btn-clear").addEventListener("click", () => { state.cables = []; state.pending = null; updateUI(); });
+
+      // Mission actions
+      $("#btn-check").addEventListener("click", validateStep);
+      $("#bcl-input").addEventListener("keydown", (e) => { if (e.key === "Enter") validateStep(); });
+
+      $("#btn-hint").addEventListener("click", () => {
+        const s = stepNow();
+        showFeedback("hint", `Panduan Cara Benar — ${s.title}:`, null, s.guide);
+      });
+
+      $("#btn-auto").addEventListener("click", () => {
+        const s = stepNow();
+        const a = s.auto;
+        if (a.bb) {
+          state.bb.topo = a.bb.topo; state.bb.r = a.bb.r; state.bb.c = a.bb.c;
+          if (a.bb.discharge) { state.bb.vc = 0; state.bb.dischargedFlag = true; }
+        }
+        if (a.setVc !== undefined) { state.bb.vc = a.setVc; state.rollBuf2.fill(a.setVc); }
+        if (a.rvar !== undefined) state.rvar = a.rvar;
+        if (a.dmm) state.dmm = a.dmm;
+        state.psu = { ...a.psu };
+        state.gen = { ...a.gen };
+        state.scope = {
+          ...state.scope,
+          mode: a.scope.mode, run: a.scope.run, ch1Cpl: a.scope.ch1Cpl, ch2Cpl: a.scope.ch2Cpl,
+          calChecked: a.scope.cal, v1Idx: a.scope.v1Idx, v2Idx: a.scope.v2Idx, tIdx: a.scope.tIdx,
+          cursorOn: Boolean(a.scope.cursor), hpos: a.scope.mode === "ROLL" ? 100 : 50
+        };
+        state.cables = a.cables.map((c) => ({ ...c }));
+        state.pending = null;
+
+        if (a.forceTransient) {
+          state.transientTrack = { charged: true, discharged: true };
+          // Isi buffer ROLL dengan kurva pengisian & pengosongan realistis agar langsung bisa dilihat dengan cursor!
+          const tau = BB_R[state.bb.r] * BB_C[state.bb.c];
+          const tdiv = TDIVS[state.scope.tIdx];
+          const dt = (10 * tdiv) / 180;
+          let vc = 0;
+          for (let i = 0; i < ROLL_LEN; i++) {
+            const local = i - (ROLL_LEN - 180);
+            const isOn = local >= 20 && local < 100;
+            const vin = isOn ? 5.0 : 0.0;
+            vc += (vin - vc) * (1 - Math.exp(-dt / tau));
+            state.rollBuf1[i] = vin;
+            state.rollBuf2[i] = vc;
+          }
+          state.bb.vc = vc;
+        }
+        if (a.forceIntWaves) state.intWaveTrack = { sqr: true, tri: true };
+
+        if (s.bclType === "select") $("#bcl-select").value = s.expected;
+        else $("#bcl-input").value = s.expected;
+
+        updateUI();
+        showFeedback("hint", "Demo rangkaian & pengaturan alat yang benar telah dipasang! Perhatikan kabel, tombol Osiloskop/Generator/PSU, lalu klik 'Cek Langkah Ini' atau coba ulang sendiri.");
+      });
+
+      $("#btn-next").addEventListener("click", () => { if (state.stepIdx < STEPS.length - 1) loadStep(state.stepIdx + 1); });
+
+      $("#btn-reset-exam").addEventListener("click", () => {
+        state.completed = {};
+        state.cables = [];
+        state.pending = null;
+        state.bb = { topo: "rc_int", r: "R1", c: "C1", vc: 1.4, dischargedFlag: false };
+        state.psu = { v: 0, on: false };
+        state.gen = { on: false, wave: "SQUARE", freq: 1000, vpp: 2 };
+        state.scope.calChecked = false;
+        state.timerSec = 0;
+        renderBCLTable();
+        loadStep(0);
+      });
+
+      window.addEventListener("resize", () => requestAnimationFrame(renderCablesOverlay));
+      window.addEventListener("keydown", (e) => { if (e.key === "Escape" && state.pending) { state.pending = null; updateUI(); } });
+
+      setInterval(() => {
+        state.timerSec++;
+        const m = String(Math.floor(state.timerSec / 60)).padStart(2, "0");
+        const s = String(state.timerSec % 60).padStart(2, "0");
+        $("#timer-pill").textContent = `⏱ ${m}:${s}`;
+      }, 1000);
+
+      loadStep(0);
+      requestAnimationFrame(tickOscilloscope);
+    })();
+  </script>
+</body>
+</html>
