@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulator Kit Lab Dasar — Thevenin-Norton & RL/RC</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-soft: #F1F5F9;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #475569;
+      --accent: #0284C7;
+      --accent-soft: #E0F2FE;
+      --mint-soft: #D1FAE5;
+      --amber-soft: #FEF3C7;
+      --rose-soft: #FFE4E6;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+      --transition: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 18px;
+    }
+
+    .app-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .kit-tabs {
+      display: flex;
+      background: var(--surface-soft);
+      padding: 4px;
+      border-radius: 12px;
+      gap: 4px;
+    }
+
+    .kit-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 8px 16px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .kit-tab.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .cable-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .group-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .cable-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .cable-btn:hover {
+      border-color: #94A3B8;
+      transform: translateY(-1px);
+    }
+
+    .cable-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #0369A1;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.14);
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .swatch-split {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #EF4444 50%, #1E293B 50%);
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-secondary:hover { background: #E2E8F0; }
+
+    .btn-danger {
+      border: 1px solid #FECDD3;
+      background: var(--rose-soft);
+      color: #BE123C;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-danger:hover { background: #FECDD3; }
+
+    select.preset-select {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Status Banner */
+    .status-bar {
+      background: linear-gradient(90deg, #E0F2FE, #F0F9FF);
+      border: 1px solid #BAE6FD;
+      color: #0369A1;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .status-bar .step-badge {
+      background: #0284C7;
+      color: #FFFFFF;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-right: 8px;
+    }
+
+    .status-cancel {
+      background: #FFFFFF;
+      border: 1px solid #7DD3FC;
+      color: #0369A1;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Main Grid */
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.95fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--mint-soft);
+      color: #065F46;
+    }
+
+    .badge.neutral {
+      background: var(--surface-soft);
+      color: var(--text-muted);
+    }
+
+    /* Bench SVG */
+    .bench-wrap {
+      padding: 12px;
+      background: #F8FAFC;
+    }
+
+    svg#lab-bench {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+    }
+
+    .terminal-group {
+      cursor: pointer;
+      transition: transform 150ms ease;
+    }
+
+    .terminal-group:hover .term-ring {
+      stroke: #0284C7;
+      stroke-width: 3;
+    }
+
+    .terminal-selectable .term-pulse {
+      animation: pulseRing 1.3s infinite;
+    }
+
+    @keyframes pulseRing {
+      0% { opacity: 0.85; r: 13; }
+      70% { opacity: 0; r: 21; }
+      100% { opacity: 0; r: 21; }
+    }
+
+    .cable-hit {
+      cursor: pointer;
+    }
+
+    .cable-hit:hover + .cable-visual,
+    .cable-group:hover .cable-visual {
+      filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
+      opacity: 0.85;
+    }
+
+    /* Controls under bench (POT sliders for Kit 1) */
+    .pot-bar {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .pot-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pot-control input[type="range"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Schematic Panel */
+    .schematic-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .schematic-canvas-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-height: 290px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      position: relative;
+    }
+
+    svg#schematic-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .metric-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .info-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      color: #92400E;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+    }
+
+    /* Cable List */
+    .cable-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 190px;
+      overflow-y: auto;
+    }
+
+    .cable-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface);
+      font-size: 0.8rem;
+    }
+
+    .cable-item-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .cable-item-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cable-del-btn {
+      border: none;
+      background: var(--rose-soft);
+      color: #BE123C;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .cable-del-btn:hover { background: #FECDD3; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <h1>Simulator Perakitan Kit Praktikum Elektronika</h1>
+        <p>Pilih jenis kabel, sambungkan port instrumen ke terminal kit, dan lihat skema rangkaian terbentuk otomatis.</p>
+      </div>
+      <div class="kit-tabs" role="tablist">
+        <button class="kit-tab active" data-kit="rcrl">Kit Rangkaian RL &amp; RC</button>
+        <button class="kit-tab" data-kit="thevenin">Kit Theorema Thevenin &amp; Norton</button>
+      </div>
+    </header>
+
+    <!-- Cable Toolbar -->
+    <section class="toolbar">
+      <div class="cable-group">
+        <span class="group-label">Jenis Kabel:</span>
+        <button class="cable-btn active" data-cable="banana-red">
+          <span class="swatch" style="background:#EF4444"></span> Banana–Banana (Merah)
+        </button>
+        <button class="cable-btn" data-cable="banana-black">
+          <span class="swatch" style="background:#1E293B"></span> Banana–Banana (Hitam)
+        </button>
+        <button class="cable-btn" data-cable="banana-blue">
+          <span class="swatch" style="background:#2563EB"></span> Banana–Banana (Biru)
+        </button>
+        <button class="cable-btn" data-cable="bnc-banana">
+          <span class="swatch-split"></span> BNC to Dual Banana
+        </button>
+        <button class="cable-btn" data-cable="bnc-alligator">
+          <span class="swatch-split" style="background:linear-gradient(135deg,#F59E0B 50%,#1E293B 50%)"></span> BNC to Capit Buaya (Probe)
+        </button>
+        <button class="cable-btn" data-cable="bnc-bnc">
+          <span class="swatch" style="background:#475569"></span> BNC to BNC
+        </button>
+      </div>
+
+      <div class="actions">
+        <select id="preset-select" class="preset-select" title="Muat Contoh Rangkaian">
+          <option value="">⚡ Contoh Rangkaian...</option>
+        </select>
+        <button id="btn-undo" class="btn-secondary">Undo</button>
+        <button id="btn-clear" class="btn-danger">Hapus Semua</button>
+      </div>
+    </section>
+
+    <!-- Interactive Guidance Bar -->
+    <div id="status-bar" class="status-bar">
+      <div id="status-text"></div>
+      <button id="btn-cancel-wire" class="status-cancel" style="display:none;">Batal Pasang (ESC)</button>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+      <!-- Left: Instruments + Kit Board -->
+      <section class="card">
+        <div class="card-header">
+          <span id="bench-title" class="card-title">Meja Praktikum — Kit Rangkaian RL &amp; RC</span>
+          <span class="badge neutral">Klik kabel yang terpasang untuk menghapus</span>
+        </div>
+        <div class="bench-wrap">
+          <svg id="lab-bench" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div id="pot-bar" class="pot-bar" style="display:none;">
+          <div class="pot-control">
+            <strong>POT Atas (C–D):</strong>
+            <input id="pot1-slider" type="range" min="100" max="10000" step="100" value="2500" />
+            <span id="pot1-val">2.5 kΩ</span>
+          </div>
+          <div class="pot-control">
+            <strong>POT Emitor (5KΩ):</strong>
+            <input id="pot2-slider" type="range" min="0" max="5000" step="100" value="2000" />
+            <span id="pot2-val">2.0 kΩ</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Live Circuit Schematic & Analysis -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-title">Rangkaian yang Sedang Dibuat</span>
+          <span id="topology-badge" class="badge neutral">Belum Terangkai</span>
+        </div>
+        <div class="schematic-body">
+          <div class="schematic-canvas-box">
+            <svg id="schematic-svg" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+
+          <div id="analysis-grid" class="analysis-grid"></div>
+          <div id="circuit-note" class="info-box" style="display:none;"></div>
+
+          <div>
+            <div style="font-size:0.8rem;font-weight:700;color:#475569;margin-bottom:6px;">
+              Daftar Kabel Terpasang (<span id="cable-count">0</span>)
+            </div>
+            <div id="cable-list" class="cable-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      // ============================================================
+      // 1. DEFINISI INSTRUMEN LAB & KEDUA KIT (AKURAT SESUAI FOTO)
+      // ============================================================
+      const INSTRUMENTS_PORTS = [
+        { id: "psu_pos", x: 68,  y: 92,  type: "banana", color: "#EF4444", label: "DC Supply (+18V)", short: "PSU +" },
+        { id: "psu_neg", x: 152, y: 92,  type: "banana", color: "#1E293B", label: "DC Supply (-/GND)", short: "PSU -" },
+        { id: "gen_bnc", x: 110, y: 210, type: "bnc",    color: "#64748B", label: "Signal Generator (BNC OUT)", short: "Gen OUT" },
+        { id: "osc_ch1", x: 68,  y: 332, type: "bnc",    color: "#0EA5E9", label: "Osiloskop CH1 (BNC)", short: "OSC CH1" },
+        { id: "osc_ch2", x: 152, y: 332, type: "bnc",    color: "#F59E0B", label: "Osiloskop CH2 (BNC)", short: "OSC CH2" },
+        { id: "dmm_pos", x: 68,  y: 462, type: "banana", color: "#EF4444", label: "Multimeter (+ V/Ω/mA)", short: "DMM +" },
+        { id: "dmm_com", x: 152, y: 462, type: "banana", color: "#1E293B", label: "Multimeter (COM)", short: "DMM COM" }
+      ];
+
+      const KITS = {
+        rcrl: {
+          name: "Kit Rangkaian RL & RC",
+          boardTitle: "RANGKAIAN RL & RC",
+          terminals: [
+            // Kiri (Komponen Reaktif)
+            { id: "c100_in",  x: 375, y: 175, type: "banana", color: "#EF4444", label: "Input 100nF (Merah)", short: "100nF-In" },
+            { id: "c100_out", x: 495, y: 175, type: "banana", color: "#FDE047", label: "Bus OUT (atas-kiri)", short: "OUT" },
+            { id: "c8n2_in",  x: 375, y: 260, type: "banana", color: "#EF4444", label: "Input 8.2nF (Merah)", short: "8.2nF-In" },
+            { id: "c8n2_out", x: 495, y: 260, type: "banana", color: "#FDE047", label: "Bus OUT (tengah-kiri)", short: "OUT" },
+            { id: "l2m5_in",  x: 375, y: 345, type: "banana", color: "#EF4444", label: "Input 2.5mH (Merah)", short: "2.5mH-In" },
+            { id: "l2m5_out", x: 495, y: 345, type: "banana", color: "#FDE047", label: "Bus OUT (bawah-kiri)", short: "OUT" },
+            // Tengah
+            { id: "out_mid",  x: 595, y: 260, type: "banana", color: "#FDE047", label: "Terminal OUT (Tengah)", short: "OUT" },
+            // Kanan (Komponen Resistif)
+            { id: "r1k_in",   x: 695, y: 175, type: "banana", color: "#FDE047", label: "Bus OUT (atas-kanan)", short: "OUT" },
+            { id: "r1k_out",  x: 815, y: 175, type: "banana", color: "#EF4444", label: "Terminal 1KΩ (Merah)", short: "1KΩ-End" },
+            { id: "r10k_in",  x: 695, y: 260, type: "banana", color: "#FDE047", label: "Bus OUT (tengah-kanan)", short: "OUT" },
+            { id: "r10k_out", x: 815, y: 260, type: "banana", color: "#EF4444", label: "Terminal 10KΩ (Merah)", short: "10KΩ-End" },
+            { id: "r100k_in", x: 695, y: 345, type: "banana", color: "#FDE047", label: "Bus OUT (bawah-kanan)", short: "OUT" },
+            { id: "r100k_out",x: 815, y: 345, type: "banana", color: "#EF4444", label: "Terminal 100KΩ (Merah)", short: "100KΩ-End" },
+            // Rel GND Bawah
+            { id: "gnd_l",    x: 345, y: 445, type: "banana", color: "#1E293B", label: "GND Kiri", short: "GND" },
+            { id: "gnd_c",    x: 595, y: 445, type: "banana", color: "#1E293B", label: "GND Tengah", short: "GND" },
+            { id: "gnd_r",    x: 845, y: 445, type: "banana", color: "#1E293B", label: "GND Kanan", short: "GND" }
+          ],
+          internalShorts: [
+            ["c100_out", "c8n2_out"],
+            ["c8n2_out", "l2m5_out"],
+            ["c8n2_out", "out_mid"],
+            ["out_mid", "r10k_in"],
+            ["r1k_in", "r10k_in"],
+            ["r10k_in", "r100k_in"],
+            ["gnd_l", "gnd_c"],
+            ["gnd_c", "gnd_r"]
+          ],
+          components: [
+            { id: "C1", type: "C", name: "C1", label: "100 nF", value: 100e-9, a: "c100_in", b: "c100_out" },
+            { id: "C2", type: "C", name: "C2", label: "8.2 nF", value: 8.2e-9, a: "c8n2_in", b: "c8n2_out" },
+            { id: "L1", type: "L", name: "L1", label: "2.5 mH", value: 2.5e-3, a: "l2m5_in", b: "l2m5_out" },
+            { id: "R1", type: "R", name: "R1", label: "1 kΩ",   value: 1e3,    a: "r1k_in",  b: "r1k_out" },
+            { id: "R2", type: "R", name: "R2", label: "10 kΩ",  value: 10e3,   a: "r10k_in", b: "r10k_out" },
+            { id: "R3", type: "R", name: "R3", label: "100 kΩ", value: 100e3,  a: "r100k_in",b: "r100k_out" }
+          ],
+          presets: [
+            {
+              id: "rc_lpf",
+              name: "RC Low-Pass Filter (10kΩ + 100nF)",
+              cables: [
+                { type: "bnc-banana", bnc: "gen_bnc", pos: "r10k_out", neg: "gnd_l" },
+                { type: "banana-black", from: "c100_in", to: "gnd_l" },
+                { type: "bnc-banana", bnc: "osc_ch1", pos: "r10k_out", neg: "gnd_c" },
+                { type: "bnc-banana", bnc: "osc_ch2", pos: "out_mid", neg: "gnd_r" }
+              ]
+            },
+            {
+              id: "rc_hpf",
+              name: "RC High-Pass Filter (100nF + 10kΩ)",
+              cables: [
+                { type: "bnc-banana", bnc: "gen_bnc", pos: "c100_in", neg: "gnd_l" },
+                { type: "banana-black", from: "r10k_out", to: "gnd_r" },
+                { type: "bnc-banana", bnc: "osc_ch1", pos: "c100_in", neg: "gnd_c" },
+                { type: "bnc-banana", bnc: "osc_ch2", pos: "out_mid", neg: "gnd_r" }
+              ]
+            },
+            {
+              id: "rl_lpf",
+              name: "RL Low-Pass Filter (2.5mH + 1kΩ)",
+              cables: [
+                { type: "bnc-banana", bnc: "gen_bnc", pos: "l2m5_in", neg: "gnd_l" },
+                { type: "banana-black", from: "r1k_out", to: "gnd_r" },
+                { type: "bnc-alligator", bnc: "osc_ch2", pos: "out_mid", neg: "gnd_c" }
+              ]
+            },
+            {
+              id: "rlc_res",
+              name: "RLC Band-Pass / Resonansi (2.5mH, 8.2nF, 1kΩ)",
+              cables: [
+                { type: "bnc-banana", bnc: "gen_bnc", pos: "r1k_out", neg: "gnd_l" },
+                { type: "banana-black", from: "c8n2_in", to: "gnd_l" },
+                { type: "banana-black", from: "l2m5_in", to: "gnd_c" },
+                { type: "bnc-banana", bnc: "osc_ch2", pos: "out_mid", neg: "gnd_r" }
+              ]
+            }
+          ]
+        },
+
+        thevenin: {
+          name: "Kit Theorema Thevenin & Norton",
+          boardTitle: "THEOREMA THEVENIN & NORTON",
+          terminals: [
+            // Supply 18V
+            { id: "v18_pos", x: 320, y: 122, type: "banana", color: "#EF4444", label: "Terminal +18V", short: "+18V" },
+            { id: "v18_neg", x: 320, y: 170, type: "banana", color: "#1E293B", label: "Terminal -18V", short: "-18V" },
+            // POT C-D
+            { id: "pot_c",   x: 525, y: 120, type: "banana", color: "#FDE047", label: "POT Terminal C", short: "POT C" },
+            { id: "pot_d",   x: 525, y: 175, type: "banana", color: "#10B981", label: "POT Terminal D", short: "POT D" },
+            // Jalur E & F + Transistor 2N1613
+            { id: "e_left",  x: 320, y: 215, type: "banana", color: "#FDE047", label: "Node E (Kiri / Atas 10KΩ)", short: "Node E" },
+            { id: "e_right", x: 525, y: 215, type: "banana", color: "#FDE047", label: "Terminal E", short: "E" },
+            { id: "f_right", x: 525, y: 260, type: "banana", color: "#10B981", label: "Terminal F (Kolektor 2N1613)", short: "F (Col)" },
+            { id: "div_mid", x: 320, y: 332, type: "banana", color: "#2563EB", label: "Node 10KΩ/2K7Ω/Zener", short: "Mid-Bias" },
+            { id: "q_base",  x: 396, y: 282, type: "banana", color: "#2563EB", label: "Basis 2N1613", short: "Base" },
+            { id: "q_emit",  x: 492, y: 312, type: "banana", color: "#2563EB", label: "Emitor 2N1613 (Atas 390Ω)", short: "Emit" },
+            { id: "r390_bot",x: 492, y: 388, type: "banana", color: "#2563EB", label: "Bawah 390Ω / Atas POT 5KΩ", short: "390Ω-Bot" },
+            // Rel GND kiri bawah
+            { id: "tgnd_1",  x: 320, y: 462, type: "banana", color: "#1E293B", label: "GND Kiri", short: "GND" },
+            { id: "tgnd_2",  x: 396, y: 462, type: "banana", color: "#1E293B", label: "GND (Zener)", short: "GND" },
+            { id: "tgnd_3",  x: 530, y: 462, type: "banana", color: "#1E293B", label: "GND Kanan", short: "GND" },
+            // Rangkaian N (Kanan Atas)
+            { id: "rn_a",    x: 720, y: 120, type: "banana", color: "#EF4444", label: "Rangkaian N — Port A", short: "N-A" },
+            { id: "rn_b",    x: 825, y: 120, type: "banana", color: "#1E293B", label: "Rangkaian N — Port B", short: "N-B" },
+            { id: "rn_c",    x: 720, y: 260, type: "banana", color: "#FDE047", label: "Rangkaian N — Port C", short: "N-C" },
+            { id: "rn_d",    x: 825, y: 260, type: "banana", color: "#10B981", label: "Rangkaian N — Port D", short: "N-D" },
+            // Bank Beban (Kanan Bawah)
+            { id: "load_top",x: 772, y: 325, type: "banana", color: "#FDE047", label: "Common Bank Beban", short: "Load-Com" },
+            { id: "load_0",  x: 682, y: 462, type: "banana", color: "#1E293B", label: "Beban Short (0Ω)", short: "Short 0Ω" },
+            { id: "load_2k1",x: 742, y: 462, type: "banana", color: "#1E293B", label: "Beban 2KΩ (1)", short: "2KΩ(a)" },
+            { id: "load_2k2",x: 802, y: 462, type: "banana", color: "#1E293B", label: "Beban 2KΩ (2)", short: "2KΩ(b)" },
+            { id: "load_3k3",x: 862, y: 462, type: "banana", color: "#1E293B", label: "Beban 3.3KΩ", short: "3.3KΩ" }
+          ],
+          internalShorts: [
+            ["e_left", "e_right"],
+            ["div_mid", "q_base"],
+            ["tgnd_1", "tgnd_2"],
+            ["tgnd_2", "tgnd_3"],
+            ["load_top", "load_0"]
+          ],
+          components: [
+            { id: "POT1", type: "POT", name: "POT", label: "POT (C-D)", value: 2500, a: "pot_c", b: "pot_d" },
+            { id: "R10K", type: "R",   name: "R1",  label: "10 kΩ",     value: 10000, a: "e_left", b: "div_mid" },
+            { id: "R2K7", type: "R",   name: "R2",  label: "2.7 kΩ",    value: 2700,  a: "div_mid", b: "tgnd_1" },
+            { id: "DZ",   type: "ZENER", name: "DZ", label: "Zener 6.2V", value: 6.2, a: "div_mid", b: "tgnd_2" },
+            { id: "Q1",   type: "NPN", name: "2N1613", label: "2N1613", b: "q_base", c: "f_right", e: "q_emit" },
+            { id: "R390", type: "R",   name: "R3",  label: "390 Ω",     value: 390,   a: "q_emit", b: "r390_bot" },
+            { id: "POT2", type: "POT", name: "RV1", label: "5 kΩ POT",  value: 2000,  a: "r390_bot", b: "tgnd_3" },
+            { id: "RN",   type: "BOX", name: "Rangkaian N", label: "Rangkaian N", ports: ["rn_a", "rn_b", "rn_c", "rn_d"] },
+            { id: "RL1",  type: "R",   name: "RL1", label: "2 kΩ",      value: 2000,  a: "load_top", b: "load_2k1" },
+            { id: "RL2",  type: "R",   name: "RL2", label: "2 kΩ",      value: 2000,  a: "load_top", b: "load_2k2" },
+            { id: "RL3",  type: "R",   name: "RL3", label: "3.3 kΩ",    value: 3300,  a: "load_top", b: "load_3k3" }
+          ],
+          presets: [
+            {
+              id: "th_vth",
+              name: "Pengukuran V_th pada Rangkaian N (Open Circuit)",
+              cables: [
+                { type: "banana-red",   from: "psu_pos", to: "rn_a" },
+                { type: "banana-black", from: "psu_neg", to: "rn_b" },
+                { type: "banana-red",   from: "dmm_pos", to: "rn_c" },
+                { type: "banana-black", from: "dmm_com", to: "rn_d" }
+              ]
+            },
+            {
+              id: "th_load",
+              name: "Rangkaian N + Beban Paralel (2kΩ || 3.3kΩ) + DMM",
+              cables: [
+                { type: "banana-red",   from: "psu_pos",  to: "rn_a" },
+                { type: "banana-black", from: "psu_neg",  to: "rn_b" },
+                { type: "banana-blue",  from: "rn_c",     to: "load_top" },
+                { type: "banana-black", from: "load_2k1", to: "rn_d" },
+                { type: "banana-black", from: "load_3k3", to: "rn_d" },
+                { type: "banana-red",   from: "dmm_pos",  to: "load_top" },
+                { type: "banana-black", from: "dmm_com",  to: "rn_d" }
+              ]
+            },
+            {
+              id: "th_transistor",
+              name: "Sumber Arus Aktif 2N1613 + Beban POT (C-D)",
+              cables: [
+                { type: "banana-red",   from: "psu_pos", to: "v18_pos" },
+                { type: "banana-black", from: "psu_neg", to: "tgnd_1" },
+                { type: "banana-red",   from: "v18_pos", to: "e_left" },
+                { type: "banana-blue",  from: "e_right", to: "pot_c" },
+                { type: "banana-blue",  from: "pot_d",   to: "f_right" },
+                { type: "banana-red",   from: "dmm_pos", to: "f_right" },
+                { type: "banana-black", from: "dmm_com", to: "tgnd_3" }
+              ]
+            }
+          ]
+        }
+      };
+
+      const CABLE_META = {
+        "banana-red":    { name: "Banana–Banana (Merah)",  color: "#EF4444", kind: "banana2" },
+        "banana-black":  { name: "Banana–Banana (Hitam)",  color: "#1E293B", kind: "banana2" },
+        "banana-blue":   { name: "Banana–Banana (Biru)",   color: "#2563EB", kind: "banana2" },
+        "bnc-banana":    { name: "BNC to Dual Banana",     color: "#EF4444", kind: "bnc_split", tipLabel: "Banana" },
+        "bnc-alligator": { name: "BNC to Capit Buaya",     color: "#F59E0B", kind: "bnc_split", tipLabel: "Capit Buaya" },
+        "bnc-bnc":       { name: "BNC to BNC (Koaksial)",  color: "#475569", kind: "bnc2" }
+      };
+
+      // ============================================================
+      // 2. STATE APLIKASI
+      // ============================================================
+      const state = {
+        activeKit: "rcrl",
+        selectedCable: "banana-red",
+        cablesByKit: { rcrl: [], thevenin: [] },
+        pending: null, // { step: 1|2, points: [...] }
+        pot1: 2500,
+        pot2: 2000
+      };
+
+      const $ = (sel) => document.querySelector(sel);
+      const benchSvg = $("#lab-bench");
+      const schematicSvg = $("#schematic-svg");
+
+      function getAllPorts(kitKey = state.activeKit) {
+        return [...INSTRUMENTS_PORTS, ...KITS[kitKey].terminals];
+      }
+
+      function getPort(id, kitKey = state.activeKit) {
+        return getAllPorts(kitKey).find((p) => p.id === id);
+      }
+
+      function currentCables() {
+        return state.cablesByKit[state.activeKit];
+      }
+
+      // ============================================================
+      // 3. INTERAKSI PEMASANGAN KABEL
+      // ============================================================
+      function getRequiredPortType() {
+        const meta = CABLE_META[state.selectedCable];
+        if (meta.kind === "banana2") return "banana";
+        if (meta.kind === "bnc2") return "bnc";
+        if (meta.kind === "bnc_split") {
+          if (!state.pending) return "bnc";
+          return "banana";
+        }
+        return "banana";
+      }
+
+      function handlePortClick(portId) {
+        const port = getPort(portId);
+        const meta = CABLE_META[state.selectedCable];
+        const reqType = getRequiredPortType();
+
+        if (!port || port.type !== reqType) {
+          flashStatus(`Terminal ini bertipe ${port.type.toUpperCase()}, sedangkan langkah saat ini butuh port ${reqType.toUpperCase()}.`);
+          return;
+        }
+
+        if (meta.kind === "banana2" || meta.kind === "bnc2") {
+          if (!state.pending) {
+            state.pending = { type: state.selectedCable, first: portId };
+          } else {
+            if (state.pending.first === portId) {
+              state.pending = null;
+            } else {
+              currentCables().push({
+                id: Date.now() + Math.random(),
+                type: state.selectedCable,
+                from: state.pending.first,
+                to: portId
+              });
+              state.pending = null;
+            }
+          }
+        } else if (meta.kind === "bnc_split") {
+          if (!state.pending) {
+            state.pending = { type: state.selectedCable, bnc: portId, pos: null };
+          } else if (!state.pending.pos) {
+            state.pending.pos = portId;
+          } else {
+            if (state.pending.pos === portId) {
+              flashStatus("Pilih terminal yang berbeda untuk ujung Hitam (GND / -).");
+              return;
+            }
+            currentCables().push({
+              id: Date.now() + Math.random(),
+              type: state.selectedCable,
+              bnc: state.pending.bnc,
+              pos: state.pending.pos,
+              neg: portId
+            });
+            state.pending = null;
+          }
+        }
+        renderAll();
+      }
+
+      function removeCable(index) {
+        currentCables().splice(index, 1);
+        renderAll();
+      }
+
+      let statusTimeout = null;
+      function flashStatus(msg) {
+        $("#status-text").innerHTML = `<span class="step-badge" style="background:#DC2626">Info</span> ${msg}`;
+        clearTimeout(statusTimeout);
+        statusTimeout = setTimeout(updateStatusBar, 2400);
+      }
+
+      function updateStatusBar() {
+        const meta = CABLE_META[state.selectedCable];
+        const cancelBtn = $("#btn-cancel-wire");
+        let html = "";
+
+        if (meta.kind === "banana2") {
+          if (!state.pending) {
+            html = `<span class="step-badge">Langkah 1/2</span> Mode <strong>${meta.name}</strong>: klik terminal <strong>Banana</strong> pertama (pada kit atau DC Supply / DMM).`;
+            cancelBtn.style.display = "none";
+          } else {
+            const p1 = getPort(state.pending.first);
+            html = `<span class="step-badge">Langkah 2/2</span> Ujung pertama di <strong>${p1.label}</strong> — sekarang klik terminal <strong>Banana</strong> tujuan.`;
+            cancelBtn.style.display = "inline-block";
+          }
+        } else if (meta.kind === "bnc2") {
+          if (!state.pending) {
+            html = `<span class="step-badge">Langkah 1/2</span> Mode <strong>BNC to BNC</strong>: klik port <strong>BNC</strong> pertama (Signal Gen / Osiloskop).`;
+            cancelBtn.style.display = "none";
+          } else {
+            const p1 = getPort(state.pending.first);
+            html = `<span class="step-badge">Langkah 2/2</span> Ujung pertama di <strong>${p1.label}</strong> — klik port <strong>BNC</strong> kedua.`;
+            cancelBtn.style.display = "inline-block";
+          }
+        } else if (meta.kind === "bnc_split") {
+          if (!state.pending) {
+            html = `<span class="step-badge">Langkah 1/3</span> Mode <strong>${meta.name}</strong>: klik port <strong>BNC</strong> pada Signal Generator atau Osiloskop.`;
+            cancelBtn.style.display = "none";
+          } else if (!state.pending.pos) {
+            const pb = getPort(state.pending.bnc);
+            html = `<span class="step-badge">Langkah 2/3</span> BNC terpasang di <strong>${pb.label}</strong> — klik terminal <strong>Banana</strong> untuk ujung <strong style="color:#DC2626">Merah (+ Sinyal)</strong>.`;
+            cancelBtn.style.display = "inline-block";
+          } else {
+            const ppos = getPort(state.pending.pos);
+            html = `<span class="step-badge">Langkah 3/3</span> Ujung (+) di <strong>${ppos.label}</strong> — sekarang klik terminal <strong>Banana</strong> untuk ujung <strong style="color:#0F172A">Hitam (GND / -)</strong>.`;
+            cancelBtn.style.display = "inline-block";
+          }
+        }
+        $("#status-text").innerHTML = html;
+      }
+
+      // ============================================================
+      // 4. RENDER MEJA PRAKTIKUM (INSTRUMEN + KIT + KABEL)
+      // ============================================================
+      function el(tag, attrs = {}, parent = null) {
+        const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+        if (parent) parent.appendChild(node);
+        return node;
+      }
+
+      function renderBench() {
+        benchSvg.innerHTML = "";
+        const kit = KITS[state.activeKit];
+        $("#bench-title").textContent = `Meja Praktikum — ${kit.name}`;
+        $("#pot-bar").style.display = state.activeKit === "thevenin" ? "flex" : "none";
+
+        // Defs
+        const defs = el("defs", {}, benchSvg);
+        const grad = el("linearGradient", { id: "boardGrad", x1: "0%", y1: "0%", x2: "0%", y2: "100%" }, defs);
+        el("stop", { offset: "0%", "stop-color": "#FDE047" }, grad);
+        el("stop", { offset: "100%", "stop-color": "#EAB308" }, grad);
+
+        const shadow = el("filter", { id: "softShadow", x: "-10%", y: "-10%", width: "120%", height: "120%" }, defs);
+        el("feDropShadow", { dx: "0", dy: "4", stdDeviation: "4", "flood-color": "#0F172A", "flood-opacity": "0.10" }, shadow);
+
+        // 1. Panel Instrumen Kiri
+        drawInstruments(benchSvg);
+
+        // 2. Papan Kit Kanan
+        drawKitBoardBase(benchSvg, kit.boardTitle);
+        if (state.activeKit === "rcrl") {
+          drawRCRLGraphics(benchSvg);
+        } else {
+          drawTheveninGraphics(benchSvg);
+        }
+
+        // 3. Semua Port / Terminal (Bisa Diklik)
+        const reqType = getRequiredPortType();
+        const portsLayer = el("g", { id: "ports-layer" }, benchSvg);
+
+        getAllPorts().forEach((p) => {
+          const isMatch = p.type === reqType;
+          const isPicked =
+            state.pending &&
+            (state.pending.first === p.id || state.pending.bnc === p.id || state.pending.pos === p.id);
+
+          const g = el("g", {
+            class: `terminal-group ${isMatch ? "terminal-selectable" : ""}`,
+            "data-port": p.id
+          }, portsLayer);
+
+          const title = el("title", {}, g);
+          title.textContent = `${p.label} [${p.type.toUpperCase()}]`;
+
+          if (isPicked) {
+            el("circle", { cx: p.x, cy: p.y, r: 17, fill: "rgba(2,132,199,0.22)", stroke: "#0284C7", "stroke-width": 2.5 }, g);
+          } else if (isMatch) {
+            el("circle", { cx: p.x, cy: p.y, r: 14, fill: "none", stroke: "#0EA5E9", "stroke-width": 1.8, class: "term-pulse" }, g);
+          }
+
+          if (p.type === "banana") {
+            el("circle", { cx: p.x, cy: p.y, r: 11, fill: p.color, stroke: "#1E293B", "stroke-width": 1.5, class: "term-ring" }, g);
+            el("circle", { cx: p.x, cy: p.y, r: 6.5, fill: "#E2E8F0", stroke: "#475569", "stroke-width": 1 }, g);
+            el("circle", { cx: p.x, cy: p.y, r: 3.4, fill: "#0F172A" }, g);
+          } else {
+            // BNC Jack realistis
+            el("circle", { cx: p.x, cy: p.y, r: 13.5, fill: "#CBD5E1", stroke: "#334155", "stroke-width": 1.8, class: "term-ring" }, g);
+            el("rect", { x: p.x - 16, y: p.y - 2.2, width: 4, height: 4.4, rx: 1, fill: "#475569" }, g);
+            el("rect", { x: p.x + 12, y: p.y - 2.2, width: 4, height: 4.4, rx: 1, fill: "#475569" }, g);
+            el("circle", { cx: p.x, cy: p.y, r: 8.5, fill: "#FFFFFF", stroke: "#64748B", "stroke-width": 1.4 }, g);
+            el("circle", { cx: p.x, cy: p.y, r: 3.2, fill: "#D97706" }, g);
+          }
+
+          g.addEventListener("click", () => handlePortClick(p.id));
+        });
+
+        // 4. Layer Kabel Terpasang
+        const cablesLayer = el("g", { id: "cables-layer" }, benchSvg);
+        currentCables().forEach((c, idx) => drawCable(cablesLayer, c, idx));
+      }
+
+      function drawInstruments(svg) {
+        const modules = [
+          { y: 18,  h: 112, title: "DC POWER SUPPLY", sub: "18V Regulated", badge: "BANANA", bg: "#FFFFFF" },
+          { y: 144, h: 108, title: "SIGNAL GENERATOR", sub: "Sine / Square 1 kHz", badge: "BNC", bg: "#FFFFFF" },
+          { y: 266, h: 112, title: "OSILOSKOP 2-CH", sub: "CH1 (Biru) • CH2 (Oranye)", badge: "BNC", bg: "#FFFFFF" },
+          { y: 392, h: 126, title: "DIGITAL MULTIMETER", sub: "Volt / Ohm / Ampere", badge: "BANANA", bg: "#FFFFFF" }
+        ];
+
+        modules.forEach((m) => {
+          const g = el("g", { filter: "url(#softShadow)" }, svg);
+          el("rect", { x: 14, y: m.y, width: 194, height: m.h, rx: 12, fill: m.bg, stroke: "#CBD5E1", "stroke-width": 1.4 }, g);
+          el("rect", { x: 14, y: m.y, width: 194, height: 28, rx: 12, fill: "#F1F5F9" }, g);
+          el("rect", { x: 14, y: m.y + 18, width: 194, height: 10, fill: "#F1F5F9" }, g);
+          el("line", { x1: 14, y1: m.y + 28, x2: 208, y2: m.y + 28, stroke: "#E2E8F0", "stroke-width": 1 }, g);
+
+          const t = el("text", { x: 24, y: m.y + 18, "font-size": "10.5", "font-weight": "700", fill: "#0F172A" }, g);
+          t.textContent = m.title;
+
+          const b = el("text", { x: 198, y: m.y + 18, "font-size": "9", "font-weight": "700", fill: "#0284C7", "text-anchor": "end" }, g);
+          b.textContent = m.badge;
+
+          const s = el("text", { x: 24, y: m.y + 45, "font-size": "10", fill: "#64748B" }, g);
+          s.textContent = m.sub;
+        });
+
+        // Label kecil di bawah port instrumen
+        const labels = [
+          [68, 118, "+18V"], [152, 118, "- / GND"],
+          [110, 238, "OUT (50Ω)"],
+          [68, 362, "CH 1"], [152, 362, "CH 2"],
+          [68, 492, "V / Ω / mA"], [152, 492, "COM"]
+        ];
+        labels.forEach(([x, y, txt]) => {
+          const t = el("text", { x, y, "font-size": "10", "font-weight": "700", fill: "#334155", "text-anchor": "middle" }, svg);
+          t.textContent = txt;
+        });
+      }
+
+      function drawKitBoardBase(svg, title) {
+        // Bingkai Abu-abu Kit
+        el("rect", {
+          x: 232, y: 18, width: 712, height: 500, rx: 14,
+          fill: "#CBD5E1", stroke: "#94A3B8", "stroke-width": 3, filter: "url(#softShadow)"
+        }, svg);
+        // Papan Kuning Khas Lab Dasar
+        el("rect", {
+          x: 248, y: 34, width: 680, height: 468, rx: 8,
+          fill: "url(#boardGrad)", stroke: "#CA8A04", "stroke-width": 1.5
+        }, svg);
+        // Judul Kit
+        const h = el("text", {
+          x: 588, y: 74, "font-size": "22", "font-weight": "800",
+          fill: "#1E293B", "text-anchor": "middle", "letter-spacing": "1"
+        }, svg);
+        h.textContent = title;
+
+        const url = el("text", {
+          x: 908, y: 492, "font-size": "11.5", "font-weight": "700",
+          fill: "#334155", "text-anchor": "end"
+        }, svg);
+        url.textContent = "http://labdasar.ee.itb.ac.id";
+      }
+
+      function drawRCRLGraphics(svg) {
+        const g = el("g", { stroke: "#1E293B", "stroke-width": 2.6, fill: "none", "stroke-linecap": "round" }, svg);
+
+        // 100nF Kapasitor
+        el("line", { x1: 375, y1: 175, x2: 428, y2: 175 }, g);
+        el("line", { x1: 428, y1: 158, x2: 428, y2: 192, "stroke-width": 3.5 }, g);
+        el("line", { x1: 442, y1: 158, x2: 442, y2: 192, "stroke-width": 3.5 }, g);
+        el("line", { x1: 442, y1: 175, x2: 495, y2: 175 }, g);
+        svgText(svg, 435, 146, "100nF", 13, "700");
+
+        // 8n2F Kapasitor
+        el("line", { x1: 375, y1: 260, x2: 428, y2: 260 }, g);
+        el("line", { x1: 428, y1: 243, x2: 428, y2: 277, "stroke-width": 3.5 }, g);
+        el("line", { x1: 442, y1: 243, x2: 442, y2: 277, "stroke-width": 3.5 }, g);
+        el("line", { x1: 442, y1: 260, x2: 495, y2: 260 }, g);
+        svgText(svg, 435, 231, "8n2F", 13, "700");
+
+        // 2,5mH Induktor
+        el("line", { x1: 375, y1: 345, x2: 407, y2: 345 }, g);
+        el("path", { d: "M 407 345 C 407 329, 421 329, 421 345 C 421 329, 435 329, 435 345 C 435 329, 449 329, 449 345 C 449 329, 463 329, 463 345" }, g);
+        el("line", { x1: 463, y1: 345, x2: 495, y2: 345 }, g);
+        svgText(svg, 435, 318, "2,5mH", 13, "700");
+
+        // Bus Vertikal Kiri + Tengah OUT + Vertikal Kanan
+        el("line", { x1: 495, y1: 175, x2: 495, y2: 345 }, g);
+        el("line", { x1: 495, y1: 260, x2: 695, y2: 260 }, g);
+        el("line", { x1: 695, y1: 175, x2: 695, y2: 345 }, g);
+        svgText(svg, 595, 236, "OUT", 14, "800");
+
+        // 3 Resistor Kanan (1K, 10K, 100K)
+        const rList = [[175, "1KΩ"], [260, "10KΩ"], [345, "100KΩ"]];
+        rList.forEach(([y, lbl]) => {
+          el("line", { x1: 695, y1: y, x2: 727, y2: y }, g);
+          el("rect", { x: 727, y: y - 11, width: 56, height: 22, fill: "#FEF08A", stroke: "#1E293B", "stroke-width": 2.4 }, g);
+          el("line", { x1: 783, y1: y, x2: 815, y2: y }, g);
+          svgText(svg, 755, y - 18, lbl, 13, "700");
+        });
+
+        // Rel GND
+        el("line", { x1: 345, y1: 445, x2: 845, y2: 445 }, g);
+        drawGroundSymbol(g, 595, 456);
+        svgText(svg, 595, 486, "GND", 13, "800");
+      }
+
+      function drawTheveninGraphics(svg) {
+        const g = el("g", { stroke: "#1E293B", "stroke-width": 2.3, fill: "none", "stroke-linecap": "round" }, svg);
+
+        // Label 18V
+        svgText(svg, 344, 127, "+", 14, "800");
+        svgText(svg, 320, 151, "18V", 12, "800");
+        svgText(svg, 344, 175, "−", 14, "800");
+
+        // Kotak POT Atas
+        el("rect", { x: 382, y: 102, width: 88, height: 88, fill: "rgba(255,255,255,0.18)" }, g);
+        el("circle", { cx: 426, cy: 142, r: 20, fill: "#CBD5E1", stroke: "#475569", "stroke-width": 2 }, g);
+        el("line", { x1: 426, y1: 142, x2: 438, y2: 129, stroke: "#0F172A", "stroke-width": 3 }, g);
+        svgText(svg, 426, 180, "POT", 12, "800");
+        el("line", { x1: 470, y1: 120, x2: 525, y2: 120 }, g);
+        el("line", { x1: 470, y1: 175, x2: 525, y2: 175 }, g);
+        svgText(svg, 548, 125, "C", 13, "800");
+        svgText(svg, 548, 180, "D", 13, "800");
+
+        // Jalur E dan F
+        el("line", { x1: 320, y1: 215, x2: 525, y2: 215 }, g);
+        svgText(svg, 548, 220, "E", 13, "800");
+        svgText(svg, 548, 265, "F", 13, "800");
+
+        // Pembagi Tegangan 10K dan 2K7
+        el("line", { x1: 320, y1: 215, x2: 320, y2: 245 }, g);
+        el("rect", { x: 309, y: 245, width: 22, height: 54, fill: "#FEF08A" }, g);
+        svgText(svg, 294, 276, "10KΩ", 11, "700");
+        el("line", { x1: 320, y1: 299, x2: 320, y2: 368 }, g);
+        el("rect", { x: 309, y: 368, width: 22, height: 54, fill: "#FEF08A" }, g);
+        svgText(svg, 294, 399, "2K7Ω", 11, "700");
+        el("line", { x1: 320, y1: 422, x2: 320, y2: 462 }, g);
+
+        // Hubungan ke Basis dan Zener 6,2V
+        el("line", { x1: 320, y1: 332, x2: 396, y2: 332 }, g);
+        el("line", { x1: 396, y1: 282, x2: 396, y2: 462 }, g);
+        el("circle", { cx: 396, cy: 332, r: 3.5, fill: "#1E293B" }, g);
+
+        // Simbol Dioda Zener 6.2V (Katoda di atas)
+        el("polygon", { points: "386,406 406,406 396,386", fill: "#1E293B" }, g);
+        el("path", { d: "M 384 382 L 388 386 L 404 386 L 408 390" }, g);
+        svgText(svg, 368, 412, "6,2V", 11, "700");
+
+        // Transistor NPN 2N1613
+        const qx = 452, qy = 282;
+        el("circle", { cx: qx, cy: qy, r: 22, fill: "rgba(255,255,255,0.22)" }, g);
+        el("line", { x1: 396, y1: qy, x2: qx - 8, y2: qy }, g);
+        el("line", { x1: qx - 8, y1: qy - 12, x2: qx - 8, y2: qy + 12, "stroke-width": 3.2 }, g);
+        // Kolektor ke F
+        el("line", { x1: qx - 8, y1: qy - 6, x2: qx + 12, y2: 260 }, g);
+        el("line", { x1: qx + 12, y1: 260, x2: 525, y2: 260 }, g);
+        // Emitor ke q_emit
+        el("line", { x1: qx - 8, y1: qy + 6, x2: qx + 14, y2: qy + 22 }, g);
+        el("line", { x1: qx + 14, y1: qy + 22, x2: 492, y2: 312 }, g);
+        // Panah Emitor
+        el("polygon", { points: "463,300 456,294 460,304", fill: "#1E293B" }, g);
+        svgText(svg, 444, 250, "2N1613", 12, "800");
+
+        // Cabang Emitor: 390 Ohm + POT 5K
+        el("line", { x1: 492, y1: 312, x2: 492, y2: 328 }, g);
+        el("rect", { x: 482, y: 328, width: 20, height: 42, fill: "#FEF08A" }, g);
+        svgText(svg, 524, 353, "390Ω", 11, "700");
+        el("line", { x1: 492, y1: 370, x2: 492, y2: 402 }, g);
+        el("rect", { x: 482, y: 402, width: 20, height: 42, fill: "#FEF08A" }, g);
+        svgText(svg, 524, 427, "5KΩ", 11, "700");
+        el("line", { x1: 492, y1: 444, x2: 492, y2: 462 }, g);
+        // Knob POT Emitor
+        el("circle", { cx: 438, cy: 382, r: 15, fill: "#1E293B", stroke: "#475569", "stroke-width": 2 }, g);
+        el("line", { x1: 438, y1: 398, x2: 438, y2: 422, "stroke-dasharray": "4,3" }, g);
+        el("line", { x1: 438, y1: 422, x2: 480, y2: 422, "stroke-dasharray": "4,3" }, g);
+        svgText(svg, 438, 360, "POT", 11, "800");
+
+        // Rel GND Kiri Bawah
+        el("line", { x1: 320, y1: 462, x2: 530, y2: 462 }, g);
+        drawGroundSymbol(g, 396, 472);
+        svgText(svg, 396, 496, "GND", 11, "800");
+
+        // Rangkaian N (Kanan Atas)
+        el("rect", { x: 702, y: 145, width: 142, height: 90, fill: "rgba(255,255,255,0.22)" }, g);
+        svgText(svg, 773, 186, "Rangkaian", 14, "800");
+        svgText(svg, 773, 206, "N", 16, "800");
+        el("line", { x1: 720, y1: 120, x2: 720, y2: 145 }, g);
+        el("line", { x1: 825, y1: 120, x2: 825, y2: 145 }, g);
+        el("line", { x1: 720, y1: 235, x2: 720, y2: 260 }, g);
+        el("line", { x1: 825, y1: 235, x2: 825, y2: 260 }, g);
+        svgText(svg, 698, 125, "A", 13, "800");
+        svgText(svg, 846, 125, "B", 13, "800");
+        svgText(svg, 698, 265, "C", 13, "800");
+        svgText(svg, 846, 265, "D", 13, "800");
+
+        // Bank Beban Kanan Bawah
+        el("line", { x1: 772, y1: 325, x2: 772, y2: 356 }, g);
+        el("line", { x1: 682, y1: 356, x2: 862, y2: 356 }, g);
+        // 4 cabang
+        el("line", { x1: 682, y1: 356, x2: 682, y2: 462 }, g); // Short 0 ohm
+        const loads = [[742, "2KΩ"], [802, "2KΩ"], [862, "3K3Ω"]];
+        loads.forEach(([x, lbl]) => {
+          el("line", { x1: x, y1: 356, x2: x, y2: 378 }, g);
+          el("rect", { x: x - 11, y: 378, width: 22, height: 52, fill: "#FEF08A" }, g);
+          el("line", { x1: x, y1: 430, x2: x, y2: 462 }, g);
+          const t = el("text", {
+            x: x, y: 408, "font-size": "10", "font-weight": "800",
+            fill: "#0F172A", "text-anchor": "middle"
+          }, svg);
+          t.textContent = lbl;
+        });
+      }
+
+      function drawGroundSymbol(g, x, y) {
+        el("line", { x1: x, y1: y - 10, x2: x, y2: y + 4 }, g);
+        el("line", { x1: x - 12, y1: y + 4, x2: x + 12, y2: y + 4 }, g);
+        el("line", { x1: x - 8,  y1: y + 9, x2: x + 8,  y2: y + 9 }, g);
+        el("line", { x1: x - 4,  y1: y + 14, x2: x + 4, y2: y + 14 }, g);
+      }
+
+      function svgText(parent, x, y, text, size = 12, weight = "600", color = "#0F172A", anchor = "middle") {
+        const t = el("text", { x, y, "font-size": size, "font-weight": weight, fill: color, "text-anchor": anchor }, parent);
+        t.textContent = text;
+        return t;
+      }
+
+      function drawCable(layer, cable, idx) {
+        const meta = CABLE_META[cable.type];
+        const g = el("g", { class: "cable-group" }, layer);
+        const title = el("title", {}, g);
+        title.textContent = `Klik untuk melepas kabel: ${meta.name}`;
+
+        if (meta.kind === "banana2" || meta.kind === "bnc2") {
+          const p1 = getPort(cable.from);
+          const p2 = getPort(cable.to);
+          if (!p1 || !p2) return;
+          const sag = Math.min(90, 28 + Math.hypot(p2.x - p1.x, p2.y - p1.y) * 0.14);
+          const mx = (p1.x + p2.x) / 2;
+          const my = Math.max(p1.y, p2.y) + sag;
+          const d = `M ${p1.x} ${p1.y} Q ${mx} ${my} ${p2.x} ${p2.y}`;
+
+          el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 16, class: "cable-hit" }, g);
+          el("path", { d, fill: "none", stroke: "rgba(15,23,42,0.18)", "stroke-width": 7, "stroke-linecap": "round", transform: "translate(0,3)" }, g);
+          el("path", {
+            d, fill: "none", stroke: meta.color, "stroke-width": meta.kind === "bnc2" ? 5.5 : 4.5,
+            "stroke-linecap": "round", class: "cable-visual"
+          }, g);
+
+          // Kepala konektor
+          drawPlugCap(g, p1.x, p1.y, meta.color, meta.kind === "bnc2");
+          drawPlugCap(g, p2.x, p2.y, meta.color, meta.kind === "bnc2");
+        } else if (meta.kind === "bnc_split") {
+          const pb = getPort(cable.bnc);
+          const pp = getPort(cable.pos);
+          const pn = getPort(cable.neg);
+          if (!pb || !pp || !pn) return;
+
+          // Titik Y-splitter antara BNC dan kedua ujung banana
+          const sx = pb.x + (Math.min(pp.x, pn.x) - pb.x) * 0.55;
+          const sy = (pb.y + (pp.y + pn.y) / 2) / 2 + 26;
+
+          const dMain = `M ${pb.x} ${pb.y} Q ${(pb.x + sx) / 2} ${Math.max(pb.y, sy) + 25} ${sx} ${sy}`;
+          const dPos  = `M ${sx} ${sy} Q ${(sx + pp.x) / 2} ${Math.min(sy, pp.y) - 24} ${pp.x} ${pp.y}`;
+          const dNeg  = `M ${sx} ${sy} Q ${(sx + pn.x) / 2} ${Math.max(sy, pn.y) + 28} ${pn.x} ${pn.y}`;
+
+          // Hit area
+          [dMain, dPos, dNeg].forEach((d) => el("path", { d, fill: "none", stroke: "transparent", "stroke-width": 15, class: "cable-hit" }, g));
+          // Visual
+          el("path", { d: dMain, fill: "none", stroke: "#334155", "stroke-width": 6, "stroke-linecap": "round", class: "cable-visual" }, g);
+          el("path", { d: dPos,  fill: "none", stroke: meta.color, "stroke-width": 4, "stroke-linecap": "round", class: "cable-visual" }, g);
+          el("path", { d: dNeg,  fill: "none", stroke: "#1E293B", "stroke-width": 4, "stroke-linecap": "round", class: "cable-visual" }, g);
+
+          // Boot Y-Splitter
+          el("rect", { x: sx - 9, y: sy - 7, width: 18, height: 14, rx: 4, fill: "#1E293B", stroke: "#94A3B8", "stroke-width": 1.4 }, g);
+          drawPlugCap(g, pb.x, pb.y, "#475569", true);
+
+          if (cable.type === "bnc-alligator") {
+            drawAlligatorCap(g, pp.x, pp.y, "#F59E0B");
+            drawAlligatorCap(g, pn.x, pn.y, "#1E293B");
+          } else {
+            drawPlugCap(g, pp.x, pp.y, "#EF4444", false);
+            drawPlugCap(g, pn.x, pn.y, "#1E293B", false);
+          }
+        }
+
+        g.addEventListener("click", (e) => {
+          e.stopPropagation();
+          removeCable(idx);
+        });
+      }
+
+      function drawPlugCap(g, x, y, color, isBnc) {
+        if (isBnc) {
+          el("circle", { cx: x, cy: y, r: 9, fill: "#334155", stroke: "#E2E8F0", "stroke-width": 2 }, g);
+          el("circle", { cx: x, cy: y, r: 3.5, fill: "#94A3B8" }, g);
+        } else {
+          el("circle", { cx: x, cy: y, r: 6.5, fill: color, stroke: "#FFFFFF", "stroke-width": 1.8 }, g);
+        }
+      }
+
+      function drawAlligatorCap(g, x, y, color) {
+        el("polygon", {
+          points: `${x - 9},${y - 5} ${x + 5},${y - 3} ${x + 9},${y} ${x + 5},${y + 3} ${x - 9},${y + 5}`,
+          fill: color, stroke: "#FFFFFF", "stroke-width": 1.4
+        }, g);
+      }
+
+      // ============================================================
+      // 5. ENGINE ANALISIS NETLIST (UNION-FIND) & SKEMA OTOMATIS
+      // ============================================================
+      function buildNetlist() {
+        const kit = KITS[state.activeKit];
+        const parent = {};
+
+        function find(x) {
+          if (!(x in parent)) parent[x] = x;
+          if (parent[x] !== x) parent[x] = find(parent[x]);
+          return parent[x];
+        }
+        function union(a, b) {
+          const ra = find(a), rb = find(b);
+          if (ra !== rb) parent[ra] = rb;
+        }
+
+        // Hubungan internal papan kit
+        kit.internalShorts.forEach(([a, b]) => union(a, b));
+
+        // Terminal yang disentuh kabel user
+        const wiredPorts = new Set();
+
+        // Hubungan kabel eksternal
+        currentCables().forEach((c) => {
+          const meta = CABLE_META[c.type];
+          if (meta.kind === "banana2") {
+            union(c.from, c.to);
+            wiredPorts.add(c.from);
+            wiredPorts.add(c.to);
+          } else if (meta.kind === "bnc2") {
+            union(c.from + "_pos", c.to + "_pos");
+            union(c.from + "_neg", c.to + "_neg");
+            wiredPorts.add(c.from);
+            wiredPorts.add(c.to);
+          } else if (meta.kind === "bnc_split") {
+            union(c.bnc + "_pos", c.pos);
+            union(c.bnc + "_neg", c.neg);
+            wiredPorts.add(c.bnc);
+            wiredPorts.add(c.pos);
+            wiredPorts.add(c.neg);
+          }
+        });
+
+        return { find, wiredPorts };
+      }
+
+      function formatFreq(hz) {
+        if (!isFinite(hz) || hz <= 0) return "—";
+        if (hz >= 1e6) return (hz / 1e6).toFixed(2) + " MHz";
+        if (hz >= 1e3) return (hz / 1e3).toFixed(2) + " kHz";
+        return hz.toFixed(1) + " Hz";
+      }
+
+      function formatTime(sec) {
+        if (!isFinite(sec) || sec <= 0) return "—";
+        if (sec < 1e-6) return (sec * 1e9).toFixed(1) + " ns";
+        if (sec < 1e-3) return (sec * 1e6).toFixed(2) + " µs";
+        if (sec < 1) return (sec * 1e3).toFixed(2) + " ms";
+        return sec.toFixed(3) + " s";
+      }
+
+      function formatOhms(r) {
+        if (!isFinite(r)) return "∞ (Open)";
+        if (r === 0) return "0 Ω (Short)";
+        if (r >= 1e3) return (r / 1e3).toFixed(2) + " kΩ";
+        return r.toFixed(0) + " Ω";
+      }
+
+      function renderSchematicAndAnalysis() {
+        schematicSvg.innerHTML = "";
+        const cables = currentCables();
+        const badge = $("#topology-badge");
+        const grid = $("#analysis-grid");
+        const note = $("#circuit-note");
+        grid.innerHTML = "";
+        note.style.display = "none";
+
+        if (cables.length === 0) {
+          badge.className = "badge neutral";
+          badge.textContent = "Belum Terangkai";
+          drawEmptySchematic(schematicSvg);
+          return;
+        }
+
+        const net = buildNetlist();
+        if (state.activeKit === "rcrl") {
+          analyzeAndDrawRCRL(net, badge, grid, note);
+        } else {
+          analyzeAndDrawThevenin(net, badge, grid, note);
+        }
+      }
+
+      function drawEmptySchematic(svg) {
+        el("rect", { x: 40, y: 65, width: 440, height: 210, rx: 14, fill: "#FFFFFF", stroke: "#CBD5E1", "stroke-dasharray": "6,6", "stroke-width": 1.6 }, svg);
+        svgText(svg, 260, 155, "Belum Ada Kabel Terpasang", 15, "700", "#334155");
+        svgText(svg, 260, 180, "Pasang kabel pada meja praktikum atau pilih Contoh Rangkaian", 12, "500", "#64748B");
+        svgText(svg, 260, 200, "untuk melihat skema rangkaian listrik secara real-time.", 12, "500", "#64748B");
+      }
+
+      // ------------------------------------------------------------
+      // SKEMA OTOMATIS KIT 2: RANGKAIAN RL & RC
+      // ------------------------------------------------------------
+      function analyzeAndDrawRCRL(net, badge, grid, note) {
+        const kit = KITS.rcrl;
+        const { find, wiredPorts } = net;
+
+        // Komponen aktif di Kit RL & RC: yang ujung luar (terminal merahnya) terpasang kabel
+        const activeComps = kit.components.filter((comp) => {
+          const outer = comp.a.endsWith("_in") ? comp.a : comp.b;
+          return wiredPorts.has(outer);
+        });
+
+        const outNet = find("out_mid");
+        const gndNet = find("gnd_c");
+
+        // Deteksi sumber aktif (Signal Generator atau DC Supply)
+        const hasGen = wiredPorts.has("gen_bnc");
+        const hasPsu = wiredPorts.has("psu_pos") || wiredPorts.has("psu_neg");
+        const srcPosNet = hasGen ? find("gen_bnc_pos") : (hasPsu ? find("psu_pos") : null);
+        const srcNegNet = hasGen ? find("gen_bnc_neg") : (hasPsu ? find("psu_neg") : gndNet);
+
+        // Kelompokkan komponen aktif terhadap topologi: Seri (Src -> OUT) vs Shunt (OUT -> GND/Return)
+        const seriesComps = [];
+        const shuntComps = [];
+        const otherComps = [];
+
+        activeComps.forEach((c) => {
+          const outer = c.a.endsWith("_in") ? c.a : c.b;
+          const outerNet = find(outer);
+          if (srcPosNet && outerNet === srcPosNet) {
+            seriesComps.push(c);
+          } else if (outerNet === srcNegNet || outerNet === gndNet) {
+            shuntComps.push(c);
+          } else {
+            otherComps.push(c);
+          }
+        });
+
+        // Cek probe Osiloskop
+        const probes = [];
+        if (wiredPorts.has("osc_ch1")) probes.push({ name: "CH1", color: "#0284C7", posNet: find("osc_ch1_pos") });
+        if (wiredPorts.has("osc_ch2")) probes.push({ name: "CH2", color: "#D97706", posNet: find("osc_ch2_pos") });
+        if (wiredPorts.has("dmm_pos")) probes.push({ name: "DMM", color: "#10B981", posNet: find("dmm_pos") });
+
+        // Klasifikasi Topologi
+        let topoName = "Rangkaian RL / RC Custom";
+        let metrics = [];
+        let explanation = "";
+
+        const sTypes = seriesComps.map((c) => c.type);
+        const pTypes = shuntComps.map((c) => c.type);
+
+        if (seriesComps.length >= 1 && shuntComps.length >= 1) {
+          if (sTypes.every((t) => t === "R") && pTypes.every((t) => t === "C")) {
+            topoName = "Filter RC Low-Pass";
+            const req = 1 / seriesComps.reduce((a, c) => a + 1 / c.value, 0);
+            const ceq = shuntComps.reduce((a, c) => a + c.value, 0);
+            const tau = req * ceq;
+            const fc = 1 / (2 * Math.PI * tau);
+            metrics = [
+              { k: "R Seri (Eq)", v: formatOhms(req) },
+              { k: "C Shunt (Eq)", v: (ceq * 1e9).toFixed(1) + " nF" },
+              { k: "Konstanta Waktu (τ)", v: formatTime(tau) },
+              { k: "Frekuensi Cutoff (fc)", v: formatFreq(fc) }
+            ];
+            explanation = "Meloloskan sinyal frekuensi rendah ke node OUT dan meredam frekuensi tinggi di atas fc.";
+          } else if (sTypes.every((t) => t === "C") && pTypes.every((t) => t === "R")) {
+            topoName = "Filter RC High-Pass";
+            const ceq = seriesComps.reduce((a, c) => a + c.value, 0);
+            const req = 1 / shuntComps.reduce((a, c) => a + 1 / c.value, 0);
+            const tau = req * ceq;
+            const fc = 1 / (2 * Math.PI * tau);
+            metrics = [
+              { k: "C Seri (Eq)", v: (ceq * 1e9).toFixed(1) + " nF" },
+              { k: "R Shunt (Eq)", v: formatOhms(req) },
+              { k: "Konstanta Waktu (τ)", v: formatTime(tau) },
+              { k: "Frekuensi Cutoff (fc)", v: formatFreq(fc) }
+            ];
+            explanation = "Menahan komponen DC / frekuensi rendah dan meloloskan sinyal di atas frekuensi cutoff fc ke OUT.";
+          } else if (sTypes.every((t) => t === "L") && pTypes.every((t) => t === "R")) {
+            topoName = "Filter RL Low-Pass";
+            const l = seriesComps[0].value;
+            const req = 1 / shuntComps.reduce((a, c) => a + 1 / c.value, 0);
+            const tau = l / req;
+            const fc = req / (2 * Math.PI * l);
+            metrics = [
+              { k: "Induktor (L)", v: (l * 1e3).toFixed(1) + " mH" },
+              { k: "Resistor (R)", v: formatOhms(req) },
+              { k: "Konstanta Waktu (τ)", v: formatTime(tau) },
+              { k: "Frekuensi Cutoff (fc)", v: formatFreq(fc) }
+            ];
+            explanation = "Induktor menghambat perubahan arus cepat (frekuensi tinggi), sehingga tegangan keluaran di R bersifat Low-Pass.";
+          } else if (sTypes.every((t) => t === "R") && pTypes.every((t) => t === "L")) {
+            topoName = "Filter RL High-Pass";
+            const req = 1 / seriesComps.reduce((a, c) => a + 1 / c.value, 0);
+            const l = shuntComps[0].value;
+            const tau = l / req;
+            const fc = req / (2 * Math.PI * l);
+            metrics = [
+              { k: "Resistor (R)", v: formatOhms(req) },
+              { k: "Induktor (L)", v: (l * 1e3).toFixed(1) + " mH" },
+              { k: "Konstanta Waktu (τ)", v: formatTime(tau) },
+              { k: "Frekuensi Cutoff (fc)", v: formatFreq(fc) }
+            ];
+            explanation = "Pada frekuensi rendah induktor mendekati hubung singkat ke GND, sedangkan frekuensi tinggi tampil di OUT.";
+          } else if (activeComps.some((c) => c.type === "L") && activeComps.some((c) => c.type === "C")) {
+            topoName = "Rangkaian Resonansi RLC";
+            const l = activeComps.find((c) => c.type === "L").value;
+            const ceq = activeComps.filter((c) => c.type === "C").reduce((a, c) => a + c.value, 0);
+            const f0 = 1 / (2 * Math.PI * Math.sqrt(l * ceq));
+            metrics = [
+              { k: "Induktor (L)", v: (l * 1e3).toFixed(1) + " mH" },
+              { k: "Kapasitor (C)", v: (ceq * 1e9).toFixed(1) + " nF" },
+              { k: "Frekuensi Resonansi (f₀)", v: formatFreq(f0) },
+              { k: "Komponen Aktif", v: activeComps.length + " komponen" }
+            ];
+            explanation = "Kombinasi R, L, dan C membentuk rangkaian resonansi orde-2 dengan frekuensi resonansi alami f₀.";
+          } else if (sTypes.every((t) => t === "R") && pTypes.every((t) => t === "R")) {
+            topoName = "Pembagi Tegangan Resistif";
+            const rTop = 1 / seriesComps.reduce((a, c) => a + 1 / c.value, 0);
+            const rBot = 1 / shuntComps.reduce((a, c) => a + 1 / c.value, 0);
+            const ratio = rBot / (rTop + rBot);
+            metrics = [
+              { k: "R Atas", v: formatOhms(rTop) },
+              { k: "R Bawah", v: formatOhms(rBot) },
+              { k: "Rasio V_out / V_in", v: ratio.toFixed(3) + " ×" }
+            ];
+          }
+        } else if (activeComps.length > 0) {
+          topoName = hasGen || hasPsu ? "Rangkaian Terbuka / Parsial" : "Belum Terhubung ke Sumber";
+          metrics = [
+            { k: "Komponen Terpasang", v: activeComps.map((c) => c.label).join(", ") },
+            { k: "Status Sumber", v: hasGen ? "Signal Gen" : (hasPsu ? "DC 18V" : "Belum Ada") }
+          ];
+          explanation = "Hubungkan sumber sinyal (misal BNC to Dual Banana dari Signal Generator) serta jalur kembali ke GND agar rangkaian tertutup.";
+        } else {
+          topoName = "Koneksi Langsung / Kalibrasi";
+          metrics = [{ k: "Kabel Aktif", v: currentCables().length + " kabel" }];
+        }
+
+        badge.className = "badge";
+        badge.textContent = topoName;
+        renderMetrics(grid, metrics);
+        if (explanation) {
+          note.textContent = explanation;
+          note.style.display = "block";
+        }
+
+        // Gambar Skema Standar IEEE pada schematicSvg (520 x 340)
+        drawRCRLSchematicSVG(schematicSvg, {
+          hasGen, hasPsu, srcPosNet, outNet, gndNet,
+          seriesComps, shuntComps, otherComps, probes
+        });
+      }
+
+      function drawRCRLSchematicSVG(svg, info) {
+        const wire = el("g", { stroke: "#0F172A", "stroke-width": 2.2, fill: "none", "stroke-linecap": "round" }, svg);
+
+        // Rel GND Bawah
+        el("line", { x1: 85, y1: 265, x2: 435, y2: 265 }, wire);
+        drawGroundSymbol(wire, 260, 275);
+        svgText(svg, 260, 305, "GND", 11, "700", "#475569");
+
+        // Sumber Sinyal di Kiri (x = 85)
+        el("line", { x1: 85, y1: 95, x2: 85, y2: 145 }, wire);
+        el("circle", { cx: 85, cy: 175, r: 28, fill: "#FFFFFF", stroke: "#0284C7", "stroke-width": 2.4 }, svg);
+        if (info.hasGen) {
+          el("path", { d: "M 69 175 Q 77 159 85 175 T 101 175", fill: "none", stroke: "#0284C7", "stroke-width": 2.4 }, svg);
+          svgText(svg, 85, 220, "Signal Gen", 11, "700", "#0284C7");
+        } else if (info.hasPsu) {
+          svgText(svg, 85, 169, "+", 15, "800", "#DC2626");
+          svgText(svg, 85, 190, "−", 15, "800", "#0F172A");
+          svgText(svg, 85, 220, "DC 18V", 11, "700", "#DC2626");
+        } else {
+          svgText(svg, 85, 179, "?", 18, "800", "#94A3B8");
+          svgText(svg, 85, 220, "No Source", 11, "600", "#94A3B8");
+        }
+        el("line", { x1: 85, y1: 203, x2: 85, y2: 265 }, wire);
+
+        // Jalur Atas Seri: dari (85,95) ke Node OUT (310,95)
+        if (info.seriesComps.length > 0) {
+          const count = info.seriesComps.length;
+          const spacing = 46;
+          const startY = 95 - ((count - 1) * spacing) / 2;
+          el("line", { x1: 85, y1: 95, x2: 125, y2: 95 }, wire);
+          el("line", { x1: 270, y1: 95, x2: 330, y2: 95 }, wire);
+          if (count > 1) {
+            el("line", { x1: 125, y1: startY, x2: 125, y2: startY + (count - 1) * spacing }, wire);
+            el("line", { x1: 270, y1: startY, x2: 270, y2: startY + (count - 1) * spacing }, wire);
+          }
+          info.seriesComps.forEach((c, i) => {
+            const y = startY + i * spacing;
+            drawHorizontalComponent(svg, wire, c, 125, 270, y);
+          });
+        } else {
+          // Tidak ada komponen seri (garis putus-putus atau short jika langsung ke OUT)
+          const directToOut = info.srcPosNet && info.srcPosNet === info.outNet;
+          el("line", {
+            x1: 85, y1: 95, x2: 330, y2: 95,
+            "stroke-dasharray": directToOut ? "none" : "5,5",
+            stroke: directToOut ? "#0F172A" : "#CBD5E1"
+          }, wire);
+        }
+
+        // Node OUT Marker
+        el("circle", { cx: 330, cy: 95, r: 5, fill: "#EAB308", stroke: "#0F172A", "stroke-width": 1.8 }, svg);
+        svgText(svg, 330, 76, "OUT", 12, "800", "#B45309");
+
+        // Cabang Shunt: dari Node OUT (330,95) ke GND (y=265)
+        if (info.shuntComps.length > 0) {
+          const count = info.shuntComps.length;
+          const spacing = 64;
+          const baseX = 330;
+          if (count > 1) {
+            el("line", { x1: baseX, y1: 95, x2: baseX + (count - 1) * spacing, y2: 95 }, wire);
+          }
+          info.shuntComps.forEach((c, i) => {
+            const x = baseX + i * spacing;
+            drawVerticalComponent(svg, wire, c, x, 95, 265);
+          });
+        } else if (info.otherComps.length > 0) {
+          // Komponen terhubung ke OUT tetapi belum ke GND (menggantung)
+          info.otherComps.forEach((c, i) => {
+            const x = 330 + i * 62;
+            drawVerticalComponent(svg, wire, c, x, 95, 220);
+            el("circle", { cx: x, cy: 220, r: 4, fill: "#FFFFFF", stroke: "#DC2626", "stroke-width": 2 }, svg);
+            svgText(svg, x, 238, "Open", 10, "700", "#DC2626");
+          });
+        }
+
+        // Tampilkan Tag Probe Osiloskop / DMM di Node yang Diukur
+        let probeYOffset = 0;
+        info.probes.forEach((p) => {
+          let tx = 445, ty = 95;
+          if (p.posNet === info.srcPosNet && p.posNet !== info.outNet) {
+            tx = 105; ty = 46;
+            el("line", { x1: 105, y1: 56, x2: 105, y2: 95, stroke: p.color, "stroke-width": 1.8, "stroke-dasharray": "3,3" }, svg);
+          } else if (p.posNet === info.outNet) {
+            tx = 445; ty = 95 + probeYOffset;
+            probeYOffset += 30;
+            el("line", { x1: 335, y1: 95, x2: 410, y2: ty, stroke: p.color, "stroke-width": 1.8, "stroke-dasharray": "3,3" }, svg);
+          } else {
+            tx = 445; ty = 170 + probeYOffset;
+            probeYOffset += 28;
+          }
+          el("rect", { x: tx - 28, y: ty - 12, width: 56, height: 22, rx: 6, fill: p.color }, svg);
+          svgText(svg, tx, ty + 3, p.name, 10.5, "800", "#FFFFFF");
+        });
+      }
+
+      function drawHorizontalComponent(svg, wire, comp, x1, x2, y) {
+        const mid = (x1 + x2) / 2;
+        if (comp.type === "R") {
+          el("line", { x1, y1: y, x2: mid - 28, y2: y }, wire);
+          el("path", { d: `M ${mid - 28} ${y} l 5 -9 l 9 18 l 9 -18 l 9 18 l 9 -18 l 9 18 l 6 -9`, fill: "none", stroke: "#0F172A", "stroke-width": 2.2 }, wire);
+          el("line", { x1: mid + 28, y1: y, x2: x2, y2: y }, wire);
+        } else if (comp.type === "C") {
+          el("line", { x1, y1: y, x2: mid - 6, y2: y }, wire);
+          el("line", { x1: mid - 6, y1: y - 14, x2: mid - 6, y2: y + 14, "stroke-width": 3 }, wire);
+          el("line", { x1: mid + 6, y1: y - 14, x2: mid + 6, y2: y + 14, "stroke-width": 3 }, wire);
+          el("line", { x1: mid + 6, y1: y, x2: x2, y2: y }, wire);
+        } else if (comp.type === "L") {
+          el("line", { x1, y1: y, x2: mid - 26, y2: y }, wire);
+          el("path", { d: `M ${mid - 26} ${y} c 0 -14 13 -14 13 0 c 0 -14 13 -14 13 0 c 0 -14 13 -14 13 0 c 0 -14 13 -14 13 0` }, wire);
+          el("line", { x1: mid + 26, y1: y, x2: x2, y2: y }, wire);
+        }
+        svgText(svg, mid, y - 17, comp.label, 11, "700", "#0F172A");
+      }
+
+      function drawVerticalComponent(svg, wire, comp, x, y1, y2) {
+        const mid = (y1 + y2) / 2;
+        if (comp.type === "R") {
+          el("line", { x1: x, y1: y1, x2: x, y2: mid - 26 }, wire);
+          el("path", { d: `M ${x} ${mid - 26} l 9 5 l -18 9 l 18 9 l -18 9 l 18 9 l -18 9 l 9 4` }, wire);
+          el("line", { x1: x, y1: mid + 28, x2: x, y2: y2 }, wire);
+        } else if (comp.type === "C") {
+          el("line", { x1: x, y1: y1, x2: x, y2: mid - 6 }, wire);
+          el("line", { x1: x - 14, y1: mid - 6, x2: x + 14, y2: mid - 6, "stroke-width": 3 }, wire);
+          el("line", { x1: x - 14, y1: mid + 6, x2: x + 14, y2: mid + 6, "stroke-width": 3 }, wire);
+          el("line", { x1: x, y1: mid + 6, x2: x, y2: y2 }, wire);
+        } else if (comp.type === "L") {
+          el("line", { x1: x, y1: y1, x2: x, y2: mid - 26 }, wire);
+          el("path", { d: `M ${x} ${mid - 26} c 14 0 14 13 0 13 c 14 0 14 13 0 13 c 14 0 14 13 0 13 c 14 0 14 13 0 13` }, wire);
+          el("line", { x1: x, y1: mid + 26, x2: x, y2: y2 }, wire);
+        }
+        svgText(svg, x + 22, mid + 4, comp.label, 11, "700", "#0F172A", "start");
+      }
+
+      // ------------------------------------------------------------
+      // SKEMA OTOMATIS KIT 1: THEOREMA THEVENIN & NORTON
+      // ------------------------------------------------------------
+      function analyzeAndDrawThevenin(net, badge, grid, note) {
+        const { find, wiredPorts } = net;
+
+        // Cek blok fungsional mana saja yang terhubung kabel
+        const rnPorts = ["rn_a", "rn_b", "rn_c", "rn_d"];
+        const activeRN = rnPorts.some((p) => wiredPorts.has(p));
+        const activePot = wiredPorts.has("pot_c") || wiredPorts.has("pot_d");
+        const activeTransistor = ["e_left", "e_right", "f_right", "div_mid", "q_base", "q_emit", "r390_bot", "tgnd_1", "tgnd_2", "tgnd_3"]
+          .some((p) => wiredPorts.has(p));
+
+        // Cek cabang Bank Beban aktif
+        const activeLoads = [];
+        if (wiredPorts.has("load_0"))   activeLoads.push({ label: "Short (0Ω)", r: 0 });
+        if (wiredPorts.has("load_2k1")) activeLoads.push({ label: "2 kΩ (a)",   r: 2000 });
+        if (wiredPorts.has("load_2k2")) activeLoads.push({ label: "2 kΩ (b)",   r: 2000 });
+        if (wiredPorts.has("load_3k3")) activeLoads.push({ label: "3.3 kΩ",     r: 3300 });
+
+        const hasPsu = wiredPorts.has("psu_pos") || wiredPorts.has("psu_neg") || wiredPorts.has("v18_pos");
+        const hasDmm = wiredPorts.has("dmm_pos") || wiredPorts.has("dmm_com");
+        const hasOsc = wiredPorts.has("osc_ch1") || wiredPorts.has("osc_ch2");
+
+        // Hitung resistansi beban paralel jika >= 1 cabang beban dipakai
+        let rLoadEq = Infinity;
+        if (activeLoads.length > 0) {
+          if (activeLoads.some((l) => l.r === 0)) {
+            rLoadEq = 0;
+          } else {
+            rLoadEq = 1 / activeLoads.reduce((acc, l) => acc + 1 / l.r, 0);
+          }
+        }
+
+        // Identifikasi skenario praktikum Thevenin-Norton
+        let topoName = "Rangkaian Thevenin / Norton";
+        let explanation = "";
+        const metrics = [];
+
+        if (activeRN && activeLoads.length === 0 && hasDmm) {
+          topoName = "Pengukuran Open-Circuit (V_th / R_th)";
+          explanation = "Rangkaian N terhubung ke Multimeter tanpa beban eksternal. Cocok untuk mengukur Tegangan Thevenin (V_th) saat dicatu, atau Resistansi Thevenin (R_th) saat sumber dimatikan.";
+        } else if (activeRN && rLoadEq === 0) {
+          topoName = "Pengukuran Short-Circuit (Arus Norton I_N)";
+          explanation = "Cabang hubung singkat (0Ω) pada bank beban terpasang — merepresentasikan kondisi short-circuit untuk verifikasi Arus Norton (I_N).";
+        } else if (activeRN && activeLoads.length > 0) {
+          topoName = "Uji Pembebanan Rangkaian N";
+          explanation = `Rangkaian N dibebani ${activeLoads.map((l) => l.label).join(" || ")} sehingga beban ekivalen R_L = ${formatOhms(rLoadEq)}.`;
+        } else if (activeTransistor) {
+          topoName = "Sumber Aktif 2N1613 & Zener 6.2V";
+          const iEmitEst = (6.2 - 0.7) / (390 + state.pot2);
+          metrics.push({ k: "V_Zener (Ref)", v: "6.2 V" });
+          metrics.push({ k: "Est. Arus Kolektor", v: (iEmitEst * 1000).toFixed(2) + " mA" });
+          explanation = "Transistor 2N1613 dengan referensi Zener 6.2V berfungsi sebagai sumber arus konstan (Norton) yang arusnya diatur oleh POT Emitor (5KΩ).";
+        }
+
+        if (activePot) metrics.push({ k: "POT Atas (C–D)", v: formatOhms(state.pot1) });
+        if (activeLoads.length > 0) metrics.push({ k: "Beban Ekivalen (R_L)", v: formatOhms(rLoadEq) });
+        metrics.push({ k: "Instrumen", v: [hasPsu && "DC 18V", hasDmm && "DMM", hasOsc && "OSC"].filter(Boolean).join(", ") || "Belum Ada" });
+
+        badge.className = "badge";
+        badge.textContent = topoName;
+        renderMetrics(grid, metrics);
+        if (explanation) {
+          note.textContent = explanation;
+          note.style.display = "block";
+        }
+
+        // Gambar Skema Blok & Komponen Thevenin-Norton (520 x 340)
+        drawTheveninSchematicSVG(schematicSvg, {
+          hasPsu, hasDmm, hasOsc, activeRN, activePot, activeTransistor, activeLoads, rLoadEq
+        });
+      }
+
+      function drawTheveninSchematicSVG(svg, info) {
+        const wire = el("g", { stroke: "#0F172A", "stroke-width": 2.2, fill: "none", "stroke-linecap": "round" }, svg);
+
+        // Rel GND Umum
+        el("line", { x1: 55, y1: 270, x2: 465, y2: 270 }, wire);
+        drawGroundSymbol(wire, 260, 280);
+        svgText(svg, 260, 310, "GND / Referensi", 10.5, "700", "#475569");
+
+        // Blok 1: Sumber DC 18V (Kiri)
+        el("line", { x1: 55, y1: 90, x2: 55, y2: 145 }, wire);
+        el("circle", { cx: 55, cy: 175, r: 26, fill: "#FFFFFF", stroke: info.hasPsu ? "#DC2626" : "#CBD5E1", "stroke-width": 2.4 }, svg);
+        svgText(svg, 55, 170, "+", 14, "800", info.hasPsu ? "#DC2626" : "#94A3B8");
+        svgText(svg, 55, 190, "−", 14, "800", "#334155");
+        svgText(svg, 55, 220, info.hasPsu ? "DC 18V" : "No PSU", 10.5, "700", info.hasPsu ? "#DC2626" : "#94A3B8");
+        el("line", { x1: 55, y1: 201, x2: 55, y2: 270 }, wire);
+
+        // Blok 2 (Tengah): Rangkaian N atau Stage Transistor 2N1613
+        let midRightX = 300;
+        if (info.activeRN) {
+          el("line", { x1: 55, y1: 90, x2: 145, y2: 90 }, wire);
+          el("rect", { x: 145, y: 70, width: 155, height: 150, rx: 10, fill: "#FEF9C3", stroke: "#CA8A04", "stroke-width": 2.2 }, svg);
+          svgText(svg, 222, 138, "Rangkaian N", 14, "800", "#1E293B");
+          svgText(svg, 222, 158, "(Black Box 2-Port)", 10.5, "600", "#64748B");
+          svgText(svg, 158, 94, "A", 11, "800", "#DC2626");
+          svgText(svg, 158, 206, "B", 11, "800", "#0F172A");
+          svgText(svg, 286, 94, "C", 11, "800", "#B45309");
+          svgText(svg, 286, 206, "D", 11, "800", "#059669");
+          el("line", { x1: 145, y1: 202, x2: 120, y2: 202 }, wire);
+          el("line", { x1: 120, y1: 202, x2: 120, y2: 270 }, wire);
+          el("line", { x1: 300, y1: 202, x2: 325, y2: 202 }, wire);
+          el("line", { x1: 325, y1: 202, x2: 325, y2: 270 }, wire);
+        } else if (info.activeTransistor) {
+          // Gambar skema sumber arus transistor 2N1613
+          el("line", { x1: 55, y1: 90, x2: 265, y2: 90 }, wire);
+          // Pembagi 10K + Zener
+          drawVerticalComponent(svg, wire, { type: "R", label: "10k" }, 140, 90, 175);
+          el("line", { x1: 140, y1: 175, x2: 140, y2: 270 }, wire);
+          el("polygon", { points: "131,232 149,232 140,214", fill: "#0F172A" }, svg);
+          el("line", { x1: 130, y1: 214, x2: 150, y2: 214, stroke: "#0F172A", "stroke-width": 2.2 }, svg);
+          svgText(svg, 108, 228, "6.2V", 10, "700", "#0F172A");
+          // Basis ke Q1
+          el("line", { x1: 140, y1: 175, x2: 215, y2: 175 }, wire);
+          el("circle", { cx: 235, cy: 175, r: 22, fill: "#FFFFFF", stroke: "#0284C7", "stroke-width": 2 }, svg);
+          svgText(svg, 235, 179, "2N1613", 9, "800", "#0284C7");
+          // Kolektor (F) ke atas
+          el("line", { x1: 235, y1: 153, x2: 235, y2: 118 }, wire);
+          el("line", { x1: 235, y1: 118, x2: 300, y2: 118 }, wire);
+          svgText(svg, 280, 110, "F (Col)", 10, "800", "#059669");
+          // Emitor ke 390 + POT 5K
+          drawVerticalComponent(svg, wire, { type: "R", label: `390+${(state.pot2 / 1000).toFixed(1)}k` }, 235, 197, 270);
+          midRightX = 300;
+        } else {
+          el("line", { x1: 55, y1: 90, x2: 300, y2: 90 }, wire);
+        }
+
+        // Blok 3 (Kanan): Beban (Load Bank / POT) & Alat Ukur (DMM / OSC)
+        let loadX = 375;
+        if (info.activePot) {
+          el("line", { x1: midRightX, y1: 90, x2: loadX, y2: 90 }, wire);
+          drawVerticalComponent(svg, wire, { type: "R", label: `POT ${formatOhms(state.pot1)}` }, loadX, 90, 270);
+          loadX += 75;
+        } else if (info.activeLoads.length > 0) {
+          el("line", { x1: midRightX, y1: 90, x2: loadX, y2: 90 }, wire);
+          if (info.rLoadEq === 0) {
+            el("line", { x1: loadX, y1: 90, x2: loadX, y2: 270, stroke: "#DC2626", "stroke-width": 3 }, svg);
+            svgText(svg, loadX + 12, 180, "Short (I_N)", 11, "800", "#DC2626", "start");
+          } else {
+            drawVerticalComponent(svg, wire, { type: "R", label: `R_L ${formatOhms(info.rLoadEq)}` }, loadX, 90, 270);
+          }
+          loadX += 75;
+        }
+
+        if (info.hasDmm || info.hasOsc) {
+          const mx = Math.min(462, loadX);
+          el("line", { x1: midRightX, y1: 90, x2: mx, y2: 90 }, wire);
+          el("line", { x1: mx, y1: 90, x2: mx, y2: 148 }, wire);
+          el("circle", { cx: mx, cy: 175, r: 24, fill: "#D1FAE5", stroke: "#059669", "stroke-width": 2.4 }, svg);
+          svgText(svg, mx, 179, info.hasDmm ? "DMM" : "OSC", 11.5, "800", "#065F46");
+          el("line", { x1: mx, y1: 199, x2: mx, y2: 270 }, wire);
+        }
+      }
+
+      function renderMetrics(container, metrics) {
+        metrics.forEach((m) => {
+          const div = document.createElement("div");
+          div.className = "metric-box";
+          div.innerHTML = `<div class="metric-label">${m.k}</div><div class="metric-value">${m.v}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function renderCableList() {
+        const list = $("#cable-list");
+        const cables = currentCables();
+        $("#cable-count").textContent = cables.length;
+        list.innerHTML = "";
+
+        if (cables.length === 0) {
+          list.innerHTML = `<div style="font-size:0.8rem;color:#94A3B8;padding:6px 2px;">Belum ada kabel terpasang.</div>`;
+          return;
+        }
+
+        cables.forEach((c, idx) => {
+          const meta = CABLE_META[c.type];
+          let desc = "";
+          if (meta.kind === "bnc_split") {
+            const pb = getPort(c.bnc), pp = getPort(c.pos), pn = getPort(c.neg);
+            desc = `<strong>${pb.short}</strong> → (+) ${pp.short} &amp; (−) ${pn.short}`;
+          } else {
+            const p1 = getPort(c.from), p2 = getPort(c.to);
+            desc = `<strong>${p1.short}</strong> ↔ <strong>${p2.short}</strong>`;
+          }
+
+          const row = document.createElement("div");
+          row.className = "cable-item";
+          row.innerHTML = `
+            <div class="cable-item-info">
+              <span class="${meta.kind === "bnc_split" ? "swatch-split" : "swatch"}" style="${meta.kind === "bnc_split" ? "" : `background:${meta.color}`}"></span>
+              <span class="cable-item-text">${meta.name}: ${desc}</span>
+            </div>
+            <button class="cable-del-btn" data-idx="${idx}">Lepas</button>
+          `;
+          row.querySelector("button").addEventListener("click", () => removeCable(idx));
+          list.appendChild(row);
+        });
+      }
+
+      function populatePresets() {
+        const sel = $("#preset-select");
+        sel.innerHTML = `<option value="">⚡ Contoh Rangkaian...</option>`;
+        KITS[state.activeKit].presets.forEach((p) => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.name;
+          sel.appendChild(opt);
+        });
+      }
+
+      function renderAll() {
+        updateStatusBar();
+        renderBench();
+        renderSchematicAndAnalysis();
+        renderCableList();
+      }
+
+      // ============================================================
+      // 6. EVENT LISTENERS
+      // ============================================================
+      document.querySelectorAll(".kit-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".kit-tab").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          state.activeKit = btn.dataset.kit;
+          state.pending = null;
+          populatePresets();
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll(".cable-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".cable-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          state.selectedCable = btn.dataset.cable;
+          state.pending = null;
+          renderAll();
+        });
+      });
+
+      $("#btn-cancel-wire").addEventListener("click", () => {
+        state.pending = null;
+        renderAll();
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && state.pending) {
+          state.pending = null;
+          renderAll();
+        }
+      });
+
+      $("#btn-undo").addEventListener("click", () => {
+        currentCables().pop();
+        state.pending = null;
+        renderAll();
+      });
+
+      $("#btn-clear").addEventListener("click", () => {
+        state.cablesByKit[state.activeKit] = [];
+        state.pending = null;
+        renderAll();
+      });
+
+      $("#preset-select").addEventListener("change", (e) => {
+        const id = e.target.value;
+        if (!id) return;
+        const preset = KITS[state.activeKit].presets.find((p) => p.id === id);
+        if (preset) {
+          state.cablesByKit[state.activeKit] = preset.cables.map((c) => ({ ...c, id: Math.random() }));
+          state.pending = null;
+          renderAll();
+        }
+        e.target.value = "";
+      });
+
+      $("#pot1-slider").addEventListener("input", (e) => {
+        state.pot1 = Number(e.target.value);
+        $("#pot1-val").textContent = formatOhms(state.pot1);
+        renderSchematicAndAnalysis();
+      });
+
+      $("#pot2-slider").addEventListener("input", (e) => {
+        state.pot2 = Number(e.target.value);
+        $("#pot2-val").textContent = formatOhms(state.pot2);
+        renderSchematicAndAnalysis();
+      });
+
+      // Init
+      populatePresets();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
