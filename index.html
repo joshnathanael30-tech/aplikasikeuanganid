@@ -3908,37 +3908,33 @@ function initTxFavLongPress() {
     hideTimer = setTimeout(() => tip.classList.remove('show'), 1400);
   }
 
-  function startPress(e) {
+  btn.addEventListener('pointerdown', () => {
     didLongPress = false;
     clearTimeout(lpTimer);
     lpTimer = setTimeout(() => {
       didLongPress = true;
       showTip();
-    }, 420);
-  }
+    }, 450);
+  });
 
-  function endPress(e) {
-    clearTimeout(lpTimer);
-    if (didLongPress) {
-      hideTipDelayed();
-      if (e && e.cancelable) e.preventDefault();
-    } else {
-      toggleTxFavorite();
-    }
-  }
-
-  function cancelPress() {
+  function releasePress() {
     clearTimeout(lpTimer);
     if (didLongPress) hideTipDelayed();
   }
 
-  btn.addEventListener('touchstart', startPress, { passive: true });
-  btn.addEventListener('touchend', endPress);
-  btn.addEventListener('touchcancel', cancelPress);
-  btn.addEventListener('mousedown', startPress);
-  btn.addEventListener('mouseup', endPress);
-  btn.addEventListener('mouseleave', cancelPress);
+  btn.addEventListener('pointerup', releasePress);
+  btn.addEventListener('pointercancel', releasePress);
+  btn.addEventListener('pointerleave', releasePress);
   btn.addEventListener('contextmenu', e => e.preventDefault());
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (didLongPress) {
+      didLongPress = false;
+      return;
+    }
+    toggleTxFavorite();
+  });
 }
 
 window.toggleTxFavorite = function() {
@@ -4460,6 +4456,7 @@ function startCryptoPolling() { fetchCryptoLive(); setInterval(fetchCryptoLive, 
 </script>
 </body>
 </html>
+
 
 
 
